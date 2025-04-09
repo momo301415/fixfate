@@ -1,0 +1,39 @@
+name: pulsedevice
+description: A new Flutter project.
+version: 1.0.0+1
+environment: 
+  sdk: ^3.6.0
+dependencies: 
+  flutter: 
+    sdk: flutter
+  flutter_localizations: 
+    sdk: flutter
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.0.16
+  get: ^4.6.6
+  shared_preferences: ^2.3.4
+  connectivity_plus: ^6.1.1
+  flutter_svg_provider: ^1.0.7
+  pin_code_fields: ^8.0.1
+  sms_autofill: ^2.4.1
+  responsive_grid_list: ^1.4.0
+  qr_flutter: ^4.1.0
+  calendar_date_picker2: ^1.1.8
+  fl_chart: ^0.70.0
+dev_dependencies: 
+  flutter_test: 
+    sdk: flutter
+flutter: 
+  uses-material-design: true
+  assets: 
+    - assets/
+    - assets/images/
+  fonts: 
+    - family: Manrope
+      fonts: 
+        - asset: assets/fonts/ManropeSemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/ManropeBold.ttf
+          weight: 700
+        - asset: assets/fonts/ManropeRegular.ttf
+          weight: 400

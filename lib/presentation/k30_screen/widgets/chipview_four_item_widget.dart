@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import '../../../core/app_export.dart';
+import '../models/chipview_four_item_model.dart';
+
+// ignore_for_file: must_be_immutable
+class ChipviewFourItemWidget extends StatelessWidget {
+  ChipviewFourItemWidget(this.chipviewFourItemModelObj, {Key? key})
+      : super(
+          key: key,
+        );
+
+  ChipviewFourItemModel chipviewFourItemModelObj;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: ThemeData(
+        canvasColor: Colors.transparent,
+      ),
+      child: Obx(
+        () => RawChip(
+          padding: EdgeInsets.symmetric(
+            horizontal: 12.h,
+            vertical: 2.h,
+          ),
+          showCheckmark: false,
+          labelPadding: EdgeInsets.zero,
+          label: Text(
+            chipviewFourItemModelObj.four!.value,
+            style: TextStyle(
+              color: (chipviewFourItemModelObj.isSelected?.value ?? false)
+                  ? appTheme.gray200
+                  : appTheme.gray50001,
+              fontSize: 17.fSize,
+              fontFamily: 'PingFang TC',
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          selected: (chipviewFourItemModelObj.isSelected?.value ?? false),
+          backgroundColor: Colors.transparent,
+          selectedColor: theme.colorScheme.primary,
+          shape: (chipviewFourItemModelObj.isSelected?.value ?? false)
+              ? RoundedRectangleBorder(
+                  side: BorderSide.none,
+                  borderRadius: BorderRadius.circular(
+                    14.h,
+                  ))
+              : RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: appTheme.blueGray100,
+                    width: 1.h,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    14.h,
+                  ),
+                ),
+          onSelected: (value) {
+            chipviewFourItemModelObj.isSelected!.value = value;
+          },
+        ),
+      ),
+    );
+  }
+}
