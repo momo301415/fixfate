@@ -5,6 +5,7 @@ import '../../widgets/custom_elevated_button.dart';
 import '../../widgets/custom_pin_code_text_field.dart';
 import 'controller/one3_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// 忘記密碼sms頁
 class One3Screen extends GetWidget<One3Controller> {
   const One3Screen({Key? key})
       : super(
@@ -114,34 +115,53 @@ class One3Screen extends GetWidget<One3Controller> {
               () => CustomPinCodeTextField(
                 context: Get.context!,
                 controller: controller.otpController.value,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  controller.checkFromIsNotEmpty();
+                },
               ),
             ),
           ),
-          Text(
-            "lbl_60s".tr,
-            style: CustomTextStyles.bodyMediumGray500,
+          Obx(
+            () => Text(
+              "${controller.countdown.value}" + "lbl_60s".tr,
+              style: CustomTextStyles.bodyMediumGray500,
+            ),
           ),
-          CustomElevatedButton(
-            height: 58.h,
-            text: "lbl27".tr,
-            buttonStyle: CustomButtonStyles.fillTeal,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgArrowDown,
-                height: 16.h,
-                width: 16.h,
-              ),
-              Text(
-                "lbl42".tr,
-                style: theme.textTheme.bodyMedium,
-              )
-            ],
-          )
+          Obx(() {
+            final isValid = controller.isValid.value;
+            return CustomElevatedButton(
+                height: 58.h,
+                text: "lbl27".tr,
+                buttonStyle: isValid
+                    ? CustomButtonStyles.none
+                    : CustomButtonStyles.fillTeal,
+                decoration: isValid
+                    ? CustomButtonStyles.gradientCyanToPrimaryDecoration
+                    : null,
+                onPressed: () {
+                  if (!isValid) return;
+                  controller.goTwo3Screen();
+                });
+          }),
+          GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgArrowDown,
+                    height: 16.h,
+                    width: 16.h,
+                  ),
+                  Text(
+                    "lbl42".tr,
+                    style: theme.textTheme.bodyMedium,
+                  )
+                ],
+              ))
         ],
       ),
     );

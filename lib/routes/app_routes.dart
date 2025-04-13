@@ -253,11 +253,14 @@ class AppRoutes {
   static const String initialRoute = '/initialRoute';
 
   static List<GetPage> pages = [
+    /// 隱私權頁
     GetPage(
       name: k0Screen,
       page: () => K0Screen(),
       bindings: [K0Binding()],
     ),
+
+    /// splash頁
     GetPage(
       name: k1Screen,
       page: () => K1Screen(),
@@ -314,6 +317,8 @@ class AppRoutes {
       page: () => K14Screen(),
       bindings: [K14Binding()],
     ),
+
+    /// 忘記密碼頁
     GetPage(
       name: one3Screen,
       page: () => One3Screen(),
@@ -324,6 +329,8 @@ class AppRoutes {
       page: () => Two2Screen(),
       bindings: [Two2Binding()],
     ),
+
+    /// 重設密碼頁
     GetPage(
       name: two3Screen,
       page: () => Two3Screen(),

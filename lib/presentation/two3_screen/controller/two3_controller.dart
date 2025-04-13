@@ -13,10 +13,22 @@ class Two3Controller extends GetxController {
 
   Rx<Two3Model> two3ModelObj = Two3Model().obs;
 
+  var isValid = false.obs;
+
   @override
   void onClose() {
     super.onClose();
     passwordController.dispose();
     passwordoneController.dispose();
+  }
+
+  void checkFromIsNotEmpty() {
+    isValid.value = passwordController.text.isNotEmpty &&
+        passwordoneController.text.isNotEmpty;
+  }
+
+  /// 路由到個人信息頁
+  void goK30Screen() {
+    Get.toNamed(AppRoutes.k30Screen);
   }
 }

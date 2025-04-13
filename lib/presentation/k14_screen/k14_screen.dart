@@ -7,6 +7,7 @@ import '../../widgets/custom_text_form_field.dart';
 import 'controller/k14_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 忘記密碼頁
 class K14Screen extends GetWidget<K14Controller> {
   K14Screen({Key? key})
       : super(
@@ -115,47 +116,72 @@ class K14Screen extends GetWidget<K14Controller> {
             ),
           ),
           SizedBox(height: 16.h),
-          CustomTextFormField(
-            controller: controller.mobileNoController,
-            hintText: "lbl_0934582915".tr,
-            textInputAction: TextInputAction.done,
-            textInputType: TextInputType.phone,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.h,
-              vertical: 14.h,
-            ),
-            validator: (value) {
-              if (!isValidPhone(value)) {
-                return "err_msg_please_enter_valid_phone_number".tr;
-              }
-              return null;
-            },
-          ),
+          _buildMobileNo(),
           SizedBox(height: 48.h),
-          CustomElevatedButton(
-            height: 58.h,
-            text: "lbl17".tr,
-            buttonStyle: CustomButtonStyles.none,
-            decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
-          ),
+          _buildSumbit(),
           SizedBox(height: 24.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgArrowDown,
-                height: 16.h,
-                width: 16.h,
-              ),
-              Text(
-                "lbl42".tr,
-                style: theme.textTheme.bodyMedium,
-              )
-            ],
-          )
+          GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgArrowDown,
+                    height: 16.h,
+                    width: 16.h,
+                  ),
+                  Text(
+                    "lbl42".tr,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ))
         ],
       ),
     );
+  }
+
+  Widget _buildMobileNo() {
+    return CustomTextFormField(
+      controller: controller.mobileNoController,
+      onChanged: (value) {
+        controller.checkFromIsNotEmpty();
+      },
+      hintText: "lbl_0934582915".tr,
+      textInputAction: TextInputAction.done,
+      textInputType: TextInputType.phone,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 16.h,
+        vertical: 14.h,
+      ),
+      validator: (value) {
+        if (!isValidPhone(value, isRequired: true)) {
+          return "err_msg_please_enter_valid_phone_number".tr;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildSumbit() {
+    return Obx(() {
+      final isValid = controller.isValid.value;
+      return CustomElevatedButton(
+        height: 58.h,
+        text: "lbl17".tr,
+        buttonStyle:
+            isValid ? CustomButtonStyles.none : CustomButtonStyles.fillTeal,
+        decoration:
+            isValid ? CustomButtonStyles.gradientCyanToPrimaryDecoration : null,
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            controller.goOne3Screen();
+          } else {}
+        },
+      );
+    });
   }
 }

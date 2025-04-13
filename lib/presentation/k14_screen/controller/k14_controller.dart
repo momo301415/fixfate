@@ -11,9 +11,20 @@ class K14Controller extends GetxController {
 
   Rx<K14Model> k14ModelObj = K14Model().obs;
 
+  var isValid = false.obs;
+
   @override
   void onClose() {
     super.onClose();
     mobileNoController.dispose();
+  }
+
+  void checkFromIsNotEmpty() {
+    isValid.value = mobileNoController.text.isNotEmpty;
+  }
+
+  /// 路由忘記密碼sms頁
+  void goOne3Screen() {
+    Get.toNamed(AppRoutes.one3Screen);
   }
 }

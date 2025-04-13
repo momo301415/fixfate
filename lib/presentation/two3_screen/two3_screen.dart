@@ -7,6 +7,7 @@ import '../../widgets/custom_text_form_field.dart';
 import 'controller/two3_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 重設密碼頁面
 class Two3Screen extends GetWidget<Two3Controller> {
   Two3Screen({Key? key})
       : super(
@@ -95,7 +96,11 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                   SizedBox(height: 16.h),
                                   CustomTextFormField(
                                     controller: controller.passwordController,
-                                    hintText: "lbl18".tr,
+                                    onChanged: (value) {
+                                      controller.checkFromIsNotEmpty();
+                                    },
+                                    hintText: "lbl_82".tr,
+                                    textInputAction: TextInputAction.done,
                                     textInputType:
                                         TextInputType.visiblePassword,
                                     obscureText: true,
@@ -104,13 +109,7 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                       vertical: 14.h,
                                     ),
                                     validator: (value) {
-                                      if (value == null ||
-                                          (!isValidPassword(value,
-                                              isRequired: true))) {
-                                        return "err_msg_please_enter_valid_password"
-                                            .tr;
-                                      }
-                                      return null;
+                                      return validPassword(value);
                                     },
                                   ),
                                   SizedBox(height: 24.h),
@@ -123,7 +122,10 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                   CustomTextFormField(
                                     controller:
                                         controller.passwordoneController,
-                                    hintText: "lbl18".tr,
+                                    onChanged: (value) {
+                                      controller.checkFromIsNotEmpty();
+                                    },
+                                    hintText: "lbl_82".tr,
                                     textInputAction: TextInputAction.done,
                                     textInputType:
                                         TextInputType.visiblePassword,
@@ -134,21 +136,39 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                     ),
                                     validator: (value) {
                                       if (value == null ||
-                                          (!isValidPassword(value,
-                                              isRequired: true))) {
-                                        return "err_msg_please_enter_valid_password"
+                                          value.isEmpty ||
+                                          controller
+                                                  .passwordoneController.text !=
+                                              value) {
+                                        return "err_msg_please_enter_same_password"
                                             .tr;
                                       }
                                       return null;
                                     },
                                   ),
                                   SizedBox(height: 48.h),
-                                  CustomElevatedButton(
-                                    height: 58.h,
-                                    text: "lbl10".tr,
-                                    buttonStyle: CustomButtonStyles.none,
-                                    decoration: CustomButtonStyles
-                                        .gradientCyanToPrimaryDecoration,
+                                  Obx(
+                                    () {
+                                      final isValid = controller.isValid.value;
+                                      return CustomElevatedButton(
+                                        height: 58.h,
+                                        text: "lbl10".tr,
+                                        buttonStyle: isValid
+                                            ? CustomButtonStyles.none
+                                            : CustomButtonStyles.fillTeal,
+                                        decoration: isValid
+                                            ? CustomButtonStyles
+                                                .gradientCyanToPrimaryDecoration
+                                            : null,
+                                        onPressed: () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            Get.toNamed(
+                                                AppRoutes.appNavigationScreen);
+                                          }
+                                        },
+                                      );
+                                    },
                                   )
                                 ],
                               ),

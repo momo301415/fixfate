@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import '../../../core/app_export.dart';
@@ -12,6 +14,9 @@ class One3Controller extends GetxController with CodeAutoFill {
 
   Rx<One3Model> one3ModelObj = One3Model().obs;
 
+  var isValid = false.obs;
+  var countdown = 60.obs;
+
   @override
   void codeUpdated() {
     otpController.value.text = code ?? '';
@@ -21,5 +26,27 @@ class One3Controller extends GetxController with CodeAutoFill {
   void onInit() {
     super.onInit();
     listenForCode();
+    countdownTimer();
+  }
+
+  void checkFromIsNotEmpty() {
+    isValid.value = otpController.value.text.isNotEmpty &&
+        otpController.value.text.length == 4;
+  }
+
+  void countdownTimer() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (countdown.value > 0) {
+        countdown.value--;
+      } else {
+        timer.cancel();
+        countdown.value = 60;
+      }
+    });
+  }
+
+  /// 路由到重設密碼
+  void goTwo3Screen() {
+    Get.toNamed(AppRoutes.two3Screen);
   }
 }

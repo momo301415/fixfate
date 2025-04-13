@@ -1,19 +1,23 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/validation_functions.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
 import '../../widgets/custom_text_form_field.dart';
 import 'controller/one2_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// 登入頁面
 class One2Screen extends GetWidget<One2Controller> {
-  const One2Screen({Key? key})
+  One2Screen({Key? key})
       : super(
           key: key,
         );
-
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Container(
@@ -21,6 +25,8 @@ class One2Screen extends GetWidget<One2Controller> {
         height: SizeUtils.height,
         decoration: AppDecoration.gradientLightBlueToOnErrorContainer,
         child: SafeArea(
+            child: Form(
+          key: _formKey,
           child: SizedBox(
             width: double.maxFinite,
             child: SingleChildScrollView(
@@ -92,14 +98,7 @@ class One2Screen extends GetWidget<One2Controller> {
                                   ),
                                 ),
                                 SizedBox(height: 16.h),
-                                CustomTextFormField(
-                                  controller: controller.oneController,
-                                  hintText: "lbl_0912345678".tr,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16.h,
-                                    vertical: 14.h,
-                                  ),
-                                ),
+                                _buildOne(),
                                 SizedBox(height: 24.h),
                                 Align(
                                   alignment: Alignment.centerLeft,
@@ -110,21 +109,9 @@ class One2Screen extends GetWidget<One2Controller> {
                                   ),
                                 ),
                                 SizedBox(height: 16.h),
-                                CustomTextFormField(
-                                  controller: controller.tfController,
-                                  hintText: "lbl_82".tr,
-                                  textInputAction: TextInputAction.done,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16.h,
-                                    vertical: 14.h,
-                                  ),
-                                ),
+                                _buildTf(),
                                 SizedBox(height: 48.h),
-                                CustomElevatedButton(
-                                  height: 58.h,
-                                  text: "lbl10".tr,
-                                  buttonStyle: CustomButtonStyles.fillTeal,
-                                ),
+                                _buildTf2(),
                                 SizedBox(height: 24.h),
                                 RichText(
                                   text: TextSpan(
@@ -134,10 +121,13 @@ class One2Screen extends GetWidget<One2Controller> {
                                         style: theme.textTheme.bodyMedium,
                                       ),
                                       TextSpan(
-                                        text: "lbl38".tr,
-                                        style:
-                                            CustomTextStyles.bodyMediumPrimary,
-                                      )
+                                          text: "lbl38".tr,
+                                          style: CustomTextStyles
+                                              .bodyMediumPrimary,
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              controller.goK14Screen();
+                                            })
                                     ],
                                   ),
                                   textAlign: TextAlign.left,
@@ -153,8 +143,73 @@ class One2Screen extends GetWidget<One2Controller> {
               ),
             ),
           ),
-        ),
+        )),
       ),
+    );
+  }
+
+  Widget _buildOne() {
+    return CustomTextFormField(
+      controller: controller.oneController,
+      onChanged: (value) {
+        controller.checkFromIsNotEmpty();
+      },
+      hintText: "lbl_0912345678".tr,
+      textInputAction: TextInputAction.done,
+      textInputType: TextInputType.phone,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 16.h,
+        vertical: 14.h,
+      ),
+      validator: (value) {
+        if (!isValidPhone(value)) {
+          return "err_msg_please_enter_valid_phone_number".tr;
+        } else if (value == null || value.isEmpty) {
+          return "err_msg_please_enter_phone_number".tr;
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildTf() {
+    return CustomTextFormField(
+      controller: controller.tfController,
+      onChanged: (value) {
+        controller.checkFromIsNotEmpty();
+      },
+      hintText: "lbl_82".tr,
+      textInputAction: TextInputAction.done,
+      textInputType: TextInputType.visiblePassword,
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 16.h,
+        vertical: 14.h,
+      ),
+      obscureText: true,
+      validator: (value) {
+        return validPassword(value);
+      },
+    );
+  }
+
+  Widget _buildTf2() {
+    return Obx(
+      () {
+        final isValid = controller.isValid.value;
+        return CustomElevatedButton(
+          height: 58.h,
+          text: "lbl10".tr,
+          buttonStyle:
+              isValid ? CustomButtonStyles.none : CustomButtonStyles.fillTeal,
+          decoration: isValid
+              ? CustomButtonStyles.gradientCyanToPrimaryDecoration
+              : null,
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) {
+            } else {}
+          },
+        );
+      },
     );
   }
 }
