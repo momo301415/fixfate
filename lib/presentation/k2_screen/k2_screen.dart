@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
 import 'controller/k2_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// 登入/註冊頁
 class K2Screen extends GetWidget<K2Controller> {
   const K2Screen({Key? key})
       : super(
@@ -12,7 +14,7 @@ class K2Screen extends GetWidget<K2Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Container(
@@ -104,11 +106,17 @@ class K2Screen extends GetWidget<K2Controller> {
             text: "lbl10".tr,
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientCyanToGrayDecoration,
+            onPressed: () {
+              controller.goOne2Screen();
+            },
           ),
           CustomElevatedButton(
             height: 58.h,
             text: "lbl11".tr,
             buttonStyle: CustomButtonStyles.fillWhiteA,
+            onPressed: () {
+              controller.goOneScreen();
+            },
           )
         ],
       ),

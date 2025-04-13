@@ -1,3 +1,5 @@
+import 'package:pulsedevice/core/app_export.dart';
+
 /// Checks if string is phone number
 bool isValidPhone(String? inputString, {bool isRequired = false}) {
   bool isInputStringValid = false;
@@ -32,4 +34,27 @@ bool isValidPassword(String? inputString, {bool isRequired = false}) {
     isInputStringValid = regExp.hasMatch(inputString);
   }
   return isInputStringValid;
+}
+
+String? validPassword(String? inputSyring) {
+  if (inputSyring == null || inputSyring.isEmpty)
+    return "err_msg_please_enter_password".tr;
+
+  if (inputSyring.length < 8)
+    return "err_msg_please_enter_than_8_characters".tr;
+
+  if (!RegExp(r'[A-Z]').hasMatch(inputSyring)) {
+    return "err_msg_please_enter_less_upper_case".tr;
+  }
+
+  if (!RegExp(r'[a-z]').hasMatch(inputSyring)) {
+    return "err_msg_please_enter_less_lower_case".tr;
+  }
+
+  if (!RegExp(r'\d').hasMatch(inputSyring)) {
+    return "err_msg_please_enter_less_number".tr;
+  }
+
+  if (inputSyring.contains(' ')) return "err_msg_please_not_enter_space";
+  return null;
 }

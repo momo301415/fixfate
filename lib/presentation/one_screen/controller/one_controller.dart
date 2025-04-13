@@ -15,11 +15,28 @@ class OneController extends GetxController {
 
   Rx<OneModel> oneModelObj = OneModel().obs;
 
+  var isValid = false.obs;
+
   @override
   void onClose() {
     super.onClose();
     oneController.dispose();
     tfController.dispose();
     tf1Controller.dispose();
+  }
+
+  /// 路由到sms
+  void goFourScreen() {
+    Get.toNamed(AppRoutes.fourScreen);
+  }
+
+  void goAll() {
+    Get.toNamed(AppRoutes.appNavigationScreen);
+  }
+
+  void checkFromIsNotEmpty() {
+    isValid.value = oneController.text.isNotEmpty &&
+        tfController.text.isNotEmpty &&
+        tf1Controller.text.isNotEmpty;
   }
 }

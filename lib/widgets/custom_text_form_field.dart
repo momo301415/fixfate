@@ -28,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
       this.obscureText = false,
       this.readOnly = false,
       this.onTap,
+      this.onChanged,
       this.textInputAction = TextInputAction.next,
       this.textInputType = TextInputType.text,
       this.maxLines,
@@ -94,6 +95,8 @@ class CustomTextFormField extends StatelessWidget {
 
   final bool? filled;
 
+  final ValueChanged<String>? onChanged;
+
   final FormFieldValidator<String>? validator;
 
   @override
@@ -112,6 +115,7 @@ class CustomTextFormField extends StatelessWidget {
           scrollPadding: EdgeInsets.only(
               bottom: MediaQuery.of(Get.context!).viewInsets.bottom),
           controller: controller,
+          onChanged: onChanged,
           focusNode: focusNode,
           onTapOutside: (event) {
             if (focusNode != null) {

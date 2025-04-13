@@ -36,7 +36,7 @@ class AppDecoration {
   static BoxDecoration get fillWhiteA => BoxDecoration(
         color: appTheme.whiteA700,
       );
-// Gradient decorations
+// Gradient decorations，splash page
   static BoxDecoration get gradientCyanToOnErrorContainer => BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment(0.5, 0),
@@ -47,7 +47,7 @@ class AppDecoration {
           image: AssetImage(
             ImageConstant.imgVector,
           ),
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
         ),
       );
   static BoxDecoration get gradientLightBlueToOnErrorContainer => BoxDecoration(
@@ -60,12 +60,12 @@ class AppDecoration {
             theme.colorScheme.onErrorContainer
           ],
         ),
-        image: DecorationImage(
-          image: AssetImage(
-            ImageConstant.img0x0,
-          ),
-          fit: BoxFit.fill,
-        ),
+        // image: DecorationImage(
+        //   image: AssetImage(
+        //     ImageConstant.img0x0,
+        //   ),
+        //   fit: BoxFit.fill,
+        // ),
       );
 // Gray decorations
   static BoxDecoration get gray100 => BoxDecoration(

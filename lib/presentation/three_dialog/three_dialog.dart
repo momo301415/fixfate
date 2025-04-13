@@ -14,11 +14,10 @@ class ThreeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: double.maxFinite,
+          width: 234.h,
           padding: EdgeInsets.symmetric(vertical: 22.h),
           decoration: AppDecoration.gray100.copyWith(
             borderRadius: BorderRadiusStyle.roundedBorder8,
@@ -27,15 +26,18 @@ class ThreeDialog extends StatelessWidget {
             spacing: 28,
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 6.h),
               Text(
                 "lbl19".tr,
                 style: CustomTextStyles.titleMediumPrimaryContainerSemiBold,
               ),
-              Text(
-                "lbl20".tr,
-                style: CustomTextStyles.titleMediumPrimarySemiBold,
-              )
+              GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    "lbl20".tr,
+                    style: CustomTextStyles.titleMediumPrimarySemiBold,
+                  ))
             ],
           ),
         )

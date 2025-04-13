@@ -263,11 +263,15 @@ class AppRoutes {
       page: () => K1Screen(),
       bindings: [K1Binding()],
     ),
+
+    /// 登入/註冊頁
     GetPage(
       name: k2Screen,
       page: () => K2Screen(),
       bindings: [K2Binding()],
     ),
+
+    /// 註冊頁
     GetPage(
       name: oneScreen,
       page: () => OneScreen(),
@@ -298,6 +302,8 @@ class AppRoutes {
       page: () => K10Screen(),
       bindings: [K10Binding()],
     ),
+
+    /// 登入頁
     GetPage(
       name: one2Screen,
       page: () => One2Screen(),
@@ -523,11 +529,15 @@ class AppRoutes {
       page: () => K86Screen(),
       bindings: [K86Binding()],
     ),
+
+    /// 所有畫面導航
     GetPage(
       name: appNavigationScreen,
       page: () => AppNavigationScreen(),
       bindings: [AppNavigationBinding()],
     ),
+
+    /// 啟動頁
     GetPage(
       name: initialRoute,
       page: () => K1Screen(),
