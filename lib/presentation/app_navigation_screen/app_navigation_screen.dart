@@ -170,7 +170,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                         _buildScreenTitle(
                           screenTitle: "0-註冊 Five - Dialog",
                           onTapScreenTitle: () => onTapDialogTitle(
-                              context, FiveDialog(Get.put(FiveController()))),
+                              context,
+                              FiveDialog(
+                                Get.put(FiveController()),
+                                message: '',
+                              )),
                         ),
                         _buildScreenTitle(
                           screenTitle: "0-註冊 Six",

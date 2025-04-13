@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
@@ -117,18 +119,31 @@ class FourScreen extends GetWidget<FourController> {
               ),
             ),
           ),
-          Text(
-            "lbl_60s".tr,
-            style: CustomTextStyles.bodyMediumGray500,
+          Obx(
+            () => Text(
+              "${controller.countdown}" + "lbl_60s".tr,
+              style: CustomTextStyles.bodyMediumGray500,
+            ),
           ),
           SizedBox(
             width: double.maxFinite,
             child: Row(
               children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgUCheckCircle,
-                  height: 16.h,
-                  width: 16.h,
+                Obx(
+                  () {
+                    final isValid = controller.isReadPrivacyPolicy.value;
+                    return isValid
+                        ? CustomImageView(
+                            imagePath: ImageConstant.imgUCheckCirclePrimary,
+                            height: 16.h,
+                            width: 16.h,
+                          )
+                        : CustomImageView(
+                            imagePath: ImageConstant.imgUCheckCircle,
+                            height: 16.h,
+                            width: 16.h,
+                          );
+                  },
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 8.h),
@@ -140,9 +155,12 @@ class FourScreen extends GetWidget<FourController> {
                           style: theme.textTheme.bodyMedium,
                         ),
                         TextSpan(
-                          text: "lbl25".tr,
-                          style: CustomTextStyles.bodyMediumPrimary,
-                        )
+                            text: "lbl25".tr,
+                            style: CustomTextStyles.bodyMediumPrimary,
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                controller.goPravacyPolicyScreen();
+                              })
                       ],
                     ),
                     textAlign: TextAlign.left,
@@ -156,6 +174,11 @@ class FourScreen extends GetWidget<FourController> {
             text: "lbl27".tr,
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
+            onPressed: () {
+              if (!controller.isReadPrivacyPolicy.value) {
+                DialogHelper.showError("lbl28".tr);
+              }
+            },
           )
         ],
       ),

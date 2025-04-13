@@ -22,6 +22,7 @@ class K0Screen extends GetWidget<K0Controller> {
         child: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
+            controller: controller.scrollController,
             child: Container(
               width: double.maxFinite,
               padding: EdgeInsets.only(
@@ -149,7 +150,9 @@ class K0Screen extends GetWidget<K0Controller> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildColumn2(),
+      bottomNavigationBar: SafeArea(
+        child: _buildColumn2(),
+      ),
     );
   }
 
@@ -234,12 +237,19 @@ class K0Screen extends GetWidget<K0Controller> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CustomElevatedButton(
-            text: "lbl9".tr,
-            margin: EdgeInsets.only(bottom: 12.h),
-            buttonStyle: CustomButtonStyles.none,
-            decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
-          )
+          Obx(() => CustomElevatedButton(
+                text: "lbl9".tr,
+                margin: EdgeInsets.only(bottom: 12.h),
+                buttonStyle: controller.isBottomReached.value
+                    ? CustomButtonStyles.none
+                    : CustomButtonStyles.fillTeal,
+                decoration: controller.isBottomReached.value
+                    ? CustomButtonStyles.gradientCyanToPrimaryDecoration
+                    : null,
+                onPressed: controller.isBottomReached.value
+                    ? () => Get.back(result: true)
+                    : null,
+              ))
         ],
       ),
     );

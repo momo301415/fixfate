@@ -4,7 +4,9 @@ import 'controller/five_controller.dart';
 
 // ignore_for_file: must_be_immutable
 class FiveDialog extends StatelessWidget {
-  FiveDialog(this.controller, {Key? key})
+  final String message;
+  final VoidCallback? onOk;
+  FiveDialog(this.controller, {Key? key, required this.message, this.onOk})
       : super(
           key: key,
         );
@@ -18,7 +20,7 @@ class FiveDialog extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: double.maxFinite,
+          width: 234.h,
           padding: EdgeInsets.symmetric(vertical: 22.h),
           decoration: AppDecoration.gray100.copyWith(
             borderRadius: BorderRadiusStyle.roundedBorder8,
@@ -27,16 +29,20 @@ class FiveDialog extends StatelessWidget {
             spacing: 28,
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 6.h),
               Text(
-                "lbl28".tr,
+                message,
                 style: CustomTextStyles.titleMediumPrimaryContainerSemiBold,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.h),
-                child: Text(
-                  "lbl20".tr,
-                  style: CustomTextStyles.titleMediumPrimarySemiBold,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    "lbl20".tr,
+                    style: CustomTextStyles.titleMediumPrimarySemiBold,
+                  ),
                 ),
               )
             ],

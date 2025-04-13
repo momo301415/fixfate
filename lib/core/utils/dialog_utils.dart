@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/presentation/five_dialog/controller/five_controller.dart';
+import 'package:pulsedevice/presentation/five_dialog/five_dialog.dart';
 import 'package:pulsedevice/presentation/three_dialog/controller/three_controller.dart';
 import 'package:pulsedevice/presentation/three_dialog/three_dialog.dart';
 
@@ -9,6 +11,11 @@ class DialogHelper {
 
     Get.dialog(PositionedDialogWrapper(child: ThreeDialog(controller)),
         barrierDismissible: false);
+  }
+
+  static void showError(String message) {
+    final controller = Get.put(FiveController());
+    Get.dialog(FiveDialog(controller, message: message));
   }
 }
 
