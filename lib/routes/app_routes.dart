@@ -1,3 +1,6 @@
+import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
+import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+
 import '../core/app_export.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import '../presentation/app_navigation_screen/binding/app_navigation_binding.dart';
@@ -341,6 +344,10 @@ class AppRoutes {
       page: () => Three1Screen(),
       bindings: [Three1Binding()],
     ),
+
+    GetPage(name: k29Page, page: () => K29Page(), bindings: [K29Binding()]),
+
+    /// 個人中心-個人資料
     GetPage(
       name: k30Screen,
       page: () => K30Screen(),

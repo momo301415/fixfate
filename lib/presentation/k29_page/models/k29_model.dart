@@ -9,6 +9,6 @@ class K29Model {
   Rx<List<ListOneItemModel>> listOneItemList = Rx([
     ListOneItemModel(one: ImageConstant.img102.obs, two: "lbl58".tr.obs),
     ListOneItemModel(one: ImageConstant.img10280x80.obs, two: "lbl59".tr.obs),
-    ListOneItemModel(two: "lbl60".tr.obs)
+    ListOneItemModel(one: ImageConstant.img1021.obs, two: "lbl60".tr.obs)
   ]);
 }

@@ -8,6 +8,7 @@ class ListOneItemModel {
     one = one ?? Rx(ImageConstant.img102);
     two = two ?? Rx("lbl58".tr);
     id = id ?? Rx("");
+    title = title ?? Rx("");
   }
 
   Rx<String>? one;
@@ -15,4 +16,6 @@ class ListOneItemModel {
   Rx<String>? two;
 
   Rx<String>? id;
+
+  Rx<String>? title;
 }

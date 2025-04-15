@@ -206,6 +206,7 @@ class One2Screen extends GetWidget<One2Controller> {
               : null,
           onPressed: () {
             if (!_formKey.currentState!.validate()) {
+              controller.goK29Page();
             } else {}
           },
         );

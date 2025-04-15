@@ -36,4 +36,9 @@ class One2Controller extends GetxController {
   void goK30Screen() {
     Get.toNamed(AppRoutes.k30Screen);
   }
+
+  /// 路由到個人中心
+  void goK29Page() {
+    Get.toNamed(AppRoutes.k29Page);
+  }
 }

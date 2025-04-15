@@ -164,6 +164,8 @@ class ImageConstant {
 
   static String imgSBg = '$imagePath/img_s_bg.png';
 
+  static String imgUnionBg = '$imagePath/img_union.png';
+
   static String imgSend = '$imagePath/img_send.svg';
 
   static String imgNavPrimary24x24 = '$imagePath/img_nav_primary_24x24.svg';
@@ -199,4 +201,7 @@ class ImageConstant {
   static String imgFrame86884 = '$imagePath/img_frame_86884.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
+
+  static String imgUnionFullBg = '$imagePath/img_union_full.png';
+  static String imgUnionBg2 = '$imagePath/img_union_2.png';
 }

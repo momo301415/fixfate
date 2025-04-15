@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:pulsedevice/presentation/k29_page/models/list_one_item_model.dart';
+
 import '../../../core/app_export.dart';
 import '../models/k29_model.dart';
 
@@ -7,7 +8,21 @@ import '../models/k29_model.dart';
 /// This class manages the state of the K29Page, including the
 /// current k29ModelObj
 class K29Controller extends GetxController {
-  K29Controller(this.k29ModelObj);
+  Rx<K29Model> k29ModelObj = K29Model().obs;
+  void onTopCardTap(ListOneItemModel model) {
+    // 可依 model.id 判斷導頁
+    print('點擊功能卡片：${model.title}');
+  }
 
-  Rx<K29Model> k29ModelObj;
+  void onMenuTap(String key) {
+    switch (key) {
+      case 'profile':
+        Get.toNamed('/profile');
+        break;
+      case 'device':
+        Get.toNamed('/device');
+        break;
+      // ...依需求加上去
+    }
+  }
 }
