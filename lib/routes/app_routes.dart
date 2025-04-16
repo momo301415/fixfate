@@ -345,6 +345,7 @@ class AppRoutes {
       bindings: [Three1Binding()],
     ),
 
+    /// 個人中心
     GetPage(name: k29Page, page: () => K29Page(), bindings: [K29Binding()]),
 
     /// 個人中心-個人資料

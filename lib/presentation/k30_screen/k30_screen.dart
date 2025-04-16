@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
@@ -17,8 +18,10 @@ import 'widgets/chipview_item_widget.dart';
 import 'widgets/chipview_one_item_widget.dart';
 import 'widgets/chipview_three_item_widget.dart';
 import 'widgets/chipview_two_item_widget.dart';
-import 'widgets/list_item_widget.dart'; // ignore_for_file: must_be_immutable
+import 'widgets/list_item_widget.dart';
+// ignore_for_file: must_be_immutable
 
+/// 個人中心-個人資料
 class K30Screen extends GetWidget<K30Controller> {
   const K30Screen({Key? key})
       : super(
@@ -27,78 +30,27 @@ class K30Screen extends GetWidget<K30Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        child: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Container(
-              height: 1974.h,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  _buildStackunionone(),
-                  Container(
-                    width: double.maxFinite,
-                    margin: EdgeInsets.symmetric(horizontal: 16.h),
-                    child: Column(
-                      spacing: 16,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildColumnone(),
-                        _buildColumnone1(),
-                        _buildColumnone2(),
-                        _buildColumnone3(),
-                        _buildColumnone4(),
-                        _buildColumnone5(),
-                        _buildRowfidownload()
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: _buildColumn(),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStackunionone() {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        height: 90.h,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgUnion90x374,
-              height: 90.h,
-              width: double.maxFinite,
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: CustomAppBar(
-                leadingWidth: 55.h,
-                leading: AppbarLeadingImage(
-                  imagePath: ImageConstant.imgArrowLeft,
-                  margin: EdgeInsets.only(left: 31.h),
-                  onTap: () {
-                    onTapArrowleftone();
-                  },
-                ),
-                centerTitle: true,
-                title: AppbarSubtitle(
-                  text: "lbl61".tr,
-                ),
-              ),
-            )
-          ],
-        ),
+    return BaseScaffoldImageHeader(
+      title: "lbl61".tr,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildColumnone(),
+          SizedBox(height: 16),
+          _buildColumnone1(),
+          SizedBox(height: 16),
+          _buildColumnone2(),
+          SizedBox(height: 16),
+          _buildColumnone3(),
+          SizedBox(height: 16),
+          _buildColumnone4(),
+          SizedBox(height: 16),
+          _buildColumnone5(),
+          SizedBox(height: 16),
+          _buildRowfidownload(),
+          SizedBox(height: 16),
+          _buildColumn(),
+        ],
       ),
     );
   }

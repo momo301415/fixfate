@@ -25,4 +25,9 @@ class K29Controller extends GetxController {
       // ...依需求加上去
     }
   }
+
+  /// 路由到個人中心-個人資料
+  void goK30Screen() {
+    Get.toNamed(AppRoutes.k30Screen);
+  }
 }

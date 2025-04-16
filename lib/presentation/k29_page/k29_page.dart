@@ -7,6 +7,7 @@ import 'models/list_one_item_model.dart';
 import 'widgets/list_one_item_widget.dart';
 import '../../widgets/custom_bottom_bar.dart';
 
+/// 個人中心
 class K29Page extends GetWidget<K29Controller> {
   const K29Page({super.key});
 
@@ -62,21 +63,25 @@ class K29Page extends GetWidget<K29Controller> {
       ),
       child: Column(
         children: [
-          _buildMenuItem("lbl61".tr, ImageConstant.imgFrameErrorcontainer20x20),
-          _buildMenuItem("lbl62".tr, ImageConstant.imgFrame20x20),
-          _buildMenuItem("lbl63".tr, ImageConstant.imgUSlidersV),
-          _buildMenuItem("lbl64".tr, ImageConstant.imgFrame1),
-          _buildMenuItem("lbl65".tr, ImageConstant.imgUShieldCheck),
-          _buildMenuItem("lbl66".tr, ImageConstant.imgFrame),
-          _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2),
+          _buildMenuItem("lbl61".tr, ImageConstant.imgFrameErrorcontainer20x20,
+              () {
+            controller.goK30Screen();
+          }),
+          _buildMenuItem("lbl62".tr, ImageConstant.imgFrame20x20, () {}),
+          _buildMenuItem("lbl63".tr, ImageConstant.imgUSlidersV, () {}),
+          _buildMenuItem("lbl64".tr, ImageConstant.imgFrame1, () {}),
+          _buildMenuItem("lbl65".tr, ImageConstant.imgUShieldCheck, () {}),
+          _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {}),
+          _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () {}),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(String title, String iconPath) {
+  Widget _buildMenuItem(
+      String title, String iconPath, GestureTapCallback onTap) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(16.h),
         decoration: AppDecoration.outlineGray,
