@@ -8,4 +8,6 @@ import '../models/k32_model.dart';
 /// current k32ModelObj
 class K32Controller extends GetxController {
   Rx<K32Model> k32ModelObj = K32Model().obs;
+  TextEditingController inputController = TextEditingController();
+  RxString inputedText = "".obs;
 }

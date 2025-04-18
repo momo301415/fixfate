@@ -5,47 +5,52 @@ import '../models/list_item_model.dart';
 
 // ignore_for_file: must_be_immutable
 class ListItemWidget extends StatelessWidget {
-  ListItemWidget(this.listItemModelObj, {Key? key})
+  ListItemWidget(this.listItemModelObj, {Key? key, required this.onTap})
       : super(
           key: key,
         );
 
   ListItemModel listItemModelObj;
+  final VoidCallback? onTap;
 
   var controller = Get.find<K30Controller>();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 8.h,
-        vertical: 16.h,
-      ),
-      decoration: AppDecoration.outlineGray,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Obx(
-            () => Text(
-              listItemModelObj.tf!.value,
-              style: CustomTextStyles.bodyMediumBluegray900,
-            ),
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 8.h,
+            vertical: 16.h,
           ),
-          Spacer(),
-          Obx(
-            () => Text(
-              listItemModelObj.tf1!.value,
-              style: CustomTextStyles.bodyMediumGray50001,
-            ),
+          decoration: AppDecoration.outlineGray,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Obx(() {
+                return Text(
+                  listItemModelObj.tf!.value,
+                  style: CustomTextStyles.bodyMediumBluegray900,
+                );
+              }),
+              Spacer(),
+              Obx(() {
+                return Text(
+                  listItemModelObj.tf1!.value,
+                  style: listItemModelObj.tf1!.value.isNotEmpty
+                      ? CustomTextStyles.bodyMediumBluegray900
+                      : CustomTextStyles.bodyMediumGray50001,
+                );
+              }),
+              CustomImageView(
+                imagePath: ImageConstant.imgVectorGray50001,
+                height: 8.h,
+                width: 6.h,
+                margin: EdgeInsets.only(left: 16.h),
+              )
+            ],
           ),
-          CustomImageView(
-            imagePath: ImageConstant.imgVectorGray50001,
-            height: 8.h,
-            width: 6.h,
-            margin: EdgeInsets.only(left: 16.h),
-          )
-        ],
-      ),
-    );
+        ));
   }
 }

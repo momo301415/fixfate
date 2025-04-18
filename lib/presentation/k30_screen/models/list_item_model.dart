@@ -16,3 +16,17 @@ class ListItemModel {
 
   Rx<String>? id;
 }
+
+// class ListItemModels {
+//   final RxString tf;
+//   final RxString tf1;
+//   final RxString id;
+
+//   ListItemModels({
+//     String tf = "lbl74",
+//     String tf1 = "lbl54",
+//     String id = "",
+//   })  : tf = tf.tr.obs,
+//         tf1 = tf1.tr.obs,
+//         id = id.obs;
+// }

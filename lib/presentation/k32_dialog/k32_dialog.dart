@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_text_form_field.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
@@ -48,11 +49,20 @@ class K32Dialog extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 14.h),
-              CustomElevatedButton(
-                height: 40.h,
-                text: "lbl128".tr,
-                buttonStyle: CustomButtonStyles.fillGray,
-                buttonTextStyle: CustomTextStyles.bodyLargeGray50016_1,
+              CustomTextFormField(
+                controller: controller.inputController,
+                onChanged: (value) {
+                  controller.inputedText.value = value;
+                },
+                hintText: "lbl128".tr,
+                textInputAction: TextInputAction.done,
+                textInputType: TextInputType.text,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.h,
+                  vertical: 14.h,
+                ),
+                borderDecoration: TextFormFieldStyleHelper.fillGrayTL5,
+                fillColor: appTheme.gray300,
               ),
               SizedBox(height: 26.h),
               Container(
@@ -61,13 +71,32 @@ class K32Dialog extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "lbl50".tr,
-                      style: CustomTextStyles.titleMediumGray500,
-                    ),
-                    Text(
-                      "lbl51".tr,
-                      style: CustomTextStyles.titleMediumGray500,
+                    GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Text(
+                          "lbl50".tr,
+                          style: CustomTextStyles.titleMediumGray500,
+                        )),
+                    Obx(
+                      () {
+                        final isNotEmpty =
+                            controller.inputedText.value.trim().isNotEmpty;
+                        return GestureDetector(
+                            onTap: () {
+                              if (isNotEmpty) {
+                                Get.back(
+                                    result: controller.inputController.text);
+                              }
+                            },
+                            child: Text(
+                              "lbl51".tr,
+                              style: isNotEmpty
+                                  ? CustomTextStyles.titleMediumPrimarySemiBold
+                                  : CustomTextStyles.titleMediumGray500,
+                            ));
+                      },
                     )
                   ],
                 ),

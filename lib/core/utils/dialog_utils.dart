@@ -17,6 +17,64 @@ class DialogHelper {
     final controller = Get.put(FiveController());
     Get.dialog(FiveDialog(controller, message: message));
   }
+
+  static void onTapDialogTitle(
+    BuildContext context,
+    Widget className,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: className,
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+        );
+      },
+    );
+  }
+
+  /// Common click event for bottomsheet
+  static void onTapBottomSheetTitle(
+    BuildContext context,
+    Widget className,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return className;
+      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  static Future<T?> showCustomBottomSheet<T>(
+    BuildContext context,
+    Widget className,
+  ) {
+    return showModalBottomSheet<T>(
+      context: context,
+      builder: (context) => className,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  /// ✅ 共用 dialog（透明背景、支援回傳值）
+  static Future<T?> showCustomDialog<T>(
+    BuildContext context,
+    Widget className,
+  ) {
+    return showDialog<T>(
+      context: Get.context!,
+      builder: (context) => AlertDialog(
+        content: className,
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+      ),
+    );
+  }
 }
 
 class PositionedDialogWrapper extends StatelessWidget {

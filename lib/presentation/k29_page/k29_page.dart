@@ -78,8 +78,7 @@ class K29Page extends GetWidget<K29Controller> {
     );
   }
 
-  Widget _buildMenuItem(
-      String title, String iconPath, GestureTapCallback onTap) {
+  Widget _buildMenuItem(String title, String iconPath, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/image_picker.dart';
 import '../../core/app_export.dart';
 import 'controller/k31_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 相機/相簿 Bottomsheet
 class K31Bottomsheet extends StatelessWidget {
   K31Bottomsheet(this.controller, {Key? key})
       : super(
@@ -25,15 +27,29 @@ class K31Bottomsheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "lbl125".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () async {
+                final image = await ImagePickerHelper.pickFromCamera();
+                if (image != null) {
+                  Get.back(result: image.path);
+                }
+              },
+              child: Text(
+                "lbl125".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl126".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () async {
+                final image = await ImagePickerHelper.pickFromGallery();
+                if (image != null) {
+                  Get.back(result: image.path);
+                }
+              },
+              child: Text(
+                "lbl126".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 16.h),
           SizedBox(
             width: double.maxFinite,
@@ -42,10 +58,15 @@ class K31Bottomsheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          Text(
-            "lbl50".tr,
-            style: CustomTextStyles.bodyLargeGray500_1,
-          )
+          GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Text(
+                "lbl50".tr,
+                style: CustomTextStyles.bodyLargeGray500_1,
+              )),
+          SizedBox(height: 16.h),
         ],
       ),
     );

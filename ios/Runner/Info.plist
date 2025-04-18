@@ -48,5 +48,11 @@
         <key>NSAllowsArbitraryLoads</key>
         <true />
     </dict>
+	<!-- 相機使用說明 -->
+	<key>NSCameraUsageDescription</key>
+	<string>需要使用相機來拍照</string>
+	<!-- 相簿使用說明 -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要存取相簿來選取圖片</string>
 </dict>
 </plist>

@@ -20,6 +20,8 @@ dependencies:
   qr_flutter: ^4.1.0
   calendar_date_picker2: ^1.1.8
   fl_chart: ^0.70.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.0.1
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

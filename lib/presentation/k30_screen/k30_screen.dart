@@ -1,4 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/presentation/k31_bottomsheet/controller/k31_controller.dart';
+import 'package:pulsedevice/presentation/k31_bottomsheet/k31_bottomsheet.dart';
+import 'package:pulsedevice/presentation/k32_dialog/controller/k32_controller.dart';
+import 'package:pulsedevice/presentation/k32_dialog/k32_dialog.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
@@ -82,49 +89,72 @@ class K30Screen extends GetWidget<K30Controller> {
             ),
           ),
           SizedBox(height: 16.h),
-          Container(
-            padding: EdgeInsets.fromLTRB(8.h, 8.h, 8.h, 6.h),
-            decoration: AppDecoration.outlineGray,
-            width: double.maxFinite,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "lbl73".tr,
-                  style: CustomTextStyles.bodyMediumBluegray900,
-                ),
-                Spacer(),
-                CustomImageView(
-                  imagePath: ImageConstant.imgEllipse82,
-                  height: 40.h,
-                  width: 42.h,
-                  radius: BorderRadius.circular(
-                    20.h,
-                  ),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgVectorGray50001,
-                  height: 8.h,
-                  width: 6.h,
-                  margin: EdgeInsets.only(left: 16.h),
-                )
-              ],
-            ),
-          ),
-          Obx(
-            () => ListView.builder(
-              padding: EdgeInsets.zero,
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: controller.k30ModelObj.value.listItemList.value.length,
-              itemBuilder: (context, index) {
-                ListItemModel model =
-                    controller.k30ModelObj.value.listItemList.value[index];
-                return ListItemWidget(
-                  model,
-                );
+          GestureDetector(
+              onTap: () {
+                controller.selectAvatar();
               },
-            ),
+              child: Container(
+                padding: EdgeInsets.fromLTRB(8.h, 8.h, 8.h, 6.h),
+                decoration: AppDecoration.outlineGray,
+                width: double.maxFinite,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "lbl73".tr,
+                      style: CustomTextStyles.bodyMediumBluegray900,
+                    ),
+                    Spacer(),
+                    Obx(() {
+                      final path = controller.avatarPath.value;
+                      if (path.isNotEmpty) {
+                        return CircleAvatar(
+                          radius: 20.h,
+                          backgroundImage: FileImage(File(path)),
+                        );
+                      } else {
+                        return CustomImageView(
+                          imagePath: ImageConstant.imgEllipse82,
+                          height: 40.h,
+                          width: 42.h,
+                          radius: BorderRadius.circular(
+                            20.h,
+                          ),
+                        );
+                      }
+                    }),
+                    CustomImageView(
+                      imagePath: ImageConstant.imgVectorGray50001,
+                      height: 8.h,
+                      width: 6.h,
+                      margin: EdgeInsets.only(left: 16.h),
+                    )
+                  ],
+                ),
+              )),
+          ListView.builder(
+            padding: EdgeInsets.zero,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: controller.k30ModelObj.value.listItemList.value.length,
+            itemBuilder: (context, index) {
+              ListItemModel model =
+                  controller.k30ModelObj.value.listItemList.value[index];
+              return ListItemWidget(
+                model,
+                onTap: () async {
+                  switch (index) {
+                    case 0:
+                      final nickName =
+                          await DialogHelper.showCustomDialog<String>(
+                              context, K32Dialog(Get.put(K32Controller())));
+                      if (nickName != null && nickName.isNotEmpty) {
+                        model.tf1?.value = nickName;
+                      }
+                  }
+                },
+              );
+            },
           ),
           SizedBox(height: 16.h),
           Container(
