@@ -269,6 +269,10 @@ class CustomTextStyles {
       theme.textTheme.labelLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,
       );
+  static TextStyle get labelLargeBlack900 =>
+      theme.textTheme.labelLarge!.copyWith(
+        color: appTheme.black900,
+      );
   static TextStyle get labelMediumBlack900 =>
       theme.textTheme.labelMedium!.copyWith(
         color: appTheme.black900,

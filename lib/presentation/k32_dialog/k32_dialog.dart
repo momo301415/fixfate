@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/widgets/custom_text_form_field.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/custom_elevated_button.dart';
 import 'controller/k32_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 輸入暱稱dialog
 class K32Dialog extends StatelessWidget {
   K32Dialog(this.controller, {Key? key})
       : super(

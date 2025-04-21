@@ -1,209 +1,125 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pulsedevice/theme/custom_button_style.dart';
+import 'package:pulsedevice/widgets/custom_elevated_button.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/custom_elevated_button.dart';
 import 'controller/k22_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 生日選擇器
 class K22Bottomsheet extends StatelessWidget {
-  K22Bottomsheet(this.controller, {Key? key})
+  K22Bottomsheet(this.controller, {Key? key, this.onDateConfirmed})
       : super(
           key: key,
         );
 
   K22Controller controller;
+  final void Function(DateTime)? onDateConfirmed;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(
-        horizontal: 6.h,
-        vertical: 2.h,
+      decoration: AppDecoration.fillWhiteA.copyWith(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.h)),
       ),
-      decoration: AppDecoration.fillWhiteA,
+      padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
       child: Column(
-        spacing: 18,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.only(left: 8.h),
-            child: Column(
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(
-                    left: 48.h,
-                    right: 54.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "lbl_1991".tr,
-                        style: CustomTextStyles.bodyMediumGray700,
-                      ),
-                      Text(
-                        "lbl_22".tr,
-                        style: CustomTextStyles.bodyMediumGray700,
-                      ),
-                      Text(
-                        "lbl_282".tr,
-                        style: CustomTextStyles.bodyMediumGray700,
-                      )
-                    ],
-                  ),
+                Text(
+                  'lbl_selector_birth'.tr,
+                  style: CustomTextStyles.labelLargeBlack900,
                 ),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(
-                    left: 44.h,
-                    right: 50.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "lbl_1992".tr,
-                        style: CustomTextStyles.bodyLargeGray700_1,
-                      ),
-                      Text(
-                        "lbl_32".tr,
-                        style: CustomTextStyles.bodyLargeGray700_1,
-                      ),
-                      Text(
-                        "lbl_292".tr,
-                        style: CustomTextStyles.bodyLargeGray700_1,
-                      )
-                    ],
-                  ),
+                IconButton(
+                  icon: Icon(Icons.close, color: appTheme.gray500),
+                  onPressed: () => Get.back(),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
                 ),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(
-                    left: 40.h,
-                    right: 48.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "lbl_1993".tr,
-                        style: CustomTextStyles.bodyLargeGray700,
-                      ),
-                      Text(
-                        "lbl_42".tr,
-                        style: CustomTextStyles.bodyLargeGray700,
-                      ),
-                      Text(
-                        "lbl_302".tr,
-                        style: CustomTextStyles.bodyLargeGray700,
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Container(
-                  margin: EdgeInsets.only(right: 8.h),
-                  padding: EdgeInsets.symmetric(horizontal: 38.h),
-                  decoration: AppDecoration.gray100.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder8,
-                  ),
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "lbl_1994".tr,
-                        style: CustomTextStyles.titleLargePrimaryContainer,
-                      ),
-                      Text(
-                        "lbl_52".tr,
-                        style: CustomTextStyles.titleLargePrimaryContainer,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 2.h),
-                        child: Text(
-                          "lbl_312".tr,
-                          style: CustomTextStyles.titleLargePrimaryContainer,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.symmetric(horizontal: 40.h),
-                  child: Row(
-                    children: [
-                      Text(
-                        "lbl_1995".tr,
-                        style: CustomTextStyles.bodyLargeGray700,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 90.h),
-                        child: Text(
-                          "lbl_62".tr,
-                          style: CustomTextStyles.bodyLargeGray700,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.symmetric(horizontal: 44.h),
-                  child: Row(
-                    children: [
-                      Text(
-                        "lbl_1996".tr,
-                        style: CustomTextStyles.bodyLargeGray700_1,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 90.h),
-                        child: Text(
-                          "lbl_72".tr,
-                          style: CustomTextStyles.bodyLargeGray700_1,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.symmetric(horizontal: 48.h),
-                  child: Row(
-                    children: [
-                      Text(
-                        "lbl_1997".tr,
-                        style: CustomTextStyles.bodyMediumGray700,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 92.h),
-                        child: Text(
-                          "lbl_83".tr,
-                          style: CustomTextStyles.bodyMediumGray700,
-                        ),
-                      )
-                    ],
-                  ),
-                )
               ],
             ),
           ),
+          SizedBox(height: 20.h),
+
+          /// Pickers
+          SizedBox(
+            height: 180.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                /// 年份
+                Obx(() => _buildPicker(
+                      controller.years,
+                      controller.selectedYear.value,
+                      (val) {
+                        controller.selectedYear.value = val;
+                        controller.updateDayOnMonthYearChange();
+                      },
+                    )),
+
+                /// 月份
+                Obx(() => _buildPicker(
+                      controller.months,
+                      controller.selectedMonth.value,
+                      (val) {
+                        controller.selectedMonth.value = val;
+                        controller.updateDayOnMonthYearChange();
+                      },
+                    )),
+
+                /// 日期
+                Obx(() => _buildPicker(
+                      controller.days,
+                      controller.selectedDay.value,
+                      (val) => controller.selectedDay.value = val,
+                    )),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 20.h),
           CustomElevatedButton(
-            text: "lbl51".tr,
+            text: "lbl51".tr, // 確定
             margin: EdgeInsets.symmetric(horizontal: 16.h),
             buttonStyle: CustomButtonStyles.fillPrimary,
+            onPressed: () {
+              final selected = controller.getFormattedDate();
+              Get.back(result: selected);
+            },
           ),
-          Text(
-            "lbl50".tr,
-            style: CustomTextStyles.bodyLargeGray500_1,
+          SizedBox(height: 12.h),
+          GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Text(
+              "lbl50".tr, // 取消
+              style: CustomTextStyles.titleMediumGray500,
+            ),
           ),
-          SizedBox(height: 38.h)
+          SizedBox(height: 50.h),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPicker(
+      List<int> items, int selectedValue, ValueChanged<int> onSelected) {
+    final initialIndex = items.indexOf(selectedValue);
+    return SizedBox(
+      width: 100.h,
+      child: CupertinoPicker(
+        scrollController:
+            FixedExtentScrollController(initialItem: initialIndex),
+        itemExtent: 32.h,
+        onSelectedItemChanged: (index) => onSelected(items[index]),
+        children: items.map((e) => Center(child: Text(e.toString()))).toList(),
       ),
     );
   }

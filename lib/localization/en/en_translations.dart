@@ -383,6 +383,10 @@ final Map<String, String> en = {
   "lbl_pulsering2": "和  PulseRing 配對",
   "lbl_pulsering3": "PulseRing  心率戒指",
   "lbl_settings": "Settings",
+  "lbl_year": "年",
+  "lbl_month": "月",
+  "lbl_day": "日",
+  "lbl_selector_birth": "選擇出生日期",
   "msg":
       "使用者應確保所輸入之個人資料正確無誤，否則可能影響系統分析結果。\r\n使用者不得以非法、侵權或違反公共秩序善良風俗之方式使用本App。\r\n未經本公司書面同意，使用者不得將本App內容進行重製、散布、反向工程或用於商業用途。",
   "msg10": "家人後需重新加入，\n確定要刪除嗎？",
@@ -432,5 +436,6 @@ final Map<String, String> en = {
   "err_msg_please_enter_less_number": "請輸入至少一個數字",
   "err_msg_field_cannot_be_empty": "Field cannot be empty",
   "msg_network_err": "Network Error",
-  "msg_something_went_wrong": "Something Went Wrong!"
+  "msg_something_went_wrong": "Something Went Wrong!",
+  "err_msg_please_enter_email": "請輸入Email",
 };

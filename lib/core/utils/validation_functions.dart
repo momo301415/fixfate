@@ -58,3 +58,19 @@ String? validPassword(String? inputSyring) {
   if (inputSyring.contains(' ')) return "err_msg_please_not_enter_space";
   return null;
 }
+
+String? validEmail(String? inputSyring) {
+  if (inputSyring == null || inputSyring.isEmpty) {
+    return "err_msg_please_enter_email".tr;
+  }
+
+  final emailRegex = RegExp(
+    r"^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9])*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$",
+  );
+
+  if (!emailRegex.hasMatch(inputSyring)) {
+    return "lbl46".tr;
+  }
+
+  return null;
+}

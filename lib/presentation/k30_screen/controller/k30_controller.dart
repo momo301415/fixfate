@@ -1,8 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/presentation/k22_bottomsheet/controller/k22_controller.dart';
+import 'package:pulsedevice/presentation/k22_bottomsheet/k22_bottomsheet.dart';
 import 'package:pulsedevice/presentation/k31_bottomsheet/controller/k31_controller.dart';
 import 'package:pulsedevice/presentation/k31_bottomsheet/k31_bottomsheet.dart';
 import 'package:pulsedevice/presentation/k32_dialog/controller/k32_controller.dart';
 import 'package:pulsedevice/presentation/k32_dialog/k32_dialog.dart';
+import 'package:pulsedevice/presentation/k34_dialog/controller/k34_controller.dart';
+import 'package:pulsedevice/presentation/k34_dialog/k34_dialog.dart';
+import 'package:pulsedevice/presentation/k35_bottomsheet/controller/k35_controller.dart';
+import 'package:pulsedevice/presentation/k35_bottomsheet/k35_bottomsheet.dart';
 
 import '../../../core/app_export.dart';
 import '../models/k30_model.dart';
@@ -15,6 +22,9 @@ class K30Controller extends GetxController {
   Rx<K30Model> k30ModelObj = K30Model().obs;
   var avatarPath = "".obs;
   var nickName = "".obs;
+  var email = "".obs;
+  var gender = "".obs;
+  var birth = "".obs;
 
   Future<void> selectAvatar() async {
     final path = await DialogHelper.showCustomBottomSheet<String>(
@@ -32,6 +42,31 @@ class K30Controller extends GetxController {
         Get.context!, K32Dialog(Get.put(K32Controller())));
     if (result != null && result.isNotEmpty) {
       nickName.value = result;
+    }
+  }
+
+  Future<void> showInputEmail() async {
+    final result = await DialogHelper.showCustomDialog<String>(
+        Get.context!, K34Dialog(Get.put(K34Controller())));
+    if (result != null && result.isNotEmpty) {
+      email.value = result;
+    }
+  }
+
+  Future<void> selectGender() async {
+    final result = await DialogHelper.showCustomBottomSheet(
+        Get.context!, K35Bottomsheet(Get.put(K35Controller())));
+    if (result != null && result.isNotEmpty) {
+      gender.value = result;
+    }
+  }
+
+  Future<void> selectBirth() async {
+    final result = await showModalBottomSheet(
+        context: Get.context!,
+        builder: (_) => K22Bottomsheet(Get.put(K22Controller())));
+    if (result != null && result.isNotEmpty) {
+      birth.value = result;
     }
   }
 }

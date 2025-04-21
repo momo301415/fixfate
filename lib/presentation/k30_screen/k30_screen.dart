@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
@@ -6,6 +7,8 @@ import 'package:pulsedevice/presentation/k31_bottomsheet/controller/k31_controll
 import 'package:pulsedevice/presentation/k31_bottomsheet/k31_bottomsheet.dart';
 import 'package:pulsedevice/presentation/k32_dialog/controller/k32_controller.dart';
 import 'package:pulsedevice/presentation/k32_dialog/k32_dialog.dart';
+import 'package:pulsedevice/presentation/k34_dialog/controller/k34_controller.dart';
+import 'package:pulsedevice/presentation/k34_dialog/k34_dialog.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
@@ -145,12 +148,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 onTap: () async {
                   switch (index) {
                     case 0:
-                      final nickName =
-                          await DialogHelper.showCustomDialog<String>(
-                              context, K32Dialog(Get.put(K32Controller())));
-                      if (nickName != null && nickName.isNotEmpty) {
-                        model.tf1?.value = nickName;
+                      await controller.showInputNickName();
+                      if (controller.nickName.value.isNotEmpty) {
+                        model.tf1?.value = controller.nickName.value;
                       }
+                      break;
+                    case 1:
+                      await controller.showInputEmail();
+                      if (controller.email.value.isNotEmpty) {
+                        model.tf1?.value = controller.email.value;
+                      }
+
+                      break;
+                    case 2:
+                      await controller.selectGender();
+                      if (controller.gender.value.isNotEmpty) {
+                        model.tf1?.value = controller.gender.value;
+                      }
+                      break;
+                    case 3:
+                      await controller.selectBirth();
+                      if (controller.birth.value.isNotEmpty) {
+                        model.tf1?.value = controller.birth.value;
+                      }
+                      break;
                   }
                 },
               );

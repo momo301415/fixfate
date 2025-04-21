@@ -3,6 +3,7 @@ import '../../core/app_export.dart';
 import 'controller/k35_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 選擇性別 Bottomsheet
 class K35Bottomsheet extends StatelessWidget {
   K35Bottomsheet(this.controller, {Key? key})
       : super(
@@ -27,7 +28,7 @@ class K35Bottomsheet extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              onTapTxtLabelthree();
+              Get.back(result: "lbl77".tr);
             },
             child: Text(
               "lbl77".tr,
@@ -35,9 +36,14 @@ class K35Bottomsheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 32.h),
-          Text(
-            "lbl130".tr,
-            style: theme.textTheme.bodyLarge,
+          GestureDetector(
+            onTap: () {
+              Get.back(result: "lbl130".tr);
+            },
+            child: Text(
+              "lbl130".tr,
+              style: theme.textTheme.bodyLarge,
+            ),
           ),
           SizedBox(height: 16.h),
           SizedBox(
@@ -47,10 +53,16 @@ class K35Bottomsheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          Text(
-            "lbl50".tr,
-            style: CustomTextStyles.bodyLargeGray500_1,
-          )
+          GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: Text(
+              "lbl50".tr,
+              style: CustomTextStyles.bodyLargeGray500_1,
+            ),
+          ),
+          SizedBox(height: 16.h),
         ],
       ),
     );
