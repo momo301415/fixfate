@@ -20,7 +20,7 @@ class K30Model {
     ListItemModel(tf: "lbl80".tr.obs, tf1: "lbl_175_cm".tr.obs)
   ]);
 
-  Rx<List<ChipviewItemModel>> chipviewItemList = Rx([
+  RxList<ChipviewItemModel> chipviewItemList = <ChipviewItemModel>[
     ChipviewItemModel(five: "lbl84".tr.obs),
     ChipviewItemModel(five: "lbl85".tr.obs),
     ChipviewItemModel(five: "lbl86".tr.obs),
@@ -31,9 +31,9 @@ class K30Model {
     ChipviewItemModel(five: "lbl91".tr.obs),
     ChipviewItemModel(five: "lbl92".tr.obs),
     ChipviewItemModel(five: "lbl93".tr.obs)
-  ]);
+  ].obs;
 
-  Rx<List<ChipviewOneItemModel>> chipviewOneItemList = Rx([
+  RxList<ChipviewOneItemModel> chipviewOneItemList = <ChipviewOneItemModel>[
     ChipviewOneItemModel(one: "lbl84".tr.obs),
     ChipviewOneItemModel(one: "lbl96".tr.obs),
     ChipviewOneItemModel(one: "lbl97".tr.obs),
@@ -42,9 +42,9 @@ class K30Model {
     ChipviewOneItemModel(one: "lbl100".tr.obs),
     ChipviewOneItemModel(one: "lbl101".tr.obs),
     ChipviewOneItemModel(one: "lbl93".tr.obs)
-  ]);
+  ].obs;
 
-  Rx<List<ChipviewTwoItemModel>> chipviewTwoItemList = Rx([
+  RxList<ChipviewTwoItemModel> chipviewTwoItemList = <ChipviewTwoItemModel>[
     ChipviewTwoItemModel(two: "lbl84".tr.obs),
     ChipviewTwoItemModel(two: "lbl103".tr.obs),
     ChipviewTwoItemModel(two: "lbl104".tr.obs),
@@ -56,9 +56,10 @@ class K30Model {
     ChipviewTwoItemModel(two: "lbl110".tr.obs),
     ChipviewTwoItemModel(two: "lbl111".tr.obs),
     ChipviewTwoItemModel(two: "lbl93".tr.obs)
-  ]);
+  ].obs;
 
-  Rx<List<ChipviewThreeItemModel>> chipviewThreeItemList = Rx([
+  RxList<ChipviewThreeItemModel> chipviewThreeItemList =
+      <ChipviewThreeItemModel>[
     ChipviewThreeItemModel(three: "lbl84".tr.obs),
     ChipviewThreeItemModel(three: "lbl103".tr.obs),
     ChipviewThreeItemModel(three: "lbl104".tr.obs),
@@ -70,9 +71,9 @@ class K30Model {
     ChipviewThreeItemModel(three: "lbl110".tr.obs),
     ChipviewThreeItemModel(three: "lbl111".tr.obs),
     ChipviewThreeItemModel(three: "lbl93".tr.obs)
-  ]);
+  ].obs;
 
-  Rx<List<ChipviewFourItemModel>> chipviewFourItemList = Rx([
+  RxList<ChipviewFourItemModel> chipviewFourItemList = <ChipviewFourItemModel>[
     ChipviewFourItemModel(four: "lbl84".tr.obs),
     ChipviewFourItemModel(four: "lbl115".tr.obs),
     ChipviewFourItemModel(four: "lbl116".tr.obs),
@@ -84,5 +85,5 @@ class K30Model {
     ChipviewFourItemModel(four: "lbl121".tr.obs),
     ChipviewFourItemModel(four: "lbl122".tr.obs),
     ChipviewFourItemModel(four: "lbl93".tr.obs)
-  ]);
+  ].obs;
 }

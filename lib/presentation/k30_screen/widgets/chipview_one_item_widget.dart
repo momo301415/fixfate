@@ -4,12 +4,13 @@ import '../models/chipview_one_item_model.dart';
 
 // ignore_for_file: must_be_immutable
 class ChipviewOneItemWidget extends StatelessWidget {
-  ChipviewOneItemWidget(this.chipviewOneItemModelObj, {Key? key})
+  ChipviewOneItemWidget(this.chipviewOneItemModelObj, {Key? key, this.onTap})
       : super(
           key: key,
         );
 
   ChipviewOneItemModel chipviewOneItemModelObj;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +57,9 @@ class ChipviewOneItemWidget extends StatelessWidget {
                 ),
           onSelected: (value) {
             chipviewOneItemModelObj.isSelected!.value = value;
+            if (onTap != null) {
+              onTap!();
+            }
           },
         ),
       ),

@@ -10,6 +10,7 @@ class K36Controller extends GetxController {
   TextEditingController inputlightoneController = TextEditingController();
 
   Rx<K36Model> k36ModelObj = K36Model().obs;
+  var inputedText = ''.obs;
 
   @override
   void onClose() {

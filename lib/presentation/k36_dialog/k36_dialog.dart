@@ -4,12 +4,14 @@ import '../../widgets/custom_text_form_field.dart';
 import 'controller/k36_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 自行輸入dialog
 class K36Dialog extends StatelessWidget {
-  K36Dialog(this.controller, {Key? key})
+  K36Dialog(this.controller, {Key? key, this.title, this.subTitle})
       : super(
           key: key,
         );
-
+  final String? title;
+  final String? subTitle;
   K36Controller controller;
 
   @override
@@ -44,12 +46,12 @@ class K36Dialog extends StatelessWidget {
                           child: Column(
                             children: [
                               Text(
-                                "lbl131".tr,
+                                title ?? "",
                                 style: CustomTextStyles
                                     .titleMediumErrorContainerSemiBold,
                               ),
                               Text(
-                                "lbl132".tr,
+                                subTitle ?? "",
                                 style: CustomTextStyles.bodyMediumGray50013,
                               )
                             ],
@@ -58,6 +60,9 @@ class K36Dialog extends StatelessWidget {
                         SizedBox(height: 14.h),
                         CustomTextFormField(
                           controller: controller.inputlightoneController,
+                          onChanged: (value) {
+                            controller.inputedText.value = value;
+                          },
                           hintText: "lbl54".tr,
                           hintStyle: CustomTextStyles.bodyLargeGray50016_1,
                           textInputAction: TextInputAction.done,
@@ -76,14 +81,35 @@ class K36Dialog extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "lbl50".tr,
-                                style: CustomTextStyles.titleMediumGray500,
+                              GestureDetector(
+                                onTap: () {
+                                  Get.back();
+                                },
+                                child: Text(
+                                  "lbl50".tr,
+                                  style: CustomTextStyles.titleMediumGray500,
+                                ),
                               ),
-                              Text(
-                                "lbl51".tr,
-                                style: CustomTextStyles.titleMediumGray500,
-                              )
+                              Obx(() {
+                                final isNotEmpty = controller.inputedText.value
+                                    .trim()
+                                    .isNotEmpty;
+                                return GestureDetector(
+                                    onTap: () {
+                                      if (isNotEmpty) {
+                                        Get.back(
+                                            result: controller
+                                                .inputlightoneController.text);
+                                      }
+                                    },
+                                    child: Text(
+                                      "lbl51".tr,
+                                      style: isNotEmpty
+                                          ? CustomTextStyles
+                                              .titleMediumPrimarySemiBold
+                                          : CustomTextStyles.titleMediumGray500,
+                                    ));
+                              }),
                             ],
                           ),
                         )

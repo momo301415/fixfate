@@ -10,6 +10,7 @@ class K23Controller extends GetxController {
   TextEditingController inputlightoneController = TextEditingController();
 
   Rx<K23Model> k23ModelObj = K23Model().obs;
+  RxString inputedText = "".obs;
 
   @override
   void onClose() {

@@ -4,6 +4,7 @@ import '../../widgets/custom_text_form_field.dart';
 import 'controller/k28_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 腰圍dialog
 class K28Dialog extends StatelessWidget {
   K28Dialog(this.controller, {Key? key})
       : super(
@@ -58,9 +59,13 @@ class K28Dialog extends StatelessWidget {
                         SizedBox(height: 14.h),
                         CustomTextFormField(
                           controller: controller.inputlightoneController,
+                          onChanged: (value) {
+                            controller.inputedText.value = value;
+                          },
                           hintText: "lbl_80".tr,
                           hintStyle: CustomTextStyles.bodyLargePrimaryContainer,
                           textInputAction: TextInputAction.done,
+                          textInputType: TextInputType.number,
                           suffix: Padding(
                             padding: EdgeInsets.only(
                               left: 16.h,
@@ -95,15 +100,35 @@ class K28Dialog extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "lbl50".tr,
-                                style: CustomTextStyles.titleMediumGray50001,
+                              GestureDetector(
+                                onTap: () {
+                                  Get.back();
+                                },
+                                child: Text(
+                                  "lbl50".tr,
+                                  style: CustomTextStyles.titleMediumGray500,
+                                ),
                               ),
-                              Text(
-                                "lbl51".tr,
-                                style:
-                                    CustomTextStyles.titleMediumPrimarySemiBold,
-                              )
+                              Obx(() {
+                                final isNotEmpty = controller.inputedText.value
+                                    .trim()
+                                    .isNotEmpty;
+                                return GestureDetector(
+                                    onTap: () {
+                                      if (isNotEmpty) {
+                                        Get.back(
+                                            result: controller
+                                                .inputlightoneController.text);
+                                      }
+                                    },
+                                    child: Text(
+                                      "lbl51".tr,
+                                      style: isNotEmpty
+                                          ? CustomTextStyles
+                                              .titleMediumPrimarySemiBold
+                                          : CustomTextStyles.titleMediumGray500,
+                                    ));
+                              }),
                             ],
                           ),
                         )

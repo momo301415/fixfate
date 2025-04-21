@@ -1,20 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:pulsedevice/core/utils/dialog_utils.dart';
-import 'package:pulsedevice/presentation/k31_bottomsheet/controller/k31_controller.dart';
-import 'package:pulsedevice/presentation/k31_bottomsheet/k31_bottomsheet.dart';
-import 'package:pulsedevice/presentation/k32_dialog/controller/k32_controller.dart';
-import 'package:pulsedevice/presentation/k32_dialog/k32_dialog.dart';
-import 'package:pulsedevice/presentation/k34_dialog/controller/k34_controller.dart';
-import 'package:pulsedevice/presentation/k34_dialog/k34_dialog.dart';
+
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
-import '../../widgets/app_bar/appbar_leading_image.dart';
-import '../../widgets/app_bar/appbar_subtitle.dart';
-import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_elevated_button.dart';
 import 'controller/k30_controller.dart';
 import 'models/chipview_four_item_model.dart';
@@ -172,34 +162,60 @@ class K30Screen extends GetWidget<K30Controller> {
                         model.tf1?.value = controller.birth.value;
                       }
                       break;
+                    case 4:
+                      await controller.showInputWeight();
+                      if (controller.weight.value.isNotEmpty) {
+                        model.tf1?.value = controller.weight.value + " kg";
+                      }
+                    case 5:
+                      await controller.showInputHeight();
+                      if (controller.height.value.isNotEmpty) {
+                        model.tf1?.value = controller.height.value + " cm";
+                      }
+                      break;
                   }
                 },
               );
             },
           ),
           SizedBox(height: 16.h),
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.symmetric(horizontal: 8.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "lbl81".tr,
-                  style: CustomTextStyles.bodyMediumBluegray900,
-                ),
-                Spacer(),
-                Text(
-                  "lbl_100_cm".tr,
-                  style: CustomTextStyles.bodyMediumBluegray900,
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgVectorGray50001,
-                  height: 8.h,
-                  width: 6.h,
-                  margin: EdgeInsets.only(left: 16.h),
-                )
-              ],
+          GestureDetector(
+            onTap: () {
+              controller.showInputWaistline();
+            },
+            child: Container(
+              width: double.maxFinite,
+              margin: EdgeInsets.symmetric(horizontal: 8.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "lbl81".tr,
+                    style: CustomTextStyles.bodyMediumBluegray900,
+                  ),
+                  Spacer(),
+                  Obx(() {
+                    final waistline = controller.waistline.value;
+                    if (waistline.isNotEmpty) {
+                      return Text(
+                        waistline + " cm",
+                        style: CustomTextStyles.bodyMediumBluegray900,
+                      );
+                    } else {
+                      return Text(
+                        "lbl_100_cm".tr,
+                        style: CustomTextStyles.bodyMediumBluegray900,
+                      );
+                    }
+                  }),
+                  CustomImageView(
+                    imagePath: ImageConstant.imgVectorGray50001,
+                    height: 8.h,
+                    width: 6.h,
+                    margin: EdgeInsets.only(left: 16.h),
+                  )
+                ],
+              ),
             ),
           ),
           SizedBox(height: 16.h)
@@ -237,12 +253,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 runSpacing: 6.h,
                 spacing: 6.h,
                 children: List<Widget>.generate(
-                  controller.k30ModelObj.value.chipviewItemList.value.length,
+                  controller.k30ModelObj.value.chipviewItemList.length,
                   (index) {
-                    ChipviewItemModel model = controller
-                        .k30ModelObj.value.chipviewItemList.value[index];
+                    ChipviewItemModel model =
+                        controller.k30ModelObj.value.chipviewItemList[index];
                     return ChipviewItemWidget(
                       model,
+                      onTap: () {
+                        controller.handleChipTap<ChipviewItemModel>(
+                          index: index,
+                          model: model,
+                          list: controller
+                              .k30ModelObj.value.chipviewItemList, // ✅ 傳 RxList
+                          context: Get.context!,
+                          title: "lbl82_1".tr,
+                          subTitle: "lbl132".tr,
+                          createModel: (text) => ChipviewItemModel(
+                            five: text.obs,
+                            isSelected: true.obs,
+                          ),
+                          onRefresh: () =>
+                              controller.k30ModelObj.value.chipviewItemList,
+                          onToggle: (m) => m.isSelected?.toggle(),
+                        );
+                      },
                     );
                   },
                 ),
@@ -283,12 +317,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 runSpacing: 6.h,
                 spacing: 6.h,
                 children: List<Widget>.generate(
-                  controller.k30ModelObj.value.chipviewOneItemList.value.length,
+                  controller.k30ModelObj.value.chipviewOneItemList.length,
                   (index) {
-                    ChipviewOneItemModel model = controller
-                        .k30ModelObj.value.chipviewOneItemList.value[index];
+                    final model =
+                        controller.k30ModelObj.value.chipviewOneItemList[index];
                     return ChipviewOneItemWidget(
                       model,
+                      onTap: () {
+                        controller.handleChipTap<ChipviewOneItemModel>(
+                          index: index,
+                          model: model,
+                          list: controller.k30ModelObj.value
+                              .chipviewOneItemList, // ✅ 傳 RxList
+                          context: Get.context!,
+                          title: "lbl94_1".tr,
+                          subTitle: "lbl132".tr,
+                          createModel: (text) => ChipviewOneItemModel(
+                            one: text.obs,
+                            isSelected: true.obs,
+                          ),
+                          onRefresh: () =>
+                              controller.k30ModelObj.value.chipviewOneItemList,
+                          onToggle: (m) => m.isSelected?.toggle(),
+                        );
+                      },
                     );
                   },
                 ),
@@ -329,12 +381,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 runSpacing: 4.h,
                 spacing: 4.h,
                 children: List<Widget>.generate(
-                  controller.k30ModelObj.value.chipviewTwoItemList.value.length,
+                  controller.k30ModelObj.value.chipviewTwoItemList.length,
                   (index) {
-                    ChipviewTwoItemModel model = controller
-                        .k30ModelObj.value.chipviewTwoItemList.value[index];
+                    final model =
+                        controller.k30ModelObj.value.chipviewTwoItemList[index];
                     return ChipviewTwoItemWidget(
                       model,
+                      onTap: () {
+                        controller.handleChipTap<ChipviewTwoItemModel>(
+                          index: index,
+                          model: model,
+                          list: controller.k30ModelObj.value
+                              .chipviewTwoItemList, // ✅ 傳 RxList
+                          context: Get.context!,
+                          title: "lbl131".tr,
+                          subTitle: "lbl132".tr,
+                          createModel: (text) => ChipviewTwoItemModel(
+                            two: text.obs,
+                            isSelected: true.obs,
+                          ),
+                          onRefresh: () =>
+                              controller.k30ModelObj.value.chipviewTwoItemList,
+                          onToggle: (m) => m.isSelected?.toggle(),
+                        );
+                      },
                     );
                   },
                 ),
@@ -375,13 +445,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 runSpacing: 4.h,
                 spacing: 4.h,
                 children: List<Widget>.generate(
-                  controller
-                      .k30ModelObj.value.chipviewThreeItemList.value.length,
+                  controller.k30ModelObj.value.chipviewThreeItemList.length,
                   (index) {
-                    ChipviewThreeItemModel model = controller
-                        .k30ModelObj.value.chipviewThreeItemList.value[index];
+                    final model = controller
+                        .k30ModelObj.value.chipviewThreeItemList[index];
                     return ChipviewThreeItemWidget(
                       model,
+                      onTap: () {
+                        controller.handleChipTap<ChipviewThreeItemModel>(
+                          index: index,
+                          model: model,
+                          list: controller.k30ModelObj.value
+                              .chipviewThreeItemList, // ✅ 傳 RxList
+                          context: Get.context!,
+                          title: "lbl112_1".tr,
+                          subTitle: "lbl132".tr,
+                          createModel: (text) => ChipviewThreeItemModel(
+                            three: text.obs,
+                            isSelected: true.obs,
+                          ),
+                          onRefresh: () => controller
+                              .k30ModelObj.value.chipviewThreeItemList,
+                          onToggle: (m) => m.isSelected?.toggle(),
+                        );
+                      },
                     );
                   },
                 ),
@@ -422,13 +509,30 @@ class K30Screen extends GetWidget<K30Controller> {
                 runSpacing: 6.h,
                 spacing: 6.h,
                 children: List<Widget>.generate(
-                  controller
-                      .k30ModelObj.value.chipviewFourItemList.value.length,
+                  controller.k30ModelObj.value.chipviewFourItemList.length,
                   (index) {
                     ChipviewFourItemModel model = controller
-                        .k30ModelObj.value.chipviewFourItemList.value[index];
+                        .k30ModelObj.value.chipviewFourItemList[index];
                     return ChipviewFourItemWidget(
                       model,
+                      onTap: () {
+                        controller.handleChipTap<ChipviewFourItemModel>(
+                          index: index,
+                          model: model,
+                          list: controller.k30ModelObj.value
+                              .chipviewFourItemList, // ✅ 傳 RxList
+                          context: Get.context!,
+                          title: "lbl113_1".tr,
+                          subTitle: "lbl132".tr,
+                          createModel: (text) => ChipviewFourItemModel(
+                            four: text.obs,
+                            isSelected: true.obs,
+                          ),
+                          onRefresh: () =>
+                              controller.k30ModelObj.value.chipviewFourItemList,
+                          onToggle: (m) => m.isSelected?.toggle(),
+                        );
+                      },
                     );
                   },
                 ),
