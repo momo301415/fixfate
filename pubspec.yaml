@@ -22,6 +22,9 @@ dependencies:
   fl_chart: ^0.70.0
   image_picker: ^1.1.2
   permission_handler: ^11.0.1
+  #穿戴式sdk
+  yc_product_plugin:
+    path: yc_product_plugin
 dev_dependencies: 
   flutter_test: 
     sdk: flutter
