@@ -43,7 +43,14 @@ class K29Page extends GetWidget<K29Controller> {
               return Padding(
                 padding: EdgeInsets.only(right: 16.h),
                 child: GestureDetector(
-                  onTap: () => print('Tapped ${model.id}'),
+                  onTap: () {
+                    switch (index) {
+                      case 0:
+                        controller.goK48Screen();
+                        break;
+                    }
+                    print('Tapped ${model.id}');
+                  },
                   child: ListOneItemWidget(model),
                 ),
               );

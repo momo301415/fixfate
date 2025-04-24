@@ -30,4 +30,9 @@ class K29Controller extends GetxController {
   void goK30Screen() {
     Get.toNamed(AppRoutes.k30Screen);
   }
+
+  /// 路由到用藥告警
+  void goK48Screen() {
+    Get.toNamed(AppRoutes.k48Screen);
+  }
 }

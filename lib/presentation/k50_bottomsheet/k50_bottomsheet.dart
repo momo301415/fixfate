@@ -3,6 +3,7 @@ import '../../core/app_export.dart';
 import 'controller/k50_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 用要提醒頻率sheet
 class K50Bottomsheet extends StatelessWidget {
   K50Bottomsheet(this.controller, {Key? key})
       : super(
@@ -25,40 +26,68 @@ class K50Bottomsheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "lbl146".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl146".tr);
+              },
+              child: Text(
+                "lbl146".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl147".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl147".tr);
+              },
+              child: Text(
+                "lbl147".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl148".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl148".tr);
+              },
+              child: Text(
+                "lbl148".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl149".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl149".tr);
+              },
+              child: Text(
+                "lbl149".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl143".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl143".tr);
+              },
+              child: Text(
+                "lbl143".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl150".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl150".tr);
+              },
+              child: Text(
+                "lbl150".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl151".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl151".tr);
+              },
+              child: Text(
+                "lbl151".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 16.h),
           SizedBox(
             width: double.maxFinite,
@@ -67,10 +96,15 @@ class K50Bottomsheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          Text(
-            "lbl50".tr,
-            style: CustomTextStyles.bodyLargeGray500_1,
-          )
+          GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Text(
+                "lbl50".tr,
+                style: CustomTextStyles.bodyLargeGray500_1,
+              )),
+          SizedBox(height: 16.h),
         ],
       ),
     );

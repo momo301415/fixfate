@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
-import '../../widgets/app_bar/appbar_leading_image.dart';
-import '../../widgets/app_bar/appbar_subtitle.dart';
-import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_switch.dart';
-import 'controller/k48_controller.dart'; // ignore_for_file: must_be_immutable
+import 'controller/k48_controller.dart'; // ignore_for_file: must_be_immutable‘
 
+/// 用藥提醒頁面
 class K48Screen extends GetWidget<K48Controller> {
   const K48Screen({Key? key})
       : super(
@@ -14,61 +13,8 @@ class K48Screen extends GetWidget<K48Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        child: Container(
-          height: 796.h,
-          width: double.maxFinite,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                height: 796.h,
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [_buildStackunionone(), _buildColumnone()],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStackunionone() {
-    return Container(
-      height: 90.h,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomImageView(
-            imagePath: ImageConstant.imgUnion90x374,
-            height: 90.h,
-            width: double.maxFinite,
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: CustomAppBar(
-              leadingWidth: 55.h,
-              leading: AppbarLeadingImage(
-                imagePath: ImageConstant.imgArrowLeft,
-                margin: EdgeInsets.only(left: 31.h),
-                onTap: () {
-                  onTapArrowleftone();
-                },
-              ),
-              centerTitle: true,
-              title: AppbarSubtitle(
-                text: "lbl58".tr,
-              ),
-            ),
-          )
-        ],
-      ),
-    );
+    return BaseScaffoldImageHeader(
+        title: "lbl58".tr, child: Container(child: _buildColumnone()));
   }
 
   /// Section Widget
@@ -77,7 +23,7 @@ class K48Screen extends GetWidget<K48Controller> {
       width: double.maxFinite,
       margin: EdgeInsets.only(
         left: 16.h,
-        top: 72.h,
+        top: 16.h,
         right: 16.h,
       ),
       padding: EdgeInsets.symmetric(
@@ -112,55 +58,87 @@ class K48Screen extends GetWidget<K48Controller> {
               ],
             ),
           ),
-          Container(
-            padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
-            decoration: AppDecoration.outlineGray,
-            width: double.maxFinite,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "lbl142".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer,
-                ),
-                Spacer(),
-                Text(
-                  "lbl143".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer,
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowRightGray600,
-                  height: 16.h,
-                  width: 18.h,
-                  margin: EdgeInsets.only(left: 8.h),
-                )
-              ],
-            ),
+          Obx(
+            () {
+              final isSwitchOpen = controller.isSelectedSwitch.value;
+              final alertTime = controller.alertTime.value;
+              return GestureDetector(
+                  onTap: () {
+                    if (isSwitchOpen) {
+                      controller.selectAlertTime();
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
+                    decoration: AppDecoration.outlineGray,
+                    width: double.maxFinite,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "lbl142".tr,
+                          style: CustomTextStyles.bodyMediumPrimaryContainer,
+                        ),
+                        Spacer(),
+                        Text(
+                          alertTime.isNotEmpty ? alertTime : "lbl143".tr,
+                          style: isSwitchOpen == true
+                              ? CustomTextStyles.bodyMediumPrimaryContainer
+                              : CustomTextStyles.bodyMediumGray300,
+                        ),
+                        CustomImageView(
+                          imagePath: isSwitchOpen == true
+                              ? ImageConstant.imgArrowRightGray600
+                              : ImageConstant.imgArrowRightGray300,
+                          height: 16.h,
+                          width: 18.h,
+                          margin: EdgeInsets.only(left: 8.h),
+                        )
+                      ],
+                    ),
+                  ));
+            },
           ),
           SizedBox(height: 24.h),
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.symmetric(horizontal: 24.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "lbl144".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer,
-                ),
-                Spacer(),
-                Text(
-                  "lbl145".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer,
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowRightGray600,
-                  height: 16.h,
-                  width: 18.h,
-                  margin: EdgeInsets.only(left: 8.h),
-                )
-              ],
-            ),
+          Obx(
+            () {
+              final isSwitchOpen = controller.isSelectedSwitch.value;
+              final eatTime = controller.eatTime.value;
+              return GestureDetector(
+                  onTap: () {
+                    if (isSwitchOpen) {
+                      controller.selectEatTime();
+                    }
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    margin: EdgeInsets.symmetric(horizontal: 24.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "lbl144".tr,
+                          style: CustomTextStyles.bodyMediumPrimaryContainer,
+                        ),
+                        Spacer(),
+                        Text(
+                          eatTime.isNotEmpty ? eatTime : "lbl145".tr,
+                          style: isSwitchOpen == true
+                              ? CustomTextStyles.bodyMediumPrimaryContainer
+                              : CustomTextStyles.bodyMediumGray300,
+                        ),
+                        CustomImageView(
+                          imagePath: isSwitchOpen == true
+                              ? ImageConstant.imgArrowRightGray600
+                              : ImageConstant.imgArrowRightGray300,
+                          height: 16.h,
+                          width: 18.h,
+                          margin: EdgeInsets.only(left: 8.h),
+                        )
+                      ],
+                    ),
+                  ));
+            },
           ),
           SizedBox(height: 24.h)
         ],

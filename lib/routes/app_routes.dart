@@ -389,6 +389,8 @@ class AppRoutes {
       page: () => One5Screen(),
       bindings: [One5Binding()],
     ),
+
+    /// 用要提醒頁面
     GetPage(
       name: k48Screen,
       page: () => K48Screen(),

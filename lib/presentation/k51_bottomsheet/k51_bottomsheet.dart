@@ -3,6 +3,7 @@ import '../../core/app_export.dart';
 import 'controller/k51_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 用要提醒時機sheet
 class K51Bottomsheet extends StatelessWidget {
   K51Bottomsheet(this.controller, {Key? key})
       : super(
@@ -25,20 +26,32 @@ class K51Bottomsheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "lbl145".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl145".tr);
+              },
+              child: Text(
+                "lbl145".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl152".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl152".tr);
+              },
+              child: Text(
+                "lbl152".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 32.h),
-          Text(
-            "lbl153".tr,
-            style: theme.textTheme.bodyLarge,
-          ),
+          GestureDetector(
+              onTap: () {
+                Get.back(result: "lbl153".tr);
+              },
+              child: Text(
+                "lbl153".tr,
+                style: theme.textTheme.bodyLarge,
+              )),
           SizedBox(height: 16.h),
           SizedBox(
             width: double.maxFinite,
@@ -47,10 +60,15 @@ class K51Bottomsheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          Text(
-            "lbl50".tr,
-            style: CustomTextStyles.bodyLargeGray500_1,
-          )
+          GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Text(
+                "lbl50".tr,
+                style: CustomTextStyles.bodyLargeGray500_1,
+              )),
+          SizedBox(height: 16.h),
         ],
       ),
     );
