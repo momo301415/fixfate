@@ -29,15 +29,10 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
@@ -54,5 +49,9 @@
 	<!-- 相簿使用說明 -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>需要存取相簿來選取圖片</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>使用BLE權限描述</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>使用BLE權限描述</string>
 </dict>
 </plist>

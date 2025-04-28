@@ -35,4 +35,9 @@ class K29Controller extends GetxController {
   void goK48Screen() {
     Get.toNamed(AppRoutes.k48Screen);
   }
+
+  /// 我的設備頁面
+  void goK40Screen() {
+    Get.toNamed(AppRoutes.k40Screen);
+  }
 }

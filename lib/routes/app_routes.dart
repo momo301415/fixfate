@@ -303,6 +303,8 @@ class AppRoutes {
       page: () => K9Screen(),
       bindings: [K9Binding()],
     ),
+
+    /// 註冊設備頁面
     GetPage(
       name: k10Screen,
       page: () => K10Screen(),
@@ -364,6 +366,8 @@ class AppRoutes {
       page: () => K39Screen(),
       bindings: [K39Binding()],
     ),
+
+    /// 我的設備頁面
     GetPage(
       name: k40Screen,
       page: () => K40Screen(),

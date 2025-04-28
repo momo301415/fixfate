@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yc_product_plugin/yc_product_plugin.dart';
 import 'core/app_export.dart';
 
 void main() {
@@ -8,6 +9,8 @@ void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
     Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
+    // 初始化穿戴式sdk
+    YcProductPlugin().initPlugin(isReconnectEnable: true, isLogEnable: true);
     runApp(MyApp());
   });
 }

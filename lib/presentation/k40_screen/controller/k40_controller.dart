@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 import '../models/k40_model.dart';
 
@@ -8,4 +7,9 @@ import '../models/k40_model.dart';
 /// current k40ModelObj
 class K40Controller extends GetxController {
   Rx<K40Model> k40ModelObj = K40Model().obs;
+
+  /// 註冊設備頁面
+  void goK10Screen() {
+    Get.toNamed(AppRoutes.k10Screen);
+  }
 }

@@ -40,6 +40,8 @@ class CustomSwitch extends StatelessWidget {
   }
 
   Widget get switchWidget => Switch(
+        thumbColor: WidgetStateProperty.all<Color>(Colors.white),
+        inactiveTrackColor: Colors.grey,
         value: value ?? false,
         onChanged: (value) {
           onChange(value);

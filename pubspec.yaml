@@ -22,9 +22,16 @@ dependencies:
   fl_chart: ^0.70.0
   image_picker: ^1.1.2
   permission_handler: ^11.0.1
+  device_info_plus: ^11.4.0
   #穿戴式sdk
+  # yc_product_plugin:
+  #   path: yc_product_plugin
   yc_product_plugin:
-    path: yc_product_plugin
+    git:
+      url: https://gitee.com/yucheng_3/yc_product_plugin.git
+      path: code/
+      ref: ed5dabd0850edc5d64bb975c9a2f4d65c1344201
+      
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

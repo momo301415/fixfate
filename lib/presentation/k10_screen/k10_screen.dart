@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
-import '../../widgets/custom_text_form_field.dart';
 import 'controller/k10_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// 註冊設備頁面
 class K10Screen extends GetWidget<K10Controller> {
   const K10Screen({Key? key})
       : super(
@@ -13,7 +14,7 @@ class K10Screen extends GetWidget<K10Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Container(
@@ -79,9 +80,7 @@ class K10Screen extends GetWidget<K10Controller> {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _buildPulsering(),
-                                _buildPulsering1(),
-                                _buildHansaone(),
+                                _buildDeviceList(),
                                 SizedBox(height: 60.h),
                                 _buildTf(),
                                 SizedBox(height: 22.h),
@@ -106,101 +105,6 @@ class K10Screen extends GetWidget<K10Controller> {
   }
 
   /// Section Widget
-  Widget _buildPulsering() {
-    return CustomTextFormField(
-      controller: controller.pulseringController,
-      hintText: "lbl_pulsering".tr,
-      hintStyle: CustomTextStyles.bodyLarge16,
-      prefix: Container(
-        margin: EdgeInsets.only(
-          top: 18.h,
-          right: 12.h,
-          bottom: 18.h,
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFrameErrorcontainer16x16,
-          height: 16.h,
-          width: 16.h,
-          fit: BoxFit.contain,
-        ),
-      ),
-      prefixConstraints: BoxConstraints(
-        maxHeight: 54.h,
-      ),
-      contentPadding: EdgeInsets.only(
-        top: 14.h,
-        right: 12.h,
-        bottom: 14.h,
-      ),
-      borderDecoration: TextFormFieldStyleHelper.underLine,
-      filled: false,
-    );
-  }
-
-  /// Section Widget
-  Widget _buildPulsering1() {
-    return CustomTextFormField(
-      controller: controller.pulsering1Controller,
-      hintText: "lbl_pulsering".tr,
-      hintStyle: CustomTextStyles.bodyLarge16,
-      prefix: Container(
-        margin: EdgeInsets.only(
-          top: 18.h,
-          right: 12.h,
-          bottom: 18.h,
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFrameErrorcontainer16x16,
-          height: 16.h,
-          width: 16.h,
-          fit: BoxFit.contain,
-        ),
-      ),
-      prefixConstraints: BoxConstraints(
-        maxHeight: 54.h,
-      ),
-      contentPadding: EdgeInsets.only(
-        top: 14.h,
-        right: 12.h,
-        bottom: 14.h,
-      ),
-      borderDecoration: TextFormFieldStyleHelper.underLine,
-      filled: false,
-    );
-  }
-
-  /// Section Widget
-  Widget _buildHansaone() {
-    return CustomTextFormField(
-      controller: controller.hansaoneController,
-      hintText: "lbl_hansa".tr,
-      hintStyle: CustomTextStyles.bodyLarge16,
-      textInputAction: TextInputAction.done,
-      prefix: Container(
-        margin: EdgeInsets.only(
-          top: 18.h,
-          right: 12.h,
-          bottom: 18.h,
-        ),
-        child: CustomImageView(
-          imagePath: ImageConstant.imgFrameErrorcontainer16x16,
-          height: 16.h,
-          width: 16.h,
-          fit: BoxFit.contain,
-        ),
-      ),
-      prefixConstraints: BoxConstraints(
-        maxHeight: 54.h,
-      ),
-      contentPadding: EdgeInsets.only(
-        top: 14.h,
-        right: 12.h,
-        bottom: 14.h,
-      ),
-      borderDecoration: TextFormFieldStyleHelper.underLine,
-      filled: false,
-    );
-  }
 
   /// Section Widget
   Widget _buildTf() {
@@ -219,5 +123,36 @@ class K10Screen extends GetWidget<K10Controller> {
       buttonStyle: CustomButtonStyles.none,
       decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
     );
+  }
+
+  /// Section Widget - Device List Item
+  Widget _buildDeviceList() {
+    return Obx(() {
+      if (controller.devices.isEmpty) {
+        return Center(
+          child: Text("device_not_found".tr),
+        );
+      }
+      return ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: controller.devices.length,
+        separatorBuilder: (_, __) => Divider(color: appTheme.gray300),
+        itemBuilder: (context, index) {
+          final device = controller.devices[index];
+          return ListTile(
+            leading: CustomImageView(
+              imagePath: ImageConstant.imgFrameErrorcontainer16x16,
+              height: 16.h,
+              width: 16.h,
+            ),
+            title: Text(device.name),
+            subtitle: Text(device.macAddress),
+            trailing: Text('${device.rssiValue}'),
+            onTap: () {},
+          );
+        },
+      );
+    });
   }
 }

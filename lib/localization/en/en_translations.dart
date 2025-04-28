@@ -442,4 +442,5 @@ final Map<String, String> en = {
   "msg_network_err": "Network Error",
   "msg_something_went_wrong": "Something Went Wrong!",
   "err_msg_please_enter_email": "請輸入Email",
+  "device_not_found": "未找到設備",
 };
