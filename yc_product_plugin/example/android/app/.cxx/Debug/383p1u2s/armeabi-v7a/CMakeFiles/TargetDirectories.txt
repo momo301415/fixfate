@@ -1,2 +1,0 @@
-/Users/kamoguai/Desktop/flutter_work/flutter-sdk-master/demo/code/example/android/app/.cxx/Debug/383p1u2s/armeabi-v7a/CMakeFiles/edit_cache.dir
-/Users/kamoguai/Desktop/flutter_work/flutter-sdk-master/demo/code/example/android/app/.cxx/Debug/383p1u2s/armeabi-v7a/CMakeFiles/rebuild_cache.dir
