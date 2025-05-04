@@ -50,6 +50,7 @@ class K30Screen extends GetWidget<K30Controller> {
           _buildRowfidownload(),
           SizedBox(height: 16),
           _buildColumn(),
+          SizedBox(height: 16),
         ],
       ),
     );
@@ -164,13 +165,13 @@ class K30Screen extends GetWidget<K30Controller> {
                       break;
                     case 4:
                       await controller.showInputWeight();
-                      if (controller.weight.value.isNotEmpty) {
-                        model.tf1?.value = controller.weight.value + " kg";
+                      if (controller.weight.value > 0) {
+                        model.tf1?.value = "${controller.weight.value} kg";
                       }
                     case 5:
                       await controller.showInputHeight();
-                      if (controller.height.value.isNotEmpty) {
-                        model.tf1?.value = controller.height.value + " cm";
+                      if (controller.height.value > 0) {
+                        model.tf1?.value = "${controller.height.value} cm";
                       }
                       break;
                   }
@@ -196,9 +197,9 @@ class K30Screen extends GetWidget<K30Controller> {
                   Spacer(),
                   Obx(() {
                     final waistline = controller.waistline.value;
-                    if (waistline.isNotEmpty) {
+                    if (waistline > 0) {
                       return Text(
-                        waistline + " cm",
+                        "$waistline cm",
                         style: CustomTextStyles.bodyMediumBluegray900,
                       );
                     } else {
@@ -260,22 +261,39 @@ class K30Screen extends GetWidget<K30Controller> {
                     return ChipviewItemWidget(
                       model,
                       onTap: () {
-                        controller.handleChipTap<ChipviewItemModel>(
-                          index: index,
-                          model: model,
-                          list: controller
-                              .k30ModelObj.value.chipviewItemList, // ✅ 傳 RxList
-                          context: Get.context!,
-                          title: "lbl82_1".tr,
-                          subTitle: "lbl132".tr,
-                          createModel: (text) => ChipviewItemModel(
-                            five: text.obs,
-                            isSelected: true.obs,
-                          ),
-                          onRefresh: () =>
-                              controller.k30ModelObj.value.chipviewItemList,
-                          onToggle: (m) => m.isSelected?.toggle(),
-                        );
+                        var list =
+                            controller.k30ModelObj.value.chipviewItemList;
+                        var lastIndex = list.length - 1; // lastIndex
+                        if (index == lastIndex) {
+                          controller.handleChipTap<ChipviewItemModel>(
+                            index: index,
+                            model: model,
+                            list: list, // ✅ 傳 RxList
+                            context: Get.context!,
+                            title: "lbl82_1".tr,
+                            subTitle: "lbl132".tr,
+                            createModel: (text) => ChipviewItemModel(
+                              five: text.obs,
+                              isSelected: true.obs,
+                            ),
+                            onRefresh: () =>
+                                controller.k30ModelObj.value.chipviewItemList,
+                            onToggle: (m) => m.isSelected?.toggle(),
+                          );
+                        } else if (index == 0) {
+                          // Toggle index 0 並取消其他選中狀態
+                          final wasSelected = model.isSelected?.value ?? false;
+                          for (var i = 0; i < list.length; i++) {
+                            list[i].isSelected?.value = false;
+                          }
+                          model.isSelected?.value = !wasSelected;
+                        } else {
+                          // index != 0，檢查第一個是否有選中
+                          if (!(list[0].isSelected?.value ?? false)) {
+                            model.isSelected?.toggle();
+                          }
+                        }
+                        controller.updateSelectedPersonalHabits();
                       },
                     );
                   },
@@ -324,22 +342,39 @@ class K30Screen extends GetWidget<K30Controller> {
                     return ChipviewOneItemWidget(
                       model,
                       onTap: () {
-                        controller.handleChipTap<ChipviewOneItemModel>(
-                          index: index,
-                          model: model,
-                          list: controller.k30ModelObj.value
-                              .chipviewOneItemList, // ✅ 傳 RxList
-                          context: Get.context!,
-                          title: "lbl94_1".tr,
-                          subTitle: "lbl132".tr,
-                          createModel: (text) => ChipviewOneItemModel(
-                            one: text.obs,
-                            isSelected: true.obs,
-                          ),
-                          onRefresh: () =>
-                              controller.k30ModelObj.value.chipviewOneItemList,
-                          onToggle: (m) => m.isSelected?.toggle(),
-                        );
+                        var list =
+                            controller.k30ModelObj.value.chipviewOneItemList;
+                        var lastIndex = list.length - 1; // lastIndex
+                        if (index == lastIndex) {
+                          controller.handleChipTap<ChipviewOneItemModel>(
+                            index: index,
+                            model: model,
+                            list: list, // ✅ 傳 RxList
+                            context: Get.context!,
+                            title: "lbl94_1".tr,
+                            subTitle: "lbl132".tr,
+                            createModel: (text) => ChipviewOneItemModel(
+                              one: text.obs,
+                              isSelected: true.obs,
+                            ),
+                            onRefresh: () => controller
+                                .k30ModelObj.value.chipviewOneItemList,
+                            onToggle: (m) => m.isSelected?.toggle(),
+                          );
+                        } else if (index == 0) {
+                          // Toggle index 0 並取消其他選中狀態
+                          final wasSelected = model.isSelected?.value ?? false;
+                          for (var i = 0; i < list.length; i++) {
+                            list[i].isSelected?.value = false;
+                          }
+                          model.isSelected?.value = !wasSelected;
+                        } else {
+                          // index != 0，檢查第一個是否有選中
+                          if (!(list[0].isSelected?.value ?? false)) {
+                            model.isSelected?.toggle();
+                          }
+                        }
+                        controller.updateSelectedDietHabits();
                       },
                     );
                   },
@@ -388,22 +423,39 @@ class K30Screen extends GetWidget<K30Controller> {
                     return ChipviewTwoItemWidget(
                       model,
                       onTap: () {
-                        controller.handleChipTap<ChipviewTwoItemModel>(
-                          index: index,
-                          model: model,
-                          list: controller.k30ModelObj.value
-                              .chipviewTwoItemList, // ✅ 傳 RxList
-                          context: Get.context!,
-                          title: "lbl131".tr,
-                          subTitle: "lbl132".tr,
-                          createModel: (text) => ChipviewTwoItemModel(
-                            two: text.obs,
-                            isSelected: true.obs,
-                          ),
-                          onRefresh: () =>
-                              controller.k30ModelObj.value.chipviewTwoItemList,
-                          onToggle: (m) => m.isSelected?.toggle(),
-                        );
+                        var list =
+                            controller.k30ModelObj.value.chipviewTwoItemList;
+                        var lastIndex = list.length - 1; // lastIndex
+                        if (index == lastIndex) {
+                          controller.handleChipTap<ChipviewTwoItemModel>(
+                            index: index,
+                            model: model,
+                            list: list, // ✅ 傳 RxList
+                            context: Get.context!,
+                            title: "lbl131".tr,
+                            subTitle: "lbl132".tr,
+                            createModel: (text) => ChipviewTwoItemModel(
+                              two: text.obs,
+                              isSelected: true.obs,
+                            ),
+                            onRefresh: () => controller
+                                .k30ModelObj.value.chipviewTwoItemList,
+                            onToggle: (m) => m.isSelected?.toggle(),
+                          );
+                        } else if (index == 0) {
+                          // Toggle index 0 並取消其他選中狀態
+                          final wasSelected = model.isSelected?.value ?? false;
+                          for (var i = 0; i < list.length; i++) {
+                            list[i].isSelected?.value = false;
+                          }
+                          model.isSelected?.value = !wasSelected;
+                        } else {
+                          // index != 0，檢查第一個是否有選中
+                          if (!(list[0].isSelected?.value ?? false)) {
+                            model.isSelected?.toggle();
+                          }
+                        }
+                        controller.updateSelectedPastDiseases();
                       },
                     );
                   },
@@ -452,22 +504,39 @@ class K30Screen extends GetWidget<K30Controller> {
                     return ChipviewThreeItemWidget(
                       model,
                       onTap: () {
-                        controller.handleChipTap<ChipviewThreeItemModel>(
-                          index: index,
-                          model: model,
-                          list: controller.k30ModelObj.value
-                              .chipviewThreeItemList, // ✅ 傳 RxList
-                          context: Get.context!,
-                          title: "lbl112_1".tr,
-                          subTitle: "lbl132".tr,
-                          createModel: (text) => ChipviewThreeItemModel(
-                            three: text.obs,
-                            isSelected: true.obs,
-                          ),
-                          onRefresh: () => controller
-                              .k30ModelObj.value.chipviewThreeItemList,
-                          onToggle: (m) => m.isSelected?.toggle(),
-                        );
+                        var list =
+                            controller.k30ModelObj.value.chipviewThreeItemList;
+                        var lastIndex = list.length - 1; // lastIndex
+                        if (index == lastIndex) {
+                          controller.handleChipTap<ChipviewThreeItemModel>(
+                            index: index,
+                            model: model,
+                            list: list, // ✅ 傳 RxList
+                            context: Get.context!,
+                            title: "lbl112_1".tr,
+                            subTitle: "lbl132".tr,
+                            createModel: (text) => ChipviewThreeItemModel(
+                              three: text.obs,
+                              isSelected: true.obs,
+                            ),
+                            onRefresh: () => controller
+                                .k30ModelObj.value.chipviewThreeItemList,
+                            onToggle: (m) => m.isSelected?.toggle(),
+                          );
+                        } else if (index == 0) {
+                          // Toggle index 0 並取消其他選中狀態
+                          final wasSelected = model.isSelected?.value ?? false;
+                          for (var i = 0; i < list.length; i++) {
+                            list[i].isSelected?.value = false;
+                          }
+                          model.isSelected?.value = !wasSelected;
+                        } else {
+                          // index != 0，檢查第一個是否有選中
+                          if (!(list[0].isSelected?.value ?? false)) {
+                            model.isSelected?.toggle();
+                          }
+                        }
+                        controller.updateSelectedFamilyDiseases();
                       },
                     );
                   },
@@ -516,22 +585,39 @@ class K30Screen extends GetWidget<K30Controller> {
                     return ChipviewFourItemWidget(
                       model,
                       onTap: () {
-                        controller.handleChipTap<ChipviewFourItemModel>(
-                          index: index,
-                          model: model,
-                          list: controller.k30ModelObj.value
-                              .chipviewFourItemList, // ✅ 傳 RxList
-                          context: Get.context!,
-                          title: "lbl113_1".tr,
-                          subTitle: "lbl132".tr,
-                          createModel: (text) => ChipviewFourItemModel(
-                            four: text.obs,
-                            isSelected: true.obs,
-                          ),
-                          onRefresh: () =>
-                              controller.k30ModelObj.value.chipviewFourItemList,
-                          onToggle: (m) => m.isSelected?.toggle(),
-                        );
+                        var list =
+                            controller.k30ModelObj.value.chipviewFourItemList;
+                        var lastIndex = list.length - 1; // lastIndex
+                        if (index == lastIndex) {
+                          controller.handleChipTap<ChipviewFourItemModel>(
+                            index: index,
+                            model: model,
+                            list: list, // ✅ 傳 RxList
+                            context: Get.context!,
+                            title: "lbl113_1".tr,
+                            subTitle: "lbl132".tr,
+                            createModel: (text) => ChipviewFourItemModel(
+                              four: text.obs,
+                              isSelected: true.obs,
+                            ),
+                            onRefresh: () => controller
+                                .k30ModelObj.value.chipviewFourItemList,
+                            onToggle: (m) => m.isSelected?.toggle(),
+                          );
+                        } else if (index == 0) {
+                          // Toggle index 0 並取消其他選中狀態
+                          final wasSelected = model.isSelected?.value ?? false;
+                          for (var i = 0; i < list.length; i++) {
+                            list[i].isSelected?.value = false;
+                          }
+                          model.isSelected?.value = !wasSelected;
+                        } else {
+                          // index != 0，檢查第一個是否有選中
+                          if (!(list[0].isSelected?.value ?? false)) {
+                            model.isSelected?.toggle();
+                          }
+                        }
+                        controller.updateSelectedDrugAllergies();
                       },
                     );
                   },
@@ -600,6 +686,13 @@ class K30Screen extends GetWidget<K30Controller> {
             margin: EdgeInsets.only(bottom: 12.h),
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientCyanToPrimaryTL8Decoration,
+            onPressed: () async {
+              bool res = await controller.saveUserProfile();
+              print("save action res : $res");
+              if (res) {
+                Get.back();
+              }
+            },
           )
         ],
       ),

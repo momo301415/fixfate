@@ -3,14 +3,17 @@ import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
 import 'controller/k42_controller.dart';
+import 'package:yc_product_plugin/yc_product_plugin.dart';
+import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';
 
 // ignore_for_file: must_be_immutable
+/// android藍牙配對dialog
 class K42Dialog extends StatelessWidget {
-  K42Dialog(this.controller, {Key? key})
+  K42Dialog(this.controller, {Key? key, required this.bluetoothDevice})
       : super(
           key: key,
         );
-
+  final BluetoothDevice bluetoothDevice;
   K42Controller controller;
 
   @override
@@ -61,6 +64,9 @@ class K42Dialog extends StatelessWidget {
                 decoration:
                     CustomButtonStyles.gradientCyanToPrimaryTL8Decoration,
                 buttonTextStyle: CustomTextStyles.titleMediumManrope,
+                onPressed: () {
+                  controller.connectToDevice(bluetoothDevice);
+                },
               )
             ],
           ),

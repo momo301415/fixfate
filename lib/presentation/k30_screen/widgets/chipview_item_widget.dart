@@ -56,7 +56,6 @@ class ChipviewItemWidget extends StatelessWidget {
                   ),
                 ),
           onSelected: (value) {
-            chipviewItemModelObj.isSelected!.value = value;
             if (onTap != null) {
               onTap!();
             }

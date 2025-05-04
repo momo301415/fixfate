@@ -1,17 +1,19 @@
 import '../../../core/app_export.dart';
 import '../models/k22_model.dart';
 
-/// A controller class for the K22Bottomsheet.
-///
-/// This class manages the state of the K22Bottomsheet, including the
-/// current k22ModelObj
+/// 自訂生日選擇器 Controller
 class K22Controller extends GetxController {
   Rx<K22Model> k22ModelObj = K22Model().obs;
+
   RxInt selectedYear = 1994.obs;
   RxInt selectedMonth = 5.obs;
   RxInt selectedDay = 31.obs;
 
-  List<int> get years => List.generate(100, (index) => 1990 + index);
+  List<int> get years {
+    final currentYear = DateTime.now().year;
+    return List.generate(currentYear - 1900 + 1, (index) => 1900 + index);
+  }
+
   List<int> get months => List.generate(12, (index) => index + 1);
 
   List<int> get days {

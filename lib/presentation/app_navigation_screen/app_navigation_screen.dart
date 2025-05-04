@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';
 import '../../core/app_export.dart';
 import '../five_dialog/controller/five_controller.dart';
 import '../five_dialog/five_dialog.dart';
@@ -341,11 +342,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.one4Screen),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "0-個人中心-我的設備-安卓配對 - Dialog",
-                          onTapScreenTitle: () => onTapDialogTitle(
-                              context, K42Dialog(Get.put(K42Controller()))),
-                        ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "0-個人中心-我的設備-安卓配對 - Dialog",
+                        //   onTapScreenTitle: () => onTapDialogTitle(
+                        //       context, K42Dialog(Get.put(K42Controller()), bluetoothDevice: device,)),
+                        // ),
                         _buildScreenTitle(
                           screenTitle: "0-個人中心-我的設備-ios配對 - Dialog",
                           onTapScreenTitle: () => onTapDialogTitle(

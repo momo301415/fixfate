@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
@@ -7,6 +8,7 @@ import '../../widgets/custom_switch.dart';
 import 'controller/ios_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 藍芽設定dialog
 class IosDialog extends StatelessWidget {
   IosDialog(this.controller, {Key? key})
       : super(
@@ -205,6 +207,9 @@ class IosDialog extends StatelessWidget {
                 decoration:
                     CustomButtonStyles.gradientCyanToPrimaryTL8Decoration,
                 buttonTextStyle: CustomTextStyles.titleMediumManrope,
+                onPressed: () async {
+                  await openAppSettings();
+                },
               )
             ],
           ),

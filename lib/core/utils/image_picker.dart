@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 
 class ImagePickerHelper {
   static final ImagePicker _picker = ImagePicker();
@@ -62,5 +65,28 @@ class ImagePickerHelper {
         Get.back();
       },
     );
+  }
+
+  /// 儲存圖片-以檔案
+  Future<void> saveProfileImageFile(File imageFile) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final profileImagePath = '${appDir.path}/profile_avatar.jpg';
+
+    final savedImage = await imageFile.copy(profileImagePath);
+
+    final box = await Hive.openBox<UserProfile>('user_profile');
+    final user = box.get('me') ?? UserProfile();
+    user.avatar = savedImage.path;
+
+    await box.put('me', user);
+  }
+
+  /// 儲存圖片-以路徑
+  Future<void> saveProfileImagePath(String imagePath) async {
+    final box = await Hive.openBox<UserProfile>('user_profile');
+    final user = box.get('me') ?? UserProfile();
+    user.avatar = imagePath;
+
+    await box.put('me', user);
   }
 }

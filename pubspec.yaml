@@ -6,35 +6,39 @@ environment:
 dependencies: 
   flutter: 
     sdk: flutter
-  flutter_localizations: 
+  flutter_localizations:  # Flutter官方多語系支援
     sdk: flutter
-  cached_network_image: ^3.4.1
-  flutter_svg: ^2.0.16
-  get: ^4.6.6
-  shared_preferences: ^2.3.4
-  connectivity_plus: ^6.1.1
-  flutter_svg_provider: ^1.0.7
-  pin_code_fields: ^8.0.1
-  sms_autofill: ^2.4.1
-  responsive_grid_list: ^1.4.0
-  qr_flutter: ^4.1.0
-  calendar_date_picker2: ^1.1.8
-  fl_chart: ^0.70.0
-  image_picker: ^1.1.2
-  permission_handler: ^11.0.1
-  device_info_plus: ^11.4.0
-  #穿戴式sdk
-  # yc_product_plugin:
-  #   path: yc_product_plugin
-  yc_product_plugin:
+  cached_network_image: ^3.4.1  # 圖片快取與異步加載
+  flutter_svg: ^2.0.16  # 載入 SVG 向量圖片
+  get: ^4.6.6  # GetX 狀態管理 / 路由跳轉 / DI
+  shared_preferences: ^2.3.4  # 本地簡單儲存 (key-value儲存設定或登入資訊)
+  connectivity_plus: ^6.1.1  # 網路連線狀態監聽 (Wi-Fi/4G/斷線)
+  flutter_svg_provider: ^1.0.7  # 把 SVG 當 ImageProvider 使用
+  pin_code_fields: ^8.0.1  # OTP驗證碼輸入格子UI
+  sms_autofill: ^2.4.1  # SMS驗證碼自動讀取 (Android / iOS)
+  responsive_grid_list: ^1.4.0  # 流式/自適應 Grid 排列
+  qr_flutter: ^4.1.0  # 生成 QRCode 圖片
+  calendar_date_picker2: ^1.1.8  # 自訂版行事曆選日期
+  fl_chart: ^0.70.0  # 畫圖表用的 (線圖、圓餅圖、柱狀圖)
+  image_picker: ^1.1.2  # 開啟相機、選取相簿圖片
+  permission_handler: ^11.0.1  # 權限請求與檢查 (相機、藍牙、儲存)
+  device_info_plus: ^11.4.0  # 取得裝置資訊 (機型/系統版本)
+  flutter_spinkit: ^5.2.1  # 載入中動畫
+  path_provider: ^2.1.5  # 取得路徑
+  hive: ^2.2.3 # Hive資料庫
+  hive_flutter: ^1.1.0 # Hive資料庫文件
+  yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:
       url: https://gitee.com/yucheng_3/yc_product_plugin.git
       path: code/
       ref: ed5dabd0850edc5d64bb975c9a2f4d65c1344201
       
 dev_dependencies: 
-  flutter_test: 
+  flutter_test:  # Flutter內建單元測試
     sdk: flutter
+  build_runner: ^2.4.15
+  hive_generator: ^2.0.1
+
 flutter: 
   uses-material-design: true
   assets: 

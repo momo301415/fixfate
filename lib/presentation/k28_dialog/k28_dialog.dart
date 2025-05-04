@@ -62,8 +62,8 @@ class K28Dialog extends StatelessWidget {
                           onChanged: (value) {
                             controller.inputedText.value = value;
                           },
-                          hintText: "lbl_80".tr,
-                          hintStyle: CustomTextStyles.bodyLargePrimaryContainer,
+                          hintText: "lbl54".tr,
+                          hintStyle: CustomTextStyles.bodyLargeGray50016_1,
                           textInputAction: TextInputAction.done,
                           textInputType: TextInputType.number,
                           suffix: Padding(

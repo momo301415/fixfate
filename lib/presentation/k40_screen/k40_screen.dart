@@ -44,8 +44,8 @@ class K40Screen extends GetWidget<K40Controller> {
             text: "lbl135".tr,
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
-            onPressed: () {
-              controller.goK10Screen();
+            onPressed: () async {
+              await controller.checkBluetoothPermission();
             },
           ),
           SizedBox(height: 16.h)
