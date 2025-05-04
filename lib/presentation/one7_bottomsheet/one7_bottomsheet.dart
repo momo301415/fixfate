@@ -1,85 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_grid_list/responsive_grid_list.dart';
+import 'package:get/get.dart';
+import 'package:pulsedevice/theme/custom_button_style.dart';
+import 'package:pulsedevice/widgets/custom_elevated_button.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/custom_elevated_button.dart';
 import 'controller/one7_controller.dart';
-import 'models/gridmonth_item_model.dart';
-import 'widgets/gridmonth_item_widget.dart';
 
-// ignore_for_file: must_be_immutable
 class One7Bottomsheet extends StatelessWidget {
-  One7Bottomsheet(this.controller, {Key? key})
-      : super(
-          key: key,
-        );
+  final void Function(int year, int month) onConfirm;
 
-  One7Controller controller;
+  One7Bottomsheet({
+    Key? key,
+    required this.onConfirm,
+  }) : super(key: key);
+
+  final One7Controller controller = Get.put(One7Controller());
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(
-        horizontal: 36.h,
-        vertical: 32.h,
-      ),
-      decoration: AppDecoration.fillWhiteA.copyWith(
-        borderRadius: BorderRadiusStyle.customBorderTL12,
+      padding: EdgeInsets.symmetric(horizontal: 24.h, vertical: 20.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        spacing: 16,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Obx(
-            () => ResponsiveGridListBuilder(
-              minItemWidth: 1,
-              minItemsPerRow: 2,
-              maxItemsPerRow: 2,
-              horizontalGridSpacing: 182.h,
-              verticalGridSpacing: 182.h,
-              builder: (context, items) => ListView(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                children: items,
-              ),
-              gridItems: List.generate(
-                controller.one7ModelObj.value.gridmonthItemList.value.length,
-                (index) {
-                  GridmonthItemModel model = controller
-                      .one7ModelObj.value.gridmonthItemList.value[index];
-                  return GridmonthItemWidget(
-                    model,
-                  );
-                },
-              ),
+          /// 年份與切換箭頭
+          Obx(() => Row(
+                children: [
+                  Text(
+                    "${controller.year.value}年",
+                    style: CustomTextStyles.bodyLarge16,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: controller.decrementYear,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: controller.incrementYear,
+                  ),
+                ],
+              )),
+          SizedBox(height: 12.h),
+
+          /// 月份選擇格子
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 12,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              mainAxisSpacing: 10.h,
+              crossAxisSpacing: 10.h,
+              childAspectRatio: 2.1,
             ),
+            itemBuilder: (context, index) {
+              final m = index + 1;
+              return Obx(() {
+                final isSelected = controller.month.value == m;
+                return GestureDetector(
+                  onTap: () => controller.selectMonth(m),
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected ? const Color(0xFF5BB5C4) : Colors.white,
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFF5BB5C4)
+                            : appTheme.gray300,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(6.h),
+                    ),
+                    child: Text(
+                      "${m.toString().padLeft(2, '0')}月",
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : appTheme.gray900,
+                        fontSize: 16.fSize,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                );
+              });
+            },
           ),
-          SizedBox(
-            width: double.maxFinite,
-            child: Row(
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    height: 56.h,
+          SizedBox(height: 8.h),
+
+          /// 按鈕
+          Row(
+            children: [
+              Expanded(
+                child: CustomElevatedButton(
+                    onPressed: () => Get.back(),
                     text: "lbl50".tr,
-                    buttonStyle: CustomButtonStyles.fillGrayTL8,
-                    buttonTextStyle: CustomTextStyles.bodyLargeGray500_1,
-                  ),
+                    margin: EdgeInsets.symmetric(horizontal: 8.h),
+                    buttonStyle: CustomButtonStyles.fillGray,
+                    buttonTextStyle: CustomTextStyles.bodyLarge16),
+              ),
+              Expanded(
+                child: CustomElevatedButton(
+                  onPressed: () {
+                    onConfirm(controller.year.value, controller.month.value);
+                    Get.back();
+                  },
+                  text: "lbl51".tr,
+                  margin: EdgeInsets.symmetric(horizontal: 8.h),
+                  buttonStyle: CustomButtonStyles.fillPrimary,
                 ),
-                Expanded(
-                  child: CustomElevatedButton(
-                    height: 56.h,
-                    text: "lbl51".tr,
-                    buttonStyle: CustomButtonStyles.fillPrimary,
-                    buttonTextStyle: CustomTextStyles.bodyLargeWhiteA700_1,
-                  ),
-                )
-              ],
-            ),
+              ),
+            ],
           ),
-          SizedBox(height: 16.h)
+          SizedBox(height: 30.h),
         ],
       ),
     );

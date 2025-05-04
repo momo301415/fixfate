@@ -1,18 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
 import '../../../core/app_export.dart';
-import '../models/k52_model.dart';
+import '../models/k52_model2.dart';
 
 /// A controller class for the K52Page.
 ///
 /// This class manages the state of the K52Page, including the
 /// current k52ModelObj
-class K52Controller extends GetxController {
-  Rx<K52Model> k52ModelObj = K52Model().obs;
-
+class K52Controller2 extends GetxController {
+  Rx<K52Model2> k52ModelObj = K52Model2().obs;
   var pickDate = ''.obs;
   @override
   void onInit() {

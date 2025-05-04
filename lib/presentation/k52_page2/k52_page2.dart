@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/presentation/k52_page2/controller/k52_controller2.dart';
+import 'package:pulsedevice/presentation/k52_page2/models/list_item_model2.dart';
+import 'package:pulsedevice/presentation/k52_page2/widgets/list_item_widget2.dart';
 import '../../core/app_export.dart';
-import 'controller/k52_controller.dart';
-import 'widgets/list_item_widget.dart';
 
-/// 警報紀錄-tab-紀錄
-class K52Page extends StatelessWidget {
-  K52Page({Key? key}) : super(key: key);
+/// 警報紀錄-tab-統計
+class K52Page2 extends StatelessWidget {
+  K52Page2({Key? key}) : super(key: key);
 
-  final K52Controller controller = Get.put(K52Controller());
+  final K52Controller2 controller = Get.put(K52Controller2());
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class K52Page extends StatelessWidget {
                 children: [
                   _buildRow202508(),
                   SizedBox(height: 8.v),
-                  _buildList(),
+                  ListItemWidget2(ListItemModel2()),
                   SizedBox(height: 16.v),
                 ],
               ),
@@ -65,23 +66,6 @@ class K52Page extends StatelessWidget {
               width: 18.h,
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildList() {
-    return Expanded(
-      child: Obx(
-        () => ListView.builder(
-          padding: EdgeInsets.zero,
-          physics: const BouncingScrollPhysics(),
-          itemCount: controller.k52ModelObj.value.listItemList.value.length,
-          itemBuilder: (context, index) {
-            final model =
-                controller.k52ModelObj.value.listItemList.value[index];
-            return ListItemWidget(model);
-          },
         ),
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
-import '../models/in_tab_model.dart';
 import '../models/k53_model.dart';
 
 /// A controller class for the K53Screen.
@@ -15,6 +14,26 @@ class K53Controller extends GetxController
       Get.put(TabController(vsync: this, length: 2));
 
   Rx<int> tabIndex = 0.obs;
+  final selectedIndex = 0.obs;
 
-  Rx<InTabModel> inTabModelObj = InTabModel().obs;
+  @override
+  void onInit() {
+    super.onInit();
+    tabviewController = TabController(length: 2, vsync: this, initialIndex: 0);
+    tabviewController.addListener(() {
+      if (!tabviewController.indexIsChanging) {
+        selectedIndex.value = tabviewController.index;
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    tabviewController.dispose();
+    super.onClose();
+  }
+
+  void animateTo(int index) {
+    tabviewController.animateTo(index);
+  }
 }

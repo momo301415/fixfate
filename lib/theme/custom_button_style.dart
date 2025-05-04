@@ -150,17 +150,17 @@ class CustomButtonStyles {
       );
   static BoxDecoration get gradientCyanToPrimaryDecoration => BoxDecoration(
         borderRadius: BorderRadius.circular(8.h),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.secondaryContainer,
-            spreadRadius: 2.h,
-            blurRadius: 2.h,
-            offset: Offset(
-              0,
-              4,
-            ),
-          )
-        ],
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: theme.colorScheme.secondaryContainer,
+        //     spreadRadius: 2.h,
+        //     blurRadius: 2.h,
+        //     offset: Offset(
+        //       0,
+        //       4,
+        //     ),
+        //   )
+        // ],
         gradient: LinearGradient(
           begin: Alignment(0.15, 0),
           end: Alignment(0.75, 0),

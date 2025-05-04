@@ -1,5 +1,7 @@
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+import 'package:pulsedevice/presentation/k52_page/binding/k52_binding.dart';
+import 'package:pulsedevice/presentation/k52_page/k52_page.dart';
 
 import '../core/app_export.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
@@ -405,6 +407,8 @@ class AppRoutes {
       page: () => One6Screen(),
       bindings: [One6Binding()],
     ),
+
+    /// 警報紀錄頁面
     GetPage(
       name: k53Screen,
       page: () => K53Screen(),
@@ -563,6 +567,6 @@ class AppRoutes {
       name: initialRoute,
       page: () => K1Screen(),
       bindings: [K1Binding()],
-    )
+    ),
   ];
 }

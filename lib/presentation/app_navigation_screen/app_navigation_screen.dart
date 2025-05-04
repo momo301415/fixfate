@@ -397,11 +397,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.k53Screen),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "0-個人中心-警報紀錄-統計 One - BottomSheet",
-                          onTapScreenTitle: () => onTapBottomSheetTitle(context,
-                              One7Bottomsheet(Get.put(One7Controller()))),
-                        ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "0-個人中心-警報紀錄-統計 One - BottomSheet",
+                        //   onTapScreenTitle: () => onTapBottomSheetTitle(context,
+                        //       One7Bottomsheet(Get.put(One7Controller()))),
+                        // ),
                         _buildScreenTitle(
                           screenTitle: "0-個人中心-通知消息",
                           onTapScreenTitle: () =>
