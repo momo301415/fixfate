@@ -24,6 +24,10 @@ dependencies:
   permission_handler: ^11.0.1  # 權限請求與檢查 (相機、藍牙、儲存)
   device_info_plus: ^11.4.0  # 取得裝置資訊 (機型/系統版本)
   flutter_spinkit: ^5.2.1  # 載入中動畫
+  flutter_local_notifications: ^19.1.0  # 設定本地通知
+  timezone: ^0.10.1  # 取得時區
+  flutter_timezone: ^4.1.0  # 取得裝置時區
+  android_intent_plus: ^5.3.0  # Android 開啟其他應用程式
   path_provider: ^2.1.5  # 取得路徑
   hive: ^2.2.3 # Hive資料庫
   hive_flutter: ^1.1.0 # Hive資料庫文件

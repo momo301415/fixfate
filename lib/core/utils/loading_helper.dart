@@ -14,8 +14,8 @@ class LoadingHelper {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SpinKitFadingCircle(
-                color: Colors.blue,
-                size: 50.0,
+                color: Colors.white,
+                size: 80.0,
               ),
               if (message != null)
                 Padding(
