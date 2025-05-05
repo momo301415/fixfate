@@ -204,4 +204,5 @@ class ImageConstant {
 
   static String imgUnionFullBg = '$imagePath/img_union_full.png';
   static String imgUnionBg2 = '$imagePath/img_union_2.png';
+  static String imgQrBg = '$imagePath/img_qr_bg.png';
 }

@@ -475,6 +475,8 @@ class AppRoutes {
       page: () => Two6Screen(),
       bindings: [Two6Binding()],
     ),
+
+    /// 家人管理頁面
     GetPage(
       name: k67Screen,
       page: () => K67Screen(),
@@ -490,11 +492,15 @@ class AppRoutes {
       page: () => Two7Screen(),
       bindings: [Two7Binding()],
     ),
+
+    /// 分享健康數據頁面
     GetPage(
       name: k71Screen,
       page: () => K71Screen(),
       bindings: [K71Binding()],
     ),
+
+    /// 掃描qr code頁面
     GetPage(
       name: k72Screen,
       page: () => K72Screen(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/app_export.dart';
 import '../models/k71_model.dart';
 
@@ -8,4 +9,10 @@ import '../models/k71_model.dart';
 /// current k71ModelObj
 class K71Controller extends GetxController {
   Rx<K71Model> k71ModelObj = K71Model().obs;
+
+  /// 路由到掃描qr code
+  void go72Screen() {
+    Get.offNamedUntil(
+        AppRoutes.k72Screen, ModalRoute.withName(AppRoutes.k67Screen));
+  }
 }

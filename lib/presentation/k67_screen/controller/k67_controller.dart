@@ -8,4 +8,14 @@ import '../models/k67_model.dart';
 /// current k67ModelObj
 class K67Controller extends GetxController {
   Rx<K67Model> k67ModelObj = K67Model().obs;
+
+  /// 路由到分享健康數據頁面
+  void gok71Screen() {
+    Get.toNamed(AppRoutes.k71Screen);
+  }
+
+  /// 路由到掃描qr code
+  void go72Screen() {
+    Get.toNamed(AppRoutes.k72Screen);
+  }
 }

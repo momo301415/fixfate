@@ -18,6 +18,7 @@ dependencies:
   sms_autofill: ^2.4.1  # SMS驗證碼自動讀取 (Android / iOS)
   responsive_grid_list: ^1.4.0  # 流式/自適應 Grid 排列
   qr_flutter: ^4.1.0  # 生成 QRCode 圖片
+  mobile_scanner: ^7.0.0  # 手機相機掃描二維碼
   calendar_date_picker2: ^1.1.8  # 自訂版行事曆選日期
   fl_chart: ^0.70.0  # 畫圖表用的 (線圖、圓餅圖、柱狀圖)
   image_picker: ^1.1.2  # 開啟相機、選取相簿圖片

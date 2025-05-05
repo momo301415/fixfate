@@ -68,4 +68,8 @@ class K29Controller extends GetxController {
   void go63Screen() {
     Get.toNamed(AppRoutes.k63Screen);
   }
+
+  void go67SrcScreen() {
+    Get.toNamed(AppRoutes.k67Screen);
+  }
 }
