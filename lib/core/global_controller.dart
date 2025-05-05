@@ -5,6 +5,7 @@ import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
   RxInt blueToolStatus = 0.obs;
+  RxString userEmail = ''.obs;
 
   @override
   void onInit() {

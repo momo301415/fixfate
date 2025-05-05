@@ -14,6 +14,7 @@ class One9Controller extends GetxController {
   TextEditingController tf2Controller = TextEditingController();
 
   Rx<One9Model> one9ModelObj = One9Model().obs;
+  var isValid = false.obs;
 
   @override
   void onClose() {
@@ -21,5 +22,11 @@ class One9Controller extends GetxController {
     tfController.dispose();
     tf1Controller.dispose();
     tf2Controller.dispose();
+  }
+
+  void checkFromIsNotEmpty() {
+    isValid.value = tfController.text.isNotEmpty &&
+        tf1Controller.text.isNotEmpty &&
+        tf2Controller.text.isNotEmpty;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
+import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/k22_bottomsheet/controller/k22_controller.dart';
 import 'package:pulsedevice/presentation/k22_bottomsheet/k22_bottomsheet.dart';
@@ -262,7 +263,7 @@ class K30Controller extends GetxController {
       user.familyDiseases = familyDiseases.toList().cast<String>();
       user.drugAllergies = drugAllergies.toList().cast<String>();
       user.personalHabits = personalHabits.toList().cast<String>();
-      await box.put('me', user);
+      await UserProfileStorage.saveUserProfile('me', user);
       res = true;
     } catch (e) {
       res = false;

@@ -448,4 +448,6 @@ final Map<String, String> en = {
   "msg_id": "ID",
   "snackbar_title": "提示",
   "snackbar_bluetooth_disconnect": "藍芽連結已斷開",
+  "snackbar_account_delete": "帳號已刪除",
+  "snackbar_no_account_delete": "無帳號可以刪除",
 };

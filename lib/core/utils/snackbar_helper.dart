@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/app_export.dart';
 
 class SnackbarHelper {
   static void showBlueSnackbar({String? title, String? message}) {
@@ -16,7 +17,7 @@ class SnackbarHelper {
               title,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 13,
+                fontSize: 16.h,
                 fontWeight: FontWeight.bold,
               ),
             )
@@ -25,7 +26,7 @@ class SnackbarHelper {
         message != null ? message : '',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 13,
+          fontSize: 16.h,
         ),
       ),
     );

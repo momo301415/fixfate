@@ -84,7 +84,9 @@ class K29Page extends GetWidget<K29Controller> {
           }),
           _buildMenuItem("lbl63".tr, ImageConstant.imgUSlidersV, () {}),
           _buildMenuItem("lbl64".tr, ImageConstant.imgFrame1, () {}),
-          _buildMenuItem("lbl65".tr, ImageConstant.imgUShieldCheck, () {}),
+          _buildMenuItem("lbl65".tr, ImageConstant.imgUShieldCheck, () {
+            controller.go63Screen();
+          }),
           _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {}),
           _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () {}),
         ],

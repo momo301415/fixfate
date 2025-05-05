@@ -1,7 +1,5 @@
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
-import 'package:pulsedevice/presentation/k52_page/binding/k52_binding.dart';
-import 'package:pulsedevice/presentation/k52_page/k52_page.dart';
 
 import '../core/app_export.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
@@ -458,11 +456,15 @@ class AppRoutes {
       page: () => K62Screen(),
       bindings: [K62Binding()],
     ),
+
+    /// 帳號與安全頁面
     GetPage(
       name: k63Screen,
       page: () => K63Screen(),
       bindings: [K63Binding()],
     ),
+
+    /// 修改密碼頁面
     GetPage(
       name: one9Screen,
       page: () => One9Screen(),

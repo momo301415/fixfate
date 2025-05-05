@@ -56,15 +56,23 @@ class Three2Dialog extends StatelessWidget {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: 16.h),
-                      child: Text(
-                        "lbl50".tr,
-                        style: CustomTextStyles.titleMediumGray500,
-                      ),
+                      child: GestureDetector(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: Text(
+                            "lbl50".tr,
+                            style: CustomTextStyles.titleMediumGray500,
+                          )),
                     ),
-                    Text(
-                      "lbl140".tr,
-                      style: CustomTextStyles.titleMediumPrimarySemiBold,
-                    )
+                    GestureDetector(
+                        onTap: () async {
+                          controller.deleteAccount();
+                        },
+                        child: Text(
+                          "lbl140".tr,
+                          style: CustomTextStyles.titleMediumPrimarySemiBold,
+                        ))
                   ],
                 ),
               )
