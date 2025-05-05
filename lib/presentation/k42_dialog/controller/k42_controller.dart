@@ -1,4 +1,7 @@
-import 'package:pulsedevice/core/utils/DeviceStorage.dart';
+import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/device_storage.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';
 
@@ -14,16 +17,27 @@ class K42Controller extends GetxController {
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
+      LoadingHelper.show();
       final result = await YcProductPlugin().connectDevice(device);
 
       if (result == true) {
-        Get.snackbar('連線成功', '已連線到 ${device.name}');
+        SnackbarHelper.showBlueSnackbar(
+            title: '連線成功', message: '已連線到 ${device.name}');
         DeviceStorage.saveDevice(device);
+        go29Screen();
       } else {
-        Get.snackbar('連線失敗', '無法連接到 ${device.name}');
+        SnackbarHelper.showErrorSnackbar(
+            title: '連線失敗', message: '無法連接到 ${device.name}');
       }
     } catch (e) {
       rethrow;
+    } finally {
+      LoadingHelper.hide();
     }
+  }
+
+  void go29Screen() {
+    Get.offNamedUntil(
+        AppRoutes.k29Page, ModalRoute.withName(AppRoutes.one2Screen));
   }
 }

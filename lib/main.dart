@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import 'core/app_export.dart';
@@ -14,6 +15,8 @@ void main() async {
     Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
     // 初始化穿戴式sdk
     YcProductPlugin().initPlugin(isReconnectEnable: true, isLogEnable: true);
+    Get.put(GlobalController()); // 註冊為全域單例
+
     await Hive.initFlutter();
     Hive.registerAdapter(UserProfileAdapter());
     await Hive.openBox<UserProfile>('user_profile');

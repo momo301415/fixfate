@@ -51,8 +51,10 @@ class K29Page extends GetWidget<K29Controller> {
                       case 1:
                         controller.goK53Screen();
                         break;
+                      case 2:
+                        controller.goK55Screen();
+                        break;
                     }
-                    print('Tapped ${model.id}');
                   },
                   child: ListOneItemWidget(model),
                 ),

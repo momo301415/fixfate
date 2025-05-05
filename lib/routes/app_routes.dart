@@ -385,6 +385,8 @@ class AppRoutes {
       page: () => K44Screen(),
       bindings: [K44Binding()],
     ),
+
+    /// 戒指資訊頁面
     GetPage(
       name: k45Screen,
       page: () => K45Screen(),
@@ -414,6 +416,8 @@ class AppRoutes {
       page: () => K53Screen(),
       bindings: [K53Binding()],
     ),
+
+    /// 通知消息頁面
     GetPage(
       name: k55Screen,
       page: () => K55Screen(),

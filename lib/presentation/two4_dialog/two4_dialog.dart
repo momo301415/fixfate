@@ -3,6 +3,7 @@ import '../../core/app_export.dart';
 import 'controller/two4_controller.dart';
 
 // ignore_for_file: must_be_immutable
+/// 刪除設備dialog
 class Two4Dialog extends StatelessWidget {
   Two4Dialog(this.controller, {Key? key})
       : super(
@@ -21,16 +22,16 @@ class Two4Dialog extends StatelessWidget {
           width: double.maxFinite,
           padding: EdgeInsets.symmetric(
             horizontal: 50.h,
-            vertical: 20.h,
+            vertical: 10.v,
           ),
           decoration: AppDecoration.outlineBlack.copyWith(
             borderRadius: BorderRadiusStyle.roundedBorder8,
           ),
           child: Column(
-            spacing: 34,
+            spacing: 24,
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 6.h),
+              SizedBox(height: 1.h),
               Container(
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(horizontal: 4.h),
@@ -60,18 +61,28 @@ class Two4Dialog extends StatelessWidget {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: 16.h),
-                      child: Text(
-                        "lbl50".tr,
-                        style: CustomTextStyles.titleMediumGray500,
-                      ),
+                      child: GestureDetector(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: Text(
+                            "lbl50".tr,
+                            style: CustomTextStyles.titleMediumGray500,
+                          )),
                     ),
-                    Text(
-                      "lbl140".tr,
-                      style: CustomTextStyles.titleMediumPrimarySemiBold,
-                    )
+                    GestureDetector(
+                        onTap: () async {
+                          controller.blueToolDisconnect();
+                          Get.back();
+                        },
+                        child: Text(
+                          "lbl140".tr,
+                          style: CustomTextStyles.titleMediumPrimarySemiBold,
+                        ))
                   ],
                 ),
-              )
+              ),
+              SizedBox(height: 1),
             ],
           ),
         )

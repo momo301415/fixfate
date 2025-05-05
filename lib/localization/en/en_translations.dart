@@ -412,6 +412,7 @@ final Map<String, String> en = {
   "msg_2025_03_29_11_23": " 2025/03/29 11:23",
   "msg_60_100": "心率正常範圍60～100次/分鐘",
   "msg_6_54_2_12": "夜間睡眠 總計 6小時54分，深睡2小時12分",
+  "msg_update_time": "更新時間",
   "msg_amy123_gmail_com": "amy123@gmail.com",
   "msg_app":
       "本App係由【公司名稱】（以下簡稱「本公司」）開發，搭配穿戴式裝置（如健康戒指）使用，用以協助用戶蒐集個人生理數據並呈現健康趨勢與分析結果。\r\n本App所提供之健康分析結果，僅供一般健康管理與生活參考用途，不具醫療診斷或治療之功能與效力。",
@@ -443,4 +444,8 @@ final Map<String, String> en = {
   "msg_something_went_wrong": "Something Went Wrong!",
   "err_msg_please_enter_email": "請輸入Email",
   "device_not_found": "未找到設備",
+  "msg_power": "電量",
+  "msg_id": "ID",
+  "snackbar_title": "提示",
+  "snackbar_bluetooth_disconnect": "藍芽連結已斷開",
 };

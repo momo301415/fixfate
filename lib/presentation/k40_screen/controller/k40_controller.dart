@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pulsedevice/core/utils/device_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
 import 'package:pulsedevice/presentation/ios_dialog/ios_dialog.dart';
+import 'package:pulsedevice/presentation/k40_screen/models/listpulsering_item_model.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 import '../../../core/app_export.dart';
@@ -16,10 +18,33 @@ import '../models/k40_model.dart';
 /// current k40ModelObj
 class K40Controller extends GetxController {
   Rx<K40Model> k40ModelObj = K40Model().obs;
+  var createdAt = "".obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    DeviceStorage.loadDeviceData().then((device) {
+      if (device.isNotEmpty) {
+        final item = ListpulseringItemModel(
+          pulsering: Rx("lbl_pulsering3".tr),
+          id: Rx(device["deviceIdentifier"] ?? "未知ID"),
+          tf: Rx(device["createdAt"] ?? "未知時間"),
+          pulsering1: Rx(ImageConstant.imgFrame86618),
+        );
+        k40ModelObj.value.listpulseringItemList.value = [item];
+        createdAt.value = device["createdAt"] ?? "未知時間";
+      }
+    });
+  }
 
   /// 註冊設備頁面
   void goK10Screen() {
     Get.toNamed(AppRoutes.k10Screen);
+  }
+
+  /// 路由到戒指資訊頁面
+  void goK45Screen() {
+    Get.toNamed(AppRoutes.k45Screen, arguments: {'createdAt': createdAt.value});
   }
 
   Future<void> showBlueTooth() async {
@@ -43,11 +68,11 @@ class K40Controller extends GetxController {
           final statusLocation = await Permission.locationWhenInUse.request();
           granted = statusLocation.isGranted;
         }
-
         if (granted) {
           final state = await YcProductPlugin().getBluetoothState();
           if (state == BluetoothState.on ||
-              state == BluetoothState.disconnected) {
+              state == BluetoothState.disconnected ||
+              state == BluetoothState.connected) {
             goK10Screen();
           } else {
             showBlueTooth();

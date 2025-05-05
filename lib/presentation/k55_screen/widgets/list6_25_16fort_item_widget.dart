@@ -26,6 +26,9 @@ class List62516fortItemWidget extends StatelessWidget {
             height: 42.h,
             width: 42.h,
           ),
+          SizedBox(
+            width: 8.h,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

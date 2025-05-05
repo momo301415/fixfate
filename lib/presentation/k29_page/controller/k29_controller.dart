@@ -1,3 +1,4 @@
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/presentation/k29_page/models/list_one_item_model.dart';
 
 import '../../../core/app_export.dart';
@@ -9,6 +10,13 @@ import '../models/k29_model.dart';
 /// current k29ModelObj
 class K29Controller extends GetxController {
   Rx<K29Model> k29ModelObj = K29Model().obs;
+  final gc = Get.find<GlobalController>();
+  @override
+  void onInit() {
+    super.onInit();
+    print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
+  }
+
   void onTopCardTap(ListOneItemModel model) {
     // 可依 model.id 判斷導頁
     print('點擊功能卡片：${model.title}');
@@ -44,5 +52,9 @@ class K29Controller extends GetxController {
   /// 路由到警報紀錄頁面
   void goK53Screen() {
     Get.toNamed(AppRoutes.k53Screen);
+  }
+
+  void goK55Screen() {
+    Get.toNamed(AppRoutes.k55Screen);
   }
 }

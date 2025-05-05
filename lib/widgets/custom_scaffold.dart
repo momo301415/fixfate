@@ -105,7 +105,9 @@ class BaseScaffoldImageHeader extends StatelessWidget {
           /// ✅ 主內容區塊
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.h,
+              ),
               child: child,
             ),
           ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/k42_dialog/controller/k42_controller.dart';
 import 'package:pulsedevice/presentation/k42_dialog/k42_dialog.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
@@ -48,7 +49,7 @@ class K10Controller extends GetxController {
 
   Future<void> scanDevices() async {
     try {
-      // ⚡不要自己 show loading，讓 plugin 自己管
+      LoadingHelper.show();
       final state = await YcProductPlugin().getBluetoothState();
       if (state != BluetoothState.disconnected) {
         await YcProductPlugin().disconnectDevice();
@@ -75,6 +76,8 @@ class K10Controller extends GetxController {
       }
     } catch (e) {
       rethrow;
+    } finally {
+      LoadingHelper.hide();
     }
   }
 
