@@ -426,6 +426,8 @@ class AppRoutes {
       page: () => K56Screen(),
       bindings: [K56Binding()],
     ),
+
+    /// 個人中心-量測設定頁面
     GetPage(
       name: k57Screen,
       page: () => K57Screen(),
@@ -451,6 +453,8 @@ class AppRoutes {
       page: () => K61Screen(),
       bindings: [K61Binding()],
     ),
+
+    /// 目標設定頁面
     GetPage(
       name: k62Screen,
       page: () => K62Screen(),

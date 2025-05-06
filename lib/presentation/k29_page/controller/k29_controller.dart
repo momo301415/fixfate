@@ -69,7 +69,13 @@ class K29Controller extends GetxController {
     Get.toNamed(AppRoutes.k63Screen);
   }
 
+  /// 路由到家人管理頁面
   void go67SrcScreen() {
     Get.toNamed(AppRoutes.k67Screen);
+  }
+
+  /// 路由到目標設定頁面
+  void goK62Screen() {
+    Get.toNamed(AppRoutes.k62Screen);
   }
 }

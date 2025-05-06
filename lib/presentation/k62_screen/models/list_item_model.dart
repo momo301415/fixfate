@@ -4,18 +4,19 @@ import '../../../core/app_export.dart';
 
 // ignore_for_file: must_be_immutable
 class ListItemModel {
-  ListItemModel({this.tf, this.tenThousand, this.tf1, this.id}) {
-    tf = tf ?? Rx("lbl186".tr);
-    tenThousand = tenThousand ?? Rx("lbl_10_000".tr);
-    tf1 = tf1 ?? Rx("lbl187".tr);
-    id = id ?? Rx("");
-  }
+  String label;
+  RxDouble value;
+  double min;
+  double max;
+  double division; // ← 每格的間距
+  String unit;
 
-  Rx<String>? tf;
-
-  Rx<String>? tenThousand;
-
-  Rx<String>? tf1;
-
-  Rx<String>? id;
+  ListItemModel({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.division,
+    required this.unit,
+  });
 }

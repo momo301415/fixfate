@@ -47,6 +47,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
   final double headerHeight;
   final String backgroundImage;
   final List<Widget>? actions;
+  final Function()? onBack;
 
   const BaseScaffoldImageHeader({
     Key? key,
@@ -56,6 +57,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
     this.headerHeight = 100,
     this.backgroundImage = 'assets/images/img_header_curved.png',
     this.actions,
+    this.onBack,
   }) : super(key: key);
 
   @override
@@ -87,7 +89,10 @@ class BaseScaffoldImageHeader extends StatelessWidget {
                       children: [
                         AppbarLeadingImage(
                           imagePath: ImageConstant.imgArrowLeft,
-                          onTap: () => Get.back(),
+                          onTap: onBack ??
+                              () {
+                                Get.back();
+                              },
                         ),
                         SizedBox(width: 8.h),
                         Expanded(
