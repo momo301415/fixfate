@@ -30,8 +30,13 @@ dependencies:
   flutter_timezone: ^4.1.0  # 取得裝置時區
   android_intent_plus: ^5.3.0  # Android 開啟其他應用程式
   path_provider: ^2.1.5  # 取得路徑
+  path: ^1.9.1  # 路徑處理
   hive: ^2.2.3 # Hive資料庫
   hive_flutter: ^1.1.0 # Hive資料庫文件
+  sqflite: ^2.4.2 # SQLite資料庫
+  drift: ^2.26.1 # SQLite資料庫封裝
+  drift_sqflite: ^2.0.1 # SQLite資料庫封裝
+  
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:
       url: https://gitee.com/yucheng_3/yc_product_plugin.git
@@ -41,8 +46,9 @@ dependencies:
 dev_dependencies: 
   flutter_test:  # Flutter內建單元測試
     sdk: flutter
-  build_runner: ^2.4.15
-  hive_generator: ^2.0.1
+  build_runner: ^2.4.15 # H資料生成器
+  hive_generator: ^2.0.1 # Hive資料庫生成器
+  drift_dev: ^2.26.0 # SQLite資料庫生成器
 
 flutter: 
   uses-material-design: true

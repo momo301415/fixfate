@@ -92,7 +92,9 @@ class K29Page extends GetWidget<K29Controller> {
           _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {
             controller.go67SrcScreen();
           }),
-          _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () {}),
+          _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () async {
+            controller.queryDb();
+          }),
         ],
       ),
     );

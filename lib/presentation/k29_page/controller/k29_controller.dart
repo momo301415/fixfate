@@ -78,4 +78,9 @@ class K29Controller extends GetxController {
   void goK62Screen() {
     Get.toNamed(AppRoutes.k62Screen);
   }
+
+  void queryDb() async {
+    var data = await gc.combinedDataService.getByUser("temp_user1");
+    print("query database -> $data");
+  }
 }
