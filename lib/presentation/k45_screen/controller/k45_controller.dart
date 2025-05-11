@@ -1,3 +1,4 @@
+import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/two4_dialog/controller/two4_controller.dart';
 import 'package:pulsedevice/presentation/two4_dialog/two4_dialog.dart';
@@ -11,14 +12,14 @@ import '../models/k45_model.dart';
 /// current k45ModelObj
 class K45Controller extends GetxController {
   Rx<K45Model> k45ModelObj = K45Model().obs;
+  final device = Get.arguments as DeviceProfile;
   var power = ''.obs;
   var deviceId = ''.obs;
-  late String createdAt = '';
+  var createdAt = ''.obs;
   @override
   void onInit() {
     super.onInit();
     getBlueToothDeviceInfo();
-    createdAt = Get.arguments['createdAt'] ?? '';
   }
 
   Future<void> getBlueToothDeviceInfo() async {
@@ -26,7 +27,8 @@ class K45Controller extends GetxController {
         await YcProductPlugin().queryDeviceBasicInfo();
     if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
       power.value = "${deviceBasicInfo.data.batteryPower} %";
-      deviceId.value = '${deviceBasicInfo.data.deviceID}';
+      deviceId.value = '${device.macAddress}';
+      createdAt.value = '${device.createdAt}';
     }
   }
 

@@ -48,15 +48,16 @@ class CombinedDataService extends BaseDbService {
       table: db.combinedData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
-
+    print("最後一次同步的 timestamp:$lastTs");
     // 2. 過濾並排序
     final newItems = sdkData
         .where((e) => e.startTimeStamp > (lastTs ?? 0))
         .toList()
       ..sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
-
+    print("需要同步的數據:$newItems");
     if (newItems.isEmpty) return;
 
     // 3. 轉成 Companion

@@ -46,11 +46,18 @@ class StepDataService extends BaseDbService {
     required String userId,
     required List<StepDataInfo> sdkData,
   }) async {
+    print('查詢 userId: $userId');
+    final all = await db.select(db.stepData).get();
+    print('目前 stepData 有 ${all.length} 筆：');
+    for (var r in all) {
+      print(r.toJson());
+    }
     // 1. 拿最後一次同步的 timestamp
     final lastTs = await getLastTimestamp<StepData, StepDataData>(
       table: db.stepData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
 
@@ -61,6 +68,8 @@ class StepDataService extends BaseDbService {
       ..sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
 
     if (newItems.isEmpty) return;
+
+    print("需要同步的數據比數 StepData:${newItems.length}");
 
     // 3. 轉成 Companion
     final companions = newItems.map((e) => e.toCompanion(userId)).toList();

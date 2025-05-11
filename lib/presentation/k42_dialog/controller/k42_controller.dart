@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/utils/device_storage.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -14,7 +16,7 @@ import '../models/k42_model.dart';
 /// current k42ModelObj
 class K42Controller extends GetxController {
   Rx<K42Model> k42ModelObj = K42Model().obs;
-
+  final gc = Get.find<GlobalController>();
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
       LoadingHelper.show();
@@ -23,7 +25,7 @@ class K42Controller extends GetxController {
       if (result == true) {
         SnackbarHelper.showBlueSnackbar(
             title: '連線成功', message: '已連線到 ${device.name}');
-        DeviceStorage.saveDevice(device);
+        UserProfileStorage.saveDeviceForCurrentUser(gc.userId.value, device);
         go29Screen();
       } else {
         SnackbarHelper.showErrorSnackbar(

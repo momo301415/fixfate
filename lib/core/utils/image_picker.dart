@@ -4,10 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 
 class ImagePickerHelper {
   static final ImagePicker _picker = ImagePicker();
+  final gc = Get.find<GlobalController>();
 
   /// ✅ 開啟相機（自動檢查權限）
   static Future<File?> pickFromCamera() async {
@@ -75,18 +77,18 @@ class ImagePickerHelper {
     final savedImage = await imageFile.copy(profileImagePath);
 
     final box = await Hive.openBox<UserProfile>('user_profile');
-    final user = box.get('me') ?? UserProfile();
+    final user = box.get(gc.userId.value) ?? UserProfile();
     user.avatar = savedImage.path;
 
-    await box.put('me', user);
+    await box.put(gc.userId.value, user);
   }
 
   /// 儲存圖片-以路徑
   Future<void> saveProfileImagePath(String imagePath) async {
     final box = await Hive.openBox<UserProfile>('user_profile');
-    final user = box.get('me') ?? UserProfile();
+    final user = box.get(gc.userId.value) ?? UserProfile();
     user.avatar = imagePath;
 
-    await box.put('me', user);
+    await box.put(gc.userId.value, user);
   }
 }

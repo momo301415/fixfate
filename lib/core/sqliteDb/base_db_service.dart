@@ -10,6 +10,7 @@ abstract class BaseDbService {
     required Column<String> Function(TABLE tbl) userIdField,
     required String userId,
     required Column<int> Function(TABLE tbl) timestampField,
+    required int Function(DATA row) getTimestamp, // ✅ 用這個來安全取值
   }) async {
     final query = db.select(table)
       ..where((tbl) => userIdField(tbl).equals(userId))
@@ -17,12 +18,7 @@ abstract class BaseDbService {
       ..limit(1);
 
     final row = await query.getSingleOrNull();
-    if (row == null) return null;
-
-    // 用 toJson 拿回 map，再用欄位名稱讀值
-    final columnName = timestampField(table as TABLE).name;
-    final json = (row as DataClass).toJson();
-    return json[columnName] as int?;
+    return row != null ? getTimestamp(row) : null;
   }
 
   /// 泛用批次插入（Insertable<DATA> 就是你的 Companion）

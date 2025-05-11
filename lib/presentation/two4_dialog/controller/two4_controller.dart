@@ -14,7 +14,6 @@ class Two4Controller extends GetxController {
 
   Future<void> blueToolDisconnect() async {
     await YcProductPlugin().disconnectDevice();
-    DeviceStorage.clearDevice();
     SnackbarHelper.showBlueSnackbar(
         title: 'snackbar_title'.tr,
         message: 'snackbar_bluetooth_disconnect'.tr);

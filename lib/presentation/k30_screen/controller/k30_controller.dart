@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
@@ -36,6 +37,7 @@ import '../models/k30_model.dart';
 /// current k30ModelObj
 class K30Controller extends GetxController {
   Rx<K30Model> k30ModelObj = K30Model().obs;
+  final gc = Get.find<GlobalController>();
   var avatarPath = "".obs;
   var nickName = "".obs;
   var email = "".obs;
@@ -249,7 +251,7 @@ class K30Controller extends GetxController {
     bool res = false;
     try {
       final box = await Hive.openBox<UserProfile>('user_profile');
-      final user = box.get('me') ?? UserProfile();
+      final user = box.get(gc.userId.value) ?? UserProfile();
       user.avatar = avatarPath.value;
       user.nickname = nickName.value;
       user.email = email.value;
@@ -263,7 +265,7 @@ class K30Controller extends GetxController {
       user.familyDiseases = familyDiseases.toList().cast<String>();
       user.drugAllergies = drugAllergies.toList().cast<String>();
       user.personalHabits = personalHabits.toList().cast<String>();
-      await UserProfileStorage.saveUserProfile('me', user);
+      await UserProfileStorage.saveUserProfile(gc.userId.value, user);
       res = true;
     } catch (e) {
       res = false;
@@ -273,7 +275,7 @@ class K30Controller extends GetxController {
 
   Future<void> loadUserProfile() async {
     final box = await Hive.openBox<UserProfile>('user_profile');
-    final user = box.get('me');
+    final user = box.get(gc.userId.value);
     if (user != null) {
       var list = k30ModelObj.value.listItemList.value;
       avatarPath.value = user.avatar ?? '';
@@ -290,16 +292,16 @@ class K30Controller extends GetxController {
       weight.value = user.weight ?? 65;
       list[5].tf1?.value = user.weight.toString();
       waistline.value = user.waist ?? 100;
-      personalHabits.assignAll(user.personalHabits);
+      personalHabits.assignAll(user.personalHabits ?? []);
 
-      dietHabits.assignAll(user.dietHabits);
-      pastDiseases.assignAll(user.pastDiseases);
-      familyDiseases.assignAll(user.familyDiseases);
-      drugAllergies.assignAll(user.drugAllergies);
+      dietHabits.assignAll(user.dietHabits ?? []);
+      pastDiseases.assignAll(user.pastDiseases ?? []);
+      familyDiseases.assignAll(user.familyDiseases ?? []);
+      drugAllergies.assignAll(user.drugAllergies ?? []);
       // Chip 還原
       restoreSelectedChipByText<ChipviewItemModel>(
         k30ModelObj.value.chipviewItemList,
-        user.personalHabits,
+        user.personalHabits!,
         (m) => m.five?.value ?? '',
         (m) => m.isSelected!,
         (text) => ChipviewItemModel(five: text.obs, isSelected: true.obs),
@@ -307,7 +309,7 @@ class K30Controller extends GetxController {
 
       restoreSelectedChipByText<ChipviewOneItemModel>(
         k30ModelObj.value.chipviewOneItemList,
-        user.dietHabits,
+        user.dietHabits!,
         (m) => m.one?.value ?? '',
         (m) => m.isSelected!,
         (text) => ChipviewOneItemModel(one: text.obs, isSelected: true.obs),
@@ -315,7 +317,7 @@ class K30Controller extends GetxController {
 
       restoreSelectedChipByText<ChipviewTwoItemModel>(
         k30ModelObj.value.chipviewTwoItemList,
-        user.pastDiseases,
+        user.pastDiseases!,
         (m) => m.two?.value ?? '',
         (m) => m.isSelected!,
         (text) => ChipviewTwoItemModel(two: text.obs, isSelected: true.obs),
@@ -323,7 +325,7 @@ class K30Controller extends GetxController {
 
       restoreSelectedChipByText<ChipviewThreeItemModel>(
         k30ModelObj.value.chipviewThreeItemList,
-        user.familyDiseases,
+        user.familyDiseases!,
         (m) => m.three?.value ?? '',
         (m) => m.isSelected!,
         (text) => ChipviewThreeItemModel(three: text.obs, isSelected: true.obs),
@@ -331,7 +333,7 @@ class K30Controller extends GetxController {
 
       restoreSelectedChipByText<ChipviewFourItemModel>(
         k30ModelObj.value.chipviewFourItemList,
-        user.drugAllergies,
+        user.drugAllergies!,
         (m) => m.four?.value ?? '',
         (m) => m.isSelected!,
         (text) => ChipviewFourItemModel(four: text.obs, isSelected: true.obs),

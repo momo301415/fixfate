@@ -41,7 +41,9 @@ class K57Screen extends GetWidget<K57Controller> {
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goK58Screen();
+              },
               child: Container(
                 padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
                 decoration: AppDecoration.outlineGray,
@@ -71,7 +73,9 @@ class K57Screen extends GetWidget<K57Controller> {
                 ),
               )),
           GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goTwo5Screen();
+              },
               child: Container(
                 padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
                 decoration: AppDecoration.outlineGray,
@@ -102,7 +106,9 @@ class K57Screen extends GetWidget<K57Controller> {
               )),
           SizedBox(height: 24.h),
           GestureDetector(
-              onTap: () {},
+              onTap: () {
+                controller.goK61Screen();
+              },
               child: Container(
                 width: double.maxFinite,
                 margin: EdgeInsets.symmetric(horizontal: 24.h),

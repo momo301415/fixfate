@@ -206,6 +206,10 @@ class One2Screen extends GetWidget<One2Controller> {
               : null,
           onPressed: () {
             if (!_formKey.currentState!.validate()) {
+              PrefUtils().setUserId(controller.oneController.text);
+              PrefUtils().setPassword(controller.tfController.text);
+              controller.gc.userId.value = controller.oneController.text;
+
               controller.goK29Page();
             } else {}
           },

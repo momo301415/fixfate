@@ -100,17 +100,19 @@ class K45Screen extends GetWidget<K45Controller> {
                       );
                     }),
                     Divider(),
-                    ListTile(
-                      leading: Text(
-                        'msg_update_time'.tr,
-                        style: CustomTextStyles.bodyMedium13,
-                      ),
-                      trailing: Text(
-                        controller.createdAt,
-                        style: CustomTextStyles.bodyMedium13,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 1),
-                    )
+                    Obx(() {
+                      return ListTile(
+                        leading: Text(
+                          'msg_update_time'.tr,
+                          style: CustomTextStyles.bodyMedium13,
+                        ),
+                        trailing: Text(
+                          controller.createdAt.value,
+                          style: CustomTextStyles.bodyMedium13,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 1),
+                      );
+                    }),
                   ],
                 )),
           )

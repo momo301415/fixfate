@@ -12,9 +12,9 @@ class Three2Controller extends GetxController {
   Rx<Three2Model> three2ModelObj = Three2Model().obs;
   final gc = Get.find<GlobalController>();
   Future<void> deleteAccount() async {
-    var isAccountExist = await UserProfileStorage.exists("me");
+    var isAccountExist = await UserProfileStorage.exists(gc.userId.value);
     if (isAccountExist) {
-      await UserProfileStorage.deleteUserProfile("me");
+      await UserProfileStorage.deleteUserProfile(gc.userId.value);
       gc.userEmail.value = "";
       Get.back(result: 'refresh');
       SnackbarHelper.showBlueSnackbar(message: "snackbar_account_delete".tr);

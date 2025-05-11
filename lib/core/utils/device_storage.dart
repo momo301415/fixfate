@@ -1,56 +1,49 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'package:pulsedevice/core/app_export.dart';
+import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';
 
 class DeviceStorage {
-  static const _deviceKey = 'saved_bluetooth_device';
+  static const _deviceBoxName = 'device_box';
+  static final _box = Hive.box<DeviceProfile>(_deviceBoxName);
 
-  /// 儲存設備到 SharedPreferences
-  static Future<void> saveDevice(BluetoothDevice device) async {
-    final prefs = await SharedPreferences.getInstance();
-    Map<String, dynamic> deviceMap = {
-      "macAddress": device.macAddress,
-      "deviceIdentifier": device.deviceIdentifier,
-      "name": device.name,
-      "rssiValue": device.rssiValue,
-      "firmwareVersion": device.firmwareVersion,
-      "deviceSize": device.deviceSize,
-      "deviceColor": device.deviceColor,
-      "imageIndex": device.imageIndex,
-      "deviceModel": device.deviceModel ?? "",
-      "createdAt": DateTime.now().format(pattern: 'yyyy/mm/dd HH:mm')
-      // 注意：deviceFeature 和 mcuPlatform 如果有需要可以額外補充
-    };
-    String jsonString = jsonEncode(deviceMap);
-    await prefs.setString(_deviceKey, jsonString);
+  /// 儲存設備到 Hive
+  static Future<void> saveDevice(String userId, BluetoothDevice device) async {
+    final profile = DeviceProfile(
+      macAddress: device.macAddress,
+      deviceIdentifier: device.deviceIdentifier,
+      name: device.name,
+      rssiValue: device.rssiValue,
+      firmwareVersion: device.firmwareVersion,
+      deviceSize: device.deviceSize,
+      deviceColor: device.deviceColor,
+      imageIndex: device.imageIndex,
+      deviceModel: device.deviceModel ?? "",
+      createdAt: DateTime.now().format(pattern: 'yyyy/MM/dd HH:mm'),
+      ownerUserId: userId,
+    );
+
+    await _box.put(device.macAddress, profile);
   }
 
   /// 讀取設備資料
-  static Future<BluetoothDevice?> loadDevice() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_deviceKey);
-    if (jsonString == null) {
-      return null;
-    }
-    final Map<String, dynamic> deviceMap = jsonDecode(jsonString);
-    return BluetoothDevice.formJson(deviceMap);
+  static Future<DeviceProfile?> loadDevice(String macAddress) async {
+    return _box.get(macAddress);
   }
 
-  /// 讀取設備資料
-  static Future<Map<String, dynamic>> loadDeviceData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_deviceKey);
-    if (jsonString == null) {
-      return {};
-    }
-    final Map<String, dynamic> deviceMap = jsonDecode(jsonString);
-    return deviceMap;
+  /// 取得所有已儲存的設備
+  static Future<List<DeviceProfile>> loadAllDevices() async {
+    return _box.values.toList();
   }
 
-  /// 清除儲存的設備
-  static Future<void> clearDevice() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_deviceKey);
+  /// 刪除單一設備
+  static Future<void> deleteDevice(String macAddress) async {
+    await _box.delete(macAddress);
+  }
+
+  /// 清除所有設備資料
+  static Future<void> clearAllDevices() async {
+    await _box.clear();
   }
 }

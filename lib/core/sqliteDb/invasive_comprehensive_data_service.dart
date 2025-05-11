@@ -49,9 +49,9 @@ class InvasiveComprehensiveDataService extends BaseDbService {
       table: db.invasiveComprehensiveData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
-
     // 2. 過濾並排序
     final newItems = sdkData
         .where((e) => e.startTimeStamp > (lastTs ?? 0))

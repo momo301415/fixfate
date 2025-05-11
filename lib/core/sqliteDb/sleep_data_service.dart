@@ -67,16 +67,17 @@ class SleepDataService extends BaseDbService {
     required List<SleepDataInfo> sdkData,
   }) async {
     // 1️⃣ 拿到本機最後一筆 SleepData 的 startTimeStamp
-    final lastSessionTs = await getLastTimestamp<SleepData, SleepDataData>(
+    final lastTs = await getLastTimestamp<SleepData, SleepDataData>(
       table: db.sleepData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
 
     // 2️⃣ 過濾出新的 Session，並升冪排序
     final newSessions = sdkData
-        .where((s) => s.startTimeStamp > (lastSessionTs ?? 0))
+        .where((s) => s.startTimeStamp > (lastTs ?? 0))
         .toList()
       ..sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
 

@@ -1,5 +1,7 @@
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
+import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
 
 import '../core/app_export.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
@@ -255,6 +257,8 @@ class AppRoutes {
 
   static const String initialRoute = '/initialRoute';
 
+  static const String rulePickerTestScreen = '/rulePickerTestScreen';
+
   static List<GetPage> pages = [
     /// 隱私權頁
     GetPage(
@@ -433,6 +437,8 @@ class AppRoutes {
       page: () => K57Screen(),
       bindings: [K57Binding()],
     ),
+
+    /// 心率測量告警設定頁面
     GetPage(
       name: k58Screen,
       page: () => K58Screen(),
@@ -443,11 +449,15 @@ class AppRoutes {
       page: () => One8Screen(),
       bindings: [One8Binding()],
     ),
+
+    /// 血氧測量告警設定頁面
     GetPage(
       name: two5Screen,
       page: () => Two5Screen(),
       bindings: [Two5Binding()],
     ),
+
+    /// 體溫測量告警頁面
     GetPage(
       name: k61Screen,
       page: () => K61Screen(),
@@ -569,6 +579,11 @@ class AppRoutes {
       name: k86Screen,
       page: () => K86Screen(),
       bindings: [K86Binding()],
+    ),
+    GetPage(
+      name: rulePickerTestScreen,
+      page: () => RulerPickerTestScreen(),
+      bindings: [RulerPikerTestBinding()],
     ),
 
     /// 所有畫面導航

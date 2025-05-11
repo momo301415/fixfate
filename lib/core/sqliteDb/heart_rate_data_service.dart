@@ -53,6 +53,7 @@ class HeartRateDataService extends BaseDbService {
       table: db.heartRateData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
 

@@ -56,7 +56,7 @@ class K40Screen extends GetWidget<K40Controller> {
                       .k40ModelObj.value.listpulseringItemList.value[index];
                   return GestureDetector(
                       onTap: () {
-                        controller.goK45Screen();
+                        controller.goK45Screen(controller.selectDevice[index]);
                       },
                       child: ListpulseringItemWidget(item));
                 },

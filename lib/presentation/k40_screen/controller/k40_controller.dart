@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pulsedevice/core/utils/device_storage.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
 import 'package:pulsedevice/presentation/ios_dialog/ios_dialog.dart';
@@ -18,21 +19,29 @@ import '../models/k40_model.dart';
 /// current k40ModelObj
 class K40Controller extends GetxController {
   Rx<K40Model> k40ModelObj = K40Model().obs;
-  var createdAt = "".obs;
+  final gc = Get.find<GlobalController>();
+  var selectDevice = [].obs;
 
   @override
   void onInit() {
     super.onInit();
-    DeviceStorage.loadDeviceData().then((device) {
-      if (device.isNotEmpty) {
-        final item = ListpulseringItemModel(
-          pulsering: Rx("lbl_pulsering3".tr),
-          id: Rx(device["deviceIdentifier"] ?? "未知ID"),
-          tf: Rx(device["createdAt"] ?? "未知時間"),
-          pulsering1: Rx(ImageConstant.imgFrame86618),
-        );
-        k40ModelObj.value.listpulseringItemList.value = [item];
-        createdAt.value = device["createdAt"] ?? "未知時間";
+    loadDevices();
+  }
+
+  void loadDevices() async {
+    UserProfileStorage.getDevicesForUser(gc.userId.value).then((devices) {
+      if (devices.isNotEmpty) {
+        for (var device in devices) {
+          final item = ListpulseringItemModel(
+            pulsering: Rx("lbl_pulsering3".tr),
+            id: Rx(device.deviceIdentifier),
+            tf: Rx(device.createdAt),
+            pulsering1: Rx(ImageConstant.imgFrame86618),
+          );
+          k40ModelObj.value.listpulseringItemList.value.add(item);
+          selectDevice.add(device);
+        }
+        k40ModelObj.value.listpulseringItemList.refresh();
       }
     });
   }
@@ -43,8 +52,8 @@ class K40Controller extends GetxController {
   }
 
   /// 路由到戒指資訊頁面
-  void goK45Screen() {
-    Get.toNamed(AppRoutes.k45Screen, arguments: {'createdAt': createdAt.value});
+  void goK45Screen(dynamic selectedObject) {
+    Get.toNamed(AppRoutes.k45Screen, arguments: selectedObject);
   }
 
   Future<void> showBlueTooth() async {

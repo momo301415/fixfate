@@ -25,18 +25,19 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       weight: fields[5] as double?,
       height: fields[6] as double?,
       waist: fields[7] as double?,
-      personalHabits: (fields[8] as List).cast<String>(),
-      dietHabits: (fields[9] as List).cast<String>(),
-      pastDiseases: (fields[10] as List).cast<String>(),
-      familyDiseases: (fields[11] as List).cast<String>(),
-      drugAllergies: (fields[12] as List).cast<String>(),
+      personalHabits: (fields[8] as List?)?.cast<String>(),
+      dietHabits: (fields[9] as List?)?.cast<String>(),
+      pastDiseases: (fields[10] as List?)?.cast<String>(),
+      familyDiseases: (fields[11] as List?)?.cast<String>(),
+      drugAllergies: (fields[12] as List?)?.cast<String>(),
+      devices: (fields[13] as List?)?.cast<DeviceProfile>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.avatar)
       ..writeByte(1)
@@ -62,7 +63,9 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(11)
       ..write(obj.familyDiseases)
       ..writeByte(12)
-      ..write(obj.drugAllergies);
+      ..write(obj.drugAllergies)
+      ..writeByte(13)
+      ..write(obj.devices);
   }
 
   @override

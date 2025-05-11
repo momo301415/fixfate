@@ -16,7 +16,7 @@ class K29Controller extends GetxController {
   void onInit() {
     super.onInit();
     print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
-    var userProfile = UserProfileStorage.getUserProfile("me");
+    var userProfile = UserProfileStorage.getUserProfile(gc.userId.value);
     if (userProfile != null) {
       gc.userEmail.value = userProfile.email ?? '';
     }
@@ -79,8 +79,23 @@ class K29Controller extends GetxController {
     Get.toNamed(AppRoutes.k62Screen);
   }
 
+  /// 路由到測量設定
+  void goK57Screen() {
+    Get.toNamed(AppRoutes.k57Screen);
+  }
+
   void queryDb() async {
-    var data = await gc.combinedDataService.getByUser("temp_user1");
-    print("query database -> $data");
+    var combined_data = await gc.combinedDataService.getByUser("temp_user1");
+    var sleep_data = await gc.sleepDataService.getSleepDataByUser("temp_user1");
+    var step_data = await gc.stepDataService.getStepDataByUser("temp_user1");
+    var heeart_rate_data =
+        await gc.heartRateDataService.getByUser("temp_user1");
+    var blood_pressure_data =
+        await gc.bloodPressureDataService.getByUser("temp_user1");
+    print("query database -> ${combined_data.length}");
+    print("query database -> ${sleep_data.length}");
+    print("query database -> ${step_data.length}");
+    print("query database -> ${heeart_rate_data.length}");
+    print("query database -> ${blood_pressure_data.length}");
   }
 }

@@ -54,6 +54,7 @@ class BloodPressureDataService extends BaseDbService {
       table: db.bloodPressureData,
       userIdField: (t) => t.userId,
       userId: userId,
+      getTimestamp: (row) => row.startTimeStamp,
       timestampField: (t) => t.startTimeStamp,
     );
 

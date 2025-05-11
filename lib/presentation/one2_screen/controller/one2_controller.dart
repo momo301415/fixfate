@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import '../../../core/app_export.dart';
 import '../models/one2_model.dart';
 
@@ -8,18 +9,29 @@ import '../models/one2_model.dart';
 /// current one2ModelObj
 class One2Controller extends GetxController {
   TextEditingController oneController = TextEditingController();
-
   TextEditingController tfController = TextEditingController();
+  final gc = Get.find<GlobalController>();
 
   Rx<One2Model> one2ModelObj = One2Model().obs;
 
   var isValid = false.obs;
 
   @override
+  void onInit() {
+    super.onInit();
+    initData();
+  }
+
+  @override
   void onClose() {
     super.onClose();
     oneController.dispose();
     tfController.dispose();
+  }
+
+  void initData() async {
+    oneController.text = await PrefUtils().getUserId();
+    tfController.text = await PrefUtils().getPassword();
   }
 
   /// 路由到忘記密碼頁

@@ -7,4 +7,19 @@ import '../models/k57_model.dart';
 /// current k57ModelObj
 class K57Controller extends GetxController {
   Rx<K57Model> k57ModelObj = K57Model().obs;
+
+  /// 路由到心率測量設定
+  void goK58Screen() {
+    Get.toNamed(AppRoutes.k58Screen);
+  }
+
+  /// 路由到體溫測量設定
+  void goK61Screen() {
+    Get.toNamed(AppRoutes.k61Screen);
+  }
+
+  /// 路由到血氧測量設定
+  void goTwo5Screen() {
+    Get.toNamed(AppRoutes.two5Screen);
+  }
 }

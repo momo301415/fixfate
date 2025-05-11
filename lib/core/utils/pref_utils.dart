@@ -31,4 +31,30 @@ class PrefUtils {
       return 'primary';
     }
   }
+
+  /// set user id
+  Future<void> setUserId(String userId) {
+    return _sharedPreferences!.setString('currentUserId', userId);
+  }
+
+  /// set user password
+  Future<void> setPassword(String password) {
+    return _sharedPreferences!.setString('currentPassword', password);
+  }
+
+  String getUserId() {
+    try {
+      return _sharedPreferences!.getString('currentUserId')!;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String getPassword() {
+    try {
+      return _sharedPreferences!.getString('currentPassword')!;
+    } catch (e) {
+      return '';
+    }
+  }
 }

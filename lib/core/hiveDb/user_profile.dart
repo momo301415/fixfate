@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 
 part 'user_profile.g.dart';
 
@@ -29,19 +30,22 @@ class UserProfile extends HiveObject {
   double? waist;
 
   @HiveField(8)
-  List<String> personalHabits;
+  List<String>? personalHabits;
 
   @HiveField(9)
-  List<String> dietHabits;
+  List<String>? dietHabits;
 
   @HiveField(10)
-  List<String> pastDiseases;
+  List<String>? pastDiseases;
 
   @HiveField(11)
-  List<String> familyDiseases;
+  List<String>? familyDiseases;
 
   @HiveField(12)
-  List<String> drugAllergies;
+  List<String>? drugAllergies;
+
+  @HiveField(13)
+  List<DeviceProfile>? devices;
 
   UserProfile({
     this.avatar,
@@ -57,5 +61,6 @@ class UserProfile extends HiveObject {
     this.pastDiseases = const [],
     this.familyDiseases = const [],
     this.drugAllergies = const [],
+    this.devices = const [],
   });
 }

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile_storage.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -13,6 +14,7 @@ import '../models/k62_model.dart';
 /// current k62ModelObj
 class K62Controller extends GetxController {
   Rx<K62Model> k62ModelObj = K62Model().obs;
+  final gc = Get.find<GlobalController>();
   var steps = 10000.0.obs;
   var sleepHours = 8.0.obs;
   var calories = 2500.0.obs;
@@ -64,7 +66,7 @@ class K62Controller extends GetxController {
 
   Future<void> saveGoalProfile() async {
     final box = await Hive.openBox<GoalProfile>('goal_profile');
-    final user = box.get('me') ?? GoalProfile();
+    final user = box.get(gc.userId.value) ?? GoalProfile();
     var a = k62ModelObj.value.listItemList.value[0];
     var b = k62ModelObj.value.listItemList.value[1];
     var c = k62ModelObj.value.listItemList.value[2];
@@ -73,13 +75,13 @@ class K62Controller extends GetxController {
     user.sleepHours = b.value.toDouble();
     user.calories = c.value.toInt();
     user.distance = d.value.toInt();
-    await GoalProfileStorage.saveUserProfile('me', user);
+    await GoalProfileStorage.saveUserProfile(gc.userId.value, user);
     Get.back();
     SnackbarHelper.showBlueSnackbar(message: "目標設定成功".tr);
   }
 
   Future<void> loadGoalProfile() async {
-    var user = await GoalProfileStorage.getUserProfile('me');
+    var user = await GoalProfileStorage.getUserProfile(gc.userId.value);
     if (user != null) {
       steps = user.steps!.toDouble().obs;
       sleepHours = user.sleepHours!.toDouble().obs;
