@@ -10,6 +10,7 @@ class ListItemModel {
   double max;
   double division; // ← 每格的間距
   String unit;
+  RxBool isEnable;
 
   ListItemModel({
     required this.label,
@@ -18,5 +19,6 @@ class ListItemModel {
     required this.max,
     required this.division,
     required this.unit,
+    required this.isEnable,
   });
 }

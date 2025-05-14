@@ -19,6 +19,10 @@ class K62Controller extends GetxController {
   var sleepHours = 8.0.obs;
   var calories = 2500.0.obs;
   var distance = 6000.0.obs;
+  var isEnableSteps = false.obs;
+  var isEnablesleepHours = false.obs;
+  var isEnablecalories = false.obs;
+  var isEnabledistance = false.obs;
 
   @override
   void onInit() {
@@ -36,6 +40,7 @@ class K62Controller extends GetxController {
         max: 30000,
         division: 1000,
         unit: "lbl187".tr,
+        isEnable: isEnableSteps,
       ),
       ListItemModel(
         label: "lbl188".tr,
@@ -44,6 +49,7 @@ class K62Controller extends GetxController {
         max: 12.0,
         division: 0.5,
         unit: "lbl189".tr,
+        isEnable: isEnablesleepHours,
       ),
       ListItemModel(
         label: "lbl190".tr,
@@ -52,6 +58,7 @@ class K62Controller extends GetxController {
         max: 4000,
         division: 100,
         unit: "lbl191".tr,
+        isEnable: isEnablecalories,
       ),
       ListItemModel(
         label: "lbl192".tr,
@@ -60,6 +67,7 @@ class K62Controller extends GetxController {
         max: 8000,
         division: 500,
         unit: "lbl193".tr,
+        isEnable: isEnabledistance,
       ),
     ];
   }
@@ -75,6 +83,23 @@ class K62Controller extends GetxController {
     user.sleepHours = b.value.toDouble();
     user.calories = c.value.toInt();
     user.distance = d.value.toInt();
+    for (int i = 0; i < k62ModelObj.value.listItemList.value.length; i++) {
+      var dic = k62ModelObj.value.listItemList.value[i];
+      switch (i) {
+        case 0:
+          user.isEnableSteps = dic.isEnable.value;
+          break;
+        case 1:
+          user.isEnablesleepHours = dic.isEnable.value;
+          break;
+        case 2:
+          user.isEnablecalories = dic.isEnable.value;
+          break;
+        case 3:
+          user.isEnabledistance = dic.isEnable.value;
+          break;
+      }
+    }
     await GoalProfileStorage.saveUserProfile(gc.userId.value, user);
     Get.back();
     SnackbarHelper.showBlueSnackbar(message: "目標設定成功".tr);
@@ -87,6 +112,10 @@ class K62Controller extends GetxController {
       sleepHours = user.sleepHours!.toDouble().obs;
       calories = user.calories!.toDouble().obs;
       distance = user.distance!.toDouble().obs;
+      isEnableSteps = user.isEnableSteps!.obs;
+      isEnablesleepHours = user.isEnablesleepHours!.obs;
+      isEnablecalories = user.isEnablecalories!.obs;
+      isEnabledistance = user.isEnabledistance!.obs;
     }
   }
 }

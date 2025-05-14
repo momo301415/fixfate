@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
@@ -119,12 +118,23 @@ class FourScreen extends GetWidget<FourController> {
               ),
             ),
           ),
-          Obx(
-            () => Text(
-              "${controller.countdown}" + "lbl_60s".tr,
-              style: CustomTextStyles.bodyMediumGray500,
-            ),
-          ),
+          Obx(() {
+            if (controller.countdown != 0) {
+              return Text(
+                "${controller.countdown}" + "lbl_60s".tr,
+                style: CustomTextStyles.bodyMediumGray500,
+              );
+            } else {
+              return GestureDetector(
+                  onTap: () {
+                    controller.fetchSms(controller.phone);
+                  },
+                  child: Text(
+                    "lbl_60s_get".tr,
+                    style: CustomTextStyles.bodyMediumPrimary,
+                  ));
+            }
+          }),
           SizedBox(
             width: double.maxFinite,
             child: Row(
@@ -169,17 +179,21 @@ class FourScreen extends GetWidget<FourController> {
               ],
             ),
           ),
-          CustomElevatedButton(
-            height: 58.h,
-            text: "lbl27".tr,
-            buttonStyle: CustomButtonStyles.none,
-            decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
-            onPressed: () {
-              if (!controller.isReadPrivacyPolicy.value) {
-                DialogHelper.showError("lbl28".tr);
-              }
-            },
-          )
+          Obx(() => CustomElevatedButton(
+                height: 58.h,
+                text: "lbl27".tr,
+                buttonStyle: controller.isReadPrivacyPolicy.value
+                    ? CustomButtonStyles.none
+                    : CustomButtonStyles.fillTeal,
+                decoration: controller.isReadPrivacyPolicy.value
+                    ? CustomButtonStyles.gradientCyanToPrimaryDecoration
+                    : null,
+                onPressed: () {
+                  if (controller.isReadPrivacyPolicy.value) {
+                    controller.pressFetchRegist();
+                  }
+                },
+              ))
         ],
       ),
     );

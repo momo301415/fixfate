@@ -37,6 +37,7 @@ dependencies:
   drift: ^2.26.1 # SQLite資料庫封裝
   drift_sqflite: ^2.0.1 # SQLite資料庫封裝
   syncfusion_flutter_gauges: ^29.1.41 # 專業圖表繪畫
+  dio: ^5.8.0+1 # 網路請求
   
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:

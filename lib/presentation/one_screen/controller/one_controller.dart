@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/app_export.dart';
 import '../models/one_model.dart';
 
@@ -27,7 +28,10 @@ class OneController extends GetxController {
 
   /// 路由到sms
   void goFourScreen() {
-    Get.toNamed(AppRoutes.fourScreen);
+    Get.toNamed(AppRoutes.fourScreen, arguments: {
+      'phone': oneController.text,
+      'password': tfController.text
+    });
   }
 
   void goAll() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_switch.dart';
 import '../../../core/app_export.dart';
 import '../models/list_item_model.dart';
 
@@ -52,6 +53,31 @@ class ListItemWidget extends StatelessWidget {
                       model.value.value = _roundToStep(v, model.division),
                 ),
               )),
+          SizedBox(height: 24.h),
+
+          // 達成通知區塊
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("達成通知", style: CustomTextStyles.bodyLarge16),
+                  SizedBox(height: 4.h),
+                  Text("根據目標達成狀況，推送系統通知。",
+                      style: CustomTextStyles.bodySmallGray50001),
+                ],
+              ),
+              Obx(
+                () => CustomSwitch(
+                  value: model.isEnable.value,
+                  onChange: (value) {
+                    model.isEnable.value = value;
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -13,6 +13,8 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin get flutterLocalNotificationsPlugin =>
+      _flutterLocalNotificationsPlugin;
 
   Future<void> initialize() async {
     // 初始化時區
@@ -165,5 +167,24 @@ class NotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     return scheduledDate;
+  }
+
+  Future<void> showTestNotification() async {
+    await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
+    await _flutterLocalNotificationsPlugin.show(
+      9999,
+      '測試通知',
+      '這是一則本地通知測試訊息',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'test_channel',
+          '測試頻道',
+          channelDescription: '這是測試通知頻道',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
   }
 }

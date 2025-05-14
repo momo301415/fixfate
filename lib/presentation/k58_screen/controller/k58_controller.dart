@@ -14,7 +14,7 @@ class K58Controller extends GetxController {
   Rx<K58Model> k58ModelObj = K58Model().obs;
   final gc = Get.find<GlobalController>();
 
-  final isSelectedSwitch = true.obs;
+  final isSelectedSwitch = false.obs;
   // 心率過高／過低門檻
   var highThreshold = 80.0.obs;
   var lowThreshold = 70.0.obs;

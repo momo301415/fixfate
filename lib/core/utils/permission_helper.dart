@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 
@@ -19,8 +20,29 @@ class PermissionHelper {
 
   ///  通知權限（Android 13+ / iOS）
   static Future<bool> checkNotificationPermission() async {
-    final status = await Permission.notification.request();
-    return status.isGranted;
+    bool isGranted = true;
+
+    if (Platform.isIOS) {
+      // iOS 額外請求通知權限
+      final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      final iosPlugin =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
+
+      final result = await iosPlugin?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      isGranted = result ?? false;
+    } else {
+      // Android 13+ 需要 request notification 權限
+      final status = await Permission.notification.request();
+      isGranted = status.isGranted;
+    }
+
+    return isGranted;
   }
 
   ///  聯絡人權限

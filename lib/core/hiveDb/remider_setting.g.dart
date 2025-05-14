@@ -1,38 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'blood_oxygen_setting.dart';
+part of 'remider_setting.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class BloodOxygenSettingAdapter extends TypeAdapter<BloodOxygenSetting> {
+class RemiderSettingAdapter extends TypeAdapter<RemiderSetting> {
   @override
-  final int typeId = 4;
+  final int typeId = 6;
 
   @override
-  BloodOxygenSetting read(BinaryReader reader) {
+  RemiderSetting read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return BloodOxygenSetting(
+    return RemiderSetting(
       alertEnabled: fields[0] as bool,
-      lowThreshold: fields[1] as int,
-      lastProcessedTimestamp: fields[2] as int?,
+      frequency: fields[1] as String,
+      timing: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, BloodOxygenSetting obj) {
+  void write(BinaryWriter writer, RemiderSetting obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
       ..write(obj.alertEnabled)
       ..writeByte(1)
-      ..write(obj.lowThreshold)
+      ..write(obj.frequency)
       ..writeByte(2)
-      ..write(obj.lastProcessedTimestamp);
+      ..write(obj.timing);
   }
 
   @override
@@ -41,7 +41,7 @@ class BloodOxygenSettingAdapter extends TypeAdapter<BloodOxygenSetting> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is BloodOxygenSettingAdapter &&
+      other is RemiderSettingAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

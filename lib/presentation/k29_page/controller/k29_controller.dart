@@ -85,17 +85,35 @@ class K29Controller extends GetxController {
   }
 
   void queryDb() async {
-    var combined_data = await gc.combinedDataService.getByUser("temp_user1");
-    var sleep_data = await gc.sleepDataService.getSleepDataByUser("temp_user1");
-    var step_data = await gc.stepDataService.getStepDataByUser("temp_user1");
-    var heeart_rate_data =
-        await gc.heartRateDataService.getByUser("temp_user1");
-    var blood_pressure_data =
-        await gc.bloodPressureDataService.getByUser("temp_user1");
-    print("query database -> ${combined_data.length}");
-    print("query database -> ${sleep_data.length}");
-    print("query database -> ${step_data.length}");
-    print("query database -> ${heeart_rate_data.length}");
-    print("query database -> ${blood_pressure_data.length}");
+    var id = await gc.userId.value;
+    var combined_data = await gc.combinedDataService.getByUser(id);
+    var sleep_data = await gc.sleepDataService.getSleepDataByUser(id);
+    var sleep_detail_data =
+        await gc.sleepDataService.getSleepDataWithDetails(id);
+    var step_data = await gc.stepDataService.getStepDataByUser(id);
+    var heeart_rate_data = await gc.heartRateDataService.getByUser(id);
+    var blood_pressure_data = await gc.bloodPressureDataService.getByUser(id);
+    print("query database combined_data -> ${combined_data.length}");
+    // printLongText("query database combined_data -> ${combined_data}");
+    print("query database sleep_data -> ${sleep_data.length}");
+    // printLongText("query database sleep_data -> ${sleep_data}");
+    print("query database sleep_detail_data -> ${sleep_data.length}");
+    // printLongText("query database sleep_detail_data -> ${sleep_detail_data}");
+    print("query database step_data -> ${step_data.length}");
+    // print("query database step_data -> ${step_data}");
+    print("query database heeart_rate_data -> ${heeart_rate_data.length}");
+    // print("query database heeart_rate_data -> ${heeart_rate_data}");
+    print(
+        "query database blood_pressure_data -> ${blood_pressure_data.length}");
+    // print("query database blood_pressure_data -> ${blood_pressure_data}");
+  }
+
+  void printLongText(String text) {
+    const int chunkSize = 800;
+    for (var i = 0; i < text.length; i += chunkSize) {
+      final chunk = text.substring(
+          i, i + chunkSize > text.length ? text.length : i + chunkSize);
+      print(chunk);
+    }
   }
 }

@@ -11,9 +11,11 @@ import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 
 class HealthDataSyncService {
   final AppDatabase _db;
-
   Timer? _timer;
-  String _userId = 'temp_user1';
+  String? _userId;
+
+  String? get userId => _userId;
+  void setUserId(String id) => _userId = id;
 
   HealthDataSyncService(
     this._db,
@@ -29,6 +31,10 @@ class HealthDataSyncService {
   ]; //
 
   void start() {
+    if (_userId == null) {
+      print("尚未設定 userId，無法啟動同步");
+      return;
+    }
     _timer?.cancel();
     _timer = Timer.periodic(Duration(minutes: 5), (_) => _fetchAndStoreData());
     _fetchAndStoreData(); // 初次啟動時立即執行一次
@@ -39,6 +45,10 @@ class HealthDataSyncService {
   }
 
   Future<void> _fetchAndStoreData() async {
+    if (_userId == null) {
+      print('❌ 無 userId，取消同步');
+      return;
+    }
     try {
       for (final dataType in healthDataTypes) {
         final result = await YcProductPlugin().queryDeviceHealthData(dataType);
@@ -50,9 +60,9 @@ class HealthDataSyncService {
                 final stepService = StepDataService(_db);
                 if (list.last is StepDataInfo) {
                   final sdkList = list.cast<StepDataInfo>();
-                  print("步數數據：$sdkList");
+                  printLongText("步數數據：$sdkList");
                   await stepService.syncStepData(
-                      userId: _userId, sdkData: sdkList);
+                      userId: _userId!, sdkData: sdkList);
                   print("步數數據寫入成功");
                 }
                 break;
@@ -60,9 +70,9 @@ class HealthDataSyncService {
                 final sleepService = SleepDataService(_db);
                 if (list.last is SleepDataInfo) {
                   final sdkList = list.cast<SleepDataInfo>();
-                  print("睡眠數據：$sdkList");
+                  printLongText("睡眠數據：$sdkList");
                   await sleepService.syncSleepData(
-                      userId: _userId, sdkData: sdkList);
+                      userId: _userId!, sdkData: sdkList);
 
                   print("睡眠數據寫入成功");
                 }
@@ -72,9 +82,9 @@ class HealthDataSyncService {
                 final heartRateService = HeartRateDataService(_db);
                 if (list.last is HeartRateDataInfo) {
                   final sdkList = list.cast<HeartRateDataInfo>();
-                  print("心率數據：$sdkList");
+                  printLongText("心率數據：$sdkList");
                   await heartRateService.syncHeartRateData(
-                      userId: _userId,
+                      userId: _userId!,
                       sdkData:
                           sdkList); // await heartRateService.insertHeartRateDataIfNotExists(companion);
                   print("心率數據寫入成功");
@@ -85,9 +95,9 @@ class HealthDataSyncService {
                 final bloodPressureService = BloodPressureDataService(_db);
                 if (list.last is BloodPressureDataInfo) {
                   final sdkList = list.cast<BloodPressureDataInfo>();
-                  print("血壓數據：$sdkList");
+                  printLongText("血壓數據：$sdkList");
                   await bloodPressureService.syncBloodPressureData(
-                      userId: _userId,
+                      userId: _userId!,
                       sdkData:
                           sdkList); // await bloodPressureService.insertBloodPressureDataIfNotExists(companion);
                   print("血壓數據寫入成功");
@@ -98,9 +108,9 @@ class HealthDataSyncService {
                 final combinedDataService = CombinedDataService(_db);
                 if (list.last is CombinedDataDataInfo) {
                   final sdkList = list.cast<CombinedDataDataInfo>();
-                  print("合併數據：$sdkList");
+                  printLongText("合併數據：$sdkList");
                   await combinedDataService.syncCombinedData(
-                      userId: _userId,
+                      userId: _userId!,
                       sdkData:
                           sdkList); // await combinedDataService.insertCombinedDataIfNotExists(companion);
                   print("合併數據寫入成功");
@@ -115,7 +125,7 @@ class HealthDataSyncService {
                   print("入侵綜合數據：$sdkList");
                   await invasiveComprehensiveDataService
                       .syncInvasiveComprehensiveData(
-                          userId: _userId,
+                          userId: _userId!,
                           sdkData:
                               sdkList); // await invasiveComprehensiveDataService.insertInvasiveComprehensiveDataIfNotExists(companion);
                   print("入侵綜合數據寫入成功");
@@ -128,6 +138,15 @@ class HealthDataSyncService {
     } catch (e) {
       // 錯誤處理，例如記錄日誌
       print('資料同步錯誤: $e');
+    }
+  }
+
+  void printLongText(String text) {
+    const int chunkSize = 800;
+    for (var i = 0; i < text.length; i += chunkSize) {
+      final chunk = text.substring(
+          i, i + chunkSize > text.length ? text.length : i + chunkSize);
+      print(chunk);
     }
   }
 }

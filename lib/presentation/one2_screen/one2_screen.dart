@@ -204,13 +204,12 @@ class One2Screen extends GetWidget<One2Controller> {
           decoration: isValid
               ? CustomButtonStyles.gradientCyanToPrimaryDecoration
               : null,
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) {
-              PrefUtils().setUserId(controller.oneController.text);
-              PrefUtils().setPassword(controller.tfController.text);
-              controller.gc.userId.value = controller.oneController.text;
-
-              controller.goK29Page();
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              var res = await controller.pressFetchLogin();
+              if (res) {
+                controller.goK29Page();
+              }
             } else {}
           },
         );

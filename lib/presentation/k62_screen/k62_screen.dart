@@ -29,11 +29,7 @@ class K62Screen extends GetWidget<K62Controller> {
   /// Section Widget
   Widget _buildList() {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 16.h,
-        top: 72.h,
-        right: 16.h,
-      ),
+      padding: EdgeInsets.only(left: 16.h, top: 0.h, right: 16.h, bottom: 50.h),
       child: Obx(
         () => ListView.separated(
           padding: EdgeInsets.zero,

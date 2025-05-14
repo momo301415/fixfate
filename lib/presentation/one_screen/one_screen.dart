@@ -213,10 +213,8 @@ class OneScreen extends GetWidget<OneController> {
         decoration:
             isValid ? CustomButtonStyles.gradientCyanToPrimaryDecoration : null,
         onPressed: () {
-          if (!_formKey.currentState!.validate()) {
+          if (_formKey.currentState!.validate()) {
             controller.goFourScreen();
-          } else {
-            // controller.goAll();
           }
         },
       );

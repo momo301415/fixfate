@@ -59,8 +59,8 @@ class K61Screen extends GetWidget<K61Controller> {
             ),
             SizedBox(height: 8.h),
             RulerPicker(
-                min: 36.0,
-                max: 40.0,
+                min: -5.0,
+                max: 5.0,
                 initialValue: controller.highThreshold,
                 height: 52.v,
                 step: 0.1,
@@ -88,8 +88,8 @@ class K61Screen extends GetWidget<K61Controller> {
             ),
             SizedBox(height: 8.h),
             RulerPicker(
-              min: 31.0,
-              max: 35.0,
+              min: -5.0,
+              max: 5.0,
               initialValue: controller.lowThreshold,
               height: 52.v,
               step: 0.1,

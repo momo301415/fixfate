@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
+import 'package:pulsedevice/core/hiveDb/remider_setting_storage.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/app_export.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/loading_helper.dart';
@@ -13,6 +15,7 @@ import '../models/k48_model.dart';
 
 class K48Controller extends GetxController {
   Rx<K48Model> k48ModelObj = K48Model().obs;
+  final gc = Get.find<GlobalController>();
 
   Rx<bool> isSelectedSwitch = false.obs;
   RxString alertTime = ''.obs;
@@ -20,9 +23,7 @@ class K48Controller extends GetxController {
 
   Timer? _autoSaveTimer;
 
-  final _keySwitch = 'k48_switch';
-  final _keyAlertTime = 'k48_alert_time';
-  final _keyEatTime = 'k48_eat_time';
+  late RemiderSetting profile;
   final notificationService = NotificationService();
 
   @override
@@ -74,10 +75,12 @@ class K48Controller extends GetxController {
   Future<void> saveReminderSettings() async {
     try {
       LoadingHelper.show(message: '儲存中...');
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_keySwitch, isSelectedSwitch.value);
-      await prefs.setString(_keyAlertTime, alertTime.value);
-      await prefs.setString(_keyEatTime, eatTime.value);
+      profile = RemiderSetting(
+        frequency: alertTime.value,
+        timing: eatTime.value,
+        alertEnabled: isSelectedSwitch.value,
+      );
+      await RemiderSettingStorage.saveUserProfile(gc.userId.value, profile);
     } finally {
       LoadingHelper.hide();
     }
@@ -86,10 +89,12 @@ class K48Controller extends GetxController {
   Future<void> loadReminderSettings() async {
     try {
       LoadingHelper.show(message: '載入中...');
-      final prefs = await SharedPreferences.getInstance();
-      isSelectedSwitch.value = prefs.getBool(_keySwitch) ?? false;
-      alertTime.value = prefs.getString(_keyAlertTime) ?? '';
-      eatTime.value = prefs.getString(_keyEatTime) ?? '';
+      var profile = await RemiderSettingStorage.getUserProfile(gc.userId.value);
+      if (profile != null) {
+        isSelectedSwitch.value = profile.alertEnabled;
+        alertTime.value = profile.frequency;
+        eatTime.value = profile.timing;
+      }
     } finally {
       LoadingHelper.hide();
     }

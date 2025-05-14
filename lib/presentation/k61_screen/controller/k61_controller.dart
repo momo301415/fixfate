@@ -14,8 +14,8 @@ class K61Controller extends GetxController {
   final gc = Get.find<GlobalController>();
   final isSelectedSwitch = false.obs;
 
-  var highThreshold = 36.0.obs;
-  var lowThreshold = 33.0.obs;
+  var highThreshold = 2.0.obs;
+  var lowThreshold = 1.0.obs;
   late BodyTemperatureSetting profile;
 
   @override

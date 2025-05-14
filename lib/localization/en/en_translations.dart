@@ -343,6 +343,7 @@ final Map<String, String> en = {
   "lbl_582": "58",
   "lbl_60": "60",
   "lbl_60s": "s 重新傳送驗證碼",
+  "lbl_60s_get": "取得驗證碼",
   "lbl_62": "6",
   "lbl_6209": "6209",
   "lbl_65_kg": "65 kg",
