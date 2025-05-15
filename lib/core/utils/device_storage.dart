@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';

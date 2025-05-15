@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/presentation/k52_page2/controller/k52_controller2.dart';
-import 'package:pulsedevice/presentation/k52_page2/models/list_item_model2.dart';
 import 'package:pulsedevice/presentation/k52_page2/widgets/list_item_widget2.dart';
 import '../../core/app_export.dart';
 
@@ -27,7 +26,7 @@ class K52Page2 extends StatelessWidget {
                 children: [
                   _buildRow202508(),
                   SizedBox(height: 8.v),
-                  ListItemWidget2(ListItemModel2()),
+                  _buildList(),
                   SizedBox(height: 16.v),
                 ],
               ),
@@ -40,7 +39,7 @@ class K52Page2 extends StatelessWidget {
 
   Widget _buildRow202508() {
     return GestureDetector(
-      onTap: () => controller.selectHistoryDate(),
+      onTap: () => controller.k53c.selectHistoryDate(),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.h, vertical: 12.h),
         decoration: AppDecoration.fillGray30066.copyWith(
@@ -55,7 +54,7 @@ class K52Page2 extends StatelessWidget {
                 child: Obx(
                   () {
                     return Text(
-                      controller.pickDate.value,
+                      controller.formattedPickDate,
                       style: CustomTextStyles.bodyMediumPrimaryContainer_1,
                     );
                   },
@@ -66,6 +65,23 @@ class K52Page2 extends StatelessWidget {
               width: 18.h,
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    return Expanded(
+      child: Obx(
+        () => ListView.builder(
+          padding: EdgeInsets.zero,
+          physics: const BouncingScrollPhysics(),
+          itemCount: controller.k52ModelObj.value.listItemList.value.length,
+          itemBuilder: (context, index) {
+            final model =
+                controller.k52ModelObj.value.listItemList.value[index];
+            return ListItemWidget2(model);
+          },
         ),
       ),
     );

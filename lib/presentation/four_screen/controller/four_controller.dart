@@ -63,7 +63,6 @@ class FourController extends GetxController with CodeAutoFill {
         countdown.value--;
       } else {
         timer.cancel();
-        countdown.value = 60;
       }
     });
   }
@@ -78,7 +77,7 @@ class FourController extends GetxController with CodeAutoFill {
           'password': password,
         },
       );
-      LoadingHelper.show();
+      LoadingHelper.hide();
       if (resData.isNotEmpty) {
         var resBody = resData['data'];
         if (resBody != null) {
@@ -86,23 +85,30 @@ class FourController extends GetxController with CodeAutoFill {
             final data = resBody['body']['data'];
           }
         } else {
-          DialogHelper.showError("${resData["message"]}");
+          final resMsg = resData["message"];
+
+          if (resMsg.contains("已註冊")) {
+            DialogHelper.showError("${resData["message"]}", onOk: () {
+              goOne2Screen();
+            });
+          } else {
+            DialogHelper.showError("${resData["message"]}");
+          }
         }
       }
     } catch (e) {
-      LoadingHelper.show();
+      LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
   }
 
-  void fetchSms(String phone) async {
+  Future<void> fetchSms(String phone) async {
     LoadingHelper.show();
     try {
       var resData = await service.postJson(
         Api.sms,
         {
           'phone': phone,
-          'password': password,
         },
       );
       LoadingHelper.hide();
@@ -148,5 +154,10 @@ class FourController extends GetxController with CodeAutoFill {
       LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
+  }
+
+  /// 路由登入頁面
+  void goOne2Screen() {
+    Get.toNamed(AppRoutes.one2Screen);
   }
 }

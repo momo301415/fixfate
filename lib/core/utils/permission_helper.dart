@@ -128,4 +128,13 @@ class PermissionHelper {
       }
     }
   }
+
+  static Future<void> initNotification() async {
+    final granted = await checkNotificationPermission();
+    if (!granted) {
+      print("我去，明明有允許啊");
+    } else {
+      print('通知權限已存在');
+    }
+  }
 }

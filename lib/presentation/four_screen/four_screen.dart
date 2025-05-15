@@ -126,8 +126,10 @@ class FourScreen extends GetWidget<FourController> {
               );
             } else {
               return GestureDetector(
-                  onTap: () {
-                    controller.fetchSms(controller.phone);
+                  onTap: () async {
+                    await controller.fetchSms(controller.phone);
+                    controller.countdown.value = 60;
+                    controller.countdownTimer();
                   },
                   child: Text(
                     "lbl_60s_get".tr,

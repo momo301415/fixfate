@@ -13,9 +13,13 @@ class DialogHelper {
         barrierDismissible: false);
   }
 
-  static void showError(String message) {
+  static void showError(String message, {VoidCallback? onOk}) {
     final controller = Get.put(FiveController());
-    Get.dialog(FiveDialog(controller, message: message));
+    Get.dialog(FiveDialog(
+      controller,
+      message: message,
+      onOk: onOk,
+    ));
   }
 
   static void onTapDialogTitle(

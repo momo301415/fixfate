@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue_plus;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
@@ -91,24 +92,19 @@ class K40Controller extends GetxController {
           showBlueTooth();
         }
       } else {
-        bool granted = false;
-        final statusScan = await Permission.bluetooth.request();
-        granted = statusScan.isGranted;
-        if (granted) {
-          final state = await YcProductPlugin().getBluetoothState();
-          if (state == BluetoothState.on ||
-              state == BluetoothState.disconnected) {
-            goK10Screen();
-          } else {
-            showBlueTooth();
-          }
-        } else {
-          Get.snackbar('權限錯誤', '請開啟藍牙相關權限');
-          showBlueTooth();
-        }
+        checkIosBluetoothState();
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  void checkIosBluetoothState() async {
+    final state = await blue_plus.FlutterBluePlus.adapterState.first;
+    if (state == blue_plus.BluetoothAdapterState.on) {
+      goK10Screen();
+    } else {
+      showBlueTooth();
     }
   }
 }

@@ -7,6 +7,8 @@ class StepData extends Table {
   IntColumn get step => integer()();
   IntColumn get distance => integer()();
   IntColumn get calories => integer()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
@@ -21,6 +23,8 @@ class SleepData extends Table {
   IntColumn get remSleepSeconds => integer()();
   BoolColumn get isNewSleepProtocol =>
       boolean().withDefault(const Constant(false))();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
@@ -33,6 +37,8 @@ class SleepDetailData extends Table {
   IntColumn get startTimeStamp => integer()();
   IntColumn get duration => integer()();
   IntColumn get sleepType => integer()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, sleepStartTimeStamp, startTimeStamp};
@@ -42,6 +48,8 @@ class HeartRateData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
   IntColumn get heartRate => integer()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
@@ -53,6 +61,8 @@ class BloodPressureData extends Table {
   IntColumn get systolicBloodPressure => integer()();
   IntColumn get diastolicBloodPressure => integer()();
   IntColumn get mode => integer()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
@@ -72,6 +82,8 @@ class CombinedData extends Table {
   RealColumn get bloodGlucose => real()();
   RealColumn get fat => real()();
   RealColumn get temperature => real()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
@@ -91,6 +103,8 @@ class InvasiveComprehensiveData extends Table {
   RealColumn get hdlCholesterol => real()();
   RealColumn get ldlCholesterol => real()();
   RealColumn get triglycerides => real()();
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
 
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};

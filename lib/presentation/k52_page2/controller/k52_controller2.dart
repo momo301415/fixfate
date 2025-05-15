@@ -1,36 +1,74 @@
-import 'package:flutter/material.dart';
-import 'package:pulsedevice/core/utils/date_time_utils.dart';
-import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
-import '../../../core/app_export.dart';
+import 'package:get/get.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record.dart';
+import 'package:pulsedevice/presentation/k52_page2/models/list_item_model2.dart';
+import 'package:pulsedevice/presentation/k53_screen/controller/k53_controller.dart';
+import 'package:collection/collection.dart';
 import '../models/k52_model2.dart';
 
-/// A controller class for the K52Page.
-///
-/// This class manages the state of the K52Page, including the
-/// current k52ModelObj
 class K52Controller2 extends GetxController {
+  final k53c = Get.find<K53Controller>();
   Rx<K52Model2> k52ModelObj = K52Model2().obs;
-  var pickDate = ''.obs;
+  String get formattedPickDate =>
+      '${k53c.selectedYear.value} 年 ${k53c.selectedMonth.value} 月';
   @override
   void onInit() {
     super.onInit();
-    getCurrentYearMonth();
+
+    ever(k53c.hasLoaded, (loaded) {
+      if (loaded == true) {
+        updateListFromRecords(k53c.filteredRecords);
+      }
+    });
+
+    ever(k53c.filteredRecords, (_) {
+      updateListFromRecords(k53c.filteredRecords);
+    });
   }
 
-  Future<void> getCurrentYearMonth() async {
-    final now = DateTime.now().format(pattern: 'yyyy 年 MM 月');
-    pickDate.value = now;
+  void updateListFromRecords(List<AlertRecord> records) {
+    final statList = generateAlertStats(records);
+    final list = statList.map((stat) {
+      return ListItemModel2(
+        tf: Rx(stat.label),
+        tf1: Rx(stat.count),
+        tf2: Rx(stat.percent),
+      );
+    }).toList();
+
+    k52ModelObj.value.listItemList.value = list;
   }
 
-  Future<void> selectHistoryDate() async {
-    await showModalBottomSheet(
-        context: Get.context!,
-        builder: (_) => One7Bottomsheet(
-              onConfirm: (int year, int month) {
-                final pick = '$year 年 $month 月';
-                pickDate.value = pick;
-                print(pick);
-              },
-            ));
+  List<AlertStat> generateAlertStats(List<AlertRecord> records) {
+    final total = records.length;
+    if (total == 0) return [];
+
+    final grouped = groupBy(records, (r) => typeMapping[r.type] ?? '未知');
+
+    return grouped.entries.map((entry) {
+      final label = entry.key;
+      final count = entry.value.length;
+      final percent = count / total;
+      return AlertStat(label: label, count: count, percent: percent);
+    }).toList();
   }
+
+  final Map<String, String> typeMapping = {
+    "heart_rate_high": "lbl160".tr,
+    "heart_rate_low": "lbl160".tr,
+    "blood_oxygen_low": "lbl163".tr,
+    "temperature_high": "lbl164".tr,
+    "temperature_low": "lbl164".tr,
+  };
+}
+
+class AlertStat {
+  final String label;
+  final int count;
+  final double percent;
+
+  AlertStat({
+    required this.label,
+    required this.count,
+    required this.percent,
+  });
 }

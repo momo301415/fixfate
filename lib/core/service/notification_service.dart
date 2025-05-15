@@ -169,21 +169,25 @@ class NotificationService {
     return scheduledDate;
   }
 
-  Future<void> showTestNotification() async {
+  Future<void> showDeviceDisconnectedNotification() async {
     await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
     await _flutterLocalNotificationsPlugin.show(
       9999,
-      '測試通知',
-      '這是一則本地通知測試訊息',
+      'PulesRing通知',
+      '藍芽裝置斷線通知',
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'test_channel',
-          '測試頻道',
-          channelDescription: '這是測試通知頻道',
+          'connect_channel',
+          '連線頻道',
+          channelDescription: '這是藍芽連線通知',
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
       ),
     );
   }

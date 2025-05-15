@@ -39,7 +39,7 @@ class K52Page extends StatelessWidget {
 
   Widget _buildRow202508() {
     return GestureDetector(
-      onTap: () => controller.selectHistoryDate(),
+      onTap: () => controller.k53c.selectHistoryDate(),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.h, vertical: 12.h),
         decoration: AppDecoration.fillGray30066.copyWith(
@@ -54,7 +54,7 @@ class K52Page extends StatelessWidget {
                 child: Obx(
                   () {
                     return Text(
-                      controller.pickDate.value,
+                      controller.formattedPickDate,
                       style: CustomTextStyles.bodyMediumPrimaryContainer_1,
                     );
                   },

@@ -10,7 +10,7 @@ class CustomBottomBar extends StatelessWidget {
           key: key,
         );
 
-  RxInt selectedIndex = 0.obs;
+  RxInt selectedIndex = 2.obs;
 
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(

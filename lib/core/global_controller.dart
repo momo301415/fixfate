@@ -1,11 +1,12 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pulsedevice/core/app_export.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
@@ -14,6 +15,7 @@ import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
+import 'package:pulsedevice/core/service/sync_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/sqliteDb/blood_pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/combined_data_service.dart';
@@ -35,6 +37,7 @@ class GlobalController extends GetxController {
   late final CombinedDataService combinedDataService;
   late final InvasiveComprehensiveDataService invasiveComprehensiveDataService;
   late final HealthDataSyncService healthDataSyncService;
+  late final SyncDataService syncDataService;
 
   ///--- 藍牙狀態
   RxInt blueToolStatus = 0.obs;
@@ -46,9 +49,11 @@ class GlobalController extends GetxController {
   var isSqfliteInit = false.obs;
 
   ///--- 用戶ID
-  var userId = 'temp_user'.obs;
+  var userId = ''.obs;
 
   var apiToken = ''.obs;
+
+  Timer? _syncTimer;
 
   @override
   void onInit() {
@@ -59,7 +64,7 @@ class GlobalController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    healthDataSyncService.stop();
+    stopSyncTimer();
     db.close();
   }
 
@@ -82,10 +87,12 @@ class GlobalController extends GetxController {
         blueToolStatus.value = st;
         if (st == 2) {
           print(" ====== 初始化sqlite ====== ");
-          if (!isSqfliteInit.value && userId.value.isNotEmpty) {
+          if (userId.value.isNotEmpty) {
             /// 只初始化一次
-            healthDataSyncService.start();
+            startSyncTimer();
             isSqfliteInit.value = true;
+          } else {
+            NotificationService().showDeviceDisconnectedNotification();
           }
         }
       }
@@ -101,11 +108,8 @@ class GlobalController extends GetxController {
     bloodPressureDataService = BloodPressureDataService(db);
     combinedDataService = CombinedDataService(db);
     invasiveComprehensiveDataService = InvasiveComprehensiveDataService(db);
-    initHealthServiceDB();
-  }
-
-  void initHealthServiceDB() {
     healthDataSyncService = HealthDataSyncService(db);
+    syncDataService = SyncDataService(db: db, gc: this);
   }
 
   /// 初始化hive
@@ -118,6 +122,8 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(BodyTemperatureSettingAdapter());
     Hive.registerAdapter(DeviceProfileAdapter());
     Hive.registerAdapter(RemiderSettingAdapter());
+    Hive.registerAdapter(AlertRecordAdapter());
+    Hive.registerAdapter(AlertRecordListAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -125,15 +131,27 @@ class GlobalController extends GetxController {
     await Hive.openBox<BodyTemperatureSetting>('body_temperature_setting');
     await Hive.openBox<DeviceProfile>('device_profile');
     await Hive.openBox<RemiderSetting>('remider_setting');
+    await Hive.openBox<AlertRecord>('alert_record');
+    await Hive.openBox<AlertRecordList>('alert_records');
   }
 
   void initNotification() async {
     final service = NotificationService();
     await service.initialize();
 
-    // Android 13+ 請求通知權限
-    if (Platform.isAndroid) {
-      PermissionHelper.checkNotificationPermission();
-    }
+    //  請求通知權限
+    PermissionHelper.checkNotificationPermission();
+  }
+
+  void startSyncTimer() {
+    stopSyncTimer();
+    _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      syncDataService.runBackgroundSync();
+    });
+    syncDataService.runBackgroundSync(); // ✅ 初始執行一次
+  }
+
+  void stopSyncTimer() {
+    _syncTimer?.cancel();
   }
 }

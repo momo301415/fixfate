@@ -13,4 +13,9 @@ class One7Controller extends GetxController {
   void incrementYear() => year.value++;
   void decrementYear() => year.value--;
   void selectMonth(int m) => month.value = m;
+  void resetToToday() {
+    final now = DateTime.now();
+    year.value = now.year;
+    month.value = now.month;
+  }
 }

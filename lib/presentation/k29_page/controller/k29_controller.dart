@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/presentation/k29_page/models/list_one_item_model.dart';
 
@@ -106,6 +108,13 @@ class K29Controller extends GetxController {
     print(
         "query database blood_pressure_data -> ${blood_pressure_data.length}");
     // print("query database blood_pressure_data -> ${blood_pressure_data}");
+  }
+
+  void querydb2() async {
+    var records = await AlertRecordListStorage.getRecords(gc.userId.value);
+    for (var record in records) {
+      debugPrint("${record.label} ; ${record.time} ; ${record.type}");
+    }
   }
 
   void printLongText(String text) {

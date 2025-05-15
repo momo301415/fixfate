@@ -53,5 +53,14 @@
 	<string>使用BLE權限描述</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>使用BLE權限描述</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>我們需要通知權限來提醒您裝置狀態變化</string>
+	<!-- 如果支援背景藍牙，還要開啟這個 -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

@@ -4,8 +4,9 @@ import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../k52_page/k52_page.dart';
 import 'controller/k53_controller.dart';
-// ignore_for_file: must_be_immutable
 
+// ignore_for_file: must_be_immutable
+/// 警報紀錄頁面
 class K53Screen extends GetWidget<K53Controller> {
   const K53Screen({Key? key})
       : super(

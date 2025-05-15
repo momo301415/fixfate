@@ -164,6 +164,9 @@ class K10Screen extends GetWidget<K10Controller> {
       ),
       buttonStyle: CustomButtonStyles.none,
       decoration: CustomButtonStyles.gradientCyanToPrimaryDecoration,
+      onPressed: () async {
+        await controller.scanDevices();
+      },
     );
   }
 }

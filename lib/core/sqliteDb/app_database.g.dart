@@ -43,9 +43,26 @@ class $StepDataTable extends StepData
   late final GeneratedColumn<int> calories = GeneratedColumn<int>(
       'calories', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
   @override
-  List<GeneratedColumn> get $columns =>
-      [userId, startTimeStamp, endTimeStamp, step, distance, calories];
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [
+        userId,
+        startTimeStamp,
+        endTimeStamp,
+        step,
+        distance,
+        calories,
+        isSynced
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -96,6 +113,10 @@ class $StepDataTable extends StepData
     } else if (isInserting) {
       context.missing(_caloriesMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -117,6 +138,8 @@ class $StepDataTable extends StepData
           .read(DriftSqlType.int, data['${effectivePrefix}distance'])!,
       calories: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}calories'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -133,13 +156,15 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
   final int step;
   final int distance;
   final int calories;
+  final bool isSynced;
   const StepDataData(
       {required this.userId,
       required this.startTimeStamp,
       required this.endTimeStamp,
       required this.step,
       required this.distance,
-      required this.calories});
+      required this.calories,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -149,6 +174,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
     map['step'] = Variable<int>(step);
     map['distance'] = Variable<int>(distance);
     map['calories'] = Variable<int>(calories);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -160,6 +186,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
       step: Value(step),
       distance: Value(distance),
       calories: Value(calories),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -173,6 +200,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
       step: serializer.fromJson<int>(json['step']),
       distance: serializer.fromJson<int>(json['distance']),
       calories: serializer.fromJson<int>(json['calories']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -185,6 +213,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
       'step': serializer.toJson<int>(step),
       'distance': serializer.toJson<int>(distance),
       'calories': serializer.toJson<int>(calories),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -194,7 +223,8 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
           int? endTimeStamp,
           int? step,
           int? distance,
-          int? calories}) =>
+          int? calories,
+          bool? isSynced}) =>
       StepDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
@@ -202,6 +232,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
         step: step ?? this.step,
         distance: distance ?? this.distance,
         calories: calories ?? this.calories,
+        isSynced: isSynced ?? this.isSynced,
       );
   StepDataData copyWithCompanion(StepDataCompanion data) {
     return StepDataData(
@@ -215,6 +246,7 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
       step: data.step.present ? data.step.value : this.step,
       distance: data.distance.present ? data.distance.value : this.distance,
       calories: data.calories.present ? data.calories.value : this.calories,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -226,14 +258,15 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
           ..write('endTimeStamp: $endTimeStamp, ')
           ..write('step: $step, ')
           ..write('distance: $distance, ')
-          ..write('calories: $calories')
+          ..write('calories: $calories, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      userId, startTimeStamp, endTimeStamp, step, distance, calories);
+      userId, startTimeStamp, endTimeStamp, step, distance, calories, isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -243,7 +276,8 @@ class StepDataData extends DataClass implements Insertable<StepDataData> {
           other.endTimeStamp == this.endTimeStamp &&
           other.step == this.step &&
           other.distance == this.distance &&
-          other.calories == this.calories);
+          other.calories == this.calories &&
+          other.isSynced == this.isSynced);
 }
 
 class StepDataCompanion extends UpdateCompanion<StepDataData> {
@@ -253,6 +287,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
   final Value<int> step;
   final Value<int> distance;
   final Value<int> calories;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const StepDataCompanion({
     this.userId = const Value.absent(),
@@ -261,6 +296,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
     this.step = const Value.absent(),
     this.distance = const Value.absent(),
     this.calories = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   StepDataCompanion.insert({
@@ -270,6 +306,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
     required int step,
     required int distance,
     required int calories,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -284,6 +321,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
     Expression<int>? step,
     Expression<int>? distance,
     Expression<int>? calories,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -293,6 +331,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
       if (step != null) 'step': step,
       if (distance != null) 'distance': distance,
       if (calories != null) 'calories': calories,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -304,6 +343,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
       Value<int>? step,
       Value<int>? distance,
       Value<int>? calories,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return StepDataCompanion(
       userId: userId ?? this.userId,
@@ -312,6 +352,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
       step: step ?? this.step,
       distance: distance ?? this.distance,
       calories: calories ?? this.calories,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -337,6 +378,9 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
     if (calories.present) {
       map['calories'] = Variable<int>(calories.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -352,6 +396,7 @@ class StepDataCompanion extends UpdateCompanion<StepDataData> {
           ..write('step: $step, ')
           ..write('distance: $distance, ')
           ..write('calories: $calories, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -409,6 +454,16 @@ class $SleepDataTable extends SleepData
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("is_new_sleep_protocol" IN (0, 1))'),
       defaultValue: const Constant(false));
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         userId,
@@ -417,7 +472,8 @@ class $SleepDataTable extends SleepData
         deepSleepSeconds,
         lightSleepSeconds,
         remSleepSeconds,
-        isNewSleepProtocol
+        isNewSleepProtocol,
+        isSynced
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -481,6 +537,10 @@ class $SleepDataTable extends SleepData
           isNewSleepProtocol.isAcceptableOrUnknown(
               data['is_new_sleep_protocol']!, _isNewSleepProtocolMeta));
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -504,6 +564,8 @@ class $SleepDataTable extends SleepData
           .read(DriftSqlType.int, data['${effectivePrefix}rem_sleep_seconds'])!,
       isNewSleepProtocol: attachedDatabase.typeMapping.read(
           DriftSqlType.bool, data['${effectivePrefix}is_new_sleep_protocol'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -521,6 +583,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
   final int lightSleepSeconds;
   final int remSleepSeconds;
   final bool isNewSleepProtocol;
+  final bool isSynced;
   const SleepDataData(
       {required this.userId,
       required this.startTimeStamp,
@@ -528,7 +591,8 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
       required this.deepSleepSeconds,
       required this.lightSleepSeconds,
       required this.remSleepSeconds,
-      required this.isNewSleepProtocol});
+      required this.isNewSleepProtocol,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -539,6 +603,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
     map['light_sleep_seconds'] = Variable<int>(lightSleepSeconds);
     map['rem_sleep_seconds'] = Variable<int>(remSleepSeconds);
     map['is_new_sleep_protocol'] = Variable<bool>(isNewSleepProtocol);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -551,6 +616,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
       lightSleepSeconds: Value(lightSleepSeconds),
       remSleepSeconds: Value(remSleepSeconds),
       isNewSleepProtocol: Value(isNewSleepProtocol),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -565,6 +631,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
       lightSleepSeconds: serializer.fromJson<int>(json['lightSleepSeconds']),
       remSleepSeconds: serializer.fromJson<int>(json['remSleepSeconds']),
       isNewSleepProtocol: serializer.fromJson<bool>(json['isNewSleepProtocol']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -578,6 +645,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
       'lightSleepSeconds': serializer.toJson<int>(lightSleepSeconds),
       'remSleepSeconds': serializer.toJson<int>(remSleepSeconds),
       'isNewSleepProtocol': serializer.toJson<bool>(isNewSleepProtocol),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -588,7 +656,8 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
           int? deepSleepSeconds,
           int? lightSleepSeconds,
           int? remSleepSeconds,
-          bool? isNewSleepProtocol}) =>
+          bool? isNewSleepProtocol,
+          bool? isSynced}) =>
       SleepDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
@@ -597,6 +666,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
         lightSleepSeconds: lightSleepSeconds ?? this.lightSleepSeconds,
         remSleepSeconds: remSleepSeconds ?? this.remSleepSeconds,
         isNewSleepProtocol: isNewSleepProtocol ?? this.isNewSleepProtocol,
+        isSynced: isSynced ?? this.isSynced,
       );
   SleepDataData copyWithCompanion(SleepDataCompanion data) {
     return SleepDataData(
@@ -619,6 +689,7 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
       isNewSleepProtocol: data.isNewSleepProtocol.present
           ? data.isNewSleepProtocol.value
           : this.isNewSleepProtocol,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -631,14 +702,22 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
           ..write('deepSleepSeconds: $deepSleepSeconds, ')
           ..write('lightSleepSeconds: $lightSleepSeconds, ')
           ..write('remSleepSeconds: $remSleepSeconds, ')
-          ..write('isNewSleepProtocol: $isNewSleepProtocol')
+          ..write('isNewSleepProtocol: $isNewSleepProtocol, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(userId, startTimeStamp, endTimeStamp,
-      deepSleepSeconds, lightSleepSeconds, remSleepSeconds, isNewSleepProtocol);
+  int get hashCode => Object.hash(
+      userId,
+      startTimeStamp,
+      endTimeStamp,
+      deepSleepSeconds,
+      lightSleepSeconds,
+      remSleepSeconds,
+      isNewSleepProtocol,
+      isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -649,7 +728,8 @@ class SleepDataData extends DataClass implements Insertable<SleepDataData> {
           other.deepSleepSeconds == this.deepSleepSeconds &&
           other.lightSleepSeconds == this.lightSleepSeconds &&
           other.remSleepSeconds == this.remSleepSeconds &&
-          other.isNewSleepProtocol == this.isNewSleepProtocol);
+          other.isNewSleepProtocol == this.isNewSleepProtocol &&
+          other.isSynced == this.isSynced);
 }
 
 class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
@@ -660,6 +740,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
   final Value<int> lightSleepSeconds;
   final Value<int> remSleepSeconds;
   final Value<bool> isNewSleepProtocol;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const SleepDataCompanion({
     this.userId = const Value.absent(),
@@ -669,6 +750,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
     this.lightSleepSeconds = const Value.absent(),
     this.remSleepSeconds = const Value.absent(),
     this.isNewSleepProtocol = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SleepDataCompanion.insert({
@@ -679,6 +761,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
     required int lightSleepSeconds,
     required int remSleepSeconds,
     this.isNewSleepProtocol = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -694,6 +777,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
     Expression<int>? lightSleepSeconds,
     Expression<int>? remSleepSeconds,
     Expression<bool>? isNewSleepProtocol,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -705,6 +789,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
       if (remSleepSeconds != null) 'rem_sleep_seconds': remSleepSeconds,
       if (isNewSleepProtocol != null)
         'is_new_sleep_protocol': isNewSleepProtocol,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -717,6 +802,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
       Value<int>? lightSleepSeconds,
       Value<int>? remSleepSeconds,
       Value<bool>? isNewSleepProtocol,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return SleepDataCompanion(
       userId: userId ?? this.userId,
@@ -726,6 +812,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
       lightSleepSeconds: lightSleepSeconds ?? this.lightSleepSeconds,
       remSleepSeconds: remSleepSeconds ?? this.remSleepSeconds,
       isNewSleepProtocol: isNewSleepProtocol ?? this.isNewSleepProtocol,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -754,6 +841,9 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
     if (isNewSleepProtocol.present) {
       map['is_new_sleep_protocol'] = Variable<bool>(isNewSleepProtocol.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -770,6 +860,7 @@ class SleepDataCompanion extends UpdateCompanion<SleepDataData> {
           ..write('lightSleepSeconds: $lightSleepSeconds, ')
           ..write('remSleepSeconds: $remSleepSeconds, ')
           ..write('isNewSleepProtocol: $isNewSleepProtocol, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -811,9 +902,25 @@ class $SleepDetailDataTable extends SleepDetailData
   late final GeneratedColumn<int> sleepType = GeneratedColumn<int>(
       'sleep_type', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
   @override
-  List<GeneratedColumn> get $columns =>
-      [userId, sleepStartTimeStamp, startTimeStamp, duration, sleepType];
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [
+        userId,
+        sleepStartTimeStamp,
+        startTimeStamp,
+        duration,
+        sleepType,
+        isSynced
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -859,6 +966,10 @@ class $SleepDetailDataTable extends SleepDetailData
     } else if (isInserting) {
       context.missing(_sleepTypeMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -879,6 +990,8 @@ class $SleepDetailDataTable extends SleepDetailData
           .read(DriftSqlType.int, data['${effectivePrefix}duration'])!,
       sleepType: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}sleep_type'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -895,12 +1008,14 @@ class SleepDetailDataData extends DataClass
   final int startTimeStamp;
   final int duration;
   final int sleepType;
+  final bool isSynced;
   const SleepDetailDataData(
       {required this.userId,
       required this.sleepStartTimeStamp,
       required this.startTimeStamp,
       required this.duration,
-      required this.sleepType});
+      required this.sleepType,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -909,6 +1024,7 @@ class SleepDetailDataData extends DataClass
     map['start_time_stamp'] = Variable<int>(startTimeStamp);
     map['duration'] = Variable<int>(duration);
     map['sleep_type'] = Variable<int>(sleepType);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -919,6 +1035,7 @@ class SleepDetailDataData extends DataClass
       startTimeStamp: Value(startTimeStamp),
       duration: Value(duration),
       sleepType: Value(sleepType),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -932,6 +1049,7 @@ class SleepDetailDataData extends DataClass
       startTimeStamp: serializer.fromJson<int>(json['startTimeStamp']),
       duration: serializer.fromJson<int>(json['duration']),
       sleepType: serializer.fromJson<int>(json['sleepType']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -943,6 +1061,7 @@ class SleepDetailDataData extends DataClass
       'startTimeStamp': serializer.toJson<int>(startTimeStamp),
       'duration': serializer.toJson<int>(duration),
       'sleepType': serializer.toJson<int>(sleepType),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -951,13 +1070,15 @@ class SleepDetailDataData extends DataClass
           int? sleepStartTimeStamp,
           int? startTimeStamp,
           int? duration,
-          int? sleepType}) =>
+          int? sleepType,
+          bool? isSynced}) =>
       SleepDetailDataData(
         userId: userId ?? this.userId,
         sleepStartTimeStamp: sleepStartTimeStamp ?? this.sleepStartTimeStamp,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
         duration: duration ?? this.duration,
         sleepType: sleepType ?? this.sleepType,
+        isSynced: isSynced ?? this.isSynced,
       );
   SleepDetailDataData copyWithCompanion(SleepDetailDataCompanion data) {
     return SleepDetailDataData(
@@ -970,6 +1091,7 @@ class SleepDetailDataData extends DataClass
           : this.startTimeStamp,
       duration: data.duration.present ? data.duration.value : this.duration,
       sleepType: data.sleepType.present ? data.sleepType.value : this.sleepType,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -980,14 +1102,15 @@ class SleepDetailDataData extends DataClass
           ..write('sleepStartTimeStamp: $sleepStartTimeStamp, ')
           ..write('startTimeStamp: $startTimeStamp, ')
           ..write('duration: $duration, ')
-          ..write('sleepType: $sleepType')
+          ..write('sleepType: $sleepType, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      userId, sleepStartTimeStamp, startTimeStamp, duration, sleepType);
+  int get hashCode => Object.hash(userId, sleepStartTimeStamp, startTimeStamp,
+      duration, sleepType, isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -996,7 +1119,8 @@ class SleepDetailDataData extends DataClass
           other.sleepStartTimeStamp == this.sleepStartTimeStamp &&
           other.startTimeStamp == this.startTimeStamp &&
           other.duration == this.duration &&
-          other.sleepType == this.sleepType);
+          other.sleepType == this.sleepType &&
+          other.isSynced == this.isSynced);
 }
 
 class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
@@ -1005,6 +1129,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
   final Value<int> startTimeStamp;
   final Value<int> duration;
   final Value<int> sleepType;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const SleepDetailDataCompanion({
     this.userId = const Value.absent(),
@@ -1012,6 +1137,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
     this.startTimeStamp = const Value.absent(),
     this.duration = const Value.absent(),
     this.sleepType = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SleepDetailDataCompanion.insert({
@@ -1020,6 +1146,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
     required int startTimeStamp,
     required int duration,
     required int sleepType,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         sleepStartTimeStamp = Value(sleepStartTimeStamp),
@@ -1032,6 +1159,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
     Expression<int>? startTimeStamp,
     Expression<int>? duration,
     Expression<int>? sleepType,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1041,6 +1169,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
       if (startTimeStamp != null) 'start_time_stamp': startTimeStamp,
       if (duration != null) 'duration': duration,
       if (sleepType != null) 'sleep_type': sleepType,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1051,6 +1180,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
       Value<int>? startTimeStamp,
       Value<int>? duration,
       Value<int>? sleepType,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return SleepDetailDataCompanion(
       userId: userId ?? this.userId,
@@ -1058,6 +1188,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
       startTimeStamp: startTimeStamp ?? this.startTimeStamp,
       duration: duration ?? this.duration,
       sleepType: sleepType ?? this.sleepType,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1080,6 +1211,9 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
     if (sleepType.present) {
       map['sleep_type'] = Variable<int>(sleepType.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1094,6 +1228,7 @@ class SleepDetailDataCompanion extends UpdateCompanion<SleepDetailDataData> {
           ..write('startTimeStamp: $startTimeStamp, ')
           ..write('duration: $duration, ')
           ..write('sleepType: $sleepType, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1123,8 +1258,19 @@ class $HeartRateDataTable extends HeartRateData
   late final GeneratedColumn<int> heartRate = GeneratedColumn<int>(
       'heart_rate', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
   @override
-  List<GeneratedColumn> get $columns => [userId, startTimeStamp, heartRate];
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [userId, startTimeStamp, heartRate, isSynced];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1155,6 +1301,10 @@ class $HeartRateDataTable extends HeartRateData
     } else if (isInserting) {
       context.missing(_heartRateMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -1170,6 +1320,8 @@ class $HeartRateDataTable extends HeartRateData
           .read(DriftSqlType.int, data['${effectivePrefix}start_time_stamp'])!,
       heartRate: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}heart_rate'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -1184,16 +1336,19 @@ class HeartRateDataData extends DataClass
   final String userId;
   final int startTimeStamp;
   final int heartRate;
+  final bool isSynced;
   const HeartRateDataData(
       {required this.userId,
       required this.startTimeStamp,
-      required this.heartRate});
+      required this.heartRate,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['user_id'] = Variable<String>(userId);
     map['start_time_stamp'] = Variable<int>(startTimeStamp);
     map['heart_rate'] = Variable<int>(heartRate);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -1202,6 +1357,7 @@ class HeartRateDataData extends DataClass
       userId: Value(userId),
       startTimeStamp: Value(startTimeStamp),
       heartRate: Value(heartRate),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -1212,6 +1368,7 @@ class HeartRateDataData extends DataClass
       userId: serializer.fromJson<String>(json['userId']),
       startTimeStamp: serializer.fromJson<int>(json['startTimeStamp']),
       heartRate: serializer.fromJson<int>(json['heartRate']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -1221,15 +1378,20 @@ class HeartRateDataData extends DataClass
       'userId': serializer.toJson<String>(userId),
       'startTimeStamp': serializer.toJson<int>(startTimeStamp),
       'heartRate': serializer.toJson<int>(heartRate),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
   HeartRateDataData copyWith(
-          {String? userId, int? startTimeStamp, int? heartRate}) =>
+          {String? userId,
+          int? startTimeStamp,
+          int? heartRate,
+          bool? isSynced}) =>
       HeartRateDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
         heartRate: heartRate ?? this.heartRate,
+        isSynced: isSynced ?? this.isSynced,
       );
   HeartRateDataData copyWithCompanion(HeartRateDataCompanion data) {
     return HeartRateDataData(
@@ -1238,6 +1400,7 @@ class HeartRateDataData extends DataClass
           ? data.startTimeStamp.value
           : this.startTimeStamp,
       heartRate: data.heartRate.present ? data.heartRate.value : this.heartRate,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -1246,37 +1409,42 @@ class HeartRateDataData extends DataClass
     return (StringBuffer('HeartRateDataData(')
           ..write('userId: $userId, ')
           ..write('startTimeStamp: $startTimeStamp, ')
-          ..write('heartRate: $heartRate')
+          ..write('heartRate: $heartRate, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(userId, startTimeStamp, heartRate);
+  int get hashCode => Object.hash(userId, startTimeStamp, heartRate, isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is HeartRateDataData &&
           other.userId == this.userId &&
           other.startTimeStamp == this.startTimeStamp &&
-          other.heartRate == this.heartRate);
+          other.heartRate == this.heartRate &&
+          other.isSynced == this.isSynced);
 }
 
 class HeartRateDataCompanion extends UpdateCompanion<HeartRateDataData> {
   final Value<String> userId;
   final Value<int> startTimeStamp;
   final Value<int> heartRate;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const HeartRateDataCompanion({
     this.userId = const Value.absent(),
     this.startTimeStamp = const Value.absent(),
     this.heartRate = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HeartRateDataCompanion.insert({
     required String userId,
     required int startTimeStamp,
     required int heartRate,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -1285,12 +1453,14 @@ class HeartRateDataCompanion extends UpdateCompanion<HeartRateDataData> {
     Expression<String>? userId,
     Expression<int>? startTimeStamp,
     Expression<int>? heartRate,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (userId != null) 'user_id': userId,
       if (startTimeStamp != null) 'start_time_stamp': startTimeStamp,
       if (heartRate != null) 'heart_rate': heartRate,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1299,11 +1469,13 @@ class HeartRateDataCompanion extends UpdateCompanion<HeartRateDataData> {
       {Value<String>? userId,
       Value<int>? startTimeStamp,
       Value<int>? heartRate,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return HeartRateDataCompanion(
       userId: userId ?? this.userId,
       startTimeStamp: startTimeStamp ?? this.startTimeStamp,
       heartRate: heartRate ?? this.heartRate,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1320,6 +1492,9 @@ class HeartRateDataCompanion extends UpdateCompanion<HeartRateDataData> {
     if (heartRate.present) {
       map['heart_rate'] = Variable<int>(heartRate.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1332,6 +1507,7 @@ class HeartRateDataCompanion extends UpdateCompanion<HeartRateDataData> {
           ..write('userId: $userId, ')
           ..write('startTimeStamp: $startTimeStamp, ')
           ..write('heartRate: $heartRate, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1372,13 +1548,24 @@ class $BloodPressureDataTable extends BloodPressureData
   late final GeneratedColumn<int> mode = GeneratedColumn<int>(
       'mode', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         userId,
         startTimeStamp,
         systolicBloodPressure,
         diastolicBloodPressure,
-        mode
+        mode,
+        isSynced
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1427,6 +1614,10 @@ class $BloodPressureDataTable extends BloodPressureData
     } else if (isInserting) {
       context.missing(_modeMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -1447,6 +1638,8 @@ class $BloodPressureDataTable extends BloodPressureData
           data['${effectivePrefix}diastolic_blood_pressure'])!,
       mode: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}mode'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -1463,12 +1656,14 @@ class BloodPressureDataData extends DataClass
   final int systolicBloodPressure;
   final int diastolicBloodPressure;
   final int mode;
+  final bool isSynced;
   const BloodPressureDataData(
       {required this.userId,
       required this.startTimeStamp,
       required this.systolicBloodPressure,
       required this.diastolicBloodPressure,
-      required this.mode});
+      required this.mode,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1477,6 +1672,7 @@ class BloodPressureDataData extends DataClass
     map['systolic_blood_pressure'] = Variable<int>(systolicBloodPressure);
     map['diastolic_blood_pressure'] = Variable<int>(diastolicBloodPressure);
     map['mode'] = Variable<int>(mode);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -1487,6 +1683,7 @@ class BloodPressureDataData extends DataClass
       systolicBloodPressure: Value(systolicBloodPressure),
       diastolicBloodPressure: Value(diastolicBloodPressure),
       mode: Value(mode),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -1501,6 +1698,7 @@ class BloodPressureDataData extends DataClass
       diastolicBloodPressure:
           serializer.fromJson<int>(json['diastolicBloodPressure']),
       mode: serializer.fromJson<int>(json['mode']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -1512,6 +1710,7 @@ class BloodPressureDataData extends DataClass
       'systolicBloodPressure': serializer.toJson<int>(systolicBloodPressure),
       'diastolicBloodPressure': serializer.toJson<int>(diastolicBloodPressure),
       'mode': serializer.toJson<int>(mode),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -1520,7 +1719,8 @@ class BloodPressureDataData extends DataClass
           int? startTimeStamp,
           int? systolicBloodPressure,
           int? diastolicBloodPressure,
-          int? mode}) =>
+          int? mode,
+          bool? isSynced}) =>
       BloodPressureDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
@@ -1529,6 +1729,7 @@ class BloodPressureDataData extends DataClass
         diastolicBloodPressure:
             diastolicBloodPressure ?? this.diastolicBloodPressure,
         mode: mode ?? this.mode,
+        isSynced: isSynced ?? this.isSynced,
       );
   BloodPressureDataData copyWithCompanion(BloodPressureDataCompanion data) {
     return BloodPressureDataData(
@@ -1543,6 +1744,7 @@ class BloodPressureDataData extends DataClass
           ? data.diastolicBloodPressure.value
           : this.diastolicBloodPressure,
       mode: data.mode.present ? data.mode.value : this.mode,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -1553,14 +1755,15 @@ class BloodPressureDataData extends DataClass
           ..write('startTimeStamp: $startTimeStamp, ')
           ..write('systolicBloodPressure: $systolicBloodPressure, ')
           ..write('diastolicBloodPressure: $diastolicBloodPressure, ')
-          ..write('mode: $mode')
+          ..write('mode: $mode, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(userId, startTimeStamp, systolicBloodPressure,
-      diastolicBloodPressure, mode);
+      diastolicBloodPressure, mode, isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1569,7 +1772,8 @@ class BloodPressureDataData extends DataClass
           other.startTimeStamp == this.startTimeStamp &&
           other.systolicBloodPressure == this.systolicBloodPressure &&
           other.diastolicBloodPressure == this.diastolicBloodPressure &&
-          other.mode == this.mode);
+          other.mode == this.mode &&
+          other.isSynced == this.isSynced);
 }
 
 class BloodPressureDataCompanion
@@ -1579,6 +1783,7 @@ class BloodPressureDataCompanion
   final Value<int> systolicBloodPressure;
   final Value<int> diastolicBloodPressure;
   final Value<int> mode;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const BloodPressureDataCompanion({
     this.userId = const Value.absent(),
@@ -1586,6 +1791,7 @@ class BloodPressureDataCompanion
     this.systolicBloodPressure = const Value.absent(),
     this.diastolicBloodPressure = const Value.absent(),
     this.mode = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BloodPressureDataCompanion.insert({
@@ -1594,6 +1800,7 @@ class BloodPressureDataCompanion
     required int systolicBloodPressure,
     required int diastolicBloodPressure,
     required int mode,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -1606,6 +1813,7 @@ class BloodPressureDataCompanion
     Expression<int>? systolicBloodPressure,
     Expression<int>? diastolicBloodPressure,
     Expression<int>? mode,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1616,6 +1824,7 @@ class BloodPressureDataCompanion
       if (diastolicBloodPressure != null)
         'diastolic_blood_pressure': diastolicBloodPressure,
       if (mode != null) 'mode': mode,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1626,6 +1835,7 @@ class BloodPressureDataCompanion
       Value<int>? systolicBloodPressure,
       Value<int>? diastolicBloodPressure,
       Value<int>? mode,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return BloodPressureDataCompanion(
       userId: userId ?? this.userId,
@@ -1635,6 +1845,7 @@ class BloodPressureDataCompanion
       diastolicBloodPressure:
           diastolicBloodPressure ?? this.diastolicBloodPressure,
       mode: mode ?? this.mode,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1659,6 +1870,9 @@ class BloodPressureDataCompanion
     if (mode.present) {
       map['mode'] = Variable<int>(mode.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1673,6 +1887,7 @@ class BloodPressureDataCompanion
           ..write('systolicBloodPressure: $systolicBloodPressure, ')
           ..write('diastolicBloodPressure: $diastolicBloodPressure, ')
           ..write('mode: $mode, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1758,6 +1973,16 @@ class $CombinedDataTable extends CombinedData
   late final GeneratedColumn<double> temperature = GeneratedColumn<double>(
       'temperature', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         userId,
@@ -1772,7 +1997,8 @@ class $CombinedDataTable extends CombinedData
         cvrr,
         bloodGlucose,
         fat,
-        temperature
+        temperature,
+        isSynced
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1876,6 +2102,10 @@ class $CombinedDataTable extends CombinedData
     } else if (isInserting) {
       context.missing(_temperatureMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -1912,6 +2142,8 @@ class $CombinedDataTable extends CombinedData
           .read(DriftSqlType.double, data['${effectivePrefix}fat'])!,
       temperature: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}temperature'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -1936,6 +2168,7 @@ class CombinedDataData extends DataClass
   final double bloodGlucose;
   final double fat;
   final double temperature;
+  final bool isSynced;
   const CombinedDataData(
       {required this.userId,
       required this.startTimeStamp,
@@ -1949,7 +2182,8 @@ class CombinedDataData extends DataClass
       required this.cvrr,
       required this.bloodGlucose,
       required this.fat,
-      required this.temperature});
+      required this.temperature,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1966,6 +2200,7 @@ class CombinedDataData extends DataClass
     map['blood_glucose'] = Variable<double>(bloodGlucose);
     map['fat'] = Variable<double>(fat);
     map['temperature'] = Variable<double>(temperature);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -1984,6 +2219,7 @@ class CombinedDataData extends DataClass
       bloodGlucose: Value(bloodGlucose),
       fat: Value(fat),
       temperature: Value(temperature),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -2006,6 +2242,7 @@ class CombinedDataData extends DataClass
       bloodGlucose: serializer.fromJson<double>(json['bloodGlucose']),
       fat: serializer.fromJson<double>(json['fat']),
       temperature: serializer.fromJson<double>(json['temperature']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -2025,6 +2262,7 @@ class CombinedDataData extends DataClass
       'bloodGlucose': serializer.toJson<double>(bloodGlucose),
       'fat': serializer.toJson<double>(fat),
       'temperature': serializer.toJson<double>(temperature),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -2041,7 +2279,8 @@ class CombinedDataData extends DataClass
           int? cvrr,
           double? bloodGlucose,
           double? fat,
-          double? temperature}) =>
+          double? temperature,
+          bool? isSynced}) =>
       CombinedDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
@@ -2058,6 +2297,7 @@ class CombinedDataData extends DataClass
         bloodGlucose: bloodGlucose ?? this.bloodGlucose,
         fat: fat ?? this.fat,
         temperature: temperature ?? this.temperature,
+        isSynced: isSynced ?? this.isSynced,
       );
   CombinedDataData copyWithCompanion(CombinedDataCompanion data) {
     return CombinedDataData(
@@ -2086,6 +2326,7 @@ class CombinedDataData extends DataClass
       fat: data.fat.present ? data.fat.value : this.fat,
       temperature:
           data.temperature.present ? data.temperature.value : this.temperature,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -2104,7 +2345,8 @@ class CombinedDataData extends DataClass
           ..write('cvrr: $cvrr, ')
           ..write('bloodGlucose: $bloodGlucose, ')
           ..write('fat: $fat, ')
-          ..write('temperature: $temperature')
+          ..write('temperature: $temperature, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
@@ -2123,7 +2365,8 @@ class CombinedDataData extends DataClass
       cvrr,
       bloodGlucose,
       fat,
-      temperature);
+      temperature,
+      isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2140,7 +2383,8 @@ class CombinedDataData extends DataClass
           other.cvrr == this.cvrr &&
           other.bloodGlucose == this.bloodGlucose &&
           other.fat == this.fat &&
-          other.temperature == this.temperature);
+          other.temperature == this.temperature &&
+          other.isSynced == this.isSynced);
 }
 
 class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
@@ -2157,6 +2401,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
   final Value<double> bloodGlucose;
   final Value<double> fat;
   final Value<double> temperature;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const CombinedDataCompanion({
     this.userId = const Value.absent(),
@@ -2172,6 +2417,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
     this.bloodGlucose = const Value.absent(),
     this.fat = const Value.absent(),
     this.temperature = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CombinedDataCompanion.insert({
@@ -2188,6 +2434,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
     required double bloodGlucose,
     required double fat,
     required double temperature,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -2216,6 +2463,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
     Expression<double>? bloodGlucose,
     Expression<double>? fat,
     Expression<double>? temperature,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2234,6 +2482,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
       if (bloodGlucose != null) 'blood_glucose': bloodGlucose,
       if (fat != null) 'fat': fat,
       if (temperature != null) 'temperature': temperature,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2252,6 +2501,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
       Value<double>? bloodGlucose,
       Value<double>? fat,
       Value<double>? temperature,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return CombinedDataCompanion(
       userId: userId ?? this.userId,
@@ -2269,6 +2519,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
       bloodGlucose: bloodGlucose ?? this.bloodGlucose,
       fat: fat ?? this.fat,
       temperature: temperature ?? this.temperature,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2317,6 +2568,9 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
     if (temperature.present) {
       map['temperature'] = Variable<double>(temperature.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2339,6 +2593,7 @@ class CombinedDataCompanion extends UpdateCompanion<CombinedDataData> {
           ..write('bloodGlucose: $bloodGlucose, ')
           ..write('fat: $fat, ')
           ..write('temperature: $temperature, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2430,6 +2685,16 @@ class $InvasiveComprehensiveDataTable extends InvasiveComprehensiveData
   late final GeneratedColumn<double> triglycerides = GeneratedColumn<double>(
       'triglycerides', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         userId,
@@ -2444,7 +2709,8 @@ class $InvasiveComprehensiveDataTable extends InvasiveComprehensiveData
         totalCholesterol,
         hdlCholesterol,
         ldlCholesterol,
-        triglycerides
+        triglycerides,
+        isSynced
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2557,6 +2823,10 @@ class $InvasiveComprehensiveDataTable extends InvasiveComprehensiveData
     } else if (isInserting) {
       context.missing(_triglyceridesMeta);
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
     return context;
   }
 
@@ -2593,6 +2863,8 @@ class $InvasiveComprehensiveDataTable extends InvasiveComprehensiveData
           DriftSqlType.double, data['${effectivePrefix}ldl_cholesterol'])!,
       triglycerides: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}triglycerides'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
     );
   }
 
@@ -2617,6 +2889,7 @@ class InvasiveComprehensiveDataData extends DataClass
   final double hdlCholesterol;
   final double ldlCholesterol;
   final double triglycerides;
+  final bool isSynced;
   const InvasiveComprehensiveDataData(
       {required this.userId,
       required this.startTimeStamp,
@@ -2630,7 +2903,8 @@ class InvasiveComprehensiveDataData extends DataClass
       required this.totalCholesterol,
       required this.hdlCholesterol,
       required this.ldlCholesterol,
-      required this.triglycerides});
+      required this.triglycerides,
+      required this.isSynced});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2647,6 +2921,7 @@ class InvasiveComprehensiveDataData extends DataClass
     map['hdl_cholesterol'] = Variable<double>(hdlCholesterol);
     map['ldl_cholesterol'] = Variable<double>(ldlCholesterol);
     map['triglycerides'] = Variable<double>(triglycerides);
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -2665,6 +2940,7 @@ class InvasiveComprehensiveDataData extends DataClass
       hdlCholesterol: Value(hdlCholesterol),
       ldlCholesterol: Value(ldlCholesterol),
       triglycerides: Value(triglycerides),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -2685,6 +2961,7 @@ class InvasiveComprehensiveDataData extends DataClass
       hdlCholesterol: serializer.fromJson<double>(json['hdlCholesterol']),
       ldlCholesterol: serializer.fromJson<double>(json['ldlCholesterol']),
       triglycerides: serializer.fromJson<double>(json['triglycerides']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -2704,6 +2981,7 @@ class InvasiveComprehensiveDataData extends DataClass
       'hdlCholesterol': serializer.toJson<double>(hdlCholesterol),
       'ldlCholesterol': serializer.toJson<double>(ldlCholesterol),
       'triglycerides': serializer.toJson<double>(triglycerides),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -2720,7 +2998,8 @@ class InvasiveComprehensiveDataData extends DataClass
           double? totalCholesterol,
           double? hdlCholesterol,
           double? ldlCholesterol,
-          double? triglycerides}) =>
+          double? triglycerides,
+          bool? isSynced}) =>
       InvasiveComprehensiveDataData(
         userId: userId ?? this.userId,
         startTimeStamp: startTimeStamp ?? this.startTimeStamp,
@@ -2735,6 +3014,7 @@ class InvasiveComprehensiveDataData extends DataClass
         hdlCholesterol: hdlCholesterol ?? this.hdlCholesterol,
         ldlCholesterol: ldlCholesterol ?? this.ldlCholesterol,
         triglycerides: triglycerides ?? this.triglycerides,
+        isSynced: isSynced ?? this.isSynced,
       );
   InvasiveComprehensiveDataData copyWithCompanion(
       InvasiveComprehensiveDataCompanion data) {
@@ -2773,6 +3053,7 @@ class InvasiveComprehensiveDataData extends DataClass
       triglycerides: data.triglycerides.present
           ? data.triglycerides.value
           : this.triglycerides,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -2791,7 +3072,8 @@ class InvasiveComprehensiveDataData extends DataClass
           ..write('totalCholesterol: $totalCholesterol, ')
           ..write('hdlCholesterol: $hdlCholesterol, ')
           ..write('ldlCholesterol: $ldlCholesterol, ')
-          ..write('triglycerides: $triglycerides')
+          ..write('triglycerides: $triglycerides, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
@@ -2810,7 +3092,8 @@ class InvasiveComprehensiveDataData extends DataClass
       totalCholesterol,
       hdlCholesterol,
       ldlCholesterol,
-      triglycerides);
+      triglycerides,
+      isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2827,7 +3110,8 @@ class InvasiveComprehensiveDataData extends DataClass
           other.totalCholesterol == this.totalCholesterol &&
           other.hdlCholesterol == this.hdlCholesterol &&
           other.ldlCholesterol == this.ldlCholesterol &&
-          other.triglycerides == this.triglycerides);
+          other.triglycerides == this.triglycerides &&
+          other.isSynced == this.isSynced);
 }
 
 class InvasiveComprehensiveDataCompanion
@@ -2845,6 +3129,7 @@ class InvasiveComprehensiveDataCompanion
   final Value<double> hdlCholesterol;
   final Value<double> ldlCholesterol;
   final Value<double> triglycerides;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const InvasiveComprehensiveDataCompanion({
     this.userId = const Value.absent(),
@@ -2860,6 +3145,7 @@ class InvasiveComprehensiveDataCompanion
     this.hdlCholesterol = const Value.absent(),
     this.ldlCholesterol = const Value.absent(),
     this.triglycerides = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   InvasiveComprehensiveDataCompanion.insert({
@@ -2876,6 +3162,7 @@ class InvasiveComprehensiveDataCompanion
     required double hdlCholesterol,
     required double ldlCholesterol,
     required double triglycerides,
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : userId = Value(userId),
         startTimeStamp = Value(startTimeStamp),
@@ -2904,6 +3191,7 @@ class InvasiveComprehensiveDataCompanion
     Expression<double>? hdlCholesterol,
     Expression<double>? ldlCholesterol,
     Expression<double>? triglycerides,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2920,6 +3208,7 @@ class InvasiveComprehensiveDataCompanion
       if (hdlCholesterol != null) 'hdl_cholesterol': hdlCholesterol,
       if (ldlCholesterol != null) 'ldl_cholesterol': ldlCholesterol,
       if (triglycerides != null) 'triglycerides': triglycerides,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2938,6 +3227,7 @@ class InvasiveComprehensiveDataCompanion
       Value<double>? hdlCholesterol,
       Value<double>? ldlCholesterol,
       Value<double>? triglycerides,
+      Value<bool>? isSynced,
       Value<int>? rowid}) {
     return InvasiveComprehensiveDataCompanion(
       userId: userId ?? this.userId,
@@ -2953,6 +3243,7 @@ class InvasiveComprehensiveDataCompanion
       hdlCholesterol: hdlCholesterol ?? this.hdlCholesterol,
       ldlCholesterol: ldlCholesterol ?? this.ldlCholesterol,
       triglycerides: triglycerides ?? this.triglycerides,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2999,6 +3290,9 @@ class InvasiveComprehensiveDataCompanion
     if (triglycerides.present) {
       map['triglycerides'] = Variable<double>(triglycerides.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3021,6 +3315,7 @@ class InvasiveComprehensiveDataCompanion
           ..write('hdlCholesterol: $hdlCholesterol, ')
           ..write('ldlCholesterol: $ldlCholesterol, ')
           ..write('triglycerides: $triglycerides, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3062,6 +3357,7 @@ typedef $$StepDataTableCreateCompanionBuilder = StepDataCompanion Function({
   required int step,
   required int distance,
   required int calories,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$StepDataTableUpdateCompanionBuilder = StepDataCompanion Function({
@@ -3071,6 +3367,7 @@ typedef $$StepDataTableUpdateCompanionBuilder = StepDataCompanion Function({
   Value<int> step,
   Value<int> distance,
   Value<int> calories,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -3101,6 +3398,9 @@ class $$StepDataTableFilterComposer
 
   ColumnFilters<int> get calories => $composableBuilder(
       column: $table.calories, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$StepDataTableOrderingComposer
@@ -3131,6 +3431,9 @@ class $$StepDataTableOrderingComposer
 
   ColumnOrderings<int> get calories => $composableBuilder(
       column: $table.calories, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$StepDataTableAnnotationComposer
@@ -3159,6 +3462,9 @@ class $$StepDataTableAnnotationComposer
 
   GeneratedColumn<int> get calories =>
       $composableBuilder(column: $table.calories, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$StepDataTableTableManager extends RootTableManager<
@@ -3190,6 +3496,7 @@ class $$StepDataTableTableManager extends RootTableManager<
             Value<int> step = const Value.absent(),
             Value<int> distance = const Value.absent(),
             Value<int> calories = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               StepDataCompanion(
@@ -3199,6 +3506,7 @@ class $$StepDataTableTableManager extends RootTableManager<
             step: step,
             distance: distance,
             calories: calories,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3208,6 +3516,7 @@ class $$StepDataTableTableManager extends RootTableManager<
             required int step,
             required int distance,
             required int calories,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               StepDataCompanion.insert(
@@ -3217,6 +3526,7 @@ class $$StepDataTableTableManager extends RootTableManager<
             step: step,
             distance: distance,
             calories: calories,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3246,6 +3556,7 @@ typedef $$SleepDataTableCreateCompanionBuilder = SleepDataCompanion Function({
   required int lightSleepSeconds,
   required int remSleepSeconds,
   Value<bool> isNewSleepProtocol,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$SleepDataTableUpdateCompanionBuilder = SleepDataCompanion Function({
@@ -3256,6 +3567,7 @@ typedef $$SleepDataTableUpdateCompanionBuilder = SleepDataCompanion Function({
   Value<int> lightSleepSeconds,
   Value<int> remSleepSeconds,
   Value<bool> isNewSleepProtocol,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -3293,6 +3605,9 @@ class $$SleepDataTableFilterComposer
   ColumnFilters<bool> get isNewSleepProtocol => $composableBuilder(
       column: $table.isNewSleepProtocol,
       builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$SleepDataTableOrderingComposer
@@ -3330,6 +3645,9 @@ class $$SleepDataTableOrderingComposer
   ColumnOrderings<bool> get isNewSleepProtocol => $composableBuilder(
       column: $table.isNewSleepProtocol,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$SleepDataTableAnnotationComposer
@@ -3361,6 +3679,9 @@ class $$SleepDataTableAnnotationComposer
 
   GeneratedColumn<bool> get isNewSleepProtocol => $composableBuilder(
       column: $table.isNewSleepProtocol, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$SleepDataTableTableManager extends RootTableManager<
@@ -3396,6 +3717,7 @@ class $$SleepDataTableTableManager extends RootTableManager<
             Value<int> lightSleepSeconds = const Value.absent(),
             Value<int> remSleepSeconds = const Value.absent(),
             Value<bool> isNewSleepProtocol = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SleepDataCompanion(
@@ -3406,6 +3728,7 @@ class $$SleepDataTableTableManager extends RootTableManager<
             lightSleepSeconds: lightSleepSeconds,
             remSleepSeconds: remSleepSeconds,
             isNewSleepProtocol: isNewSleepProtocol,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3416,6 +3739,7 @@ class $$SleepDataTableTableManager extends RootTableManager<
             required int lightSleepSeconds,
             required int remSleepSeconds,
             Value<bool> isNewSleepProtocol = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SleepDataCompanion.insert(
@@ -3426,6 +3750,7 @@ class $$SleepDataTableTableManager extends RootTableManager<
             lightSleepSeconds: lightSleepSeconds,
             remSleepSeconds: remSleepSeconds,
             isNewSleepProtocol: isNewSleepProtocol,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3457,6 +3782,7 @@ typedef $$SleepDetailDataTableCreateCompanionBuilder = SleepDetailDataCompanion
   required int startTimeStamp,
   required int duration,
   required int sleepType,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$SleepDetailDataTableUpdateCompanionBuilder = SleepDetailDataCompanion
@@ -3466,6 +3792,7 @@ typedef $$SleepDetailDataTableUpdateCompanionBuilder = SleepDetailDataCompanion
   Value<int> startTimeStamp,
   Value<int> duration,
   Value<int> sleepType,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -3494,6 +3821,9 @@ class $$SleepDetailDataTableFilterComposer
 
   ColumnFilters<int> get sleepType => $composableBuilder(
       column: $table.sleepType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$SleepDetailDataTableOrderingComposer
@@ -3521,6 +3851,9 @@ class $$SleepDetailDataTableOrderingComposer
 
   ColumnOrderings<int> get sleepType => $composableBuilder(
       column: $table.sleepType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$SleepDetailDataTableAnnotationComposer
@@ -3546,6 +3879,9 @@ class $$SleepDetailDataTableAnnotationComposer
 
   GeneratedColumn<int> get sleepType =>
       $composableBuilder(column: $table.sleepType, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$SleepDetailDataTableTableManager extends RootTableManager<
@@ -3580,6 +3916,7 @@ class $$SleepDetailDataTableTableManager extends RootTableManager<
             Value<int> startTimeStamp = const Value.absent(),
             Value<int> duration = const Value.absent(),
             Value<int> sleepType = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SleepDetailDataCompanion(
@@ -3588,6 +3925,7 @@ class $$SleepDetailDataTableTableManager extends RootTableManager<
             startTimeStamp: startTimeStamp,
             duration: duration,
             sleepType: sleepType,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3596,6 +3934,7 @@ class $$SleepDetailDataTableTableManager extends RootTableManager<
             required int startTimeStamp,
             required int duration,
             required int sleepType,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               SleepDetailDataCompanion.insert(
@@ -3604,6 +3943,7 @@ class $$SleepDetailDataTableTableManager extends RootTableManager<
             startTimeStamp: startTimeStamp,
             duration: duration,
             sleepType: sleepType,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3633,6 +3973,7 @@ typedef $$HeartRateDataTableCreateCompanionBuilder = HeartRateDataCompanion
   required String userId,
   required int startTimeStamp,
   required int heartRate,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$HeartRateDataTableUpdateCompanionBuilder = HeartRateDataCompanion
@@ -3640,6 +3981,7 @@ typedef $$HeartRateDataTableUpdateCompanionBuilder = HeartRateDataCompanion
   Value<String> userId,
   Value<int> startTimeStamp,
   Value<int> heartRate,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -3661,6 +4003,9 @@ class $$HeartRateDataTableFilterComposer
 
   ColumnFilters<int> get heartRate => $composableBuilder(
       column: $table.heartRate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$HeartRateDataTableOrderingComposer
@@ -3681,6 +4026,9 @@ class $$HeartRateDataTableOrderingComposer
 
   ColumnOrderings<int> get heartRate => $composableBuilder(
       column: $table.heartRate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$HeartRateDataTableAnnotationComposer
@@ -3700,6 +4048,9 @@ class $$HeartRateDataTableAnnotationComposer
 
   GeneratedColumn<int> get heartRate =>
       $composableBuilder(column: $table.heartRate, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$HeartRateDataTableTableManager extends RootTableManager<
@@ -3731,24 +4082,28 @@ class $$HeartRateDataTableTableManager extends RootTableManager<
             Value<String> userId = const Value.absent(),
             Value<int> startTimeStamp = const Value.absent(),
             Value<int> heartRate = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               HeartRateDataCompanion(
             userId: userId,
             startTimeStamp: startTimeStamp,
             heartRate: heartRate,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String userId,
             required int startTimeStamp,
             required int heartRate,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               HeartRateDataCompanion.insert(
             userId: userId,
             startTimeStamp: startTimeStamp,
             heartRate: heartRate,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3780,6 +4135,7 @@ typedef $$BloodPressureDataTableCreateCompanionBuilder
   required int systolicBloodPressure,
   required int diastolicBloodPressure,
   required int mode,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$BloodPressureDataTableUpdateCompanionBuilder
@@ -3789,6 +4145,7 @@ typedef $$BloodPressureDataTableUpdateCompanionBuilder
   Value<int> systolicBloodPressure,
   Value<int> diastolicBloodPressure,
   Value<int> mode,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -3818,6 +4175,9 @@ class $$BloodPressureDataTableFilterComposer
 
   ColumnFilters<int> get mode => $composableBuilder(
       column: $table.mode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$BloodPressureDataTableOrderingComposer
@@ -3846,6 +4206,9 @@ class $$BloodPressureDataTableOrderingComposer
 
   ColumnOrderings<int> get mode => $composableBuilder(
       column: $table.mode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$BloodPressureDataTableAnnotationComposer
@@ -3871,6 +4234,9 @@ class $$BloodPressureDataTableAnnotationComposer
 
   GeneratedColumn<int> get mode =>
       $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$BloodPressureDataTableTableManager extends RootTableManager<
@@ -3907,6 +4273,7 @@ class $$BloodPressureDataTableTableManager extends RootTableManager<
             Value<int> systolicBloodPressure = const Value.absent(),
             Value<int> diastolicBloodPressure = const Value.absent(),
             Value<int> mode = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               BloodPressureDataCompanion(
@@ -3915,6 +4282,7 @@ class $$BloodPressureDataTableTableManager extends RootTableManager<
             systolicBloodPressure: systolicBloodPressure,
             diastolicBloodPressure: diastolicBloodPressure,
             mode: mode,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -3923,6 +4291,7 @@ class $$BloodPressureDataTableTableManager extends RootTableManager<
             required int systolicBloodPressure,
             required int diastolicBloodPressure,
             required int mode,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               BloodPressureDataCompanion.insert(
@@ -3931,6 +4300,7 @@ class $$BloodPressureDataTableTableManager extends RootTableManager<
             systolicBloodPressure: systolicBloodPressure,
             diastolicBloodPressure: diastolicBloodPressure,
             mode: mode,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -3971,6 +4341,7 @@ typedef $$CombinedDataTableCreateCompanionBuilder = CombinedDataCompanion
   required double bloodGlucose,
   required double fat,
   required double temperature,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$CombinedDataTableUpdateCompanionBuilder = CombinedDataCompanion
@@ -3988,6 +4359,7 @@ typedef $$CombinedDataTableUpdateCompanionBuilder = CombinedDataCompanion
   Value<double> bloodGlucose,
   Value<double> fat,
   Value<double> temperature,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -4042,6 +4414,9 @@ class $$CombinedDataTableFilterComposer
 
   ColumnFilters<double> get temperature => $composableBuilder(
       column: $table.temperature, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$CombinedDataTableOrderingComposer
@@ -4096,6 +4471,9 @@ class $$CombinedDataTableOrderingComposer
 
   ColumnOrderings<double> get temperature => $composableBuilder(
       column: $table.temperature, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$CombinedDataTableAnnotationComposer
@@ -4145,6 +4523,9 @@ class $$CombinedDataTableAnnotationComposer
 
   GeneratedColumn<double> get temperature => $composableBuilder(
       column: $table.temperature, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$CombinedDataTableTableManager extends RootTableManager<
@@ -4186,6 +4567,7 @@ class $$CombinedDataTableTableManager extends RootTableManager<
             Value<double> bloodGlucose = const Value.absent(),
             Value<double> fat = const Value.absent(),
             Value<double> temperature = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               CombinedDataCompanion(
@@ -4202,6 +4584,7 @@ class $$CombinedDataTableTableManager extends RootTableManager<
             bloodGlucose: bloodGlucose,
             fat: fat,
             temperature: temperature,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -4218,6 +4601,7 @@ class $$CombinedDataTableTableManager extends RootTableManager<
             required double bloodGlucose,
             required double fat,
             required double temperature,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               CombinedDataCompanion.insert(
@@ -4234,6 +4618,7 @@ class $$CombinedDataTableTableManager extends RootTableManager<
             bloodGlucose: bloodGlucose,
             fat: fat,
             temperature: temperature,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -4273,6 +4658,7 @@ typedef $$InvasiveComprehensiveDataTableCreateCompanionBuilder
   required double hdlCholesterol,
   required double ldlCholesterol,
   required double triglycerides,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 typedef $$InvasiveComprehensiveDataTableUpdateCompanionBuilder
@@ -4290,6 +4676,7 @@ typedef $$InvasiveComprehensiveDataTableUpdateCompanionBuilder
   Value<double> hdlCholesterol,
   Value<double> ldlCholesterol,
   Value<double> triglycerides,
+  Value<bool> isSynced,
   Value<int> rowid,
 });
 
@@ -4346,6 +4733,9 @@ class $$InvasiveComprehensiveDataTableFilterComposer
 
   ColumnFilters<double> get triglycerides => $composableBuilder(
       column: $table.triglycerides, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
 }
 
 class $$InvasiveComprehensiveDataTableOrderingComposer
@@ -4405,6 +4795,9 @@ class $$InvasiveComprehensiveDataTableOrderingComposer
   ColumnOrderings<double> get triglycerides => $composableBuilder(
       column: $table.triglycerides,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
 }
 
 class $$InvasiveComprehensiveDataTableAnnotationComposer
@@ -4454,6 +4847,9 @@ class $$InvasiveComprehensiveDataTableAnnotationComposer
 
   GeneratedColumn<double> get triglycerides => $composableBuilder(
       column: $table.triglycerides, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$InvasiveComprehensiveDataTableTableManager extends RootTableManager<
@@ -4500,6 +4896,7 @@ class $$InvasiveComprehensiveDataTableTableManager extends RootTableManager<
             Value<double> hdlCholesterol = const Value.absent(),
             Value<double> ldlCholesterol = const Value.absent(),
             Value<double> triglycerides = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               InvasiveComprehensiveDataCompanion(
@@ -4516,6 +4913,7 @@ class $$InvasiveComprehensiveDataTableTableManager extends RootTableManager<
             hdlCholesterol: hdlCholesterol,
             ldlCholesterol: ldlCholesterol,
             triglycerides: triglycerides,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -4532,6 +4930,7 @@ class $$InvasiveComprehensiveDataTableTableManager extends RootTableManager<
             required double hdlCholesterol,
             required double ldlCholesterol,
             required double triglycerides,
+            Value<bool> isSynced = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               InvasiveComprehensiveDataCompanion.insert(
@@ -4548,6 +4947,7 @@ class $$InvasiveComprehensiveDataTableTableManager extends RootTableManager<
             hdlCholesterol: hdlCholesterol,
             ldlCholesterol: ldlCholesterol,
             triglycerides: triglycerides,
+            isSynced: isSynced,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0

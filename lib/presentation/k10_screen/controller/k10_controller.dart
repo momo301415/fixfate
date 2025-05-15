@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -40,7 +41,9 @@ class K10Controller extends GetxController {
           Get.snackbar('權限錯誤', '請開啟藍牙相關權限');
         }
       } else {
-        await scanDevices();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scanDevices();
+        });
       }
     } catch (e) {
       rethrow;

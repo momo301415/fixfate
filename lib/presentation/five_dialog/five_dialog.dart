@@ -29,16 +29,20 @@ class FiveDialog extends StatelessWidget {
             spacing: 28,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                message,
-                style: CustomTextStyles.titleMediumPrimaryContainerSemiBold,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 1.h),
+                child: Text(
+                  message,
+                  style: CustomTextStyles.titleMediumPrimaryContainerSemiBold,
+                ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.h),
                 child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
+                  onTap: onOk ??
+                      () {
+                        Get.back();
+                      },
                   child: Text(
                     "lbl20".tr,
                     style: CustomTextStyles.titleMediumPrimarySemiBold,

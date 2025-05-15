@@ -6,6 +6,5 @@ import 'package:pulsedevice/presentation/k52_page2/models/list_item_model2.dart'
 
 // ignore_for_file: must_be_immutable
 class K52Model2 {
-  Rx<List<ListItemModel2>> listItemList2 =
-      Rx(List.generate(1, (index) => ListItemModel2()));
+  Rx<List<ListItemModel2>> listItemList = Rx([]);
 }

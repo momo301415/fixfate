@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
+import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import 'controller/k29_controller.dart';
@@ -97,7 +98,10 @@ class K29Page extends GetWidget<K29Controller> {
           }),
           _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () async {
             // controller.queryDb();
-            await NotificationService().showTestNotification();
+            await NotificationService().showDeviceDisconnectedNotification();
+            PermissionHelper.initNotification();
+
+            // controller.querydb2();
           }),
         ],
       ),
