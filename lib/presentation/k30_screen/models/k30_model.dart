@@ -20,27 +20,37 @@ class K30Model {
     ListItemModel(tf: "lbl80".tr.obs, tf1: "lbl_175_cm".tr.obs)
   ]);
 
+  Rx<List<ListItemModel>> listItemList2 = Rx([
+    ListItemModel(tf: "lbl300".tr.obs, tf1: "lbl300_1".tr.obs),
+    ListItemModel(tf: "lbl301".tr.obs, tf1: "lbl301_1".tr.obs),
+    ListItemModel(tf: "lbl302".tr.obs, tf1: "lbl299".tr.obs),
+    ListItemModel(tf: "lbl303".tr.obs, tf1: "lbl303_1".tr.obs),
+    ListItemModel(tf: "lbl304".tr.obs, tf1: "lbl303_1".tr.obs),
+    ListItemModel(tf: "lbl305".tr.obs, tf1: "lbl303_2".tr.obs),
+    ListItemModel(tf: "lbl306".tr.obs, tf1: "lbl306_3".tr.obs),
+    ListItemModel(tf: "lbl307".tr.obs, tf1: "lbl307_1".tr.obs),
+  ]);
+
   RxList<ChipviewItemModel> chipviewItemList = <ChipviewItemModel>[
     ChipviewItemModel(five: "lbl84".tr.obs),
-    ChipviewItemModel(five: "lbl85".tr.obs),
-    ChipviewItemModel(five: "lbl86".tr.obs),
-    ChipviewItemModel(five: "lbl87".tr.obs),
-    ChipviewItemModel(five: "lbl88".tr.obs),
-    ChipviewItemModel(five: "lbl89".tr.obs),
-    ChipviewItemModel(five: "lbl90".tr.obs),
-    ChipviewItemModel(five: "lbl91".tr.obs),
-    ChipviewItemModel(five: "lbl92".tr.obs),
+    ChipviewItemModel(five: "lbl309".tr.obs),
+    ChipviewItemModel(five: "lbl310".tr.obs),
+    ChipviewItemModel(five: "lbl311".tr.obs),
+    ChipviewItemModel(five: "lbl312".tr.obs),
+    ChipviewItemModel(five: "lbl313".tr.obs),
+    ChipviewItemModel(five: "lbl314".tr.obs),
     ChipviewItemModel(five: "lbl93".tr.obs)
   ].obs;
 
   RxList<ChipviewOneItemModel> chipviewOneItemList = <ChipviewOneItemModel>[
     ChipviewOneItemModel(one: "lbl84".tr.obs),
-    ChipviewOneItemModel(one: "lbl96".tr.obs),
-    ChipviewOneItemModel(one: "lbl97".tr.obs),
-    ChipviewOneItemModel(one: "lbl98".tr.obs),
-    ChipviewOneItemModel(one: "lbl99".tr.obs),
-    ChipviewOneItemModel(one: "lbl100".tr.obs),
-    ChipviewOneItemModel(one: "lbl101".tr.obs),
+    ChipviewOneItemModel(one: "lbl316".tr.obs),
+    ChipviewOneItemModel(one: "lbl317".tr.obs),
+    ChipviewOneItemModel(one: "lbl318".tr.obs),
+    ChipviewOneItemModel(one: "lbl319".tr.obs),
+    ChipviewOneItemModel(one: "lbl320".tr.obs),
+    ChipviewOneItemModel(one: "lbl321".tr.obs),
+    ChipviewOneItemModel(one: "lbl322".tr.obs),
     ChipviewOneItemModel(one: "lbl93".tr.obs)
   ].obs;
 

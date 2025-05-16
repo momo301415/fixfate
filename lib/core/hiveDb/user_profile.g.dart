@@ -25,19 +25,27 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       weight: fields[5] as double?,
       height: fields[6] as double?,
       waist: fields[7] as double?,
-      personalHabits: (fields[8] as List?)?.cast<String>(),
-      dietHabits: (fields[9] as List?)?.cast<String>(),
-      pastDiseases: (fields[10] as List?)?.cast<String>(),
-      familyDiseases: (fields[11] as List?)?.cast<String>(),
-      drugAllergies: (fields[12] as List?)?.cast<String>(),
-      devices: (fields[13] as List?)?.cast<DeviceProfile>(),
+      drinking: fields[8] as String?,
+      smoking: fields[9] as String?,
+      sporting: fields[10] as String?,
+      sitting: fields[11] as String?,
+      standding: fields[12] as String?,
+      lowHeadding: fields[13] as String?,
+      waterIntake: fields[14] as String?,
+      noneSleep: fields[15] as String?,
+      foodHabits: (fields[16] as List?)?.cast<String>(),
+      cookHabits: (fields[17] as List?)?.cast<String>(),
+      pastDiseases: (fields[18] as List?)?.cast<String>(),
+      familyDiseases: (fields[19] as List?)?.cast<String>(),
+      drugAllergies: (fields[20] as List?)?.cast<String>(),
+      devices: (fields[21] as List?)?.cast<DeviceProfile>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.avatar)
       ..writeByte(1)
@@ -55,16 +63,32 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       ..writeByte(7)
       ..write(obj.waist)
       ..writeByte(8)
-      ..write(obj.personalHabits)
+      ..write(obj.drinking)
       ..writeByte(9)
-      ..write(obj.dietHabits)
+      ..write(obj.smoking)
       ..writeByte(10)
-      ..write(obj.pastDiseases)
+      ..write(obj.sporting)
       ..writeByte(11)
-      ..write(obj.familyDiseases)
+      ..write(obj.sitting)
       ..writeByte(12)
-      ..write(obj.drugAllergies)
+      ..write(obj.standding)
       ..writeByte(13)
+      ..write(obj.lowHeadding)
+      ..writeByte(14)
+      ..write(obj.waterIntake)
+      ..writeByte(15)
+      ..write(obj.noneSleep)
+      ..writeByte(16)
+      ..write(obj.foodHabits)
+      ..writeByte(17)
+      ..write(obj.cookHabits)
+      ..writeByte(18)
+      ..write(obj.pastDiseases)
+      ..writeByte(19)
+      ..write(obj.familyDiseases)
+      ..writeByte(20)
+      ..write(obj.drugAllergies)
+      ..writeByte(21)
       ..write(obj.devices);
   }
 

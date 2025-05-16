@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' as getx;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/network_info.dart';
 import 'package:pulsedevice/core/global_controller.dart';
@@ -19,7 +24,7 @@ class ApiService {
       InterceptorsWrapper(
         onRequest: (options, handler) {
           // 自動加入 Bearer token
-          final token = Get.find<GlobalController>().apiToken.value;
+          final token = getx.Get.find<GlobalController>().apiToken.value;
           if (token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -74,6 +79,49 @@ class ApiService {
       }
     } on DioException catch (e) {
       throw Exception('Dio 錯誤：${e.message}');
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadImage({
+    required String path,
+    required File imageFile,
+    required String phone,
+  }) async {
+    final hasConnection = await _networkInfo.isConnected();
+    if (!hasConnection) throw NoInternetException('請確認網路連線');
+
+    final mimeType =
+        lookupMimeType(imageFile.path) ?? 'application/octet-stream';
+    final mediaType = MediaType.parse(mimeType);
+
+    final fileName = p.basename(imageFile.path);
+    final filePart = await MultipartFile.fromFile(
+      imageFile.path,
+      filename: fileName,
+      contentType: mediaType,
+    );
+
+    final formData = FormData.fromMap({
+      'file': filePart,
+      'phone': phone,
+    });
+
+    try {
+      final response = await _dio.post(
+        path,
+        data: formData,
+        options: Options(
+          contentType: 'multipart/form-data',
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data;
+      } else {
+        throw Exception('圖片上傳失敗：${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      throw Exception('上傳錯誤：${e.message}');
     }
   }
 }

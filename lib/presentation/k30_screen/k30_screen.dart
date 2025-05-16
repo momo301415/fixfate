@@ -47,10 +47,12 @@ class K30Screen extends GetWidget<K30Controller> {
           SizedBox(height: 16),
           _buildColumnone5(),
           SizedBox(height: 16),
+          _buildColumnone6(),
+          SizedBox(height: 16),
           _buildRowfidownload(),
           SizedBox(height: 16),
           _buildColumn(),
-          SizedBox(height: 16),
+          SizedBox(height: 36.h),
         ],
       ),
     );
@@ -225,8 +227,106 @@ class K30Screen extends GetWidget<K30Controller> {
     );
   }
 
-  /// Section Widget
   Widget _buildColumnone1() {
+    return Container(
+      width: double.maxFinite,
+      padding: EdgeInsets.all(16.h),
+      decoration: AppDecoration.fillWhiteA.copyWith(
+        borderRadius: BorderRadiusStyle.roundedBorder24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "lbl82".tr,
+              style: CustomTextStyles.titleMediumBluegray900,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "lbl82_2".tr,
+              style: CustomTextStyles.bodySmallGray50001,
+            ),
+          ),
+          SizedBox(height: 16.h),
+          ListView.builder(
+            padding: EdgeInsets.zero,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: controller.k30ModelObj.value.listItemList2.value.length,
+            itemBuilder: (context, index) {
+              ListItemModel model =
+                  controller.k30ModelObj.value.listItemList2.value[index];
+              return ListItemWidget(
+                model,
+                onTap: () async {
+                  switch (index) {
+                    case 0:
+                      await controller.selectDrink();
+                      if (controller.drikValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.drikValue.value;
+                      }
+                      break;
+                    case 1:
+                      await controller.selectSmoke();
+                      if (controller.smokeValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.smokeValue.value;
+                      }
+
+                      break;
+                    case 2:
+                      await controller.selectSport();
+                      if (controller.sportValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.sportValue.value;
+                      }
+                      break;
+                    case 3:
+                      await controller.selectLongSit();
+                      if (controller.longSitValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.longSitValue.value;
+                      }
+                      break;
+                    case 4:
+                      await controller.selectLongStand();
+                      if (controller.longStandValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.longStandValue.value;
+                      }
+                      break;
+                    case 5:
+                      await controller.selectLowHead();
+                      if (controller.lowHeadValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.lowHeadValue.value;
+                      }
+                      break;
+                    case 6:
+                      await controller.selectWater();
+                      if (controller.waterValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.waterValue.value + "ml";
+                      }
+                      break;
+                    case 7:
+                      await controller.selectNoneSleep();
+                      if (controller.noneSleepValue.value.isNotEmpty) {
+                        model.tf1?.value = controller.noneSleepValue.value;
+                      }
+                      break;
+                  }
+                },
+              );
+            },
+          ),
+          SizedBox(height: 16.h),
+        ],
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildColumnone2() {
     return Container(
       width: double.maxFinite,
       padding: EdgeInsets.all(16.h),
@@ -238,12 +338,12 @@ class K30Screen extends GetWidget<K30Controller> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "lbl82".tr,
+            "lbl308".tr,
             style: CustomTextStyles.titleMediumErrorContainer,
           ),
           SizedBox(height: 4.h),
           Text(
-            "lbl83".tr,
+            "lbl308_1".tr,
             style: CustomTextStyles.bodySmallGray50001,
           ),
           SizedBox(height: 16.h),
@@ -270,7 +370,7 @@ class K30Screen extends GetWidget<K30Controller> {
                             model: model,
                             list: list, // ✅ 傳 RxList
                             context: Get.context!,
-                            title: "lbl82_1".tr,
+                            title: "lbl308_2".tr,
                             subTitle: "lbl132".tr,
                             createModel: (text) => ChipviewItemModel(
                               five: text.obs,
@@ -293,7 +393,7 @@ class K30Screen extends GetWidget<K30Controller> {
                             model.isSelected?.toggle();
                           }
                         }
-                        controller.updateSelectedPersonalHabits();
+                        controller.updateSelectedFoodHabits();
                       },
                     );
                   },
@@ -307,7 +407,7 @@ class K30Screen extends GetWidget<K30Controller> {
   }
 
   /// Section Widget
-  Widget _buildColumnone2() {
+  Widget _buildColumnone3() {
     return Container(
       width: double.maxFinite,
       padding: EdgeInsets.all(16.h),
@@ -319,12 +419,12 @@ class K30Screen extends GetWidget<K30Controller> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "lbl94".tr,
+            "lbl315".tr,
             style: CustomTextStyles.titleMediumErrorContainer,
           ),
           SizedBox(height: 4.h),
           Text(
-            "lbl95".tr,
+            "lbl315_1".tr,
             style: CustomTextStyles.bodySmallGray50001,
           ),
           SizedBox(height: 16.h),
@@ -351,7 +451,7 @@ class K30Screen extends GetWidget<K30Controller> {
                             model: model,
                             list: list, // ✅ 傳 RxList
                             context: Get.context!,
-                            title: "lbl94_1".tr,
+                            title: "lbl315_2".tr,
                             subTitle: "lbl132".tr,
                             createModel: (text) => ChipviewOneItemModel(
                               one: text.obs,
@@ -374,7 +474,7 @@ class K30Screen extends GetWidget<K30Controller> {
                             model.isSelected?.toggle();
                           }
                         }
-                        controller.updateSelectedDietHabits();
+                        controller.updateSelectedCookHabits();
                       },
                     );
                   },
@@ -388,7 +488,7 @@ class K30Screen extends GetWidget<K30Controller> {
   }
 
   /// Section Widget
-  Widget _buildColumnone3() {
+  Widget _buildColumnone4() {
     return Container(
       width: double.maxFinite,
       padding: EdgeInsets.all(16.h),
@@ -469,7 +569,7 @@ class K30Screen extends GetWidget<K30Controller> {
   }
 
   /// Section Widget
-  Widget _buildColumnone4() {
+  Widget _buildColumnone5() {
     return Container(
       width: double.maxFinite,
       padding: EdgeInsets.all(16.h),
@@ -550,7 +650,7 @@ class K30Screen extends GetWidget<K30Controller> {
   }
 
   /// Section Widget
-  Widget _buildColumnone5() {
+  Widget _buildColumnone6() {
     return Container(
       width: double.maxFinite,
       padding: EdgeInsets.all(16.h),

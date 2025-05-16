@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -22,6 +28,29 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>使用BLE權限描述</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>使用BLE權限描述</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要使用相機來拍照</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要存取相簿來選取圖片</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>我們需要通知權限來提醒您裝置狀態變化</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -29,38 +58,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsArbitraryLoads</key>
-        <true />
-    </dict>
-	<!-- 相機使用說明 -->
-	<key>NSCameraUsageDescription</key>
-	<string>需要使用相機來拍照</string>
-	<!-- 相簿使用說明 -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>需要存取相簿來選取圖片</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>使用BLE權限描述</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>使用BLE權限描述</string>
-	<key>NSUserNotificationUsageDescription</key>
-	<string>我們需要通知權限來提醒您裝置狀態變化</string>
-	<!-- 如果支援背景藍牙，還要開啟這個 -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>bluetooth-central</string>
-		<string>fetch</string>
-		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

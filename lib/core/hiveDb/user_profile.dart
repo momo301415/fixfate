@@ -30,21 +30,45 @@ class UserProfile extends HiveObject {
   double? waist;
 
   @HiveField(8)
-  List<String>? personalHabits;
+  String? drinking;
 
   @HiveField(9)
-  List<String>? dietHabits;
+  String? smoking;
 
   @HiveField(10)
-  List<String>? pastDiseases;
+  String? sporting;
 
   @HiveField(11)
-  List<String>? familyDiseases;
+  String? sitting;
 
   @HiveField(12)
-  List<String>? drugAllergies;
+  String? standding;
 
   @HiveField(13)
+  String? lowHeadding;
+
+  @HiveField(14)
+  String? waterIntake;
+
+  @HiveField(15)
+  String? noneSleep;
+
+  @HiveField(16)
+  List<String>? foodHabits;
+
+  @HiveField(17)
+  List<String>? cookHabits;
+
+  @HiveField(18)
+  List<String>? pastDiseases;
+
+  @HiveField(19)
+  List<String>? familyDiseases;
+
+  @HiveField(20)
+  List<String>? drugAllergies;
+
+  @HiveField(21)
   List<DeviceProfile>? devices;
 
   UserProfile({
@@ -56,8 +80,16 @@ class UserProfile extends HiveObject {
     this.weight,
     this.height,
     this.waist,
-    this.personalHabits = const [],
-    this.dietHabits = const [],
+    this.drinking,
+    this.smoking,
+    this.sporting,
+    this.sitting,
+    this.standding,
+    this.lowHeadding,
+    this.waterIntake,
+    this.noneSleep,
+    this.foodHabits = const [],
+    this.cookHabits = const [],
     this.pastDiseases = const [],
     this.familyDiseases = const [],
     this.drugAllergies = const [],
