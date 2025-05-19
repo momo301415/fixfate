@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import '../../widgets/custom_search_view.dart';
@@ -6,6 +7,7 @@ import 'controller/k73_controller.dart';
 import 'models/listview_item_model.dart';
 import 'widgets/listview_item_widget.dart'; // ignore_for_file: must_be_immutable
 
+/// 健康資料主頁面
 class K73Screen extends GetWidget<K73Controller> {
   const K73Screen({Key? key})
       : super(
@@ -14,60 +16,41 @@ class K73Screen extends GetWidget<K73Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        child: SizedBox(
+    return BaseChatScaffold(
+      child: Container(
+        child: Container(
           width: double.maxFinite,
+          margin: EdgeInsets.only(
+            left: 0.h,
+            right: 0.h,
+            bottom: 80.h,
+          ),
           child: Column(
+            spacing: 12,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    height: 732.h,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Container(
-                          width: double.maxFinite,
-                          margin: EdgeInsets.only(
-                            left: 14.h,
-                            right: 6.h,
-                            bottom: 80.h,
-                          ),
-                          child: Column(
-                            spacing: 12,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "msg_2025_03_29".tr,
-                                style: CustomTextStyles.bodySmall10,
-                              ),
-                              _buildListview(),
-                              _buildRowviewtwo()
-                            ],
-                          ),
-                        ),
-                        _buildStacksbgone()
-                      ],
-                    ),
-                  ),
-                ),
+              Text(
+                "msg_2025_03_29".tr,
+                style: CustomTextStyles.bodySmall10,
               ),
-              SizedBox(height: 20.h)
+              _buildListview(),
+              _buildRowviewtwo()
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        width: double.maxFinite,
-        margin: EdgeInsets.only(
-          left: 54.h,
-          right: 54.h,
-          bottom: 20.h,
-        ),
-        child: _buildBottombar(),
+      bottomNavigationBar: CustomBottomBar(
+        onChanged: (value) {
+          switch (value) {
+            case 0:
+              break;
+            case 1:
+              break;
+            case 2:
+              controller.goK29Screen();
+              break;
+          }
+        },
       ),
     );
   }
@@ -77,22 +60,20 @@ class K73Screen extends GetWidget<K73Controller> {
     return Padding(
       padding: EdgeInsets.only(right: 8.h),
       child: Obx(
-        () => ListView.separated(
-          padding: EdgeInsets.zero,
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (context, index) {
-            return SizedBox(
-              height: 16.h,
-            );
-          },
+        () => GridView.builder(
           itemCount: controller.k73ModelObj.value.listviewItemList.value.length,
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12.h,
+            mainAxisSpacing: 12.h,
+            childAspectRatio: 1.3,
+          ),
           itemBuilder: (context, index) {
-            ListviewItemModel model =
+            final item =
                 controller.k73ModelObj.value.listviewItemList.value[index];
-            return ListviewItemWidget(
-              model,
-            );
+            return ListviewItemWidget(model: item);
           },
         ),
       ),
@@ -195,73 +176,6 @@ class K73Screen extends GetWidget<K73Controller> {
             ),
           )
         ],
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStacksbgone() {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        height: 168.h,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgSBg,
-              height: 168.h,
-              width: double.maxFinite,
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                width: double.maxFinite,
-                margin: EdgeInsets.only(top: 8.h),
-                padding: EdgeInsets.symmetric(horizontal: 14.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 16.h),
-                      child: Text(
-                        "lbl224".tr,
-                        style: CustomTextStyles.bodyLargeWhiteA700,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 16.h),
-                      child: Text(
-                        "lbl225".tr,
-                        style: CustomTextStyles.bodyMediumWhiteA700,
-                      ),
-                    ),
-                    SizedBox(height: 14.h),
-                    CustomSearchView(
-                      controller: controller.searchController,
-                      hintText: "lbl226".tr,
-                      contentPadding:
-                          EdgeInsets.fromLTRB(16.h, 12.h, 12.h, 12.h),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildBottombar() {
-    return SizedBox(
-      width: double.maxFinite,
-      child: CustomBottomBar(
-        onChanged: (BottomBarEnum type) {
-          Get.toNamed(getCurrentRoute(type), id: 1);
-        },
       ),
     );
   }

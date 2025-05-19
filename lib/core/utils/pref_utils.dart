@@ -42,6 +42,11 @@ class PrefUtils {
     return _sharedPreferences!.setString('currentPassword', password);
   }
 
+  /// api user id
+  Future<void> setApiUserId(String usrid) {
+    return _sharedPreferences!.setString('apiUserId', usrid);
+  }
+
   String getUserId() {
     try {
       return _sharedPreferences!.getString('currentUserId')!;
@@ -53,6 +58,14 @@ class PrefUtils {
   String getPassword() {
     try {
       return _sharedPreferences!.getString('currentPassword')!;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String getApiUserId() {
+    try {
+      return _sharedPreferences!.getString('apiUserId')!;
     } catch (e) {
       return '';
     }

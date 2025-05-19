@@ -787,8 +787,7 @@ class K30Screen extends GetWidget<K30Controller> {
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientCyanToPrimaryTL8Decoration,
             onPressed: () async {
-              bool res = await controller.saveUserProfile();
-              print("save action res : $res");
+              var res = await controller.prossesSaveProfile();
               if (res) {
                 Get.back();
               }

@@ -21,4 +21,14 @@ class YcService {
       print("停止實時跑步失敗");
     }
   }
+
+  static void setListeningTime(int interval) async {
+    var res =
+        await YcProductPlugin().setDeviceHealthMonitoringMode(interval: 60);
+    if (res != null && res.statusCode == PluginState.succeed) {
+      print("設定偵測時間成功");
+    } else {
+      print("設定偵測時間失敗");
+    }
+  }
 }

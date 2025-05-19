@@ -126,16 +126,19 @@ class CustomSearchView extends StatelessWidget {
             ),
         suffixIcon: suffix ??
             Container(
-              padding: EdgeInsets.all(8.h),
-              margin: EdgeInsets.fromLTRB(16.h, 12.h, 12.h, 12.h),
+              width: 40.h,
+              height: 40.h,
+              margin: EdgeInsets.only(right: 6.h),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(20.h),
+                shape: BoxShape.circle, // ✅ 重點：使用 circle
               ),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgSend,
-                height: 24.h,
-                width: 24.h,
+              child: Center(
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgSend,
+                  height: 17.h,
+                  width: 17.h,
+                ),
               ),
             ),
         suffixIconConstraints: suffixConstraints ??

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_subtitle.dart';
+import 'package:pulsedevice/widgets/custom_search_view.dart';
 
 class BaseScaffold extends StatelessWidget {
   final Widget body;
@@ -200,6 +201,88 @@ class BaseScaffoldImageHeaderQr extends StatelessWidget {
                 child: child,
               ),
             ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: bottomNavigationBar,
+    );
+  }
+}
+
+class BaseChatScaffold extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final TextEditingController? controller;
+  final Widget? bottomNavigationBar;
+  BaseChatScaffold({
+    Key? key,
+    required this.child,
+    this.padding,
+    this.controller,
+    this.bottomNavigationBar,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: appTheme.teal50,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 168.h,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  ImageConstant.imgUnionBg2,
+                  width: double.infinity,
+                  height: 168.h,
+                  fit: BoxFit.fill,
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    width: double.maxFinite,
+                    margin: EdgeInsets.only(top: 18.h),
+                    padding: EdgeInsets.symmetric(horizontal: 14.h),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 16.h),
+                          child: Text(
+                            "lbl224".tr,
+                            style: CustomTextStyles.bodyLargeWhiteA700,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 16.h),
+                          child: Text(
+                            "lbl225".tr,
+                            style: CustomTextStyles.bodyMediumWhiteA700,
+                          ),
+                        ),
+                        SizedBox(height: 14.h),
+                        CustomSearchView(
+                          controller: controller,
+                          hintText: "lbl226".tr,
+                          contentPadding:
+                              EdgeInsets.fromLTRB(16.h, 12.h, 12.h, 12.h),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 8.h),
+              child: child,
+            ),
           ),
         ],
       ),

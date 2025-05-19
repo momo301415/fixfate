@@ -64,15 +64,15 @@ class One2Controller extends GetxController {
           'password': tfController.text,
         },
       );
-      LoadingHelper.show();
+      LoadingHelper.hide();
       if (resData.isNotEmpty) {
         var resBody = resData['data'];
         if (resBody != null) {
           await PrefUtils().setUserId(oneController.text);
           await PrefUtils().setPassword(tfController.text);
-
+          await PrefUtils().setApiUserId(resBody['id'].toString());
           gc.userId.value = oneController.text;
-          gc.apiToken.value = resBody;
+          gc.apiToken.value = resBody['token'].toString();
           gc.healthDataSyncService.setUserId(oneController.text);
 
           return true;

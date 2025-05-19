@@ -2,6 +2,10 @@ import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
+import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
+import 'package:pulsedevice/presentation/two10_screen/two10_screen.dart';
+import 'package:pulsedevice/presentation/two9_screen/binding/two9_binding.dart';
+import 'package:pulsedevice/presentation/two9_screen/two9_screen.dart';
 
 import '../core/app_export.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
@@ -186,6 +190,10 @@ class AppRoutes {
   static const String one8Screen = '/one8_screen';
 
   static const String two5Screen = '/two5_screen';
+
+  static const String two9Screen = '/two9_screen';
+
+  static const String two10Screen = '/two10_screen';
 
   static const String k61Screen = '/k61_screen';
 
@@ -464,6 +472,20 @@ class AppRoutes {
       bindings: [K61Binding()],
     ),
 
+    /// 壓力測量告警設定頁面
+    GetPage(
+      name: two9Screen,
+      page: () => Two9Screen(),
+      bindings: [Two9Binding()],
+    ),
+
+    /// 裝置監聽設置頁面
+    GetPage(
+      name: two10Screen,
+      page: () => Two10Screen(),
+      bindings: [Two10Binding()],
+    ),
+
     /// 目標設定頁面
     GetPage(
       name: k62Screen,
@@ -520,6 +542,8 @@ class AppRoutes {
       page: () => K72Screen(),
       bindings: [K72Binding()],
     ),
+
+    /// 健康資料主頁面
     GetPage(
       name: k73Screen,
       page: () => K73Screen(),

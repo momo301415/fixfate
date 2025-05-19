@@ -12,6 +12,8 @@ import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
+import 'package:pulsedevice/core/hiveDb/listen_setting.dart';
+import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
@@ -54,6 +56,9 @@ class GlobalController extends GetxController {
   var apiToken = ''.obs;
 
   Timer? _syncTimer;
+
+  ///--- 記錄bottombar index
+  var bottomBarIndex = 2.obs;
 
   @override
   void onInit() {
@@ -124,6 +129,8 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(RemiderSettingAdapter());
     Hive.registerAdapter(AlertRecordAdapter());
     Hive.registerAdapter(AlertRecordListAdapter());
+    Hive.registerAdapter(ListenSettingAdapter());
+    Hive.registerAdapter(PressureSettingAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -133,6 +140,8 @@ class GlobalController extends GetxController {
     await Hive.openBox<RemiderSetting>('remider_setting');
     await Hive.openBox<AlertRecord>('alert_record');
     await Hive.openBox<AlertRecordList>('alert_records');
+    await Hive.openBox<ListenSetting>('listen_setting');
+    await Hive.openBox<PressureSetting>('pressure_setting');
   }
 
   void initNotification() async {

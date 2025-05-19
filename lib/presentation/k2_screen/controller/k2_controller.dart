@@ -47,8 +47,9 @@ class K2Controller extends GetxController {
       if (resData.isNotEmpty) {
         var resBody = resData['data'];
         if (resBody != null) {
+          await PrefUtils().setApiUserId(resBody['id'].toString());
+          gc.apiToken.value = resBody['token'].toString();
           gc.userId.value = userid;
-          gc.apiToken.value = resBody;
           gc.healthDataSyncService.setUserId(userid);
 
           goK29Page();

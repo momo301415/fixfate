@@ -16,4 +16,9 @@ class K73Controller extends GetxController {
     super.onClose();
     searchController.dispose();
   }
+
+  /// 路由到個人頁面
+  void goK29Screen() {
+    Get.toNamed(AppRoutes.k29Page);
+  }
 }

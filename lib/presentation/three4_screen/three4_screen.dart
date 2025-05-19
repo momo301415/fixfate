@@ -53,8 +53,8 @@ class Three4Screen extends GetWidget<Three4Controller> {
     return SizedBox(
       width: double.maxFinite,
       child: CustomBottomBar(
-        onChanged: (BottomBarEnum type) {
-          Get.toNamed(getCurrentRoute(type), id: 1);
+        onChanged: (int index) {
+          // Get.toNamed(getCurrentRoute(type), id: 1);
         },
       ),
     );

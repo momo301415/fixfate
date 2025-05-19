@@ -46,7 +46,7 @@ class FourController extends GetxController with CodeAutoFill {
 
     ///確保不卡UI
     Future.delayed(const Duration(milliseconds: 500), () {
-      fetchRegist(phone, password);
+      fetchSms(phone);
     });
   }
 
@@ -113,11 +113,8 @@ class FourController extends GetxController with CodeAutoFill {
       );
       LoadingHelper.hide();
       if (resData.isNotEmpty) {
-        var resBody = resData['data'];
-        if (resBody != null) {
-          if (resBody['body']['status'] == 0) {
-            final data = resBody['body']['data'];
-          }
+        var resBody = resData['success'];
+        if (resBody != null && resBody['success'] == true) {
         } else {
           DialogHelper.showError("${resData["message"]}");
         }

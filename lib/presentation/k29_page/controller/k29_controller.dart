@@ -86,6 +86,11 @@ class K29Controller extends GetxController {
     Get.toNamed(AppRoutes.k57Screen);
   }
 
+  /// 路由到健康資訊頁面
+  void go73Screen() {
+    Get.toNamed(AppRoutes.k73Screen);
+  }
+
   void queryDb() async {
     var id = await gc.userId.value;
     var combined_data = await gc.combinedDataService.getByUser(id);

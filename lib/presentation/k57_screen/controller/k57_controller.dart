@@ -22,4 +22,14 @@ class K57Controller extends GetxController {
   void goTwo5Screen() {
     Get.toNamed(AppRoutes.two5Screen);
   }
+
+  /// 路由到壓力測量設定
+  void goTwo9Screen() {
+    Get.toNamed(AppRoutes.two9Screen);
+  }
+
+  /// 路由到監聽設定
+  void goTwo10Screen() {
+    Get.toNamed(AppRoutes.two10Screen);
+  }
 }

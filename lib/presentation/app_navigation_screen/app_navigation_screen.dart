@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:yc_product_plugin/yc_product_plugin_data_type.dart';
 import '../../core/app_export.dart';
 import '../five_dialog/controller/five_controller.dart';
 import '../five_dialog/five_dialog.dart';

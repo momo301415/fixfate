@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import '../core/app_export.dart';
 
 enum BottomBarEnum { tf }
@@ -11,6 +12,7 @@ class CustomBottomBar extends StatelessWidget {
         );
 
   RxInt selectedIndex = 2.obs;
+  final gc = Get.find<GlobalController>();
 
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(
@@ -33,7 +35,7 @@ class CustomBottomBar extends StatelessWidget {
     )
   ];
 
-  Function(BottomBarEnum)? onChanged;
+  Function(int)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class CustomBottomBar extends StatelessWidget {
           showUnselectedLabels: false,
           selectedFontSize: 0,
           elevation: 0,
-          currentIndex: selectedIndex.value,
+          currentIndex: gc.bottomBarIndex.value,
           type: BottomNavigationBarType.fixed,
           items: List.generate(bottomMenuList.length, (index) {
             return BottomNavigationBarItem(
@@ -112,7 +114,8 @@ class CustomBottomBar extends StatelessWidget {
           }),
           onTap: (index) {
             selectedIndex.value = index;
-            onChanged?.call(bottomMenuList[index].type);
+            gc.bottomBarIndex.value = index;
+            onChanged?.call(index);
           },
         ),
       ),

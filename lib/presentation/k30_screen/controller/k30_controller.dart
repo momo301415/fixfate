@@ -359,7 +359,8 @@ class K30Controller extends GetxController {
       user.nickname = nickName.value;
       user.email = email.value;
       user.gender = gender.value.isEmpty ? '男' : gender.value;
-      user.birthDate = birth.value.isEmpty ? '1985.03.14' : birth.value;
+      user.birthDate =
+          birth.value.isEmpty ? '1985-03-14' : birth.value.replaceAll(".", "-");
       user.height = height.value > 0 ? height.value : 175;
       user.weight = weight.value > 0 ? weight.value : 65;
       user.waist = waistline.value > 0 ? waistline.value : 100;
@@ -378,15 +379,12 @@ class K30Controller extends GetxController {
       user.noneSleep =
           noneSleepValue.value.isEmpty ? 'lbl307_1'.tr : noneSleepValue.value;
       user.foodHabits = foodHabits.toList().cast<String>();
-      user.cookHabits = foodHabits.toList().cast<String>();
+      user.cookHabits = cookHabits.toList().cast<String>();
       user.pastDiseases = pastDiseases.toList().cast<String>();
       user.familyDiseases = familyDiseases.toList().cast<String>();
       user.drugAllergies = drugAllergies.toList().cast<String>();
 
       await UserProfileStorage.saveUserProfile(gc.userId.value, user);
-      Future.delayed(const Duration(milliseconds: 500), () {
-        SnackbarHelper.showBlueSnackbar(message: "snackbar_save_success".tr);
-      });
 
       res = true;
     } catch (e) {
@@ -510,8 +508,9 @@ class K30Controller extends GetxController {
   }
 
   /// call api上傳圖片
-  void uploadAvatar() async {
-    if (avatarPath.value.isEmpty) return;
+  Future<String> uploadAvatar() async {
+    if (avatarPath.value.isEmpty) return "";
+    LoadingHelper.show();
     try {
       final res = await api.uploadImage(
           path: Api.avatar,
@@ -521,6 +520,7 @@ class K30Controller extends GetxController {
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
+          return resBody['avatarUrl'];
         } else {
           DialogHelper.showError("${res["message"]}");
         }
@@ -531,6 +531,7 @@ class K30Controller extends GetxController {
     } finally {
       LoadingHelper.hide();
     }
+    return "";
   }
 
   /// call api取得個人資訊
@@ -538,6 +539,7 @@ class K30Controller extends GetxController {
     LoadingHelper.show();
     try {
       final res = await api.postJson(Api.userProfile, {'phone': phone});
+      LoadingHelper.hide();
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
@@ -545,7 +547,6 @@ class K30Controller extends GetxController {
           DialogHelper.showError("${res["message"]}");
         }
       }
-      LoadingHelper.hide();
     } catch (e) {
       LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
@@ -555,16 +556,16 @@ class K30Controller extends GetxController {
   }
 
   /// call api更新個人資訊
-  void updateUserProfile() async {
+  Future<bool> updateUserProfile(String imgPath) async {
     LoadingHelper.show();
     try {
-      final res = await api.postJson(Api.updateUserProfile, {
+      var params = {
         "phone": gc.userId.value,
         "email": email.value,
         "name": nickName.value,
-        "birthDate": birth.value,
+        "birthDate": birth.value.replaceAll(".", "-"),
         "gender": gender.value,
-        "avatarUrl": avatarPath.value,
+        "avatarUrl": imgPath.isEmpty ? null : imgPath,
         "bodyWeight": weight.value,
         "bodyHeight": height.value,
         "waistline": waistline.value,
@@ -597,14 +598,13 @@ class K30Controller extends GetxController {
           },
           "allergies": {"drug": drugAllergies.toList(), "others": null}
         },
-        "token": "",
-        "notityToken": "",
-        "createdAt": DateTime.now().format(pattern: 'yyyy-MM-dd HH:mm:ss')
-      });
+      };
+      final res = await api.postJson(Api.updateUserProfile, params);
       LoadingHelper.hide();
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
+          return true;
         } else {
           DialogHelper.showError("${res["message"]}");
         }
@@ -615,5 +615,26 @@ class K30Controller extends GetxController {
     } finally {
       LoadingHelper.hide();
     }
+    return false;
+  }
+
+  Future<bool> prossesSaveProfile() async {
+    var res = await saveUserProfile();
+    if (res) {
+      if (avatarPath.value.isNotEmpty) {
+        var imgPath = await uploadAvatar();
+        if (imgPath.isNotEmpty) {
+          var res = await updateUserProfile(imgPath);
+          if (res) {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              SnackbarHelper.showBlueSnackbar(
+                  message: "snackbar_save_success".tr);
+            });
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }
