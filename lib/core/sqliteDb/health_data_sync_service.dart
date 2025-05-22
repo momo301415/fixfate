@@ -12,6 +12,7 @@ import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
+import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 
@@ -220,6 +221,69 @@ class HealthDataSyncService {
     if (alertList.isEmpty) return;
 
     await AlertRecordListStorage.addRecords(_userId!, alertList);
+  }
+
+  Future<Map<String, dynamic>> getAnalysisHealthData() async {
+    final stepService = StepDataService(_db);
+    final sleepService = SleepDataService(_db);
+    final heartService = HeartRateDataService(_db);
+    final combinedService = CombinedDataService(_db);
+    if (_userId == null) {
+      _userId = await PrefUtils().getUserId();
+    }
+    final stepList = await stepService.getStepDataByUser(_userId!);
+    final sleepList = await sleepService.getSleepDataByUser(_userId!);
+    final heartList = await heartService.getByUser(_userId!);
+    final combinedList = await combinedService.getByUser(_userId!);
+
+    final stepLast = stepList.last;
+    final sleepLast = sleepList.last;
+    final heartLast = heartList.last;
+    final combinedLast = combinedList.last;
+    int stepCount = stepList.fold(0, (sum, d) => sum + d.step);
+    int stepDistance = stepList.fold(0, (sum, d) => sum + d.distance);
+    final calories = stepList.fold(0, (sum, d) => sum + d.calories);
+    String stepDuration =
+        DateTimeUtils.getTimeDifferenceString(stepLast.endTimeStamp);
+    final sleepTime =
+        ((sleepLast.endTimeStamp - sleepLast.startTimeStamp) / 3600)
+            .toStringAsFixed(2);
+    String sleepDuration =
+        DateTimeUtils.getTimeDifferenceString(sleepLast.endTimeStamp);
+    final heartRate = heartLast.heartRate;
+    String heartDuration =
+        DateTimeUtils.getTimeDifferenceString(heartLast.startTimeStamp);
+    String combinedDuration =
+        DateTimeUtils.getTimeDifferenceString(combinedLast.startTimeStamp);
+    final bloodOxygen = combinedLast.bloodOxygen;
+    final t = combinedLast.temperature;
+    var temperature = "";
+    if (t > 0.0) {
+      temperature = "+ ${t}";
+    } else {
+      temperature = "- ${t}";
+    }
+    final loadDataTime = DateTimeUtils.formatMaxTimestamp(
+        stepLast.startTimeStamp,
+        sleepLast.startTimeStamp,
+        heartLast.startTimeStamp,
+        combinedLast.startTimeStamp);
+
+    final analysis = {
+      "stepCount": stepCount,
+      "stepDistance": stepDistance,
+      "stepDuration": stepDuration,
+      "calories": calories,
+      "sleepTime": sleepTime,
+      "sleepDuration": sleepDuration,
+      "heartRate": heartRate,
+      "heartDuration": heartDuration,
+      "bloodOxygen": bloodOxygen,
+      "combinedDuration": combinedDuration,
+      "temperature": temperature,
+      "loadDataTime": loadDataTime
+    };
+    return analysis;
   }
 
   void printLongText(String text) {

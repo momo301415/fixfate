@@ -3,6 +3,8 @@ plugins {
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
+    id("com.google.gms.google-services")
+    
 }
 
 android {
@@ -11,15 +13,18 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
          // ✅ 啟用 desugaring
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_17
     }
+    // kotlin {
+    //     jvmToolchain(17) // 🔧 關鍵：讓 Java/Kotlin 使用同一 JVM target
+    // }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -30,13 +35,29 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled true
+        // multiDexEnabled true
+    }
+
+    signingConfigs {
+        readom {
+            storeFile rootProject.file("AppKey.jks")
+            keyAlias 'AppAkyAlias'
+            storePassword 'gfgg8b4196f'
+            keyPassword 'b8g64f4bw'
+        }
     }
 
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.readom
+              ///規避打包錯誤
+            // shrinkResources true
+            // minifyEnabled true
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
             signingConfig = signingConfigs.debug
         }
     }
@@ -49,4 +70,5 @@ flutter {
 dependencies {
     implementation "androidx.multidex:multidex:2.0.1"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 }

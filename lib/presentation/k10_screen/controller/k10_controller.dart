@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
+import 'package:pulsedevice/presentation/ios_dialog/ios_dialog.dart';
 import 'package:pulsedevice/presentation/k42_dialog/controller/k42_controller.dart';
 import 'package:pulsedevice/presentation/k42_dialog/k42_dialog.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
@@ -42,7 +44,12 @@ class K10Controller extends GetxController {
         }
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          scanDevices();
+          final state = YcProductPlugin().getBluetoothState();
+          if (state != BluetoothState.off) {
+            showBlueTooth();
+          } else {
+            scanDevices();
+          }
         });
       }
     } catch (e) {
@@ -76,11 +83,11 @@ class K10Controller extends GetxController {
           ..sort((a, b) => (b.rssiValue.toInt()) - (a.rssiValue.toInt()));
 
         devices.assignAll(sortedList);
+        LoadingHelper.hide();
       }
     } catch (e) {
-      rethrow;
-    } finally {
       LoadingHelper.hide();
+      rethrow;
     }
   }
 
@@ -107,6 +114,12 @@ class K10Controller extends GetxController {
           Get.put(K42Controller()),
           bluetoothDevice: device,
         ));
+    if (result != null && result.isNotEmpty) {}
+  }
+
+  Future<void> showBlueTooth() async {
+    final result = await DialogHelper.showCustomDialog(
+        Get.context!, IosDialog(Get.put(IosController())));
     if (result != null && result.isNotEmpty) {}
   }
 }

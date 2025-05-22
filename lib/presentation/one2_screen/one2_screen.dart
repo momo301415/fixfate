@@ -173,23 +173,38 @@ class One2Screen extends GetWidget<One2Controller> {
   }
 
   Widget _buildTf() {
-    return CustomTextFormField(
-      controller: controller.tfController,
-      onChanged: (value) {
-        controller.checkFromIsNotEmpty();
-      },
-      hintText: "lbl_82".tr,
-      textInputAction: TextInputAction.done,
-      textInputType: TextInputType.visiblePassword,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 14.h,
-      ),
-      obscureText: true,
-      validator: (value) {
-        return validPassword(value);
-      },
-    );
+    return Obx(() => CustomTextFormField(
+          controller: controller.tfController,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          obscureText: controller.isDisablePwd.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwd.value = !controller.isDisablePwd.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwd.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            return validPassword(value);
+          },
+        ));
   }
 
   Widget _buildTf2() {

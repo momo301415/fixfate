@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_bottom_bar.dart';
-import '../../widgets/custom_search_view.dart';
 import 'controller/k73_controller.dart';
-import 'models/listview_item_model.dart';
 import 'widgets/listview_item_widget.dart'; // ignore_for_file: must_be_immutable
 
 /// 健康資料主頁面
@@ -29,10 +27,12 @@ class K73Screen extends GetWidget<K73Controller> {
             spacing: 12,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "msg_2025_03_29".tr,
-                style: CustomTextStyles.bodySmall10,
-              ),
+              Obx(() => Text(
+                    "msg_update_time".tr +
+                        " : " +
+                        controller.loadDataTime.value,
+                    style: CustomTextStyles.bodySmall10,
+                  )),
               _buildListview(),
               _buildRowviewtwo()
             ],
@@ -59,24 +59,38 @@ class K73Screen extends GetWidget<K73Controller> {
   Widget _buildListview() {
     return Padding(
       padding: EdgeInsets.only(right: 8.h),
-      child: Obx(
-        () => GridView.builder(
-          itemCount: controller.k73ModelObj.value.listviewItemList.value.length,
-          shrinkWrap: true,
-          physics: BouncingScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12.h,
-            mainAxisSpacing: 12.h,
-            childAspectRatio: 1.3,
-          ),
-          itemBuilder: (context, index) {
-            final item =
-                controller.k73ModelObj.value.listviewItemList.value[index];
-            return ListviewItemWidget(model: item);
+      child: RefreshIndicator(
+          onRefresh: () async {
+            await controller.getData();
           },
-        ),
-      ),
+          child: Obx(
+            () => GridView.builder(
+              itemCount:
+                  controller.k73ModelObj.value.listviewItemList.value.length,
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 3.h,
+                mainAxisSpacing: 12.h,
+                childAspectRatio: 1.5,
+              ),
+              itemBuilder: (context, index) {
+                final item =
+                    controller.k73ModelObj.value.listviewItemList.value[index];
+                return GestureDetector(
+                    onTap: () {
+                      switch (index) {
+                        case 0:
+                          controller.gok77Screen();
+                          break;
+                      }
+                      print("點擊了${item.label}");
+                    },
+                    child: ListviewItemWidget(model: item));
+              },
+            ),
+          )),
     );
   }
 

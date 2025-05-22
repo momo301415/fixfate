@@ -17,7 +17,8 @@ class OneController extends GetxController {
   Rx<OneModel> oneModelObj = OneModel().obs;
 
   var isValid = false.obs;
-
+  var isDisablePwd = true.obs;
+  var isDisablePwdConfirm = true.obs;
   @override
   void onClose() {
     super.onClose();

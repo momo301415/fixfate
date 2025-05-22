@@ -92,7 +92,7 @@ class K40Controller extends GetxController {
           showBlueTooth();
         }
       } else {
-        checkIosBluetoothState();
+        goK10Screen();
       }
     } catch (e) {
       rethrow;

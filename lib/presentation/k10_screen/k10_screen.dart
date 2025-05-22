@@ -5,7 +5,7 @@ import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
 import 'controller/k10_controller.dart'; // ignore_for_file: must_be_immutable
 
-/// 註冊設備頁面
+/// 註冊設備頁面-裝置綁定
 class K10Screen extends GetWidget<K10Controller> {
   const K10Screen({Key? key}) : super(key: key);
 
@@ -91,7 +91,8 @@ class K10Screen extends GetWidget<K10Controller> {
           SizedBox(height: 22.h),
           GestureDetector(
               onTap: () {
-                Get.back();
+                Get.offNamedUntil(AppRoutes.k29Page,
+                    ModalRoute.withName(AppRoutes.one2Screen));
               },
               child: Text(
                 "lbl32".tr,

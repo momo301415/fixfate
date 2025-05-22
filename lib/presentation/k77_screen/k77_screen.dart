@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
@@ -11,6 +12,7 @@ import '../k79_page/k79_page.dart';
 import 'controller/k77_controller.dart';
 import 'initial_tab_page.dart'; // ignore_for_file: must_be_immutable
 
+/// 健康-心率頁面
 class K77Screen extends GetWidget<K77Controller> {
   const K77Screen({Key? key})
       : super(
@@ -19,65 +21,15 @@ class K77Screen extends GetWidget<K77Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
+    return BaseScaffoldImageHeader(
+        title: "lbl243".tr,
         child: Container(
           height: 796.h,
-          width: double.maxFinite,
           child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                height: 796.h,
-                child: Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [_buildStackunionone(), _buildHorizontalscrol()],
-                ),
-              )
-            ],
+            alignment: Alignment.bottomLeft,
+            children: [_buildHorizontalscrol()],
           ),
-        ),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStackunionone() {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Container(
-        height: 90.h,
-        margin: EdgeInsets.only(right: 74.h),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgUnion90x374,
-              height: 90.h,
-              width: double.maxFinite,
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: CustomAppBar(
-                leadingWidth: 56.h,
-                leading: AppbarLeadingImage(
-                  imagePath: ImageConstant.imgArrowLeft,
-                  margin: EdgeInsets.only(left: 32.h),
-                  onTap: () {
-                    onTapArrowleftone();
-                  },
-                ),
-                title: AppbarSubtitle(
-                  text: "lbl228".tr,
-                  margin: EdgeInsets.only(right: 97.h),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+        ));
   }
 
   /// Section Widget
@@ -93,26 +45,7 @@ class K77Screen extends GetWidget<K77Controller> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: double.maxFinite,
-                child: Obx(
-                  () => Container(
-                    height: 56.h,
-                    width: 432.h,
-                    margin: EdgeInsets.only(left: 16.h),
-                    child: CalendarDatePicker2(
-                      config: CalendarDatePicker2Config(
-                        calendarType: CalendarDatePicker2Type.single,
-                        firstDate: DateTime(DateTime.now().year - 5),
-                        lastDate: DateTime(DateTime.now().year + 5),
-                        firstDayOfWeek: 0,
-                      ),
-                      value: controller.selectedDatesFromCalendar.value,
-                      onValueChanged: (dates) {
-                        controller.selectedDatesFromCalendar.value = dates;
-                      },
-                    ),
-                  ),
-                ),
+                height: 16.h,
               ),
               Expanded(
                 child: SizedBox(

@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'core/app_export.dart';
 
 void main() async {
@@ -9,7 +11,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) async {
     Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
-
+    await Firebase.initializeApp();
     Get.put(GlobalController()); // 註冊為全域單例
 
     runApp(MyApp());

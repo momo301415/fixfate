@@ -3,6 +3,7 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/presentation/k29_page/models/list_one_item_model.dart';
+import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 
 import '../../../core/app_export.dart';
 import '../models/k29_model.dart';
@@ -88,7 +89,9 @@ class K29Controller extends GetxController {
 
   /// 路由到健康資訊頁面
   void go73Screen() {
-    Get.toNamed(AppRoutes.k73Screen);
+    Get.toNamed(AppRoutes.k73Screen)?.then((_) {
+      Get.find<K73Controller>().getData();
+    });
   }
 
   void queryDb() async {

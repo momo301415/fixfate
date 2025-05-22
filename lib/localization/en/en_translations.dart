@@ -179,6 +179,7 @@ final Map<String, String> en = {
   "lbl250": "良好",
   "lbl26": "我已經閱讀並同意《使用者條款》",
   "lbl27": "重設密碼",
+  "lbl27_1": "完成驗證",
   "lbl28": "驗證碼錯誤",
   "lbl28_1": "尚未閱讀使用者條款",
   "lbl29": "裝置綁定",
@@ -518,4 +519,5 @@ final Map<String, String> en = {
   "snackbar_account_delete": "帳號已刪除",
   "snackbar_no_account_delete": "無帳號可以刪除",
   "snackbar_save_success": "保存成功",
+  "snackbar_send_msm": "已發送簡訊，請查看簡訊",
 };

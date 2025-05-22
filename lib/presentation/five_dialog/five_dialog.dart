@@ -20,7 +20,8 @@ class FiveDialog extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 234.h,
+          width: 294.h,
+          height: 134.h,
           padding: EdgeInsets.symmetric(vertical: 22.h),
           decoration: AppDecoration.gray100.copyWith(
             borderRadius: BorderRadiusStyle.roundedBorder8,
@@ -30,7 +31,7 @@ class FiveDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.h),
                 child: Text(
                   message,
                   style: CustomTextStyles.titleMediumPrimaryContainerSemiBold,

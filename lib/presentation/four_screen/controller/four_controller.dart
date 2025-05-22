@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import '../../../core/app_export.dart';
 import '../models/four_model.dart';
@@ -67,41 +68,6 @@ class FourController extends GetxController with CodeAutoFill {
     });
   }
 
-  void fetchRegist(String phone, String password) async {
-    LoadingHelper.show();
-    try {
-      var resData = await service.postJson(
-        Api.register,
-        {
-          'phone': phone,
-          'password': password,
-        },
-      );
-      LoadingHelper.hide();
-      if (resData.isNotEmpty) {
-        var resBody = resData['data'];
-        if (resBody != null) {
-          if (resBody['body']['status'] == 0) {
-            final data = resBody['body']['data'];
-          }
-        } else {
-          final resMsg = resData["message"];
-
-          if (resMsg.contains("已註冊")) {
-            DialogHelper.showError("${resData["message"]}", onOk: () {
-              goOne2Screen();
-            });
-          } else {
-            DialogHelper.showError("${resData["message"]}");
-          }
-        }
-      }
-    } catch (e) {
-      LoadingHelper.hide();
-      DialogHelper.showError("服務錯誤，請稍後再試");
-    }
-  }
-
   Future<void> fetchSms(String phone) async {
     LoadingHelper.show();
     try {
@@ -113,8 +79,11 @@ class FourController extends GetxController with CodeAutoFill {
       );
       LoadingHelper.hide();
       if (resData.isNotEmpty) {
-        var resBody = resData['success'];
-        if (resBody != null && resBody['success'] == true) {
+        final resMsg = resData["message"];
+        if (resMsg.contains("請輸入")) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            SnackbarHelper.showBlueSnackbar(message: "snackbar_send_msm".tr);
+          });
         } else {
           DialogHelper.showError("${resData["message"]}");
         }
@@ -138,11 +107,13 @@ class FourController extends GetxController with CodeAutoFill {
       );
       LoadingHelper.hide();
       if (resData.isNotEmpty) {
-        var resBody = resData['data'];
-        if (resBody != null) {
-          if (resBody['body']['status'] == 0) {
-            final data = resBody['body']['data'];
-          }
+        final resMsg = resData["message"];
+        if (resMsg.contains("已註冊")) {
+          DialogHelper.showError("${resData["message"]}", onOk: () {
+            goOne2Screen();
+          });
+        } else if (resMsg.contains("成功")) {
+          gok10Screen();
         } else {
           DialogHelper.showError("${resData["message"]}");
         }
@@ -156,5 +127,10 @@ class FourController extends GetxController with CodeAutoFill {
   /// 路由登入頁面
   void goOne2Screen() {
     Get.toNamed(AppRoutes.one2Screen);
+  }
+
+  /// 路由到設備註冊頁面
+  void gok10Screen() {
+    Get.toNamed(AppRoutes.k10Screen);
   }
 }

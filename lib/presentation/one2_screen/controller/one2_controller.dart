@@ -3,6 +3,7 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import '../../../core/app_export.dart';
 import '../models/one2_model.dart';
@@ -19,6 +20,7 @@ class One2Controller extends GetxController {
   Rx<One2Model> one2ModelObj = One2Model().obs;
 
   var isValid = false.obs;
+  var isDisablePwd = true.obs;
   final service = ApiService();
   @override
   void onInit() {
@@ -56,12 +58,13 @@ class One2Controller extends GetxController {
   Future<bool> pressFetchLogin() async {
     try {
       LoadingHelper.show();
-
+      final notityToken = await FirebaseHelper.getDeviceToken();
       var resData = await service.postJson(
         Api.login,
         {
           'phone': oneController.text,
           'password': tfController.text,
+          'notityToken': notityToken,
         },
       );
       LoadingHelper.hide();
@@ -71,10 +74,15 @@ class One2Controller extends GetxController {
           await PrefUtils().setUserId(oneController.text);
           await PrefUtils().setPassword(tfController.text);
           await PrefUtils().setApiUserId(resBody['id'].toString());
+
           gc.userId.value = oneController.text;
           gc.apiToken.value = resBody['token'].toString();
           gc.healthDataSyncService.setUserId(oneController.text);
-
+          // await FirebaseHelper.init();
+          final ftoken = await FirebaseHelper.getDeviceToken();
+          if (ftoken != null) {
+            gc.apiToken.value = ftoken;
+          }
           return true;
         } else {
           DialogHelper.showError("${resData["message"]}");

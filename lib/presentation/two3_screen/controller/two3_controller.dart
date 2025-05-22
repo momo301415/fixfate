@@ -14,6 +14,8 @@ class Two3Controller extends GetxController {
   Rx<Two3Model> two3ModelObj = Two3Model().obs;
 
   var isValid = false.obs;
+  var isDisablePwd = true.obs;
+  var isDisablePwdConfirm = true.obs;
 
   @override
   void onClose() {

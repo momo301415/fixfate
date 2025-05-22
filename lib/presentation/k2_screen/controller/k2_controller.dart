@@ -2,6 +2,7 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 
 import '../../../core/app_export.dart';
@@ -19,7 +20,11 @@ class K2Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    autoLogin();
+    initData();
+  }
+
+  void initData() async {
+    FirebaseHelper.init().then((value) => autoLogin());
   }
 
   /// 路由登入頁面
@@ -35,12 +40,13 @@ class K2Controller extends GetxController {
   Future<bool> pressFetchLogin(String userid, String password) async {
     try {
       LoadingHelper.show();
-
+      final notityToken = await FirebaseHelper.getDeviceToken();
       var resData = await service.postJson(
         Api.login,
         {
           'phone': userid,
           'password': password,
+          'notityToken': notityToken,
         },
       );
       LoadingHelper.hide();
@@ -51,6 +57,11 @@ class K2Controller extends GetxController {
           gc.apiToken.value = resBody['token'].toString();
           gc.userId.value = userid;
           gc.healthDataSyncService.setUserId(userid);
+          // await FirebaseHelper.init();
+          final ftoken = await FirebaseHelper.getDeviceToken();
+          if (ftoken != null) {
+            gc.apiToken.value = ftoken;
+          }
 
           goK29Page();
           return true;

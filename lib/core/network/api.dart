@@ -6,4 +6,6 @@ class Api {
   static const String avatar = "uploadAvatar";
   static const String userProfile = "getUserProfile";
   static const String updateUserProfile = "updateUserProfile";
+  static const String bindDevice = "bindDevice";
+  static const String sethealthRecord = "sethealthRecord";
 }

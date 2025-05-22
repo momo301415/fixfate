@@ -6,6 +6,7 @@ import '../../widgets/custom_elevated_button.dart';
 import '../../widgets/custom_pin_code_text_field.dart';
 import 'controller/four_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// sms簡訊驗證頁面
 class FourScreen extends GetWidget<FourController> {
   const FourScreen({Key? key})
       : super(
@@ -183,7 +184,7 @@ class FourScreen extends GetWidget<FourController> {
           ),
           Obx(() => CustomElevatedButton(
                 height: 58.h,
-                text: "lbl27".tr,
+                text: "lbl27_1".tr,
                 buttonStyle: controller.isReadPrivacyPolicy.value
                     ? CustomButtonStyles.none
                     : CustomButtonStyles.fillTeal,
