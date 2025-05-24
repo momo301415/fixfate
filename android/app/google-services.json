@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1092295145251",
-    "project_id": "smartwearplatform",
-    "storage_bucket": "smartwearplatform.firebasestorage.app"
+    "project_number": "485992804744",
+    "project_id": "smartwearplatform-test",
+    "storage_bucket": "smartwearplatform-test.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1092295145251:android:88e6de1cf79fd6e303fe96",
+        "mobilesdk_app_id": "1:485992804744:android:d92b8b451b546437e4ca3d",
         "android_client_info": {
           "package_name": "com.pulsedevice.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBsvNKcAe5d26nOOTIdLPaG7pHlbx5cpXE"
+          "current_key": "AIzaSyCBWTPQIIGImEL_qzR2o_4lNOVe1Kv5Mnw"
         }
       ],
       "services": {

@@ -1,5 +1,7 @@
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+import 'package:pulsedevice/presentation/k76_screen/biding/k76_biding.dart';
+import 'package:pulsedevice/presentation/k76_screen/k76_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
@@ -266,6 +268,8 @@ class AppRoutes {
   static const String initialRoute = '/initialRoute';
 
   static const String rulePickerTestScreen = '/rulePickerTestScreen';
+
+  static const String k76Screen = '/k76_screen';
 
   static List<GetPage> pages = [
     /// 隱私權頁
@@ -623,5 +627,8 @@ class AppRoutes {
       page: () => K1Screen(),
       bindings: [K1Binding()],
     ),
+
+    /// 健康-主要控制頁面
+    GetPage(name: k76Screen, page: () => K76Screen(), bindings: [K76Biding()]),
   ];
 }

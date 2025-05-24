@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/sqliteDb/health_data_sync_service.dart';
 import '../../../core/app_export.dart';
@@ -10,6 +11,7 @@ import '../models/k73_model.dart';
 /// current k73ModelObj
 class K73Controller extends GetxController {
   TextEditingController searchController = TextEditingController();
+  final gc = Get.find<GlobalController>();
 
   Rx<K73Model> k73ModelObj = K73Model().obs;
 
@@ -43,11 +45,14 @@ class K73Controller extends GetxController {
     Get.toNamed(AppRoutes.k77Screen);
   }
 
+  /// 路由到健康-控制主頁面
+  void gok76Screen() {
+    Get.toNamed(AppRoutes.k76Screen);
+  }
+
   Future<void> getData() async {
     print("k73 controller getData");
-    final db = AppDatabase();
-    final service = HealthDataSyncService(db);
-    var res = await service.getAnalysisHealthData();
+    var res = await gc.healthDataSyncService.getAnalysisHealthData();
     k73ModelObj.value.listviewItemList.value[0].loadTime?.value =
         res["heartDuration"].toString();
     k73ModelObj.value.listviewItemList.value[0].value?.value =

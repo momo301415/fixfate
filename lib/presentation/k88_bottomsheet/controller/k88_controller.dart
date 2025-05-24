@@ -10,5 +10,9 @@ import '../models/k88_model.dart';
 class K88Controller extends GetxController {
   Rx<K88Model> k88ModelObj = K88Model().obs;
 
-  Rx<List<DateTime?>> selectedDatesFromCalendar = Rx([]);
+  RxList<DateTime?> selectedDatesFromCalendar = <DateTime?>[].obs;
+
+  void setInitialDate(DateTime date) {
+    selectedDatesFromCalendar.value = [date];
+  }
 }

@@ -24,6 +24,45 @@ class HeartRateDataService extends BaseDbService {
         .get();
   }
 
+  /// 共用：根據秒級 timestamp 範圍查詢
+  Future<List<HeartRateDataData>> getByUserAndRange({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  }) {
+    final fromSec = from.millisecondsSinceEpoch ~/ 1000;
+    final toSec = to.millisecondsSinceEpoch ~/ 1000;
+
+    return (db.select(db.heartRateData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.startTimeStamp.isBiggerOrEqualValue(fromSec) &
+              tbl.startTimeStamp.isSmallerOrEqualValue(toSec)))
+        .get();
+  }
+
+  /// 查詢：日
+  Future<List<HeartRateDataData>> getDaily(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：週
+  Future<List<HeartRateDataData>> getWeekly(String userId, DateTime date) {
+    final start = date.subtract(Duration(days: date.weekday - 1));
+    final end = start.add(Duration(days: 7)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：月
+  Future<List<HeartRateDataData>> getMonthly(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end =
+        DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
   /// 根據複合主鍵更新資料
   Future<void> update(
       String userId, int startTimeStamp, HeartRateDataCompanion data) {

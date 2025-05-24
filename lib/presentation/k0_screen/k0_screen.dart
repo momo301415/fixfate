@@ -59,22 +59,6 @@ class K0Screen extends GetWidget<K0Controller> {
                   SizedBox(height: 22.h),
                   _buildColumn1(),
                   SizedBox(height: 22.h),
-                  Text(
-                    "lbl4".tr,
-                    style: CustomTextStyles.bodyMediumPrimaryContainer,
-                  ),
-                  SizedBox(height: 10.h),
-                  Padding(
-                    padding: EdgeInsets.only(left: 6.h),
-                    child: Text(
-                      "msg".tr,
-                      maxLines: 6,
-                      overflow: TextOverflow.ellipsis,
-                      style: CustomTextStyles.bodyMediumBluegray400.copyWith(
-                        height: 1.70,
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 22.h),
                   Text(
                     "lbl5".tr,

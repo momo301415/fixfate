@@ -45,6 +45,7 @@ class K73Screen extends GetWidget<K73Controller> {
             case 0:
               break;
             case 1:
+              Get.toNamed(AppRoutes.appNavigationScreen);
               break;
             case 2:
               controller.goK29Screen();
@@ -82,7 +83,7 @@ class K73Screen extends GetWidget<K73Controller> {
                     onTap: () {
                       switch (index) {
                         case 0:
-                          controller.gok77Screen();
+                          controller.gok76Screen();
                           break;
                       }
                       print("點擊了${item.label}");

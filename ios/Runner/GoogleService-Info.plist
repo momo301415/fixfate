@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyABxB851ciSh_JjIiR7BLgSgSLEflHe798</string>
+	<string>AIzaSyDigEuU9gIESXr4oVrvgFYARl4eickhBos</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1092295145251</string>
+	<string>485992804744</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.pulsedevice.app.testProject</string>
 	<key>PROJECT_ID</key>
-	<string>smartwearplatform</string>
+	<string>smartwearplatform-test</string>
 	<key>STORAGE_BUCKET</key>
-	<string>smartwearplatform.firebasestorage.app</string>
+	<string>smartwearplatform-test.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1092295145251:ios:b6dc433f3880898603fe96</string>
+	<string>1:485992804744:ios:d1f20f04ff6d015fe4ca3d</string>
 </dict>
 </plist>

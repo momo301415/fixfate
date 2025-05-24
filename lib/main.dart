@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pulsedevice/core/global_controller.dart';
-import 'package:pulsedevice/core/utils/firebase_helper.dart';
+
 import 'core/app_export.dart';
 
 void main() async {
@@ -29,6 +29,10 @@ class MyApp extends StatelessWidget {
         translations: AppLocalization(),
         locale: Locale('en', ''),
         fallbackLocale: Locale('en', ''),
+        supportedLocales: const [
+          Locale("en", ""),
+          Locale("zh", "TW"),
+        ],
         title: 'pulsedevice',
         initialRoute: AppRoutes.initialRoute,
         getPages: AppRoutes.pages,

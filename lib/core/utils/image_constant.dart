@@ -205,4 +205,13 @@ class ImageConstant {
   static String imgUnionFullBg = '$imagePath/img_union_full.png';
   static String imgUnionBg2 = '$imagePath/img_union_2.png';
   static String imgQrBg = '$imagePath/img_qr_bg.png';
+
+  static String solidDistance = '$imagePath/solid-icon-distance.svg';
+  static String solidHeartbeat = '$imagePath/solid-icon-heartbeat.svg';
+  static String solidBlood = '$imagePath/solid-icon-blood.svg';
+  static String solidTemp = '$imagePath/solid-icon-temp.svg';
+  static String solidPressure = '$imagePath/solid-icon-pressure.svg';
+  static String solidStep = '$imagePath/solid-icon-step.svg';
+  static String solidSleep = '$imagePath/solid-icon-sleep.svg';
+  static String solidFire = '$imagePath/solid-icon-fire.svg';
 }

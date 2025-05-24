@@ -26,10 +26,8 @@ import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
-import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class GlobalController extends GetxController {
   ///---- Db相關

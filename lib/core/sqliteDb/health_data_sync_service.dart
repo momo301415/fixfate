@@ -27,6 +27,9 @@ class HealthDataSyncService {
   HealthDataSyncService(
     this._db,
   );
+  AppDatabase getInstance() {
+    return _db;
+  }
 
   List<int> healthDataTypes = [
     HealthDataType.step,

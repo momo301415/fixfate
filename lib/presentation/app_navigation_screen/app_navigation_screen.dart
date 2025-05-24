@@ -551,16 +551,16 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.k86Screen),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-日選擇 - BottomSheet",
-                          onTapScreenTitle: () => onTapBottomSheetTitle(context,
-                              K87Bottomsheet(Get.put(K87Controller()))),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-週選擇 - BottomSheet",
-                          onTapScreenTitle: () => onTapBottomSheetTitle(context,
-                              K88Bottomsheet(Get.put(K88Controller()))),
-                        ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "2-健康-日選擇 - BottomSheet",
+                        //   onTapScreenTitle: () => onTapBottomSheetTitle(context,
+                        //       K87Bottomsheet(Get.put(K87Controller()))),
+                        // ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "2-健康-週選擇 - BottomSheet",
+                        //   onTapScreenTitle: () => onTapBottomSheetTitle(context,
+                        //       K88Bottomsheet(Get.put(K88Controller()))),
+                        // ),
                         _buildScreenTitle(
                           screenTitle: "2-健康-月選擇 - BottomSheet",
                           onTapScreenTitle: () => onTapBottomSheetTitle(context,

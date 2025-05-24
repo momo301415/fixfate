@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
 import '../../widgets/app_bar/appbar_subtitle.dart';
@@ -14,54 +15,41 @@ class K85Screen extends GetWidget<K85Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
+    return BaseScaffoldImageHeader(
+        title: "lbl243".tr,
         child: Container(
           height: 796.h,
-          width: double.maxFinite,
           child: Stack(
-            alignment: Alignment.center,
+            alignment: Alignment.bottomCenter,
             children: [
-              Container(
-                height: 796.h,
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
+              SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: double.maxFinite,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTabview(),
-                          Expanded(
-                            child: Container(
-                              child: TabBarView(
-                                controller: controller.tabviewController,
-                                children: [
-                                  Container(),
-                                  Container(),
-                                  Container(),
-                                  Container(),
-                                  Container(),
-                                  InitiTabPage()
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
+                    _buildTabview(),
+                    Expanded(
+                      child: Container(
+                        child: TabBarView(
+                          controller: controller.tabviewController,
+                          children: [
+                            Container(),
+                            Container(),
+                            Container(),
+                            Container(),
+                            Container(),
+                            InitiTabPage()
+                          ],
+                        ),
                       ),
-                    ),
-                    _buildStackunionone()
+                    )
                   ],
                 ),
-              )
+              ),
             ],
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   /// Section Widget
@@ -240,10 +228,11 @@ class K85Screen extends GetWidget<K85Controller> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: 12.h,
-                    vertical: 32.h,
+                    vertical: 12.h,
                   ),
                   child: Text(
                     "lbl220".tr,
+                    style: TextStyle(fontSize: 12.h, color: Colors.white),
                   ),
                 ),
               ),
