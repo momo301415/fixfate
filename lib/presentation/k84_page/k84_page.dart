@@ -2,12 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
-import 'package:pulsedevice/presentation/k77_screen/models/list_item_model.dart';
 import '../../core/app_export.dart';
-import 'controller/k77_controller.dart';
+import 'controller/k84_controller.dart';
 
-class K77Screen extends GetWidget<K77Controller> {
-  const K77Screen({Key? key}) : super(key: key);
+/// 健康-移動距離頁面
+class K84Page extends GetWidget<K84Controller> {
+  const K84Page({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +15,6 @@ class K77Screen extends GetWidget<K77Controller> {
       padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
       children: [
         buildTrendBlock(),
-        SizedBox(height: 4.h),
-        buildGrid1(),
         SizedBox(height: 4.h),
         buildAnalysis(),
       ],
@@ -43,11 +41,11 @@ class K77Screen extends GetWidget<K77Controller> {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: controller.heartRateVal.value,
+                            text: controller.distanceVal.value,
                             style: theme.textTheme.headlineMedium, // 數值部分，較大字體
                           ),
                           TextSpan(
-                            text: 'lbl177'.tr,
+                            text: 'lbl193'.tr,
                             style: theme.textTheme.bodySmall, // 單位部分，較小字體
                           ),
                         ],
@@ -58,20 +56,6 @@ class K77Screen extends GetWidget<K77Controller> {
                         Text(controller.loadDataTime.value,
                             style: theme.textTheme.bodySmall),
                         SizedBox(width: 8.h),
-                        controller.isAlert.value
-                            ? Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.h, vertical: 4.v),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(12.h),
-                                ),
-                                child: Text('lbl216'.tr,
-                                    style: TextStyle(color: Colors.white)),
-                              )
-                            : Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.h, vertical: 4.v)),
                       ],
                     ),
                   ],
@@ -231,158 +215,63 @@ class K77Screen extends GetWidget<K77Controller> {
         indent: 8,
         endIndent: 8,
       ));
-  Widget buildGrid1() {
-    return Obx(() => Container(
-          // margin: const EdgeInsets.all(12),
-          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.h),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            children: [
-              // 上排
-              Row(
-                children: [
-                  Expanded(
-                      child: buildStat('${controller.normalCount.value}',
-                          'lbl161'.tr, 'lbl232'.tr)),
-                  verticalDivider(),
-                  Expanded(
-                      child: buildStat('${controller.highCount.value}',
-                          'lbl161'.tr, 'lbl233'.tr)),
-                  verticalDivider(),
-                  Expanded(
-                      child: buildStat('${controller.lowCount.value}',
-                          'lbl161'.tr, 'lbl234'.tr)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // 下排
-              Row(
-                children: [
-                  Expanded(
-                      child: buildStat('${controller.normalMinCount.value}',
-                          'lbl177'.tr, 'lbl235'.tr)),
-                  verticalDivider(),
-                  Expanded(
-                      child: buildStat('${controller.hightMinCount.value}',
-                          'lbl177'.tr, 'lbl236'.tr)),
-                  verticalDivider(),
-                  Expanded(
-                      child: buildStat('${controller.lowMinCount.value}',
-                          'lbl177'.tr, 'lbl237'.tr)),
-                ],
-              ),
-            ],
-          ),
-        ));
-  }
 
   Widget buildAnalysis() {
-    return Container(
-        padding: EdgeInsets.all(16.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.h),
-        ),
-        child: Obx(() =>
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8.h),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Row(
-                  children:
-                      List.generate(controller.recordTabs.length, (index) {
-                    final isSelected = controller.recordIndex.value == index;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          controller.recordIndex.value = index;
-                        },
-                        child: Container(
-                          color: isSelected
-                              ? const Color(0xFF5BB5C4)
-                              : Colors.transparent,
-                          padding: EdgeInsets.symmetric(vertical: 4.v),
-                          alignment: Alignment.center,
-                          child: Text(
-                            controller.recordTabs[index],
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : appTheme.blueGray90001,
-                            ),
-                          ),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.v),
+      child: Obx(() {
+        final list = controller.k84ModelObj.value.listItemList2.value;
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.h),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(12.h),
+                child: Text('lbl239'.tr,
+                    style: CustomTextStyles.labelLargeBlack900),
+              ),
+              Divider(height: 1, color: Colors.grey.shade300),
+              if (list.isEmpty)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  child: Center(child: Text('無資料')),
+                )
+              else
+                ...List.generate(list.length, (index) {
+                  final item = list[index];
+                  final itemTime =
+                      item.time?.value.format(pattern: 'yyyy/MM/dd HH:mm') ??
+                          '';
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.h, horizontal: 12.h),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                '${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                                style: CustomTextStyles.bodyMediumBluegray900),
+                            Text(itemTime,
+                                style: CustomTextStyles.bodyMediumBluegray900),
+                          ],
                         ),
                       ),
-                    );
-                  }),
-                ),
-              ),
-              buildRecordList(),
-            ])));
-  }
-
-  Widget buildRecordList() {
-    return Obx(() {
-      final isRecordMode = controller.recordIndex.value == 0;
-      final list = isRecordMode
-          ? controller.k77ModelObj.value.listItemList.value
-          : controller.k77ModelObj.value.listItemList2.value;
-
-      if (list.isEmpty) {
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          child: Center(child: Text('無資料')),
+                      Divider(height: 1, color: Colors.grey.shade300),
+                    ],
+                  );
+                }),
+            ],
+          ),
         );
-      }
-
-      return ListView.separated(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: list.length,
-        separatorBuilder: (context, index) =>
-            Divider(height: 1, color: Colors.grey.shade300),
-        itemBuilder: (context, index) {
-          if (isRecordMode) {
-            final item = list[index] as ListRecordItemModel;
-            final itemTime =
-                item.time?.value.format(pattern: 'yyyy/MM/dd HH:mm') ?? '';
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(item.label?.value ?? '',
-                      style: CustomTextStyles.bodyMediumBluegray900),
-                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
-                      style: CustomTextStyles.bodyMediumBluegray900),
-                  Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
-                ],
-              ),
-            );
-          } else {
-            final item = list[index] as ListHistoryItemModel;
-            final itemTime =
-                item.time?.value.format(pattern: 'yyyy/MM/dd HH:mm') ?? '';
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
-                      style: CustomTextStyles.bodyMediumBluegray900),
-                  Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
-                ],
-              ),
-            );
-          }
-        },
-      );
-    });
+      }),
+    );
   }
 }

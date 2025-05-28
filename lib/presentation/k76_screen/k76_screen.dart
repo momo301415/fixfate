@@ -4,7 +4,14 @@ import 'package:get/get.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/presentation/k76_screen/controller/k76_controller.dart';
 import 'package:pulsedevice/presentation/k76_screen/widget/list_item_widget.dart';
-import 'package:pulsedevice/presentation/k77_screen/k77_screen.dart';
+import 'package:pulsedevice/presentation/k77_page/k77_page.dart';
+import 'package:pulsedevice/presentation/k78_page/k78_page.dart';
+import 'package:pulsedevice/presentation/k79_page/k79_page.dart';
+import 'package:pulsedevice/presentation/k80_page/k80_page.dart';
+import 'package:pulsedevice/presentation/k81_page/k81_page.dart';
+import 'package:pulsedevice/presentation/k82_page/k82_page.dart';
+import 'package:pulsedevice/presentation/k83_page/k83_page.dart';
+import 'package:pulsedevice/presentation/k84_page/k84_page.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 
 /// 健康-主要控制頁面
@@ -45,7 +52,21 @@ class K76Screen extends GetView<K76Controller> {
                       .K76ModelObj.value.listIconBarModelObj.value
                       .map((item) {
                     if (item.label?.value == "心率") {
-                      return K77Screen();
+                      return K77Page();
+                    } else if (item.label?.value == "血氧") {
+                      return K78Page();
+                    } else if (item.label?.value == "體溫") {
+                      return K79Page();
+                    } else if (item.label?.value == "壓力") {
+                      return K80Page();
+                    } else if (item.label?.value == "步數") {
+                      return K81Page();
+                    } else if (item.label?.value == "睡眠") {
+                      return K82Page();
+                    } else if (item.label?.value == "卡路里") {
+                      return K83Page();
+                    } else if (item.label!.value.contains("距離")) {
+                      return K84Page();
                     } else {
                       return Center(child: Text("這是 ${item.label} 頁面"));
                     }

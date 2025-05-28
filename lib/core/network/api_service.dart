@@ -82,6 +82,29 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> postJsonList(
+    String path,
+    dynamic data,
+  ) async {
+    final hasConnection = await _networkInfo.isConnected();
+    if (!hasConnection) throw NoInternetException('請確認網路連線');
+
+    try {
+      final response = await _dio.post(path, data: data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data is Map<String, dynamic>) {
+          return response.data;
+        } else {
+          throw Exception('回應非 JSON 格式');
+        }
+      } else {
+        throw ServerException();
+      }
+    } on DioException catch (e) {
+      throw Exception('Dio 錯誤：${e.message}');
+    }
+  }
+
   Future<Map<String, dynamic>> uploadImage({
     required String path,
     required File imageFile,

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pulsedevice/core/service/notification_service.dart';
-import 'package:pulsedevice/core/service/yc_service.dart';
-import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import 'controller/k29_controller.dart';
@@ -18,19 +15,22 @@ class K29Page extends GetWidget<K29Controller> {
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
       title: "lbl57".tr,
-      bottomNavigationBar: CustomBottomBar(
-        onChanged: (value) {
-          switch (value) {
-            case 0:
-              controller.go73Screen();
-              break;
-            case 1:
-              break;
-            case 2:
-              break;
-          }
-        },
-      ),
+      bottomNavigationBar: SafeArea(
+          child: SizedBox(
+              height: 72.h,
+              child: CustomBottomBar(
+                onChanged: (value) {
+                  switch (value) {
+                    case 0:
+                      controller.go73Screen();
+                      break;
+                    case 1:
+                      break;
+                    case 2:
+                      break;
+                  }
+                },
+              ))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -107,15 +107,8 @@ class K29Page extends GetWidget<K29Controller> {
           _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {
             controller.go67SrcScreen();
           }),
-          _buildMenuItem("lbl67".tr, ImageConstant.imgFrame2, () async {
-            // controller.queryDb();
-            // await NotificationService().showDeviceDisconnectedNotification();
-            // PermissionHelper.initNotification();
-
-            // controller.querydb2();
-
-            YcService.queryDeviewModel();
-          }),
+          _buildMenuItemNonDivider(
+              "lbl67".tr, ImageConstant.imgFrame2, () async {}),
         ],
       ),
     );
@@ -127,6 +120,30 @@ class K29Page extends GetWidget<K29Controller> {
       child: Container(
         padding: EdgeInsets.all(16.h),
         decoration: AppDecoration.outlineGray,
+        width: double.infinity,
+        child: Row(
+          children: [
+            CustomImageView(imagePath: iconPath, height: 20.h, width: 22.h),
+            SizedBox(width: 8.h),
+            Text(title, style: CustomTextStyles.bodyMedium15),
+            const Spacer(),
+            CustomImageView(
+              imagePath: ImageConstant.imgArrowRight,
+              height: 16.h,
+              width: 18.h,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItemNonDivider(
+      String title, String iconPath, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16.h),
         width: double.infinity,
         child: Row(
           children: [

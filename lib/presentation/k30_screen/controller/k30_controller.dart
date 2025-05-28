@@ -395,8 +395,13 @@ class K30Controller extends GetxController {
 
   Future<void> loadUserProfile() async {
     final box = await Hive.openBox<UserProfile>('user_profile');
-    final user = box.get(gc.userId.value);
-    if (user != null) {
+    var user = box.get(gc.userId.value);
+
+    ///如果手機資料庫沒資料就撈api
+    if (user == null) {
+      user = await getUserProfile(gc.userId.value);
+    }
+    if (user.gender != null) {
       var list = k30ModelObj.value.listItemList.value;
       var list2 = k30ModelObj.value.listItemList2.value;
       avatarPath.value = user.avatar ?? '';
@@ -535,7 +540,7 @@ class K30Controller extends GetxController {
   }
 
   /// call api取得個人資訊
-  void getUserProfile(String phone) async {
+  Future<UserProfile> getUserProfile(String phone) async {
     LoadingHelper.show();
     try {
       final res = await api.postJson(Api.userProfile, {'phone': phone});
@@ -543,6 +548,35 @@ class K30Controller extends GetxController {
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
+          final user = UserProfile();
+          user.avatar = resBody['avatarUrl'] ?? '';
+          user.nickname = resBody['name'] ?? '';
+          user.email = resBody['email'] ?? '';
+          user.gender = resBody['gender'] ?? '';
+          user.birthDate = resBody['birthDate'] ?? '';
+          user.height = resBody['bodyHeight'] ?? 0;
+          user.weight = resBody['bodyWeight'] ?? 0;
+          user.waist = resBody['waistline'] ?? 0;
+          final otherData = resBody['otherData'];
+          final habits = otherData['habits'];
+
+          user.drinking = habits['drinking'] ?? '';
+          user.smoking = habits['smoking'] ?? '';
+          user.sporting = habits['exercise'] ?? '';
+          user.sitting = habits['sitting'] ?? '';
+          user.standding = habits['standing'] ?? '';
+          user.lowHeadding = habits['lowHead'] ?? '';
+          user.waterIntake = habits['waterIntake'] ?? '';
+          user.noneSleep = habits['noneSleep'] ?? '';
+
+          user.foodHabits = otherData['foodPreferences']["favoriteTypes"] ?? [];
+          user.cookHabits =
+              otherData['cookingPreferences']["favoriteTypes"] ?? [];
+          user.pastDiseases = otherData['medicalHistory']["pastDiseases"] ?? [];
+          user.familyDiseases =
+              otherData['familyHistory']["pastDiseases"] ?? [];
+          user.drugAllergies = otherData['allergies']["favoriteTypes"] ?? [];
+          return user;
         } else {
           DialogHelper.showError("${res["message"]}");
         }
@@ -553,6 +587,7 @@ class K30Controller extends GetxController {
     } finally {
       LoadingHelper.hide();
     }
+    return UserProfile();
   }
 
   /// call api更新個人資訊
@@ -632,6 +667,15 @@ class K30Controller extends GetxController {
             });
             return true;
           }
+        }
+      } else {
+        var res = await updateUserProfile('');
+        if (res) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            SnackbarHelper.showBlueSnackbar(
+                message: "snackbar_save_success".tr);
+          });
+          return true;
         }
       }
     }

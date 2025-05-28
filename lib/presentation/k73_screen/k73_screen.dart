@@ -81,11 +81,7 @@ class K73Screen extends GetWidget<K73Controller> {
                     controller.k73ModelObj.value.listviewItemList.value[index];
                 return GestureDetector(
                     onTap: () {
-                      switch (index) {
-                        case 0:
-                          controller.gok76Screen();
-                          break;
-                      }
+                      controller.gok76Screen(index);
                       print("點擊了${item.label}");
                     },
                     child: ListviewItemWidget(model: item));

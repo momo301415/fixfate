@@ -1,4 +1,4 @@
-import 'package:pulsedevice/presentation/k77_screen/models/list_item_model.dart';
+import 'package:pulsedevice/presentation/k77_page/models/list_item_model.dart';
 
 import '../../../core/app_export.dart';
 

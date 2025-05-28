@@ -42,12 +42,12 @@ class K73Controller extends GetxController {
 
   /// 路由到健康-心率頁面
   void gok77Screen() {
-    Get.toNamed(AppRoutes.k77Screen);
+    Get.toNamed(AppRoutes.k77Page);
   }
 
   /// 路由到健康-控制主頁面
-  void gok76Screen() {
-    Get.toNamed(AppRoutes.k76Screen);
+  void gok76Screen(int index) {
+    Get.toNamed(AppRoutes.k76Screen, arguments: index);
   }
 
   Future<void> getData() async {

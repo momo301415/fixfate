@@ -68,10 +68,7 @@ class K25Dialog extends StatelessWidget {
                           textInputType: TextInputType.number,
                           suffix: Padding(
                             padding: EdgeInsets.only(
-                              left: 16.h,
-                              top: 12.h,
-                              bottom: 12.h,
-                            ),
+                                left: 8.h, top: 6.h, bottom: 6.h, right: 8.h),
                             child: Text(
                               "lbl_kg".tr,
                               style: TextStyle(

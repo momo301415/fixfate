@@ -55,6 +55,7 @@ class GlobalController extends GetxController {
 
   ///--- 登入後取得的API Token
   var apiToken = ''.obs;
+  var apiId = ''.obs;
 
   ///--- Firebase Token
   var firebaseToken = ''.obs;
@@ -101,9 +102,9 @@ class GlobalController extends GetxController {
             /// 只初始化一次
             startSyncTimer();
             isSqfliteInit.value = true;
-          } else {
-            NotificationService().showDeviceDisconnectedNotification();
           }
+        } else if (isSqfliteInit.value && st != 2) {
+          NotificationService().showDeviceDisconnectedNotification();
         }
       }
     });
@@ -168,4 +169,6 @@ class GlobalController extends GetxController {
   void stopSyncTimer() {
     _syncTimer?.cancel();
   }
+
+  void sethealthRecordApi() async {}
 }

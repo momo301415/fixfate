@@ -62,8 +62,8 @@ import '../presentation/k72_screen/binding/k72_binding.dart';
 import '../presentation/k72_screen/k72_screen.dart';
 import '../presentation/k73_screen/binding/k73_binding.dart';
 import '../presentation/k73_screen/k73_screen.dart';
-import '../presentation/k77_screen/binding/k77_binding.dart';
-import '../presentation/k77_screen/k77_screen.dart';
+import '../presentation/k77_page/binding/k77_binding.dart';
+import '../presentation/k77_page/k77_page.dart';
 import '../presentation/k80_screen/binding/k80_binding.dart';
 import '../presentation/k80_screen/k80_screen.dart';
 import '../presentation/k81_screen/binding/k81_binding.dart';
@@ -227,7 +227,7 @@ class AppRoutes {
 
   static const String threeInitialPage = '/three_initial_page';
 
-  static const String k77Screen = '/k77_screen';
+  static const String k77Page = '/k77_page';
 
   static const String initialTabPage = '/initial_tab_page';
 
@@ -569,8 +569,8 @@ class AppRoutes {
       bindings: [Three4Binding()],
     ),
     GetPage(
-      name: k77Screen,
-      page: () => K77Screen(),
+      name: k77Page,
+      page: () => K77Page(),
       bindings: [K77Binding()],
     ),
     GetPage(

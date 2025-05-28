@@ -1,927 +1,387 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/date_time_utils.dart';
+import 'package:pulsedevice/presentation/k79_page/models/list_item_model.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/custom_elevated_button.dart';
 import 'controller/k79_controller.dart';
-import 'models/k79_model.dart';
 
+/// 健康--體溫頁面
 // ignore_for_file: must_be_immutable
-class K79Page extends StatelessWidget {
+class K79Page extends GetWidget<K79Controller> {
   K79Page({Key? key})
       : super(
           key: key,
         );
 
-  K79Controller controller = Get.put(K79Controller(K79Model().obs));
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SizedBox(
-        width: double.maxFinite,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              width: double.maxFinite,
-              padding: EdgeInsets.symmetric(horizontal: 16.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  SizedBox(height: 12.h),
-                  SizedBox(
-                    width: 342.h,
-                    child: Column(
+    return ListView(
+      padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
+      children: [
+        buildTrendBlock(),
+        SizedBox(height: 4.h),
+        buildGrid1(),
+        SizedBox(height: 4.h),
+        buildAnalysis(),
+      ],
+    );
+  }
+
+  Widget buildTrendBlock() {
+    return Container(
+      padding: EdgeInsets.all(16.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.h),
+      ),
+      child: Obx(() {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.h),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: controller.tempratureVal.value,
+                            style: theme.textTheme.headlineMedium, // 數值部分，較大字體
+                          ),
+                          TextSpan(
+                            text: 'lbl_c'.tr,
+                            style: theme.textTheme.bodySmall, // 單位部分，較小字體
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
                       children: [
-                        Container(
-                          width: double.maxFinite,
-                          margin: EdgeInsets.symmetric(horizontal: 22.h),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgArrowDownPrimarycontainer,
-                                height: 18.h,
-                                width: 18.h,
-                              ),
-                              Spacer(
-                                flex: 50,
-                              ),
-                              Text(
-                                "lbl_2025_8".tr,
-                                style: CustomTextStyles
-                                    .bodyMediumPrimaryContainer15_1,
-                              ),
-                              CustomImageView(
-                                imagePath: ImageConstant.imgForward,
-                                height: 6.h,
-                                width: 12.h,
-                                radius: BorderRadius.circular(
-                                  1.h,
+                        Text(controller.loadDataTime.value,
+                            style: theme.textTheme.bodySmall),
+                        SizedBox(width: 8.h),
+                        controller.isAlert.value
+                            ? Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.h, vertical: 4.v),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(12.h),
                                 ),
-                                margin: EdgeInsets.only(left: 12.h),
-                              ),
-                              Spacer(
-                                flex: 49,
-                              ),
-                              CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgArrowRightPrimarycontainer,
-                                height: 18.h,
-                                width: 18.h,
+                                child: Text('lbl216'.tr,
+                                    style: TextStyle(color: Colors.white)),
                               )
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 14.h),
-                        _buildRowonehundredfo(),
-                        _buildRowonehundredtw(),
-                        _buildStackonehundred(),
-                        _buildRowforty(),
-                        Container(
-                          width: double.maxFinite,
-                          margin: EdgeInsets.only(
-                            left: 30.h,
-                            right: 24.h,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "lbl_13".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_52".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_102".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_152".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_202".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_252".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              ),
-                              Text(
-                                "lbl_302".tr,
-                                style: CustomTextStyles.bodySmallGray50010,
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 24.h),
-                        _buildColumntwentyfou(),
-                        SizedBox(height: 8.h),
-                        _buildColumn()
+                            : Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8.h, vertical: 4.v)),
                       ],
                     ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+                  ],
+                )),
+            SizedBox(height: 12.h),
 
-  /// Section Widget
-  Widget _buildRowonehundredfo() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 16.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "lbl_1402".tr,
-            style: CustomTextStyles.bodySmallGray5008,
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 4.h),
-                child: Divider(),
+            /// 切換：日／週／月
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8.h), // 整體圓角
               ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildRowonehundredtw() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 16.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "lbl_1202".tr,
-            style: CustomTextStyles.bodySmallGray5008,
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 4.h),
-                child: Divider(),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStackonehundred() {
-    return Container(
-      height: 38.h,
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 16.h),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl_1002".tr,
-                        style: CustomTextStyles.bodySmallGray5008,
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 4.h),
-                            child: Divider(),
+              clipBehavior: Clip.antiAlias, // 確保子項目裁切不溢出圓角
+              child: Row(
+                children: List.generate(controller.timeTabs.length, (index) {
+                  final isSelected = controller.currentIndex.value == index;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        controller.currentIndex.value = index;
+                        controller.updateDateRange(index);
+                      },
+                      child: Container(
+                        color:
+                            isSelected ? Color(0xFF5BB5C4) : Colors.transparent,
+                        padding: EdgeInsets.symmetric(vertical: 4.v),
+                        alignment: Alignment.center,
+                        child: Text(
+                          controller.timeTabs[index],
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.white
+                                : appTheme.blueGray90001,
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(left: 2.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl_80".tr,
-                        style: CustomTextStyles.bodySmallGray5008,
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 4.h),
-                            child: Divider(),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: double.maxFinite,
-                  margin: EdgeInsets.only(left: 2.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl_60".tr,
-                        style: CustomTextStyles.bodySmallGray5008,
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 4.h),
-                            child: Divider(),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          CustomImageView(
-            imagePath: ImageConstant.imgLine1,
-            height: 24.h,
-            width: double.maxFinite,
-            alignment: Alignment.topRight,
-            margin: EdgeInsets.only(top: 4.h),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildRowforty() {
-    return Container(
-      width: double.maxFinite,
-      margin: EdgeInsets.only(
-        left: 18.h,
-        right: 16.h,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "lbl_402".tr,
-            style: CustomTextStyles.bodySmallGray5008,
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 4.h),
-                child: Divider(),
+                    ),
+                  );
+                }),
               ),
             ),
-          )
-        ],
-      ),
-    );
-  }
+            SizedBox(height: 12.h),
 
-  /// Section Widget
-  Widget _buildColumntwentyfou() {
-    return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.h,
-        vertical: 8.h,
-      ),
-      decoration: AppDecoration.fillWhiteA.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder8,
-      ),
-      child: Column(
-        spacing: 10,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.only(
-              left: 12.h,
-              right: 18.h,
-            ),
-            child: Row(
+            /// 日期區間 + 上下切換箭頭
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  height: 44.h,
-                  width: 42.h,
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
+                /// 左箭頭
+                GestureDetector(
+                  onTap: () =>
+                      controller.prevDateRange(controller.currentIndex.value),
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgArrowDownPrimarycontainer,
+                    height: 18.h,
+                    width: 18.h,
+                  ),
+                ),
+
+                /// 日期顯示與下拉圖示
+                GestureDetector(
+                  onTap: () {
+                    controller.datePicker(controller.currentIndex.value);
+                  },
+                  child: Row(
                     children: [
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "lbl_242".tr,
-                                    style: theme.textTheme.titleLarge,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(bottom: 6.h),
-                                      child: Text(
-                                        "lbl161".tr,
-                                        style: CustomTextStyles
-                                            .bodySmallBluegray40010,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
+                      Text(
+                        controller.formattedRange.value,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15.fSize,
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 6.h),
-                        child: Text(
-                          "lbl232".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
+                      SizedBox(width: 4.h),
+                      CustomImageView(
+                        imagePath: ImageConstant.imgForward,
+                        height: 10.h,
+                        width: 10.h,
+                      ),
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: VerticalDivider(
-                    width: 1.h,
-                    thickness: 1.h,
-                    color: appTheme.blueGray10001,
-                    endIndent: 4.h,
+
+                /// 右箭頭
+                GestureDetector(
+                  onTap: () =>
+                      controller.nextDateRange(controller.currentIndex.value),
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgArrowRightPrimarycontainer,
+                    height: 18.h,
+                    width: 18.h,
                   ),
                 ),
-                _buildStacktwentyfour(
-                  twentyfourTwo: "lbl_22".tr,
-                  two: "lbl161".tr,
-                  one: "lbl233".tr,
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: VerticalDivider(
-                    width: 1.h,
-                    thickness: 1.h,
-                    color: appTheme.blueGray10001,
-                    endIndent: 4.h,
-                  ),
-                ),
-                _buildStacktwentyfour(
-                  twentyfourTwo: "lbl_13".tr,
-                  two: "lbl161".tr,
-                  one: "lbl234".tr,
-                )
               ],
             ),
-          ),
-          SizedBox(
-            width: double.maxFinite,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: _buildStacktwentyfour1(
-                    twentyfourFive: "lbl_862".tr,
-                    two: "lbl177".tr,
-                    one: "lbl235".tr,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 24.h),
-                    child: VerticalDivider(
-                      width: 1.h,
-                      thickness: 1.h,
-                      color: appTheme.blueGray10001,
-                      endIndent: 4.h,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 44.h,
-                    margin: EdgeInsets.only(left: 16.h),
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "lbl_1202".tr,
-                                      style: theme.textTheme.titleLarge,
-                                    ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(bottom: 6.h),
-                                        child: Text(
-                                          "lbl177".tr,
-                                          style: CustomTextStyles
-                                              .bodySmallBluegray40010,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Text(
-                          "lbl236".tr,
-                          style: theme.textTheme.bodySmall,
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 18.h),
-                    child: VerticalDivider(
-                      width: 1.h,
-                      thickness: 1.h,
-                      color: appTheme.blueGray10001,
-                      endIndent: 4.h,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 22.h),
-                    child: _buildStacktwentyfour1(
-                      twentyfourFive: "lbl_80".tr,
-                      two: "lbl177".tr,
-                      one: "lbl237".tr,
-                    ),
-                  ),
-                )
-              ],
+
+            SizedBox(height: 12.h),
+
+            /// 切換內容 (圖表)
+            SizedBox(
+              height: 110.h,
+              child: IndexedStack(
+                index: controller.currentIndex.value,
+                children: List.generate(3, (index) {
+                  return Obx(() => LineChart(controller.getChartData(index)));
+                }),
+              ),
             ),
-          ),
-          SizedBox(height: 6.h)
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  /// Section Widget
-  Widget _buildColumn() {
+  Widget buildStat(String value, String unit, String label) {
+    return Column(
+      children: [
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: value,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: appTheme.cyan700,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              TextSpan(
+                text: ' ',
+              ),
+              TextSpan(
+                text: unit,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: appTheme.blueGray400,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+        ),
+      ],
+    );
+  }
+
+  Widget verticalDivider() => Container(
+      height: 36.h,
+      child: const VerticalDivider(
+        color: Color(0xFFD8D8D8),
+        width: 1,
+        thickness: 1,
+        indent: 8,
+        endIndent: 8,
+      ));
+  Widget buildGrid1() {
+    return Obx(() => Container(
+          // margin: const EdgeInsets.all(12),
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              // 上排
+              Row(
+                children: [
+                  Expanded(
+                      child: buildStat('${controller.normalCount.value}',
+                          'lbl161'.tr, 'lbl232'.tr)),
+                  verticalDivider(),
+                  Expanded(
+                      child: buildStat('${controller.lowCount.value}',
+                          'lbl242'.tr, 'lbl234'.tr)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // 下排
+              Row(
+                children: [
+                  Expanded(
+                      child: buildStat('${controller.normalMinCount.value}',
+                          'lbl_c'.tr, 'lbl235'.tr)),
+                  verticalDivider(),
+                  Expanded(
+                      child: buildStat('${controller.hightMinCount.value}',
+                          'lbl_c'.tr, 'lbl236'.tr)),
+                  verticalDivider(),
+                  Expanded(
+                      child: buildStat('${controller.lowMinCount.value}',
+                          'lbl_c'.tr, 'lbl237'.tr)),
+                ],
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Widget buildAnalysis() {
     return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 14.h,
-      ),
-      decoration: AppDecoration.fillWhiteA.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder8,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: double.maxFinite,
-            child: Row(
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    height: 24.h,
-                    text: "lbl238".tr,
-                    buttonStyle: CustomButtonStyles.fillPrimaryTL4,
-                    buttonTextStyle: CustomTextStyles.bodySmallWhiteA700_1,
-                  ),
+        padding: EdgeInsets.all(16.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.h),
+        ),
+        child: Obx(() =>
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.h),
                 ),
-                Expanded(
-                  child: CustomElevatedButton(
-                    height: 24.h,
-                    text: "lbl239".tr,
-                    buttonStyle: CustomButtonStyles.fillGrayLR4,
-                    buttonTextStyle: CustomTextStyles.bodySmallErrorContainer_1,
-                  ),
-                )
-              ],
-            ),
-          ),
-          SizedBox(height: 4.h),
-          SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.only(
-                    top: 12.h,
-                    bottom: 10.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl155".tr,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      Spacer(
-                        flex: 43,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "lbl_1502".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                      Spacer(
-                        flex: 56,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "msg_2025_03_29_11_23".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: 12.h,
-                    bottom: 10.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl155".tr,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      Spacer(
-                        flex: 43,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "lbl_1502".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                      Spacer(
-                        flex: 56,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "msg_2025_03_29_11_23".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: 12.h,
-                    bottom: 10.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl155".tr,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      Spacer(
-                        flex: 43,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "lbl_1502".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                      Spacer(
-                        flex: 56,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "msg_2025_03_29_11_23".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: 12.h,
-                    bottom: 10.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl155".tr,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      Spacer(
-                        flex: 43,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "lbl_1502".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                      Spacer(
-                        flex: 56,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "msg_2025_03_29_11_23".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: 12.h,
-                    bottom: 10.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "lbl155".tr,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      Spacer(
-                        flex: 43,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "lbl_1502".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      ),
-                      Spacer(
-                        flex: 56,
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Text(
-                          "msg_2025_03_29_11_23".tr,
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(8.h, 12.h, 8.h, 10.h),
-            decoration: AppDecoration.outlineGray,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "lbl155".tr,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "lbl_1502".tr,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "msg_2023_03_23_14_32".tr,
-                    textAlign: TextAlign.right,
-                    style: theme.textTheme.bodySmall,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(8.h, 12.h, 8.h, 10.h),
-            decoration: AppDecoration.outlineGray,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "lbl155".tr,
-                  style: theme.textTheme.bodyMedium,
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "lbl_1502".tr,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "msg_2023_03_23_14_32".tr,
-                    textAlign: TextAlign.right,
-                    style: theme.textTheme.bodySmall,
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Common widget
-  Widget _buildStacktwentyfour({
-    required String twentyfourTwo,
-    required String two,
-    required String one,
-  }) {
-    return SizedBox(
-      height: 44.h,
-      width: 28.h,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        twentyfourTwo,
-                        style: theme.textTheme.titleLarge!.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 6.h),
+                clipBehavior: Clip.antiAlias,
+                child: Row(
+                  children:
+                      List.generate(controller.recordTabs.length, (index) {
+                    final isSelected = controller.recordIndex.value == index;
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          controller.recordIndex.value = index;
+                        },
+                        child: Container(
+                          color: isSelected
+                              ? const Color(0xFF5BB5C4)
+                              : Colors.transparent,
+                          padding: EdgeInsets.symmetric(vertical: 4.v),
+                          alignment: Alignment.center,
                           child: Text(
-                            two,
-                            style: CustomTextStyles.bodySmallBluegray40010
-                                .copyWith(
-                              color: appTheme.blueGray400,
+                            controller.recordTabs[index],
+                            style: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : appTheme.blueGray90001,
                             ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          Text(
-            one,
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.errorContainer,
-            ),
-          )
-        ],
-      ),
-    );
+                      ),
+                    );
+                  }),
+                ),
+              ),
+              buildRecordList(),
+            ])));
   }
 
-  /// Common widget
-  Widget _buildStacktwentyfour1({
-    required String twentyfourFive,
-    required String two,
-    required String one,
-  }) {
-    return SizedBox(
-      height: 44.h,
-      width: 64.h,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        twentyfourFive,
-                        style: theme.textTheme.titleLarge!.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 6.h),
-                          child: Text(
-                            two,
-                            style: CustomTextStyles.bodySmallBluegray40010
-                                .copyWith(
-                              color: appTheme.blueGray400,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          Text(
-            one,
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.errorContainer,
-            ),
-          )
-        ],
-      ),
-    );
+  Widget buildRecordList() {
+    return Obx(() {
+      final isRecordMode = controller.recordIndex.value == 0;
+      final list = isRecordMode
+          ? controller.k79ModelObj.value.listItemList.value
+          : controller.k79ModelObj.value.listItemList2.value;
+
+      if (list.isEmpty) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          child: Center(child: Text('無資料')),
+        );
+      }
+
+      return ListView.separated(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: list.length,
+        separatorBuilder: (context, index) =>
+            Divider(height: 1, color: Colors.grey.shade300),
+        itemBuilder: (context, index) {
+          if (isRecordMode) {
+            final item = list[index] as ListRecordItemModel;
+            final itemTime =
+                item.time?.value.format(pattern: 'yyyy/MM/dd HH:mm') ?? '';
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(item.label?.value ?? '',
+                      style: CustomTextStyles.bodyMediumBluegray900),
+                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                      style: CustomTextStyles.bodyMediumBluegray900),
+                  Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
+                ],
+              ),
+            );
+          } else {
+            final item = list[index] as ListHistoryItemModel;
+            final itemTime =
+                item.time?.value.format(pattern: 'yyyy/MM/dd HH:mm') ?? '';
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                      style: CustomTextStyles.bodyMediumBluegray900),
+                  Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
+                ],
+              ),
+            );
+          }
+        },
+      );
+    });
   }
 }

@@ -130,7 +130,7 @@ class _RulerPickerState extends State<RulerPicker> {
         onPanEnd: (_) => _snapToTick(),
         child: ClipRRect(
           child: Container(
-            color: Colors.white,
+            color: const Color(0xFFF2F2F2), // 原本是 Colors.white
             height: widget.height + 20,
             child: Stack(
               alignment: Alignment.topCenter,

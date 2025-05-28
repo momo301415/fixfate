@@ -18,6 +18,68 @@ class SleepDataService extends BaseDbService {
         .get();
   }
 
+  /// 共用：根據秒級 timestamp 範圍查詢
+  Future<List<SleepDataData>> getByUserAndRange({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  }) {
+    final fromSec = from.millisecondsSinceEpoch ~/ 1000;
+    final toSec = to.millisecondsSinceEpoch ~/ 1000;
+
+    return (db.select(db.sleepData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.startTimeStamp.isBiggerOrEqualValue(fromSec) &
+              tbl.startTimeStamp.isSmallerOrEqualValue(toSec)))
+        .get();
+  }
+
+  /// 查詢：日
+  Future<List<SleepDataData>> getDaily(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：週
+  Future<List<SleepDataData>> getWeekly(String userId, DateTime date) {
+    final start = date.subtract(Duration(days: date.weekday - 1));
+    final end = start.add(Duration(days: 7)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：月
+  Future<List<SleepDataData>> getMonthly(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end =
+        DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 取得尚未同步的資料
+  Future<List<SleepDataData>> getUnsyncedData(String userId) {
+    return (db.select(db.sleepData)
+          ..where(
+              (tbl) => tbl.userId.equals(userId) & tbl.isSynced.equals(false)))
+        .get();
+  }
+
+  /// 標記為已同步
+  Future<void> markAsSynced(List<SleepDataData> list) async {
+    await db.batch((batch) {
+      for (final data in list) {
+        batch.update(
+          db.sleepData,
+          const SleepDataCompanion(isSynced: Value(true)),
+          where: (tbl) =>
+              tbl.userId.equals(data.userId) &
+              tbl.startTimeStamp.equals(data.startTimeStamp),
+        );
+      }
+    });
+  }
+
   Future<void> insertSleepDetails(String userId, int parentStartTimeStamp,
       List<SleepDetailDataCompanion> details) async {
     for (final detail in details) {
@@ -43,6 +105,71 @@ class SleepDataService extends BaseDbService {
       result.add(SleepDataWithDetails(data: record, details: detailList));
     }
     return result;
+  }
+
+  /// 共用：根據秒級 timestamp 範圍查詢
+  Future<List<SleepDetailDataData>> getByUserAndRangeDetails({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  }) {
+    final fromSec = from.millisecondsSinceEpoch ~/ 1000;
+    final toSec = to.millisecondsSinceEpoch ~/ 1000;
+
+    return (db.select(db.sleepDetailData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.startTimeStamp.isBiggerOrEqualValue(fromSec) &
+              tbl.startTimeStamp.isSmallerOrEqualValue(toSec)))
+        .get();
+  }
+
+  /// 查詢：日
+  Future<List<SleepDetailDataData>> getDailyDetails(
+      String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+    return getByUserAndRangeDetails(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：週
+  Future<List<SleepDetailDataData>> getWeeklyDetails(
+      String userId, DateTime date) {
+    final start = date.subtract(Duration(days: date.weekday - 1));
+    final end = start.add(Duration(days: 7)).subtract(Duration(seconds: 1));
+    return getByUserAndRangeDetails(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：月
+  Future<List<SleepDetailDataData>> getMonthlyDetials(
+      String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end =
+        DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
+    return getByUserAndRangeDetails(userId: userId, from: start, to: end);
+  }
+
+  /// 取得尚未同步的資料
+  Future<List<SleepDetailDataData>> getUnsyncedDetailsData(String userId) {
+    return (db.select(db.sleepDetailData)
+          ..where(
+              (tbl) => tbl.userId.equals(userId) & tbl.isSynced.equals(false)))
+        .get();
+  }
+
+  /// 標記為已同步
+  Future<void> markDetailsAsSynced(List<SleepDetailDataData> list) async {
+    await db.batch((batch) {
+      for (final data in list) {
+        batch.update(
+          db.sleepDetailData,
+          const SleepDetailDataCompanion(isSynced: Value(true)),
+          where: (tbl) =>
+              tbl.userId.equals(data.userId) &
+              tbl.startTimeStamp.equals(data.startTimeStamp),
+        );
+      }
+    });
   }
 
   Future<void> deleteSleepData(String userId, int startTimeStamp) async {

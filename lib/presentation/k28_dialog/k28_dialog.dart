@@ -69,8 +69,9 @@ class K28Dialog extends StatelessWidget {
                           suffix: Padding(
                             padding: EdgeInsets.only(
                               left: 16.h,
-                              top: 12.h,
-                              bottom: 12.h,
+                              top: 6.h,
+                              bottom: 6.h,
+                              right: 8.h,
                             ),
                             child: Text(
                               "lbl_cm".tr,

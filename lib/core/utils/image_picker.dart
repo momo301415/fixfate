@@ -13,8 +13,10 @@ class ImagePickerHelper {
 
   /// ✅ 開啟相機（自動檢查權限）
   static Future<File?> pickFromCamera() async {
-    final granted = await _checkCameraPermission();
-    if (!granted) return null;
+    if (Platform.isAndroid) {
+      final granted = await _checkCameraPermission();
+      if (!granted) return null;
+    }
 
     final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
     return photo != null ? File(photo.path) : null;
@@ -22,8 +24,10 @@ class ImagePickerHelper {
 
   /// ✅ 開啟相簿（自動檢查權限）
   static Future<File?> pickFromGallery() async {
-    final granted = await _checkGalleryPermission();
-    if (!granted) return null;
+    if (Platform.isAndroid) {
+      final granted = await _checkGalleryPermission();
+      if (!granted) return null;
+    }
 
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     return image != null ? File(image.path) : null;
@@ -31,8 +35,11 @@ class ImagePickerHelper {
 
   /// ✅ 開啟多張相簿圖片
   static Future<List<File>> pickMultipleFromGallery() async {
-    final granted = await _checkGalleryPermission();
-    if (!granted) return [];
+    ///image_picker會自動檢測ios相簿權限
+    if (Platform.isAndroid) {
+      final granted = await _checkGalleryPermission();
+      if (!granted) return [];
+    }
 
     final List<XFile>? images = await _picker.pickMultiImage();
     return images?.map((xfile) => File(xfile.path)).toList() ?? [];

@@ -63,6 +63,29 @@ class HeartRateDataService extends BaseDbService {
     return getByUserAndRange(userId: userId, from: start, to: end);
   }
 
+  /// 取得尚未同步的資料
+  Future<List<HeartRateDataData>> getUnsyncedData(String userId) {
+    return (db.select(db.heartRateData)
+          ..where(
+              (tbl) => tbl.userId.equals(userId) & tbl.isSynced.equals(false)))
+        .get();
+  }
+
+  /// 標記為已同步
+  Future<void> markAsSynced(List<HeartRateDataData> list) async {
+    await db.batch((batch) {
+      for (final data in list) {
+        batch.update(
+          db.heartRateData,
+          const HeartRateDataCompanion(isSynced: Value(true)),
+          where: (tbl) =>
+              tbl.userId.equals(data.userId) &
+              tbl.startTimeStamp.equals(data.startTimeStamp),
+        );
+      }
+    });
+  }
+
   /// 根據複合主鍵更新資料
   Future<void> update(
       String userId, int startTimeStamp, HeartRateDataCompanion data) {

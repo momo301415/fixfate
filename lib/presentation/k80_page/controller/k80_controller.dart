@@ -8,8 +8,9 @@ import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
-import 'package:pulsedevice/presentation/k77_screen/models/k77_model.dart';
-import 'package:pulsedevice/presentation/k77_screen/models/list_item_model.dart';
+import 'package:pulsedevice/presentation/k80_page/model/k80_model.dart';
+import 'package:pulsedevice/presentation/k80_page/model/list_item_model.dart';
+
 import 'package:pulsedevice/presentation/k87_bottomsheet/controller/k87_controller.dart';
 import 'package:pulsedevice/presentation/k87_bottomsheet/k87_bottomsheet.dart';
 import 'package:pulsedevice/presentation/k88_bottomsheet/controller/k88_controller.dart';
@@ -17,9 +18,9 @@ import 'package:pulsedevice/presentation/k88_bottomsheet/k88_bottomsheet.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/controller/one7_controller.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
 
-class K77Controller extends GetxController {
+class K80Controller extends GetxController {
   final gc = Get.find<GlobalController>();
-  final k77ModelObj = K77Model().obs;
+  final k80ModelObj = K80Model().obs;
   final userId = ''.obs;
   RxInt currentIndex = 0.obs; // 預設日
   RxInt recordIndex = 0.obs; // 預設報警記錄
@@ -27,7 +28,7 @@ class K77Controller extends GetxController {
   List<String> timeTabs = ['lbl229'.tr, 'lbl230'.tr, 'lbl231'.tr];
   List<String> recordTabs = ['lbl238'.tr, 'lbl239'.tr];
   Rx<DateTime> currentDate = DateTime.now().obs;
-  final heartRateVal = ''.obs;
+  final pressureVal = '0'.obs;
   final loadDataTime = ''.obs;
   final isAlert = false.obs;
   final normalCount = 0.obs;
@@ -37,7 +38,7 @@ class K77Controller extends GetxController {
   final hightMinCount = 0.obs;
   final lowMinCount = 0.obs;
   final alertRecords = <AlertRecord>[].obs;
-  final heartRateData = <HeartRateDataData>[].obs;
+  final pressureData = [].obs;
 
   // 模擬資料
   final List<FlSpot> weeklyData = [
@@ -52,7 +53,9 @@ class K77Controller extends GetxController {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      LoadingHelper.show();
       updateDateRange(currentIndex.value);
+      LoadingHelper.hide();
     });
   }
 
@@ -60,64 +63,64 @@ class K77Controller extends GetxController {
   Future<void> loadDataByDate(DateTime date) async {
     userId.value = gc.userId.value;
 
-    List<HeartRateDataData> res = [];
+    // List<pressureDataData> res = [];
 
-    if (currentIndex.value == 0) {
-      res = await gc.heartRateDataService.getDaily(userId.value, date);
-    } else if (currentIndex.value == 1) {
-      res = await gc.heartRateDataService.getWeekly(userId.value, date);
-    } else if (currentIndex.value == 2) {
-      res = await gc.heartRateDataService.getMonthly(userId.value, date);
-    }
+    // if (currentIndex.value == 0) {
+    //   res = await gc.pressureDataService.getDaily(userId.value, date);
+    // } else if (currentIndex.value == 1) {
+    //   res = await gc.pressureDataService.getWeekly(userId.value, date);
+    // } else if (currentIndex.value == 2) {
+    //   res = await gc.pressureDataService.getMonthly(userId.value, date);
+    // }
 
-    if (res.isEmpty) {
-      clearData();
-      return;
-    }
+    // if (res.isEmpty) {
+    //   clearData();
+    //   return;
+    // }
 
-    res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    // res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
 
-    final lastData = res.last;
-    loadDataTime.value =
-        DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
-    heartRateVal.value = lastData.heartRate.toString();
+    // final lastData = res.last;
+    // loadDataTime.value =
+    //     DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
+    // heartRateVal.value = lastData.heartRate.toString();
 
-    final heartSettings = HeartRateSettingStorage.getUserProfile(userId.value);
-    final heartRateList = res.map((e) => e.heartRate).toList();
+    // final heartSettings = HeartRateSettingStorage.getUserProfile(userId.value);
+    // final heartRateList = res.map((e) => e.heartRate).toList();
 
-    final min = heartRateList.reduce((a, b) => a < b ? a : b);
-    final max = heartRateList.reduce((a, b) => a > b ? a : b);
-    final avg = heartRateList.reduce((a, b) => a + b) / heartRateList.length;
+    // final min = heartRateList.reduce((a, b) => a < b ? a : b);
+    // final max = heartRateList.reduce((a, b) => a > b ? a : b);
+    // final avg = heartRateList.reduce((a, b) => a + b) / heartRateList.length;
 
-    normalMinCount.value = avg.toInt();
-    hightMinCount.value = max;
-    lowMinCount.value = min;
+    // normalMinCount.value = avg.toInt();
+    // hightMinCount.value = max;
+    // lowMinCount.value = min;
 
-    if (heartSettings != null && heartSettings.alertEnabled) {
-      final setLow = heartSettings.lowThreshold;
-      final setHigh = heartSettings.highThreshold;
-      final minCount = heartRateList.where((e) => e <= setLow).length;
-      final maxCount = heartRateList.where((e) => e >= setHigh).length;
-      lowCount.value = minCount;
-      highCount.value = maxCount;
-      normalCount.value = res.length - minCount - maxCount;
-    } else {
-      normalCount.value = res.length;
-    }
+    // if (heartSettings != null && heartSettings.alertEnabled) {
+    //   final setLow = heartSettings.lowThreshold;
+    //   final setHigh = heartSettings.highThreshold;
+    //   final minCount = heartRateList.where((e) => e <= setLow).length;
+    //   final maxCount = heartRateList.where((e) => e >= setHigh).length;
+    //   lowCount.value = minCount;
+    //   highCount.value = maxCount;
+    //   normalCount.value = res.length - minCount - maxCount;
+    // } else {
+    //   normalCount.value = res.length;
+    // }
 
     /// 歷史紀錄
-    final list = res.map((m) {
-      final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
-      return ListHistoryItemModel(
-        unit: Rx('lbl177'.tr),
-        value: Rx(m.heartRate.toString()),
-        time: Rx(date),
-      );
-    }).toList();
-    k77ModelObj.value.listItemList2.value = list;
+    // final list = res.map((m) {
+    //   final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
+    //   return ListHistoryItemModel(
+    //     unit: Rx('lbl180'.tr),
+    //     value: Rx(m.heartRate.toString()),
+    //     time: Rx(date),
+    //   );
+    // }).toList();
+    // k80ModelObj.value.listItemList2.value = list;
 
     /// 圖表
-    heartRateData.assignAll(res);
+    // pressureData.assignAll(res);
 
     // 警報紀錄（根據模式切換）
     final records = await AlertRecordListStorage.getRecords(userId.value);
@@ -147,7 +150,7 @@ class K77Controller extends GetxController {
 
     final selectRecords = records
         .where((r) =>
-            r.type.contains('heart') &&
+            r.type.contains('pressure') &&
             r.time.isAfter(
                 startRange.subtract(const Duration(milliseconds: 1))) &&
             r.time.isBefore(endRange.add(const Duration(milliseconds: 1))))
@@ -160,84 +163,84 @@ class K77Controller extends GetxController {
         label: Rx(m.label),
         value: Rx(m.value ?? ''),
         time: Rx(m.time),
-        unit: Rx('lbl177'.tr),
+        unit: Rx('lbl180'.tr),
       );
     }).toList();
 
-    k77ModelObj.value.listItemList.value = alertList;
+    k80ModelObj.value.listItemList.value = alertList;
   }
 
   /// 繪製圖表--日
-  List<FlSpot> buildDaySpots(List<HeartRateDataData> data) {
-    if (data.isEmpty) return [];
+  // List<FlSpot> buildDaySpots(List<pressureDataData> data) {
+  //   if (data.isEmpty) return [];
 
-    final base =
-        DateTime.fromMillisecondsSinceEpoch(data.first.startTimeStamp * 1000);
-    return data.map((e) {
-      final current =
-          DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-      final diffMinutes = current.difference(base).inMinutes.toDouble();
-      return FlSpot(diffMinutes, e.heartRate.toDouble());
-    }).toList();
-  }
+  //   final base =
+  //       DateTime.fromMillisecondsSinceEpoch(data.first.startTimeStamp * 1000);
+  //   return data.map((e) {
+  //     final current =
+  //         DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //     final diffMinutes = current.difference(base).inMinutes.toDouble();
+  //     return FlSpot(diffMinutes, e.heartRate.toDouble());
+  //   }).toList();
+  // }
 
   /// 繪製圖表--週
-  List<FlSpot> buildWeeklySpots(
-      List<HeartRateDataData> data, DateTime startDate) {
-    List<FlSpot> spots = [];
-    for (int i = 0; i < 7; i++) {
-      final day = startDate.add(Duration(days: i));
-      final dayStart = DateTime(day.year, day.month, day.day);
-      final dayEnd =
-          dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
-      final dayData = data.where((e) {
-        final timestamp =
-            DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-        return timestamp
-                .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
-            timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
-      }).toList();
+  // List<FlSpot> buildWeeklySpots(
+  //     List<pressureDataData> data, DateTime startDate) {
+  //   List<FlSpot> spots = [];
+  //   for (int i = 0; i < 7; i++) {
+  //     final day = startDate.add(Duration(days: i));
+  //     final dayStart = DateTime(day.year, day.month, day.day);
+  //     final dayEnd =
+  //         dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
+  //     final dayData = data.where((e) {
+  //       final timestamp =
+  //           DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //       return timestamp
+  //               .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
+  //           timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
+  //     }).toList();
 
-      if (dayData.isNotEmpty) {
-        final avg = dayData.map((e) => e.heartRate).reduce((a, b) => a + b) /
-            dayData.length;
-        spots.add(FlSpot(i.toDouble(), avg));
-      } else {
-        spots.add(FlSpot(i.toDouble(), 0));
-      }
-    }
-    return spots;
-  }
+  //     if (dayData.isNotEmpty) {
+  //       final avg = dayData.map((e) => e.heartRate).reduce((a, b) => a + b) /
+  //           dayData.length;
+  //       spots.add(FlSpot(i.toDouble(), avg));
+  //     } else {
+  //       spots.add(FlSpot(i.toDouble(), 0));
+  //     }
+  //   }
+  //   return spots;
+  // }
 
   /// 繪製圖表--月
-  List<FlSpot> buildMonthlySpots(
-      List<HeartRateDataData> data, DateTime startDate) {
-    List<FlSpot> spots = [];
-    final daysInMonth =
-        DateUtils.getDaysInMonth(startDate.year, startDate.month);
-    for (int i = 0; i < daysInMonth; i++) {
-      final day = DateTime(startDate.year, startDate.month, i + 1);
-      final dayStart = DateTime(day.year, day.month, day.day);
-      final dayEnd =
-          dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
-      final dayData = data.where((e) {
-        final timestamp =
-            DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-        return timestamp
-                .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
-            timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
-      }).toList();
+  // List<FlSpot> buildMonthlySpots(
+  //     List<pressureDataData> data, DateTime startDate) {
+  //   List<FlSpot> spots = [];
+  //   final daysInMonth =
+  //       DateUtils.getDaysInMonth(startDate.year, startDate.month);
+  //   for (int i = 0; i < daysInMonth; i++) {
+  //     final day = DateTime(startDate.year, startDate.month, i + 1);
+  //     final dayStart = DateTime(day.year, day.month, day.day);
+  //     final dayEnd =
+  //         dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
+  //     final dayData = data.where((e) {
+  //       final timestamp =
+  //           DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //       return timestamp
+  //               .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
+  //           timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
+  //     }).toList();
 
-      if (dayData.isNotEmpty) {
-        final avg = dayData.map((e) => e.heartRate).reduce((a, b) => a + b) /
-            dayData.length;
-        spots.add(FlSpot((i + 1).toDouble(), avg));
-      } else {
-        spots.add(FlSpot((i + 1).toDouble(), 0));
-      }
-    }
-    return spots;
-  }
+  //     if (dayData.isNotEmpty) {
+  //       final avg = dayData.map((e) => e.heartRate).reduce((a, b) => a + b) /
+  //           dayData.length;
+  //       spots.add(FlSpot((i + 1).toDouble(), avg));
+  //     } else {
+  //       spots.add(FlSpot((i + 1).toDouble(), 0));
+  //     }
+  //   }
+  //   return spots;
+  // }
 
   SideTitles getDailyTitles(DateTime baseTime) {
     return SideTitles(
@@ -337,14 +340,14 @@ class K77Controller extends GetxController {
 
     if (index == 0) {
       // 日：時間顯示
-      if (heartRateData.isEmpty) {
+      if (pressureData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
         final base = DateTime.fromMillisecondsSinceEpoch(
-            heartRateData.first.startTimeStamp * 1000);
+            pressureData.first.startTimeStamp * 1000);
 
-        data = heartRateData.map((e) {
+        data = pressureData.map((e) {
           final current =
               DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
           final diffMinutes = current.difference(base).inMinutes.toDouble();
@@ -365,7 +368,7 @@ class K77Controller extends GetxController {
       }
     } else if (index == 1) {
       // 週：星期
-      if (heartRateData.isEmpty) {
+      if (pressureData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
@@ -373,7 +376,7 @@ class K77Controller extends GetxController {
             .subtract(Duration(days: currentDate.value.weekday - 1));
         final Map<int, List<int>> dayData = {};
 
-        for (var e in heartRateData) {
+        for (var e in pressureData) {
           final date =
               DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
           final diffDays = date.difference(startOfWeek).inDays;
@@ -402,7 +405,7 @@ class K77Controller extends GetxController {
       }
     } else {
       // 月：日期
-      if (heartRateData.isEmpty) {
+      if (pressureData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
@@ -410,7 +413,7 @@ class K77Controller extends GetxController {
             DateTime(currentDate.value.year, currentDate.value.month, 1);
         final Map<int, List<int>> dayData = {};
 
-        for (var e in heartRateData) {
+        for (var e in pressureData) {
           final date =
               DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
           final diffDays = date.difference(startOfMonth).inDays;
@@ -548,8 +551,8 @@ class K77Controller extends GetxController {
   }
 
   void clearData() {
-    heartRateData.clear();
-    heartRateVal.value = '';
+    pressureData.clear();
+    pressureVal.value = '';
     loadDataTime.value = '';
     isAlert.value = false;
 
@@ -560,7 +563,7 @@ class K77Controller extends GetxController {
     hightMinCount.value = 0;
     lowMinCount.value = 0;
 
-    k77ModelObj.value.listItemList.value.clear(); // 報警紀錄
-    k77ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k80ModelObj.value.listItemList.value.clear(); // 報警紀錄
+    k80ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
   }
 }

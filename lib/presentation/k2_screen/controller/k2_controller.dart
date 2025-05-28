@@ -55,9 +55,10 @@ class K2Controller extends GetxController {
         if (resBody != null) {
           await PrefUtils().setApiUserId(resBody['id'].toString());
           gc.apiToken.value = resBody['token'].toString();
+          gc.apiId.value = resBody['id'].toString();
           gc.userId.value = userid;
           gc.healthDataSyncService.setUserId(userid);
-          // await FirebaseHelper.init();
+
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {
             gc.apiToken.value = ftoken;

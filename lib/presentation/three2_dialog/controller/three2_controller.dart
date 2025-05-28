@@ -13,7 +13,8 @@ class Three2Controller extends GetxController {
   final gc = Get.find<GlobalController>();
   Future<void> deleteAccount() async {
     var isAccountExist = await UserProfileStorage.exists(gc.userId.value);
-    if (isAccountExist) {
+    var userId = await PrefUtils().getUserId();
+    if (isAccountExist || userId.isNotEmpty) {
       await UserProfileStorage.deleteUserProfile(gc.userId.value);
       gc.userEmail.value = "";
       Get.back(result: 'refresh');

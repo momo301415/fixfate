@@ -1,0 +1,393 @@
+import 'dart:math';
+
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
+import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
+import 'package:pulsedevice/core/sqliteDb/app_database.dart';
+import 'package:pulsedevice/core/utils/date_time_utils.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/k82_page/models/k82_model.dart';
+import 'package:pulsedevice/presentation/k82_page/models/list_item_model.dart';
+import 'package:pulsedevice/presentation/k87_bottomsheet/controller/k87_controller.dart';
+import 'package:pulsedevice/presentation/k87_bottomsheet/k87_bottomsheet.dart';
+import 'package:pulsedevice/presentation/k88_bottomsheet/controller/k88_controller.dart';
+import 'package:pulsedevice/presentation/k88_bottomsheet/k88_bottomsheet.dart';
+import 'package:pulsedevice/presentation/one7_bottomsheet/controller/one7_controller.dart';
+import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
+import 'package:pulsedevice/widgets/sleep_bar_chart.dart';
+
+class K82Controller extends GetxController {
+  final gc = Get.find<GlobalController>();
+  final k82ModelObj = K82Model().obs;
+  final userId = ''.obs;
+  RxInt currentIndex = 0.obs; // 預設日
+  RxInt recordIndex = 0.obs; // 預設報警記錄
+  RxString formattedRange = ''.obs;
+  List<String> timeTabs = ['lbl229'.tr, 'lbl230'.tr, 'lbl231'.tr];
+  List<String> recordTabs = ['lbl238'.tr, 'lbl239'.tr];
+  Rx<DateTime> currentDate = DateTime.now().obs;
+  final isAlert = false.obs;
+  final sleepVal = ''.obs;
+  final loadDataTime = ''.obs;
+  final deep = ''.obs;
+  final light = ''.obs;
+  final rem = ''.obs;
+  final awake = ''.obs;
+  final deepCount = 0.obs;
+  final lightCount = 0.obs;
+  final remCount = 0.obs;
+  final awakeCount = 0.obs;
+  final segmentStartText = ''.obs;
+  final segmentEndText = ''.obs;
+  final sleepSegments = <SleepSegment>[].obs;
+
+  final sleepData = <SleepDataData>[].obs;
+
+  // 模擬資料
+  final List<FlSpot> weeklyData = [
+    FlSpot(0, 0),
+  ].obs;
+
+  final List<FlSpot> monthlyData = [
+    FlSpot(0, 0),
+  ].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      LoadingHelper.show();
+      updateDateRange(currentIndex.value);
+      LoadingHelper.hide();
+    });
+  }
+
+  /// 輸入日期讀取數據
+  Future<void> loadDataByDate(DateTime date) async {
+    userId.value = gc.userId.value;
+
+    List<SleepDataData> res = [];
+    List<SleepDetailDataData> detailRes = [];
+    sleepSegments.value = [];
+    if (currentIndex.value == 0) {
+      res = await gc.sleepDataService.getDaily(userId.value, date);
+      detailRes = await gc.sleepDataService.getDailyDetails(userId.value, date);
+    } else if (currentIndex.value == 1) {
+      res = await gc.sleepDataService.getWeekly(userId.value, date);
+      detailRes =
+          await gc.sleepDataService.getWeeklyDetails(userId.value, date);
+    } else if (currentIndex.value == 2) {
+      res = await gc.sleepDataService.getMonthly(userId.value, date);
+      detailRes =
+          await gc.sleepDataService.getMonthlyDetials(userId.value, date);
+    }
+
+    if (res.isEmpty) {
+      clearData();
+      return;
+    }
+
+    res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    detailRes.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    final lastData = res.last;
+    loadDataTime.value =
+        DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
+    sleepVal.value = ((lastData.endTimeStamp - lastData.startTimeStamp) / 3600)
+        .toStringAsFixed(1);
+
+    final deepSleepSeconds = res.fold<int>(
+      0,
+      (sum, item) => sum + item.deepSleepSeconds,
+    );
+    final lightSleepSeconds = res.fold<int>(
+      0,
+      (sum, item) => sum + item.lightSleepSeconds,
+    );
+
+    final remSleepSeconds = res.fold<int>(
+      0,
+      (sum, item) => sum + item.remSleepSeconds,
+    );
+
+    deep.value = DateTimeUtils.formatSecondsToHourDecimal(deepSleepSeconds);
+    light.value = DateTimeUtils.formatSecondsToHourDecimal(lightSleepSeconds);
+    rem.value = DateTimeUtils.formatSecondsToHourDecimal(remSleepSeconds);
+
+    deepCount.value = detailRes.where((e) => e.sleepType == 241).length;
+    lightCount.value = detailRes.where((e) => e.sleepType == 242).length;
+    remCount.value = detailRes.where((e) => e.sleepType == 243).length;
+    awakeCount.value = detailRes.where((e) => e.sleepType == 244).length;
+    int totalDuration244 = detailRes
+        .where((e) => e.sleepType == 244)
+        .fold(0, (sum, e) => sum + e.duration);
+    awake.value = DateTimeUtils.formatSecondsToHourDecimal(totalDuration244);
+
+    /// 直接將detail數據轉為橫條圖
+    for (var dic in detailRes) {
+      switch (dic.sleepType) {
+        case 241:
+          sleepSegments.add(SleepSegment(
+            stage: SleepStage.deep,
+            duration: Duration(seconds: dic.duration),
+          ));
+          break;
+        case 242:
+          sleepSegments.add(SleepSegment(
+            stage: SleepStage.light,
+            duration: Duration(seconds: dic.duration),
+          ));
+          break;
+        case 243:
+          sleepSegments.add(SleepSegment(
+            stage: SleepStage.rem,
+            duration: Duration(seconds: dic.duration),
+          ));
+          break;
+        case 244:
+          sleepSegments.add(SleepSegment(
+            stage: SleepStage.awake,
+            duration: Duration(seconds: dic.duration),
+          ));
+          break;
+      }
+    }
+
+    switch (currentIndex.value) {
+      case 0:
+        segmentStartText.value =
+            DateTime.fromMillisecondsSinceEpoch(lastData.startTimeStamp * 1000)
+                    .format(pattern: "HH:mm") +
+                '入睡';
+        segmentEndText.value =
+            DateTime.fromMillisecondsSinceEpoch(lastData.endTimeStamp * 1000)
+                    .format(pattern: "HH:mm") +
+                '清醒';
+        break;
+      case 1:
+      case 2:
+        segmentStartText.value =
+            DateTime.fromMillisecondsSinceEpoch(res.first.startTimeStamp * 1000)
+                .format(pattern: "d日");
+        segmentEndText.value =
+            DateTime.fromMillisecondsSinceEpoch(res.last.endTimeStamp * 1000)
+                .format(pattern: "d日");
+        break;
+    }
+
+    /// 歷史紀錄
+    final list = res.map((m) {
+      final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
+
+      return ListHistoryItemModel(
+        unit: Rx(''),
+        value: Rx(DateTimeUtils.getDurationFormattedString(
+            m.startTimeStamp, m.endTimeStamp)),
+        time: Rx(date),
+      );
+    }).toList();
+    k82ModelObj.value.listItemList2.value = list;
+
+    /// 圖表
+    sleepData.assignAll(res);
+  }
+
+  Future<void> updateDateRange(int index) async {
+    if (index == 0) {
+      formattedRange.value =
+          "${currentDate.value.format(pattern: 'M月d日, EEEE', locale: 'zh_CN')}";
+      loadDataByDate(currentDate.value);
+    } else if (index == 1) {
+      final start = currentDate.value
+          .subtract(Duration(days: currentDate.value.weekday - 1));
+      final end = start.add(Duration(days: 6));
+      formattedRange.value =
+          '${start.format(pattern: 'M月d日')} ～ ${end.format(pattern: 'M月d日')}';
+      loadDataByDate(currentDate.value);
+    } else {
+      formattedRange.value =
+          "${currentDate.value.year}年 ${currentDate.value.month}月";
+      loadDataByDate(currentDate.value);
+    }
+  }
+
+  void prevDateRange(int index) {
+    if (index == 0) {
+      currentDate.value = currentDate.value.subtract(const Duration(days: 1));
+    } else if (index == 1) {
+      currentDate.value = currentDate.value.subtract(const Duration(days: 7));
+    } else {
+      currentDate.value = DateTime(
+        currentDate.value.year,
+        currentDate.value.month - 1,
+        currentDate.value.day,
+      );
+    }
+    updateDateRange(index);
+  }
+
+  void nextDateRange(int index) {
+    if (index == 0) {
+      currentDate.value = currentDate.value.add(const Duration(days: 1));
+    } else if (index == 1) {
+      currentDate.value = currentDate.value.add(const Duration(days: 7));
+    } else {
+      currentDate.value = DateTime(
+        currentDate.value.year,
+        currentDate.value.month + 1,
+        currentDate.value.day,
+      );
+    }
+    updateDateRange(index);
+  }
+
+  //----- 日期選擇器
+  Future<void> datePicker(int index) async {
+    switch (index) {
+      case 0:
+        await selectDayDate();
+        break;
+      case 1:
+        await selectWeekDate();
+        break;
+      case 2:
+        await selectMothDate();
+        break;
+    }
+  }
+
+  Future<void> selectDayDate() async {
+    final controller = Get.put(K87Controller());
+    controller.setInitialDate(currentDate.value);
+    await showModalBottomSheet(
+      context: Get.context!,
+      builder: (_) => K87Bottomsheet(
+        onConfirm: (int year, int month, int day) {
+          final selected = DateTime(year, month, day);
+          currentDate.value = selected;
+          updateDateRange(0);
+        },
+      ),
+    );
+  }
+
+  Future<void> selectWeekDate() async {
+    final controller = Get.put(K88Controller());
+    controller.setInitialDate(currentDate.value);
+    await showModalBottomSheet(
+      context: Get.context!,
+      builder: (_) => K88Bottomsheet(
+        onConfirm: (int year, int month, int day) {
+          final selected = DateTime(year, month, day);
+          currentDate.value = selected;
+          updateDateRange(1);
+        },
+      ),
+    );
+  }
+
+  Future<void> selectMothDate() async {
+    final controller = Get.put(One7Controller());
+    // 設定初始值（同步顯示）
+    controller.year.value = currentDate.value.year;
+    controller.month.value = currentDate.value.month;
+    await showModalBottomSheet(
+      context: Get.context!,
+      builder: (_) => One7Bottomsheet(
+        onConfirm: (int year, int month) {
+          final selected = DateTime(year, month, 1);
+          currentDate.value = selected;
+          updateDateRange(2);
+        },
+      ),
+    );
+  }
+
+  Map<String, int> getDailySleepDurationByType241(
+      List<SleepDetailDataData> list) {
+    final Map<String, int> dailyDurationMap = {};
+
+    for (var item in list) {
+      if (item.sleepType == 241) {
+        final key = "${item.sleepStartTimeStamp}";
+        dailyDurationMap.update(key, (value) => value + item.duration,
+            ifAbsent: () => item.duration);
+      }
+    }
+
+    return dailyDurationMap;
+  }
+
+  void clearData() {
+    sleepData.clear();
+    sleepVal.value = '';
+    loadDataTime.value = '';
+    deep.value = '';
+    light.value = '';
+    rem.value = '';
+    awake.value = '';
+    isAlert.value = false;
+
+    deepCount.value = 0;
+    lightCount.value = 0;
+    remCount.value = 0;
+    awakeCount.value = 0;
+    segmentStartText.value = '';
+    segmentEndText.value = '';
+    sleepSegments.clear();
+
+    k82ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+  }
+
+  /// 將sleepData & sleepDetail 轉換為 SleepSegment
+  List<SleepSegment> buildSleepSegments({
+    required List<SleepDataData> sleepDataList,
+    required List<SleepDetailDataData> sleepDetailList,
+  }) {
+    final List<SleepSegment> segments = [];
+
+    for (final data in sleepDataList) {
+      if (data.deepSleepSeconds > 0) {
+        segments.add(SleepSegment(
+          stage: SleepStage.deep,
+          duration: Duration(seconds: data.deepSleepSeconds),
+        ));
+      }
+
+      if (data.lightSleepSeconds > 0) {
+        segments.add(SleepSegment(
+          stage: SleepStage.light,
+          duration: Duration(seconds: data.lightSleepSeconds),
+        ));
+      }
+
+      if (data.remSleepSeconds > 0) {
+        segments.add(SleepSegment(
+          stage: SleepStage.rem,
+          duration: Duration(seconds: data.remSleepSeconds),
+        ));
+      }
+
+      // 找到對應的 detail 項目
+      final awakeDetails = sleepDetailList.where((detail) =>
+              detail.sleepStartTimeStamp == data.startTimeStamp &&
+              detail.sleepType == 244 // awake type
+          );
+
+      final awakeDuration =
+          awakeDetails.fold<int>(0, (sum, d) => sum + d.duration);
+
+      if (awakeDuration > 0) {
+        segments.add(SleepSegment(
+          stage: SleepStage.awake,
+          duration: Duration(seconds: awakeDuration),
+        ));
+      }
+    }
+
+    return segments;
+  }
+}

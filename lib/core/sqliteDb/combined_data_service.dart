@@ -21,6 +21,67 @@ class CombinedDataService extends BaseDbService {
         .get();
   }
 
+  Future<List<CombinedDataData>> getByUserAndRange({
+    required String userId,
+    required DateTime from,
+    required DateTime to,
+  }) {
+    final fromSec = from.millisecondsSinceEpoch ~/ 1000;
+    final toSec = to.millisecondsSinceEpoch ~/ 1000;
+
+    return (db.select(db.combinedData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.startTimeStamp.isBiggerOrEqualValue(fromSec) &
+              tbl.startTimeStamp.isSmallerOrEqualValue(toSec)))
+        .get();
+  }
+
+  /// 查詢：日
+  Future<List<CombinedDataData>> getDaily(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：週
+  Future<List<CombinedDataData>> getWeekly(String userId, DateTime date) {
+    final start = date.subtract(Duration(days: date.weekday - 1));
+    final end = start.add(Duration(days: 7)).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 查詢：月
+  Future<List<CombinedDataData>> getMonthly(String userId, DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end =
+        DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
+    return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 取得尚未同步的資料
+  Future<List<CombinedDataData>> getUnsyncedData(String userId) {
+    return (db.select(db.combinedData)
+          ..where(
+              (tbl) => tbl.userId.equals(userId) & tbl.isSynced.equals(false)))
+        .get();
+  }
+
+  /// 標記為已同步
+  Future<void> markAsSynced(List<CombinedDataData> list) async {
+    await db.batch((batch) {
+      for (final data in list) {
+        batch.update(
+          db.combinedData,
+          const CombinedDataCompanion(isSynced: Value(true)),
+          where: (tbl) =>
+              tbl.userId.equals(data.userId) &
+              tbl.startTimeStamp.equals(data.startTimeStamp),
+        );
+      }
+    });
+  }
+
   Future<void> update(
       String userId, int startTimeStamp, CombinedDataCompanion data) {
     return (db.update(db.combinedData)

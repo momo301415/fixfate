@@ -78,7 +78,8 @@ class One2Controller extends GetxController {
           gc.userId.value = oneController.text;
           gc.apiToken.value = resBody['token'].toString();
           gc.healthDataSyncService.setUserId(oneController.text);
-          // await FirebaseHelper.init();
+          gc.apiId.value = resBody['id'].toString();
+
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {
             gc.apiToken.value = ftoken;

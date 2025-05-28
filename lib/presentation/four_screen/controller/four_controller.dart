@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -19,6 +21,7 @@ class FourController extends GetxController with CodeAutoFill {
 
   Rx<FourModel> fourModelObj = FourModel().obs;
   ApiService service = ApiService();
+  final gc = Get.find<GlobalController>();
 
   var isReadPrivacyPolicy = false.obs;
 
@@ -85,7 +88,9 @@ class FourController extends GetxController with CodeAutoFill {
             SnackbarHelper.showBlueSnackbar(message: "snackbar_send_msm".tr);
           });
         } else {
-          DialogHelper.showError("${resData["message"]}");
+          DialogHelper.showError("${resData["message"]}", onOk: () {
+            goOne2Screen();
+          });
         }
       }
     } catch (e) {
@@ -113,7 +118,9 @@ class FourController extends GetxController with CodeAutoFill {
             goOne2Screen();
           });
         } else if (resMsg.contains("成功")) {
-          gok10Screen();
+          pressFetchLogin().then((val) {
+            gok10Screen();
+          });
         } else {
           DialogHelper.showError("${resData["message"]}");
         }
@@ -122,6 +129,48 @@ class FourController extends GetxController with CodeAutoFill {
       LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
+  }
+
+  Future<bool> pressFetchLogin() async {
+    try {
+      LoadingHelper.show();
+      final notityToken = await FirebaseHelper.getDeviceToken();
+      var resData = await service.postJson(
+        Api.login,
+        {
+          'phone': phone,
+          'password': password,
+          'notityToken': notityToken,
+        },
+      );
+      LoadingHelper.hide();
+      if (resData.isNotEmpty) {
+        var resBody = resData['data'];
+        if (resBody != null) {
+          await PrefUtils().setUserId(phone);
+          await PrefUtils().setPassword(password);
+          await PrefUtils().setApiUserId(resBody['id'].toString());
+
+          gc.userId.value = phone;
+          gc.apiToken.value = resBody['token'].toString();
+          gc.apiId.value = resBody['id'].toString();
+          gc.healthDataSyncService.setUserId(phone);
+
+          final ftoken = await FirebaseHelper.getDeviceToken();
+          if (ftoken != null) {
+            gc.apiToken.value = ftoken;
+          }
+          return true;
+        } else {
+          DialogHelper.showError("${resData["message"]}");
+        }
+      }
+    } catch (e) {
+      e.printError();
+      LoadingHelper.hide();
+      DialogHelper.showError("服務錯誤，請稍後再試");
+    }
+    return false;
   }
 
   /// 路由登入頁面

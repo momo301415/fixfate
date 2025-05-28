@@ -80,28 +80,35 @@ class BaseScaffoldImageHeader extends StatelessWidget {
                   fit: BoxFit.fill,
                 ),
                 Positioned(
-                  top: 48.h,
+                  top: 40.h,
                   left: 0,
                   right: 0,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.h),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                  child: SizedBox(
+                    height: 40.h,
+                    child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        AppbarLeadingImage(
-                          imagePath: ImageConstant.imgArrowLeft,
-                          onTap: onBack ??
-                              () {
-                                Get.back();
-                              },
+                        // Title centered
+                        Center(
+                          child: AppbarSubtitle(text: title),
                         ),
-                        SizedBox(width: 8.h),
-                        Expanded(
-                          child: Center(
-                            child: AppbarSubtitle(text: title),
+                        // Left leading
+                        Positioned(
+                          left: 30.h,
+                          child: AppbarLeadingImage(
+                            imagePath: ImageConstant.imgArrowLeft,
+                            onTap: onBack ?? () => Get.back(),
                           ),
                         ),
-                        if (actions != null) ...actions!,
+                        // Right actions
+                        if (actions != null)
+                          Positioned(
+                            right: 16.h,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: actions!,
+                            ),
+                          ),
                       ],
                     ),
                   ),

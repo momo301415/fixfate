@@ -514,7 +514,7 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                         _buildScreenTitle(
                           screenTitle: "2-健康-心率(日)",
                           onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k77Screen),
+                              onTapScreenTitle(AppRoutes.k77Page),
                         ),
                         _buildScreenTitle(
                           screenTitle: "3-健康-血氧(日)",
