@@ -1,6 +1,10 @@
 import 'package:pulsedevice/core/global_controller.dart' show GlobalController;
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import '../../../core/app_export.dart';
 import '../models/two5_model.dart';
@@ -12,6 +16,7 @@ import '../models/two5_model.dart';
 class Two5Controller extends GetxController {
   Rx<Two5Model> two5ModelObj = Two5Model().obs;
   final gc = Get.find<GlobalController>();
+  ApiService service = ApiService();
   final isSelectedSwitch = false.obs;
   // 血氧過低門檻
   var lowThreshold = 60.0.obs;
@@ -24,6 +29,7 @@ class Two5Controller extends GetxController {
   }
 
   void saveData() async {
+    if (isSelectedSwitch.value) {}
     YcProductPlugin()
         .setDeviceBloodOxygenAlarm(
       isEnable: isSelectedSwitch.value,
@@ -41,6 +47,7 @@ class Two5Controller extends GetxController {
       alertEnabled: isSelectedSwitch.value,
     );
     BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
+    await settingApi();
   }
 
   void getData() async {
@@ -50,6 +57,58 @@ class Two5Controller extends GetxController {
     if (data != null) {
       lowThreshold.value = data.lowThreshold.toDouble();
       isSelectedSwitch.value = data.alertEnabled;
+    } else {
+      await gettingApi();
+    }
+  }
+
+  Future<void> settingApi() async {
+    LoadingHelper.show();
+    try {
+      final payload = {
+        "codeType": "oxygen",
+        "userId": gc.apiId.value,
+        "miniVal": lowThreshold.value,
+        "maxVal": 0,
+        "alert": isSelectedSwitch.value
+      };
+      var res = await service.postJson(
+        Api.measurementSet,
+        payload,
+      );
+      LoadingHelper.hide();
+      if (res.isNotEmpty) {}
+    } catch (e) {
+      LoadingHelper.hide();
+      DialogHelper.showError("服務錯誤，請稍後再試");
+    }
+  }
+
+  Future<void> gettingApi() async {
+    LoadingHelper.show();
+    try {
+      final payload = {
+        "codeType": "oxygen",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+      LoadingHelper.hide();
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null) {
+            lowThreshold.value = data["miniVal"].toDouble();
+            isSelectedSwitch.value = data["alert"];
+          }
+        }
+      }
+    } catch (e) {
+      LoadingHelper.hide();
+      DialogHelper.showError("服務錯誤，請稍後再試");
     }
   }
 }
