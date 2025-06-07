@@ -50,14 +50,14 @@ class NotificationService {
     return false;
   }
 
-  Future<void> _requestExactAlarmPermission() async {
-    if (Platform.isAndroid) {
-      final androidPlugin = _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      await androidPlugin?.requestExactAlarmsPermission();
-    }
-  }
+  // Future<void> _requestExactAlarmPermission() async {
+  //   if (Platform.isAndroid) {
+  //     final androidPlugin = _flutterLocalNotificationsPlugin
+  //         .resolvePlatformSpecificImplementation<
+  //             AndroidFlutterLocalNotificationsPlugin>();
+  //     await androidPlugin?.requestExactAlarmsPermission();
+  //   }
+  // }
 
   Future<void> scheduleReminder(String frequency) async {
     // 取消所有已排程的通知
@@ -132,11 +132,11 @@ class NotificationService {
 
     final bool hasExactAlarmPermission = await _canScheduleExactAlarms();
 
-    if (!hasExactAlarmPermission) {
-      await _requestExactAlarmPermission();
-      // 等待使用者授權後再嘗試排程通知
-      return;
-    }
+    // if (!hasExactAlarmPermission) {
+    //   await _requestExactAlarmPermission();
+    //   // 等待使用者授權後再嘗試排程通知
+    //   return;
+    // }
 
     for (int i = 0; i < scheduledDates.length; i++) {
       await _flutterLocalNotificationsPlugin.zonedSchedule(
@@ -180,6 +180,29 @@ class NotificationService {
           'connect_channel',
           '連線頻道',
           channelDescription: '這是藍芽連線通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> showDeviceLowPowerNotification() async {
+    await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
+    await _flutterLocalNotificationsPlugin.show(
+      9998,
+      'PulesRing通知',
+      '藍芽裝置低電量通知',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'connect_channel',
+          '低電量頻道',
+          channelDescription: '這是藍芽裝置低電量通知',
           importance: Importance.max,
           priority: Priority.high,
         ),

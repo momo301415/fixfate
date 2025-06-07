@@ -214,4 +214,40 @@ class ImageConstant {
   static String solidStep = '$imagePath/solid-icon-step.svg';
   static String solidSleep = '$imagePath/solid-icon-sleep.svg';
   static String solidFire = '$imagePath/solid-icon-fire.svg';
+
+  static String imgFrame86912 = '$imagePath/img_frame_86912.svg';
+
+  static String imgFrame86911 = '$imagePath/img_frame_86911.svg';
+
+  static String imgIcon11 = '$imagePath/img_icon_1_1.png';
+
+  static String imgUCalender = '$imagePath/img_u_calender.svg';
+
+  static String imgFavorite = '$imagePath/img_favorite.svg';
+
+  static String imgURuler = '$imagePath/img_u_ruler.svg';
+
+  static String imgUserGray500 = '$imagePath/img_user_gray_500.svg';
+
+  static String imgIcon11252x252 = '$imagePath/img_icon_1_1_252x252.png';
+
+  static String imgFrame87012 = '$imagePath/img_frame_87012.png';
+
+  static String imgIcon12 = '$imagePath/img_icon_1_2.png';
+
+  static String imgThumbsUp = '$imagePath/img_thumbs_up.svg';
+
+  static String imgFavoriteWhiteA700 = '$imagePath/img_favorite_white_a700.svg';
+
+  static String imgURulerWhiteA700 = '$imagePath/img_u_ruler_white_a700.svg';
+
+  static String imgSettings = '$imagePath/img_settings.svg';
+
+  static String imgVector286x374 = '$imagePath/img_vector_286x374.png';
+
+  static String imgPrimary = '$imagePath/img__primary.svg';
+
+  static String imgGray500 = '$imagePath/img__gray_500.svg';
+
+  static String imgIcon12162x162 = '$imagePath/img_icon_1_2_162x162.png';
 }

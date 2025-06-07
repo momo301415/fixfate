@@ -10,4 +10,6 @@ class Api {
   static const String sethealthRecord = "sethealthRecord";
   static const String measurementSet = "measurementSettings/set";
   static const String measurementGet = "measurementSettings/get";
+  static const String updatePWD = "user/updatePWD";
+  static const String delete = "user/delete";
 }

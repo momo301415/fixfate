@@ -24,8 +24,9 @@ class YcService {
   }
 
   static void setListeningTime(int interval) async {
-    var res =
-        await YcProductPlugin().setDeviceHealthMonitoringMode(interval: 60);
+    var res = await YcProductPlugin()
+        .setDeviceHealthMonitoringMode(isEnable: true, interval: interval);
+
     if (res != null && res.statusCode == PluginState.succeed) {
       print("設定偵測時間成功");
     } else {

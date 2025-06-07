@@ -39,87 +39,90 @@ class CustomBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(
-        left: 54.h,
-        right: 54.h,
-        bottom: 20.h,
-      ),
-      decoration: BoxDecoration(
-        color: appTheme.whiteA700,
-        borderRadius: BorderRadius.circular(
-          32.h,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: appTheme.gray6004c,
-            spreadRadius: 2.h,
-            blurRadius: 2.h,
-            offset: Offset(
-              0,
-              4,
-            ),
-          )
-        ],
-      ),
-      child: Obx(
-        () => BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          selectedFontSize: 0,
-          elevation: 0,
-          currentIndex: gc.bottomBarIndex.value,
-          type: BottomNavigationBarType.fixed,
-          items: List.generate(bottomMenuList.length, (index) {
-            return BottomNavigationBarItem(
-              icon: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomImageView(
-                    imagePath: bottomMenuList[index].icon,
-                    height: 24.h,
-                    width: 24.h,
-                    color: appTheme.gray500,
-                  ),
-                  Text(
-                    bottomMenuList[index].title ?? "",
-                    style: theme.textTheme.labelMedium!.copyWith(
-                      color: appTheme.gray500,
+    return SafeArea(
+        child: SizedBox(
+            height: 72.h,
+            child: Container(
+              margin: EdgeInsets.only(
+                left: 54.h,
+                right: 54.h,
+                bottom: 20.h,
+              ),
+              decoration: BoxDecoration(
+                color: appTheme.whiteA700,
+                borderRadius: BorderRadius.circular(
+                  32.h,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: appTheme.gray6004c,
+                    spreadRadius: 2.h,
+                    blurRadius: 2.h,
+                    offset: Offset(
+                      0,
+                      4,
                     ),
                   )
                 ],
               ),
-              activeIcon: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomImageView(
-                    imagePath: bottomMenuList[index].activeIcon,
-                    height: 24.h,
-                    width: 24.h,
-                    color: theme.colorScheme.primary,
-                  ),
-                  Text(
-                    bottomMenuList[index].title ?? "",
-                    style: CustomTextStyles.labelMediumPrimary.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
-                  )
-                ],
+              child: Obx(
+                () => BottomNavigationBar(
+                  backgroundColor: Colors.transparent,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  selectedFontSize: 0,
+                  elevation: 0,
+                  currentIndex: gc.bottomBarIndex.value,
+                  type: BottomNavigationBarType.fixed,
+                  items: List.generate(bottomMenuList.length, (index) {
+                    return BottomNavigationBarItem(
+                      icon: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CustomImageView(
+                            imagePath: bottomMenuList[index].icon,
+                            height: 24.h,
+                            width: 24.h,
+                            color: appTheme.gray500,
+                          ),
+                          Text(
+                            bottomMenuList[index].title ?? "",
+                            style: theme.textTheme.labelMedium!.copyWith(
+                              color: appTheme.gray500,
+                            ),
+                          )
+                        ],
+                      ),
+                      activeIcon: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CustomImageView(
+                            imagePath: bottomMenuList[index].activeIcon,
+                            height: 24.h,
+                            width: 24.h,
+                            color: theme.colorScheme.primary,
+                          ),
+                          Text(
+                            bottomMenuList[index].title ?? "",
+                            style: CustomTextStyles.labelMediumPrimary.copyWith(
+                              color: theme.colorScheme.primary,
+                            ),
+                          )
+                        ],
+                      ),
+                      label: '',
+                    );
+                  }),
+                  onTap: (index) {
+                    selectedIndex.value = index;
+                    gc.bottomBarIndex.value = index;
+                    onChanged?.call(index);
+                  },
+                ),
               ),
-              label: '',
-            );
-          }),
-          onTap: (index) {
-            selectedIndex.value = index;
-            gc.bottomBarIndex.value = index;
-            onChanged?.call(index);
-          },
-        ),
-      ),
-    );
+            )));
   }
 }
 

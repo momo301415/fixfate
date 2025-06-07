@@ -44,10 +44,6 @@ class K53Controller extends GetxController
     super.onClose();
   }
 
-  void animateTo(int index) {
-    tabviewController.animateTo(index);
-  }
-
   Future<void> getRecords() async {
     try {
       LoadingHelper.show();

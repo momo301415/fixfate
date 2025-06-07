@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 
-enum Style { bgOutlineGray200 }
+enum Style { bgOutlineGray200, bgFillOnPrimary }
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   CustomAppBar(
@@ -71,6 +71,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
+        );
+      case Style.bgFillOnPrimary:
+        return Container(
+          height: 56.h,
+          width: 374.h,
+          decoration: BoxDecoration(color: theme.colorScheme.onPrimary),
         );
       default:
         return null;

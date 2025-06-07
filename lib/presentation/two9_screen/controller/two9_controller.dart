@@ -35,6 +35,8 @@ class Two9Controller extends GetxController {
       );
       PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
       await settingApi();
+    } else {
+      Get.back();
     }
   }
 
@@ -87,7 +89,7 @@ class Two9Controller extends GetxController {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {
           final data = res["data"];
-          if (data != null) {
+          if (data != null && data.length > 0) {
             highThreshold.value = data["maxVal"].toDouble();
             isSelectedSwitch.value = data["alert"];
           }

@@ -200,8 +200,7 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                         onPressed: () {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            Get.toNamed(
-                                                AppRoutes.appNavigationScreen);
+                                            controller.callApi();
                                           }
                                         },
                                       );

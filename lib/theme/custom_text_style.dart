@@ -19,6 +19,11 @@ extension on TextStyle {
 /// categorized by different font families and weights.
 /// Additionally, this class includes extensions on [TextStyle] to easily apply specific font families to text.
 class CustomTextStyles {
+  static TextStyle get bodyLargePrimaryContainer16_1 =>
+      theme.textTheme.bodyLarge!.copyWith(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.45),
+        fontSize: 16.fSize,
+      );
   // Body text style
   static TextStyle get bodyLarge16 => theme.textTheme.bodyLarge!.copyWith(
         fontSize: 16.fSize,
@@ -64,6 +69,7 @@ class CustomTextStyles {
       theme.textTheme.bodyLarge!.copyWith(
         color: appTheme.gray700,
       );
+
   static TextStyle get bodyLargePrimaryContainer =>
       theme.textTheme.bodyLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,
@@ -88,6 +94,7 @@ class CustomTextStyles {
       theme.textTheme.bodyLarge!.copyWith(
         color: appTheme.whiteA700,
       );
+
   static TextStyle get bodyMedium13 => theme.textTheme.bodyMedium!.copyWith(
         fontSize: 13.fSize,
       );
@@ -258,13 +265,23 @@ class CustomTextStyles {
       theme.textTheme.bodySmall!.copyWith(
         color: appTheme.whiteA700,
       );
-// Headline text style
+  static TextStyle get bodySmallPrimaryContainer_5 =>
+      theme.textTheme.bodySmall!.copyWith(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.86),
+      );
+  static TextStyle get bodySmallPrimaryContainer_4 =>
+      theme.textTheme.bodySmall!.copyWith(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.85),
+      );
+  // Headline text style
+  static TextStyle get headlineSmallPrimary => theme.textTheme.headlineSmall!
+      .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.85));
   static TextStyle get headlineLargePrimaryContainer =>
       theme.textTheme.headlineLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,
         fontWeight: FontWeight.w400,
       );
-// Label text style
+  // Label text style
   static TextStyle get labelLargePrimaryContainer =>
       theme.textTheme.labelLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,
@@ -292,6 +309,8 @@ class CustomTextStyles {
         fontWeight: FontWeight.w400,
       ).pingFangTC;
 // Title text style
+  static TextStyle get titleMediumPrimary_1 => theme.textTheme.titleMedium!
+      .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.85));
   static TextStyle get titleLarge20 => theme.textTheme.titleLarge!.copyWith(
         fontSize: 20.fSize,
       );
@@ -407,5 +426,33 @@ class CustomTextStyles {
   static TextStyle get titleSmallWhiteA700 =>
       theme.textTheme.titleSmall!.copyWith(
         color: appTheme.whiteA700,
+      );
+  static TextStyle get bodySmallWhiteA700_2 => theme.textTheme.bodySmall!
+      .copyWith(color: appTheme.whiteA700.withValues(alpha: 0.45));
+  static TextStyle get titleMediumWhiteA700 => theme.textTheme.titleMedium!
+      .copyWith(color: appTheme.whiteA700.withValues(alpha: 0.5));
+  // Display text style
+  static TextStyle get displayMediumPrimaryContainer =>
+      theme.textTheme.displayMedium!.copyWith(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.85),
+      );
+  static TextStyle get displaySmallWhiteA700 =>
+      theme.textTheme.displaySmall!.copyWith(
+        color: appTheme.whiteA700.withValues(alpha: 0.85),
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get displaySmallPrimaryContainer =>
+      theme.textTheme.displaySmall!.copyWith(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.85),
+        fontWeight: FontWeight.w500,
+      );
+
+  static TextStyle get displaySmallPrimary =>
+      theme.textTheme.displaySmall!.copyWith(color: theme.colorScheme.primary);
+  static TextStyle get bodyLargeWhiteA70016_1 =>
+      theme.textTheme.bodyLarge!.copyWith(
+        color: appTheme.whiteA700.withValues(alpha: 0.45),
+        fontSize: 16.fSize,
       );
 }

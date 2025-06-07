@@ -50,9 +50,14 @@ class K73Controller extends GetxController {
     Get.toNamed(AppRoutes.k76Screen, arguments: index);
   }
 
+  void gok5Screen() {
+    Get.toNamed(AppRoutes.k5Screen);
+  }
+
   Future<void> getData() async {
     print("k73 controller getData");
     var res = await gc.healthDataSyncService.getAnalysisHealthData();
+    if (res.isEmpty) return;
     k73ModelObj.value.listviewItemList.value[0].loadTime?.value =
         res["heartDuration"].toString();
     k73ModelObj.value.listviewItemList.value[0].value?.value =

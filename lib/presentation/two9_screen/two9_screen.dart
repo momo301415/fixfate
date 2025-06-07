@@ -94,7 +94,6 @@ class Two9Screen extends GetWidget<Two9Controller> {
       ),
       onBack: () {
         controller.saveData();
-        Get.back();
       },
     );
   }

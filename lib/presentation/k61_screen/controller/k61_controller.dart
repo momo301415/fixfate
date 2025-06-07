@@ -19,8 +19,8 @@ class K61Controller extends GetxController {
   ApiService service = ApiService();
   final isSelectedSwitch = false.obs;
 
-  var highThreshold = 2.0.obs;
-  var lowThreshold = 1.0.obs;
+  var highThreshold = 36.0.obs;
+  var lowThreshold = 35.0.obs;
   late BodyTemperatureSetting profile;
 
   @override
@@ -30,24 +30,27 @@ class K61Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {}
-    YcProductPlugin()
-        .setDeviceTemperatureAlarm(isSelectedSwitch.value,
-            "${highThreshold.value}", "${lowThreshold.value}")
-        .then((value) {
-      if (value?.statusCode == PluginState.succeed) {
-        print("體溫設定成功！！！！！！！");
-      } else {
-        print("體溫設定失敗！ -> ${value?.statusCode} ; ");
-      }
-    });
-    profile = BodyTemperatureSetting(
-      highThreshold: "${highThreshold.value}",
-      lowThreshold: "${lowThreshold.value}",
-      alertEnabled: isSelectedSwitch.value,
-    );
-    BodyTemperatureSettingStorage.saveUserProfile(gc.userId.value, profile);
-    await settingApi();
+    if (isSelectedSwitch.value) {
+      // YcProductPlugin()
+      //     .setDeviceTemperatureAlarm(isSelectedSwitch.value,
+      //         "${highThreshold.value}", "${lowThreshold.value}")
+      //     .then((value) {
+      //   if (value?.statusCode == PluginState.succeed) {
+      //     print("體溫設定成功！！！！！！！");
+      //   } else {
+      //     print("體溫設定失敗！ -> ${value?.statusCode} ; ");
+      //   }
+      // });
+      profile = BodyTemperatureSetting(
+        highThreshold: "${highThreshold.value}",
+        lowThreshold: "${lowThreshold.value}",
+        alertEnabled: isSelectedSwitch.value,
+      );
+      BodyTemperatureSettingStorage.saveUserProfile(gc.userId.value, profile);
+      await settingApi();
+    } else {
+      Get.back();
+    }
   }
 
   void getData() async {
@@ -77,6 +80,7 @@ class K61Controller extends GetxController {
         payload,
       );
       LoadingHelper.hide();
+      Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
       LoadingHelper.hide();
@@ -100,7 +104,8 @@ class K61Controller extends GetxController {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {
           final data = res["data"];
-          if (data != null) {
+
+          if (data != null && data.length > 0) {
             lowThreshold.value = data["miniVal"].toDouble();
             highThreshold.value = data["maxVal"].toDouble();
             isSelectedSwitch.value = data["alert"];

@@ -106,7 +106,7 @@ class K57Screen extends GetWidget<K57Controller> {
               )),
           GestureDetector(
               onTap: () {
-                controller.goK58Screen();
+                controller.goK61Screen();
               },
               child: Container(
                 padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),

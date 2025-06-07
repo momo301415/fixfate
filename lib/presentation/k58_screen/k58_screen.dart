@@ -125,7 +125,6 @@ class K58Screen extends GetWidget<K58Controller> {
       ),
       onBack: () {
         controller.saveData();
-        Get.back();
       },
     );
   }

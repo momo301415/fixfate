@@ -47,6 +47,11 @@ class PrefUtils {
     return _sharedPreferences!.setString('apiUserId', usrid);
   }
 
+  /// 第一次sync資料到api
+  Future<void> setIsSyncApi(String isSyncApi) {
+    return _sharedPreferences!.setString('isSyncApi', isSyncApi);
+  }
+
   String getUserId() {
     try {
       return _sharedPreferences!.getString('currentUserId')!;
@@ -66,6 +71,14 @@ class PrefUtils {
   String getApiUserId() {
     try {
       return _sharedPreferences!.getString('apiUserId')!;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String getIsSyncApi() {
+    try {
+      return _sharedPreferences!.getString('isSyncApi')!;
     } catch (e) {
       return '';
     }

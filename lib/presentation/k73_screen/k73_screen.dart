@@ -45,7 +45,6 @@ class K73Screen extends GetWidget<K73Controller> {
             case 0:
               break;
             case 1:
-              Get.toNamed(AppRoutes.appNavigationScreen);
               break;
             case 2:
               controller.goK29Screen();
@@ -99,92 +98,101 @@ class K73Screen extends GetWidget<K73Controller> {
       child: Row(
         children: [
           Expanded(
-            child: Container(
-              height: 50.h,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Container(
-                    height: 40.h,
-                    width: 162.h,
-                    decoration: BoxDecoration(
-                      color: appTheme.whiteA700,
-                      borderRadius: BorderRadius.circular(
-                        8.h,
+            child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  height: 50.h,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 162.h,
+                        decoration: BoxDecoration(
+                          color: appTheme.whiteA700,
+                          borderRadius: BorderRadius.circular(
+                            8.h,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: double.maxFinite,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: double.maxFinite,
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.h),
-                                child: _buildRowiconsportrun(
-                                  iconsportrun: ImageConstant.img2411,
-                                  one: "lbl222".tr,
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.maxFinite,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.h),
+                                    child: _buildRowiconsportrun(
+                                      iconsportrun: ImageConstant.img2411,
+                                      one: "lbl222".tr,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
           ),
           Expanded(
-            child: Container(
-              height: 50.h,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Container(
-                    height: 40.h,
-                    width: 162.h,
-                    decoration: BoxDecoration(
-                      color: appTheme.whiteA700,
-                      borderRadius: BorderRadius.circular(
-                        8.h,
+            child: GestureDetector(
+                onTap: () {
+                  controller.gok5Screen();
+                },
+                child: Container(
+                  height: 50.h,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 162.h,
+                        decoration: BoxDecoration(
+                          color: appTheme.whiteA700,
+                          borderRadius: BorderRadius.circular(
+                            8.h,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: double.maxFinite,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: double.maxFinite,
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.h),
-                                child: _buildRowiconsportrun(
-                                  iconsportrun: ImageConstant.imgIconSportRun,
-                                  one: "lbl223".tr,
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.maxFinite,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.h),
+                                    child: _buildRowiconsportrun(
+                                      iconsportrun:
+                                          ImageConstant.imgIconSportRun,
+                                      one: "lbl223".tr,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
           )
         ],
       ),
@@ -220,15 +228,5 @@ class K73Screen extends GetWidget<K73Controller> {
         )
       ],
     );
-  }
-
-  ///Handling route based on bottom click actions
-  String getCurrentRoute(BottomBarEnum type) {
-    switch (type) {
-      case BottomBarEnum.tf:
-        return AppRoutes.threeInitialPage;
-      default:
-        return "/";
-    }
   }
 }

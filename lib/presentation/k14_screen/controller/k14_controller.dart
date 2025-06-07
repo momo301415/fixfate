@@ -25,6 +25,8 @@ class K14Controller extends GetxController {
 
   /// 路由忘記密碼sms頁
   void goOne3Screen() {
-    Get.toNamed(AppRoutes.one3Screen);
+    Get.toNamed(AppRoutes.one3Screen, arguments: {
+      'phone': mobileNoController.text,
+    });
   }
 }

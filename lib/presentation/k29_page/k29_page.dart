@@ -15,22 +15,19 @@ class K29Page extends GetWidget<K29Controller> {
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
       title: "lbl57".tr,
-      bottomNavigationBar: SafeArea(
-          child: SizedBox(
-              height: 72.h,
-              child: CustomBottomBar(
-                onChanged: (value) {
-                  switch (value) {
-                    case 0:
-                      controller.go73Screen();
-                      break;
-                    case 1:
-                      break;
-                    case 2:
-                      break;
-                  }
-                },
-              ))),
+      bottomNavigationBar: CustomBottomBar(
+        onChanged: (value) {
+          switch (value) {
+            case 0:
+              controller.go73Screen();
+              break;
+            case 1:
+              break;
+            case 2:
+              break;
+          }
+        },
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

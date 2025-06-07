@@ -238,7 +238,7 @@ class HealthDataSyncService {
     final sleepList = await sleepService.getSleepDataByUser(_userId!);
     final heartList = await heartService.getByUser(_userId!);
     final combinedList = await combinedService.getByUser(_userId!);
-
+    if (heartList.isEmpty) return {};
     final stepLast = stepList.last;
     final sleepLast = sleepList.last;
     final heartLast = heartList.last;
@@ -260,12 +260,8 @@ class HealthDataSyncService {
         DateTimeUtils.getTimeDifferenceString(combinedLast.startTimeStamp);
     final bloodOxygen = combinedLast.bloodOxygen;
     final t = combinedLast.temperature;
-    var temperature = "";
-    if (t > 0.0) {
-      temperature = "+ ${t}";
-    } else {
-      temperature = "- ${t}";
-    }
+    var temperature = t;
+
     final loadDataTime = DateTimeUtils.formatMaxTimestamp(
         stepLast.startTimeStamp,
         sleepLast.startTimeStamp,

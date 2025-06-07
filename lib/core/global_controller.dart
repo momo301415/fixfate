@@ -15,6 +15,8 @@ import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
 import 'package:pulsedevice/core/hiveDb/listen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
+import 'package:pulsedevice/core/hiveDb/sport_record.dart';
+import 'package:pulsedevice/core/hiveDb/sport_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/service/sync_data_service.dart';
@@ -64,6 +66,9 @@ class GlobalController extends GetxController {
 
   ///--- 記錄bottombar index
   var bottomBarIndex = 2.obs;
+
+  ///--- 紀錄是否已經
+  var isSendSyncApi = "Y".obs;
 
   @override
   void onInit() {
@@ -137,6 +142,8 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(AlertRecordListAdapter());
     Hive.registerAdapter(ListenSettingAdapter());
     Hive.registerAdapter(PressureSettingAdapter());
+    Hive.registerAdapter(SportRecordAdapter());
+    Hive.registerAdapter(SportRecordListAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -148,6 +155,8 @@ class GlobalController extends GetxController {
     await Hive.openBox<AlertRecordList>('alert_records');
     await Hive.openBox<ListenSetting>('listen_setting');
     await Hive.openBox<PressureSetting>('pressure_setting');
+    await Hive.openBox<SportRecord>('sport_record');
+    await Hive.openBox<SportRecordList>('sport_record_list');
   }
 
   void initNotification() async {
@@ -162,6 +171,9 @@ class GlobalController extends GetxController {
     stopSyncTimer();
     _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
       syncDataService.runBackgroundSync();
+
+      ///電量偵測推播
+      getBlueToothDeviceInfo();
     });
     syncDataService.runBackgroundSync(); // ✅ 初始執行一次
   }
@@ -170,5 +182,13 @@ class GlobalController extends GetxController {
     _syncTimer?.cancel();
   }
 
-  void sethealthRecordApi() async {}
+  Future<void> getBlueToothDeviceInfo() async {
+    PluginResponse<DeviceBasicInfo>? deviceBasicInfo =
+        await YcProductPlugin().queryDeviceBasicInfo();
+    if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
+      if (deviceBasicInfo.data.batteryPower < 20) {
+        NotificationService().showDeviceDisconnectedNotification();
+      }
+    }
+  }
 }

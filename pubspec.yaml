@@ -29,7 +29,7 @@ dependencies:
   flutter_local_notifications: ^19.1.0  # 設定本地通知
   timezone: ^0.10.1  # 取得時區
   flutter_timezone: ^4.1.0  # 取得裝置時區
-  android_intent_plus: ^5.3.0  # Android 開啟其他應用程式
+  # android_intent_plus: ^5.3.0  # Android 開啟其他應用程式
   path_provider: ^2.1.5  # 取得路徑
   path: ^1.9.1  # 路徑處理
   hive: ^2.2.3 # Hive資料庫
@@ -48,7 +48,7 @@ dependencies:
     git:
       url: https://gitee.com/yucheng_3/yc_product_plugin.git
       path: code/
-      ref: ed5dabd0850edc5d64bb975c9a2f4d65c1344201
+      ref: 89962c165497ec484f1788b0d2546e1cc6a2f402
       
 dev_dependencies: 
   flutter_test:  # Flutter內建單元測試

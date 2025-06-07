@@ -2,6 +2,30 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
 extension IconButtonStyleHelper on CustomIconButton {
+  static BoxDecoration get outlineGray => BoxDecoration(
+        color: appTheme.whiteA700,
+        borderRadius: BorderRadius.circular(44.h),
+        boxShadow: [
+          BoxShadow(
+            color: appTheme.gray80032,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(0, 4),
+          ),
+        ],
+      );
+  static BoxDecoration get outlineGrayTL24 => BoxDecoration(
+        color: appTheme.whiteA700,
+        borderRadius: BorderRadius.circular(24.h),
+        boxShadow: [
+          BoxShadow(
+            color: appTheme.gray80032,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(0, 4),
+          ),
+        ],
+      );
   static BoxDecoration get none => BoxDecoration();
 }
 

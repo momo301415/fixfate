@@ -272,6 +272,25 @@ class AppDecoration {
           fit: BoxFit.fill,
         ),
       );
+  static BoxDecoration get outlineGray2001 => BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: appTheme.gray200.withValues(alpha: 0.3),
+            width: 1.h,
+          ),
+        ),
+      );
+  static BoxDecoration get outlineBlack900 => BoxDecoration(
+        color: appTheme.teal900,
+        boxShadow: [
+          BoxShadow(
+            color: appTheme.black900.withValues(alpha: 0.3),
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(0, 4),
+          ),
+        ],
+      );
 }
 
 class BorderRadiusStyle {

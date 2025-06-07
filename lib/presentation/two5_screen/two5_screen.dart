@@ -97,7 +97,6 @@ class Two5Screen extends GetWidget<Two5Controller> {
       ),
       onBack: () {
         controller.saveData();
-        Get.back();
       },
     );
   }

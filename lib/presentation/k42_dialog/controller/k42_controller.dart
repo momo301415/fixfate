@@ -3,7 +3,6 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
-import 'package:pulsedevice/core/utils/device_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -57,8 +56,8 @@ class K42Controller extends GetxController {
       final params = {
         "userId": apiId,
         "deviceType": "ring",
-        "deviceCode": device.name,
-        "bluetoothCode": device.macAddress
+        "deviceCode": device.macAddress,
+        "bluetoothCode": device.name
       };
       var res = await apiService.postJson(Api.bindDevice, params);
       LoadingHelper.hide();

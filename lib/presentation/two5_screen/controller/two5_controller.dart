@@ -29,25 +29,28 @@ class Two5Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {}
-    YcProductPlugin()
-        .setDeviceBloodOxygenAlarm(
-      isEnable: isSelectedSwitch.value,
-      minimum: lowThreshold.value.toInt(),
-    )
-        .then((value) {
-      if (value?.statusCode == PluginState.succeed) {
-        print("血氧設定成功！！！！！！！");
-      } else {
-        print("血氧設定失敗！ -> ${value?.statusCode} ; ");
-      }
-    });
-    profile = BloodOxygenSetting(
-      lowThreshold: lowThreshold.value.toInt(),
-      alertEnabled: isSelectedSwitch.value,
-    );
-    BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
-    await settingApi();
+    if (isSelectedSwitch.value) {
+      // YcProductPlugin()
+      //     .setDeviceBloodOxygenAlarm(
+      //   isEnable: isSelectedSwitch.value,
+      //   minimum: lowThreshold.value.toInt(),
+      // )
+      //     .then((value) {
+      //   if (value?.statusCode == PluginState.succeed) {
+      //     print("血氧設定成功！！！！！！！");
+      //   } else {
+      //     print("血氧設定失敗！ -> ${value?.statusCode} ; ");
+      //   }
+      // });
+      profile = BloodOxygenSetting(
+        lowThreshold: lowThreshold.value.toInt(),
+        alertEnabled: isSelectedSwitch.value,
+      );
+      BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
+      await settingApi();
+    } else {
+      Get.back();
+    }
   }
 
   void getData() async {
@@ -77,6 +80,7 @@ class Two5Controller extends GetxController {
         payload,
       );
       LoadingHelper.hide();
+      Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
       LoadingHelper.hide();
@@ -100,7 +104,7 @@ class Two5Controller extends GetxController {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {
           final data = res["data"];
-          if (data != null) {
+          if (data != null && data.length > 0) {
             lowThreshold.value = data["miniVal"].toDouble();
             isSelectedSwitch.value = data["alert"];
           }

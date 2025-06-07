@@ -32,18 +32,18 @@ class K58Controller extends GetxController {
 
   void saveData() async {
     if (isSelectedSwitch.value) {
-      YcProductPlugin()
-          .setDeviceHeartRateAlarm(
-              isEnable: isSelectedSwitch.value,
-              maxHeartRate: highThreshold.value.toInt(),
-              minHeartRate: lowThreshold.value.toInt())
-          .then((value) {
-        if (value?.statusCode == PluginState.succeed) {
-          print("心率設定成功！！！！！！！");
-        } else {
-          print("心率設定失敗！ -> ${value?.statusCode} ; ");
-        }
-      });
+      // YcProductPlugin()
+      //     .setDeviceHeartRateAlarm(
+      //         isEnable: isSelectedSwitch.value,
+      //         maxHeartRate: highThreshold.value.toInt(),
+      //         minHeartRate: lowThreshold.value.toInt())
+      //     .then((value) {
+      //   if (value?.statusCode == PluginState.succeed) {
+      //     print("心率設定成功！！！！！！！");
+      //   } else {
+      //     print("心率設定失敗！ -> ${value?.statusCode} ; ");
+      //   }
+      // });
       profile = HeartRateSetting(
         highThreshold: highThreshold.value.toInt(),
         lowThreshold: lowThreshold.value.toInt(),
@@ -51,6 +51,8 @@ class K58Controller extends GetxController {
       );
       HeartRateSettingStorage.saveUserProfile(gc.userId.value, profile);
       settingApi();
+    } else {
+      Get.back();
     }
   }
 
@@ -71,7 +73,7 @@ class K58Controller extends GetxController {
     LoadingHelper.show();
     try {
       final payload = {
-        "codeType": "heartRate",
+        "codeType": "rate",
         "userId": gc.apiId.value,
         "miniVal": lowThreshold.value,
         "maxVal": highThreshold.value,
@@ -82,6 +84,7 @@ class K58Controller extends GetxController {
         payload,
       );
       LoadingHelper.hide();
+      Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
       LoadingHelper.hide();
@@ -105,7 +108,7 @@ class K58Controller extends GetxController {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {
           final data = res["data"];
-          if (data != null) {
+          if (data != null && data.length > 0) {
             highThreshold.value = data["maxVal"].toDouble();
             lowThreshold.value = data["miniVal"].toDouble();
             isSelectedSwitch.value = data["alert"];

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pulsedevice/core/utils/device_storage.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import '../../../core/app_export.dart';

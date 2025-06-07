@@ -71,4 +71,9 @@ class DateTimeUtils {
     final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(maxTs * 1000);
     return DateFormat('yyyy/MM/dd HH:mm').format(dateTime);
   }
+
+  /// 取得兩個時間點之間的秒數
+  static int getDurationInSeconds(int startTimestamp, int endTimestamp) {
+    return endTimestamp - startTimestamp;
+  }
 }

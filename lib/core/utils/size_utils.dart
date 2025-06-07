@@ -24,6 +24,14 @@ extension FormatExtension on double {
   }
 }
 
+extension FormatWithComma on String {
+  String formatWithComma(int val) {
+    final str = val.toString();
+    final reg = RegExp(r'\B(?=(\d{3})+(?!\d))');
+    return str.replaceAllMapped(reg, (match) => ',');
+  }
+}
+
 enum DeviceType { mobile, tablet, desktop }
 
 typedef ResponsiveBuild = Widget Function(

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:android_intent_plus/android_intent.dart';
+// import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
@@ -116,18 +116,18 @@ class PermissionHelper {
     );
   }
 
-  static Future<void> requestExactAlarmPermission() async {
-    if (Platform.isAndroid) {
-      final intent = AndroidIntent(
-        action: 'android.settings.REQUEST_SCHEDULE_EXACT_ALARM',
-      );
-      try {
-        await intent.launch();
-      } catch (e) {
-        print("Failed to launch settings for exact alarm: $e");
-      }
-    }
-  }
+  // static Future<void> requestExactAlarmPermission() async {
+  //   if (Platform.isAndroid) {
+  //     final intent = AndroidIntent(
+  //       action: 'android.settings.REQUEST_SCHEDULE_EXACT_ALARM',
+  //     );
+  //     try {
+  //       await intent.launch();
+  //     } catch (e) {
+  //       print("Failed to launch settings for exact alarm: $e");
+  //     }
+  //   }
+  // }
 
   static Future<void> initNotification() async {
     final granted = await checkNotificationPermission();

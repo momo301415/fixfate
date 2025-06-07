@@ -86,8 +86,7 @@ class K79Controller extends GetxController {
     final lastData = res.last;
     loadDataTime.value =
         DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
-    tempratureVal.value = (lastData.temperature >= 0.0 ? '+' : '') +
-        lastData.temperature.toStringAsFixed(1);
+    tempratureVal.value = lastData.temperature.toStringAsFixed(1);
 
     final tempSettings =
         BodyTemperatureSettingStorage.getUserProfile(userId.value);
@@ -97,9 +96,9 @@ class K79Controller extends GetxController {
     final max = tempList.reduce((a, b) => a > b ? a : b);
     final avg = tempList.reduce((a, b) => a + b) / tempList.length;
 
-    normalMinCount.value = (avg >= 0.0 ? '+' : '') + avg.toStringAsFixed(1);
-    hightMinCount.value = (max >= 0.0 ? '+' : '') + max.toStringAsFixed(1);
-    lowMinCount.value = (min >= 0.0 ? '+' : '') + min.toStringAsFixed(1);
+    normalMinCount.value = avg.toStringAsFixed(1);
+    hightMinCount.value = max.toStringAsFixed(1);
+    lowMinCount.value = min.toStringAsFixed(1);
 
     if (tempSettings != null && tempSettings.alertEnabled) {
       final setLow = double.parse(tempSettings.lowThreshold);
@@ -118,8 +117,7 @@ class K79Controller extends GetxController {
       final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
       return ListHistoryItemModel(
         unit: Rx('lbl_c'.tr),
-        value: Rx((m.temperature >= 0.0 ? '+' : '') +
-            m.temperature.toStringAsFixed(1)),
+        value: Rx(m.temperature.toStringAsFixed(1)),
         time: Rx(date),
       );
     }).toList();
@@ -456,13 +454,13 @@ class K79Controller extends GetxController {
     }
 
     return LineChartData(
-      minY: -2,
-      maxY: 6,
+      minY: 35.0,
+      maxY: 40.0,
       gridData: FlGridData(
         show: true,
         drawHorizontalLine: true,
         drawVerticalLine: false,
-        horizontalInterval: 2,
+        horizontalInterval: 1,
         getDrawingHorizontalLine: (value) => FlLine(
           color: Colors.grey,
           strokeWidth: 1,
@@ -473,7 +471,7 @@ class K79Controller extends GetxController {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 2.0,
+            interval: 1.0,
             getTitlesWidget: (value, meta) =>
                 Text('${value.toInt()}', style: TextStyle(fontSize: 10)),
           ),

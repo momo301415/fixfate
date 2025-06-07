@@ -8,6 +8,7 @@ import '../../widgets/custom_elevated_button.dart';
 import '../../widgets/custom_text_form_field.dart';
 import 'controller/one9_controller.dart'; // ignore_for_file: must_be_immutable
 
+///修改密碼頁面
 class One9Screen extends GetWidget<One9Controller> {
   One9Screen({Key? key})
       : super(
@@ -139,7 +140,7 @@ class One9Screen extends GetWidget<One9Controller> {
               isValid ? CustomButtonStyles.none : CustomButtonStyles.fillTeal,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              Get.back();
+              controller.callApi();
             } else {}
           },
         );
