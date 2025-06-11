@@ -19,12 +19,10 @@ class K73Screen extends GetWidget<K73Controller> {
         child: Container(
           width: double.maxFinite,
           margin: EdgeInsets.only(
-            left: 0.h,
-            right: 0.h,
-            bottom: 80.h,
+            bottom: 20.h,
           ),
           child: Column(
-            spacing: 12,
+            // spacing: 12,
             mainAxisSize: MainAxisSize.min,
             children: [
               Obx(() => Text(
@@ -72,8 +70,8 @@ class K73Screen extends GetWidget<K73Controller> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 3.h,
-                mainAxisSpacing: 12.h,
-                childAspectRatio: 1.5,
+                mainAxisSpacing: 6.h,
+                childAspectRatio: 1.6,
               ),
               itemBuilder: (context, index) {
                 final item =
@@ -215,15 +213,16 @@ class K73Screen extends GetWidget<K73Controller> {
         Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: EdgeInsets.only(right: 20.h),
-            child: Text(
+            padding: EdgeInsets.only(right: 20.h, top: 15.v),
+            child: Center(
+                child: Text(
               one,
               style: CustomTextStyles.bodyMediumPrimaryContainer_2.copyWith(
                 color: theme.colorScheme.primaryContainer.withValues(
                   alpha: 0.8,
                 ),
               ),
-            ),
+            )),
           ),
         )
       ],

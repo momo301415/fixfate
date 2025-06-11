@@ -236,7 +236,7 @@ class BaseChatScaffold extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(
-            height: 168.h,
+            height: 178.h,
             width: double.infinity,
             child: Stack(
               fit: StackFit.expand,
@@ -244,14 +244,14 @@ class BaseChatScaffold extends StatelessWidget {
                 Image.asset(
                   ImageConstant.imgUnionBg2,
                   width: double.infinity,
-                  height: 168.h,
+                  height: 178.h,
                   fit: BoxFit.fill,
                 ),
                 Align(
                   alignment: Alignment.topCenter,
                   child: Container(
                     width: double.maxFinite,
-                    margin: EdgeInsets.only(top: 18.h),
+                    margin: EdgeInsets.only(top: 28.h),
                     padding: EdgeInsets.symmetric(horizontal: 14.h),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -40,110 +39,29 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<bool> _canScheduleExactAlarms() async {
-    if (Platform.isAndroid) {
-      final androidPlugin = _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      return await androidPlugin?.canScheduleExactNotifications() ?? false;
-    }
-    return false;
-  }
-
-  // Future<void> _requestExactAlarmPermission() async {
-  //   if (Platform.isAndroid) {
-  //     final androidPlugin = _flutterLocalNotificationsPlugin
-  //         .resolvePlatformSpecificImplementation<
-  //             AndroidFlutterLocalNotificationsPlugin>();
-  //     await androidPlugin?.requestExactAlarmsPermission();
-  //   }
-  // }
-
   Future<void> scheduleReminder(String frequency) async {
-    // 取消所有已排程的通知
-    await _flutterLocalNotificationsPlugin.cancelAll();
+    await _flutterLocalNotificationsPlugin.cancelAll(); // 清除舊通知
 
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    final List<tz.TZDateTime> scheduledDates = [];
+    int notificationId = 0;
 
-    switch (frequency) {
-      case '三天一次':
-        scheduledDates.add(_nextInstanceOfTime(now, 8, 0));
-        for (int i = 1; i <= 10; i++) {
-          scheduledDates.add(scheduledDates[0].add(Duration(days: i * 3)));
-        }
-        break;
-      case '兩天一次':
-        scheduledDates.add(_nextInstanceOfTime(now, 8, 0));
-        for (int i = 1; i <= 15; i++) {
-          scheduledDates.add(scheduledDates[0].add(Duration(days: i * 2)));
-        }
-        break;
-      case '每天一次':
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 8, 0));
-        }
-        break;
-      case '一天兩次':
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 8, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 18, 0));
-        }
-        break;
-      case '一天三次':
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 8, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 13, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 18, 0));
-        }
-        break;
-      case '一天四次':
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 8, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 13, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 18, 0));
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 22, 0));
-        }
-        break;
-      case '每晚一次':
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 18, 0));
-        }
-        break;
-      default:
-        // 預設為每天早上8點
-        for (int i = 0; i < 30; i++) {
-          scheduledDates
-              .add(_nextInstanceOfTime(now.add(Duration(days: i)), 8, 0));
-        }
-        break;
+    tz.TZDateTime _nextInstanceOfTime(
+        tz.TZDateTime from, int hour, int minute) {
+      tz.TZDateTime scheduledDate = tz.TZDateTime(
+          tz.local, from.year, from.month, from.day, hour, minute);
+      if (scheduledDate.isBefore(from)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+      return scheduledDate;
     }
 
-    final bool hasExactAlarmPermission = await _canScheduleExactAlarms();
-
-    // if (!hasExactAlarmPermission) {
-    //   await _requestExactAlarmPermission();
-    //   // 等待使用者授權後再嘗試排程通知
-    //   return;
-    // }
-
-    for (int i = 0; i < scheduledDates.length; i++) {
+    Future<void> scheduleNotification(
+        tz.TZDateTime scheduledTime, String title, int id) async {
       await _flutterLocalNotificationsPlugin.zonedSchedule(
-        i,
+        id,
         '用藥提醒',
-        '該服藥了，請按時服用。',
-        scheduledDates[i],
+        title,
+        scheduledTime,
         const NotificationDetails(
           android: AndroidNotificationDetails(
             'medication_channel',
@@ -158,15 +76,60 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.time,
       );
     }
-  }
 
-  tz.TZDateTime _nextInstanceOfTime(tz.TZDateTime from, int hour, int minute) {
-    tz.TZDateTime scheduledDate =
-        tz.TZDateTime(tz.local, from.year, from.month, from.day, hour, minute);
-    if (scheduledDate.isBefore(from)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    for (int i = 0; i < 30; i++) {
+      final baseDate = now.add(Duration(days: i));
+      switch (frequency) {
+        case '三天一次':
+          if (i % 3 == 0) {
+            final time = _nextInstanceOfTime(baseDate, 8, 0);
+            await scheduleNotification(time, '三天一次服藥提醒', notificationId++);
+          }
+          break;
+        case '兩天一次':
+          if (i % 2 == 0) {
+            final time = _nextInstanceOfTime(baseDate, 8, 0);
+            await scheduleNotification(time, '兩天一次服藥提醒', notificationId++);
+          }
+          break;
+        case '每天一次':
+          final time = _nextInstanceOfTime(baseDate, 8, 0);
+          await scheduleNotification(time, '每天服藥提醒', notificationId++);
+          break;
+        case '一天兩次':
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
+          break;
+        case '一天三次':
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 13, 0), '中午服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
+          break;
+        case '一天四次':
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 13, 0), '中午服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 18, 0), '傍晚服藥提醒', notificationId++);
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 22, 0), '晚上服藥提醒', notificationId++);
+          break;
+        case '每晚一次':
+          await scheduleNotification(
+              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
+          break;
+        default:
+          final time = _nextInstanceOfTime(baseDate, 8, 0);
+          await scheduleNotification(time, '預設服藥提醒', notificationId++);
+          break;
+      }
     }
-    return scheduledDate;
   }
 
   Future<void> showDeviceDisconnectedNotification() async {

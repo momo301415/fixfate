@@ -88,11 +88,16 @@ class UserProfile extends HiveObject {
     this.lowHeadding,
     this.waterIntake,
     this.noneSleep,
-    this.foodHabits = const [],
-    this.cookHabits = const [],
-    this.pastDiseases = const [],
-    this.familyDiseases = const [],
-    this.drugAllergies = const [],
-    this.devices = const [],
-  });
+    List<String>? foodHabits,
+    List<String>? cookHabits,
+    List<String>? pastDiseases,
+    List<String>? familyDiseases,
+    List<String>? drugAllergies,
+    List<DeviceProfile>? devices,
+  })  : foodHabits = foodHabits ?? [],
+        cookHabits = cookHabits ?? [],
+        pastDiseases = pastDiseases ?? [],
+        familyDiseases = familyDiseases ?? [],
+        drugAllergies = drugAllergies ?? [],
+        devices = devices ?? [];
 }

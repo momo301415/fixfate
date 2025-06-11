@@ -62,7 +62,10 @@ class K63Screen extends GetWidget<K63Controller> {
                               style: CustomTextStyles.bodyMedium15,
                             );
                           } else {
-                            return Container();
+                            return Text(
+                              controller.eamil.value,
+                              style: CustomTextStyles.bodyMedium15,
+                            );
                           }
                         },
                       ),

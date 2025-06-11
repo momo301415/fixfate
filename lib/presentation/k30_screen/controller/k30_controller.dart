@@ -398,7 +398,7 @@ class K30Controller extends GetxController {
     var user = box.get(gc.userId.value);
 
     ///如果手機資料庫沒資料就撈api
-    if (user == null) {
+    if (user == null || user.gender == null) {
       user = await getUserProfile(gc.userId.value);
     }
     if (user.gender != null) {
@@ -554,9 +554,9 @@ class K30Controller extends GetxController {
           user.email = resBody['email'] ?? '';
           user.gender = resBody['gender'] ?? '';
           user.birthDate = resBody['birthDate'] ?? '';
-          user.height = resBody['bodyHeight'] ?? 0;
-          user.weight = resBody['bodyWeight'] ?? 0;
-          user.waist = resBody['waistline'] ?? 0;
+          user.height = double.tryParse(resBody['bodyHeight'] ?? '0') ?? 0.0;
+          user.weight = double.tryParse(resBody['bodyWeight'] ?? '0') ?? 0.0;
+          user.waist = double.tryParse(resBody['waistline'] ?? '0') ?? 0.0;
           final otherData = resBody['otherData'];
           final habits = otherData['habits'];
 
@@ -568,14 +568,25 @@ class K30Controller extends GetxController {
           user.lowHeadding = habits['lowHead'] ?? '';
           user.waterIntake = habits['waterIntake'] ?? '';
           user.noneSleep = habits['noneSleep'] ?? '';
+          user.foodHabits?.assignAll(List<String>.from(
+            otherData['foodPreferences']?["favoriteTypes"] ?? [],
+          ));
 
-          user.foodHabits = otherData['foodPreferences']["favoriteTypes"] ?? [];
-          user.cookHabits =
-              otherData['cookingPreferences']["favoriteTypes"] ?? [];
-          user.pastDiseases = otherData['medicalHistory']["pastDiseases"] ?? [];
-          user.familyDiseases =
-              otherData['familyHistory']["pastDiseases"] ?? [];
-          user.drugAllergies = otherData['allergies']["favoriteTypes"] ?? [];
+          user.cookHabits?.assignAll(List<String>.from(
+            otherData['cookingPreferences']?["favoriteTypes"] ?? [],
+          ));
+
+          user.pastDiseases?.assignAll(List<String>.from(
+            otherData['medicalHistory']?["pastDiseases"] ?? [],
+          ));
+
+          user.familyDiseases?.assignAll(List<String>.from(
+            otherData['familyHistory']?["pastDiseases"] ?? [],
+          ));
+
+          user.drugAllergies?.assignAll(List<String>.from(
+            otherData['allergies']?["drug"] ?? [],
+          ));
           return user;
         } else {
           DialogHelper.showError("${res["message"]}");

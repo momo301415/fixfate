@@ -366,11 +366,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.one5Screen),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "0-個人中心-我的設備-設備設定 Two - Dialog",
-                          onTapScreenTitle: () => onTapDialogTitle(
-                              context, Two4Dialog(Get.put(Two4Controller()))),
-                        ),
+                        // _buildScreenTitle(
+                        //   screenTitle: "0-個人中心-我的設備-設備設定 Two - Dialog",
+                        //   onTapScreenTitle: () => onTapDialogTitle(
+                        //       context, Two4Dialog(Get.put(Two4Controller()))),
+                        // ),
                         _buildScreenTitle(
                           screenTitle: "0-個人中心-用藥提醒",
                           onTapScreenTitle: () =>

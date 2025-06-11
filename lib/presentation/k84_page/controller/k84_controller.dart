@@ -374,7 +374,30 @@ class K84Controller extends GetxController {
       );
     }
 
+    double? minX;
+    double? maxX;
+
+    if (index == 0) {
+      // 日：時間（單位分鐘，最多1440分鐘）
+      minX = 0;
+      maxX = 1440;
+    } else if (index == 1) {
+      // 週：7天
+      minX = 0;
+      maxX = 6;
+    } else if (index == 2) {
+      // 月：天數取決於當月天數
+      final daysInMonth = DateUtils.getDaysInMonth(
+        currentDate.value.year,
+        currentDate.value.month,
+      );
+      minX = 1;
+      maxX = daysInMonth.toDouble();
+    }
+
     return LineChartData(
+      maxX: maxX,
+      minX: minX,
       minY: 0,
       maxY: _maxY.value.toDouble(),
       gridData: FlGridData(
@@ -393,6 +416,7 @@ class K84Controller extends GetxController {
           sideTitles: SideTitles(
             showTitles: true,
             interval: _interval.value.toDouble(),
+            reservedSize: 36,
             getTitlesWidget: (value, meta) =>
                 Text('${value.toInt()}', style: TextStyle(fontSize: 10)),
           ),

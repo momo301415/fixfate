@@ -108,7 +108,7 @@ class GlobalController extends GetxController {
             startSyncTimer();
             isSqfliteInit.value = true;
           }
-        } else if (isSqfliteInit.value && st != 2) {
+        } else if (isSqfliteInit.value && st != 2 && st != 1) {
           NotificationService().showDeviceDisconnectedNotification();
         }
       }

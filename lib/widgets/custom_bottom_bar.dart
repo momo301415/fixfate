@@ -41,12 +41,13 @@ class CustomBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: SizedBox(
-            height: 72.h,
+            height: 55.h,
             child: Container(
               margin: EdgeInsets.only(
+                top: 6.h,
                 left: 54.h,
                 right: 54.h,
-                bottom: 20.h,
+                bottom: 6.h,
               ),
               decoration: BoxDecoration(
                 color: appTheme.whiteA700,

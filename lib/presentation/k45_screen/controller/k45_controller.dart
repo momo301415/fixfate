@@ -36,7 +36,7 @@ class K45Controller extends GetxController {
     await DialogHelper.showCustomDialog(
       Get.context!,
       Two4Dialog(
-        Get.put(Two4Controller()),
+        Get.put(Two4Controller(deviceId.value)),
       ),
     );
   }

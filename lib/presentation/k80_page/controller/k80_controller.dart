@@ -4,13 +4,10 @@ import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
-import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
-import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/k80_page/model/k80_model.dart';
 import 'package:pulsedevice/presentation/k80_page/model/list_item_model.dart';
-
 import 'package:pulsedevice/presentation/k87_bottomsheet/controller/k87_controller.dart';
 import 'package:pulsedevice/presentation/k87_bottomsheet/k87_bottomsheet.dart';
 import 'package:pulsedevice/presentation/k88_bottomsheet/controller/k88_controller.dart';
@@ -449,7 +446,30 @@ class K80Controller extends GetxController {
       );
     }
 
+    double? minX;
+    double? maxX;
+
+    if (index == 0) {
+      // 日：時間（單位分鐘，最多1440分鐘）
+      minX = 0;
+      maxX = 1440;
+    } else if (index == 1) {
+      // 週：7天
+      minX = 0;
+      maxX = 6;
+    } else if (index == 2) {
+      // 月：天數取決於當月天數
+      final daysInMonth = DateUtils.getDaysInMonth(
+        currentDate.value.year,
+        currentDate.value.month,
+      );
+      minX = 1;
+      maxX = daysInMonth.toDouble();
+    }
+
     return LineChartData(
+      maxX: maxX,
+      minX: minX,
       minY: 40,
       maxY: 140,
       gridData: FlGridData(
@@ -468,6 +488,7 @@ class K80Controller extends GetxController {
           sideTitles: SideTitles(
             showTitles: true,
             interval: 20,
+            reservedSize: 36,
             getTitlesWidget: (value, meta) =>
                 Text('${value.toInt()}', style: TextStyle(fontSize: 10)),
           ),

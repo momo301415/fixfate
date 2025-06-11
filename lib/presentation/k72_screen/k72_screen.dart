@@ -1,3 +1,4 @@
+// ✅ K72Screen：遮罩不再覆蓋 Header，掃描區域正確顯示
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,8 +7,8 @@ import 'package:pulsedevice/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_subtitle.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_trailing_image.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
+import '../../theme/custom_button_style.dart';
 import 'controller/k72_controller.dart';
 
 class K72Screen extends GetWidget<K72Controller> {
@@ -16,7 +17,7 @@ class K72Screen extends GetWidget<K72Controller> {
   @override
   Widget build(BuildContext context) {
     final double headerHeight = 100.h;
-    final double scanSize = Get.width * 0.5;
+    final double scanSize = Get.width * 0.6;
 
     return Scaffold(
       body: Stack(
@@ -29,52 +30,7 @@ class K72Screen extends GetWidget<K72Controller> {
             ),
           ),
 
-          // Header 區域
-          // Header 區域
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: headerHeight,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(
-                  ImageConstant.imgUnionBg2,
-                  fit: BoxFit.fill,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 18.h, left: 16.h, right: 16.h),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      AppbarLeadingImage(
-                        imagePath: ImageConstant.imgArrowLeft,
-                        onTap: () => Get.back(),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: AppbarSubtitle(
-                            text: "lbl202".tr,
-                          ),
-                        ),
-                      ),
-                      // 可選右側 action（預留空間）
-                      AppbarTrailingImage(
-                        imagePath: ImageConstant.imgUQrcodeScan,
-                        margin: EdgeInsets.only(right: 14.h),
-                        onTap: () {
-                          controller.gok71Screen();
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 遮罩與掃描框
+          // ✅ 遮罩與掃描框 (header 之下)
           Positioned(
             top: headerHeight,
             left: 0,
@@ -83,7 +39,10 @@ class K72Screen extends GetWidget<K72Controller> {
             child: _buildScanOverlay(scanSize),
           ),
 
-          // 掃描結果與底部按鈕
+          // ✅ Header 區塊
+          _buildHeader(headerHeight),
+
+          // ✅ 掃描結果與底部按鈕
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -120,15 +79,52 @@ class K72Screen extends GetWidget<K72Controller> {
                     buttonStyle: CustomButtonStyles.fillGrayTL8,
                     buttonTextStyle:
                         CustomTextStyles.titleMediumPrimaryContainer16,
-                    onPressed: () {
-                      // 圖片選擇邏輯
-                    },
+                    onPressed: () {},
                   ),
-                  SizedBox(
-                    height: 18.h,
-                  ),
+                  SizedBox(height: 18.h),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(double height) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      height: height,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            ImageConstant.imgUnionBg2,
+            fit: BoxFit.fill,
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 18.h, left: 16.h, right: 16.h),
+            child: Row(
+              children: [
+                AppbarLeadingImage(
+                  imagePath: ImageConstant.imgArrowLeft,
+                  onTap: () => Get.back(),
+                ),
+                Expanded(
+                  child: Center(
+                    child: AppbarSubtitle(
+                      text: "lbl202".tr,
+                    ),
+                  ),
+                ),
+                AppbarTrailingImage(
+                  imagePath: ImageConstant.imgUQrcodeScan,
+                  margin: EdgeInsets.only(right: 14.h),
+                  onTap: () => controller.gok71Screen(),
+                ),
+              ],
             ),
           ),
         ],
@@ -143,55 +139,56 @@ class K72Screen extends GetWidget<K72Controller> {
       final left = (width - scanSize) / 2;
       final top = (height - scanSize) / 2;
 
-      return Stack(
-        children: [
-          // 黑色遮罩
-          ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Colors.black54,
-              BlendMode.srcOut,
-            ),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    backgroundBlendMode: BlendMode.dstOut,
-                  ),
-                ),
-                Positioned(
-                  left: left,
-                  top: top,
-                  width: scanSize,
-                  height: scanSize,
-                  child: Container(
+      return ClipRect(
+        child: Stack(
+          children: [
+            ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.black54,
+                BlendMode.srcOut,
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
                     decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      color: Colors.black,
+                      backgroundBlendMode: BlendMode.dstOut,
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    left: left,
+                    top: top,
+                    width: scanSize,
+                    height: scanSize,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // 四角框裝飾
-          Positioned(
-            left: left,
-            top: top,
-            width: scanSize,
-            height: scanSize,
-            child: Stack(
-              children: [
-                _buildCorner(Alignment.topLeft, 0),
-                _buildCorner(Alignment.topRight, 90),
-                _buildCorner(Alignment.bottomLeft, 270),
-                _buildCorner(Alignment.bottomRight, 180),
-              ],
+            // 四角框裝飾
+            Positioned(
+              left: left,
+              top: top,
+              width: scanSize,
+              height: scanSize,
+              child: Stack(
+                children: [
+                  _buildCorner(Alignment.topLeft, 0),
+                  _buildCorner(Alignment.topRight, 90),
+                  _buildCorner(Alignment.bottomLeft, 270),
+                  _buildCorner(Alignment.bottomRight, 180),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     });
   }

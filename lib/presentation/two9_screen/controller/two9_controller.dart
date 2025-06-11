@@ -66,6 +66,7 @@ class Two9Controller extends GetxController {
         payload,
       );
       LoadingHelper.hide();
+      Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
       LoadingHelper.hide();

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/app_export.dart';
-import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 import 'package:pulsedevice/presentation/k73_screen/models/listview_item_model.dart';
 import 'package:pulsedevice/widgets/custom_image_view.dart';
-import 'package:pulsedevice/core/utils/image_constant.dart';
 import 'package:pulsedevice/core/utils/size_utils.dart';
 
 class ListviewItemWidget extends StatelessWidget {
@@ -97,8 +95,9 @@ class ListviewItemWidget extends StatelessWidget {
           left: 12.h,
           child: CustomImageView(
             imagePath: model.icon!.value,
-            height: 41.h,
-            width: 41.h,
+            height: 45.h,
+            width: 45.h,
+            fit: BoxFit.contain,
           ),
         ),
       ],

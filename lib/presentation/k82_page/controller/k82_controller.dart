@@ -1,12 +1,7 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
-import 'package:pulsedevice/core/hiveDb/alert_record.dart';
-import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
-import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';

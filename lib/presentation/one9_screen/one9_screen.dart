@@ -67,65 +67,38 @@ class One9Screen extends GetWidget<One9Controller> {
 
   /// Section Widget
   Widget _buildTf() {
-    return CustomTextFormField(
-      controller: controller.tfController,
-      onChanged: (value) {
-        controller.checkFromIsNotEmpty();
-      },
-      hintText: "lbl_82".tr,
-      textInputAction: TextInputAction.done,
-      textInputType: TextInputType.visiblePassword,
-      obscureText: true,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 14.h,
-      ),
-      validator: (value) {
-        return validPassword(value);
-      },
-    );
-  }
-
-  /// Section Widget
-  Widget _buildTf1() {
-    return CustomTextFormField(
-      controller: controller.tf1Controller,
-      onChanged: (value) {
-        controller.checkFromIsNotEmpty();
-      },
-      hintText: "lbl_82".tr,
-      textInputAction: TextInputAction.done,
-      textInputType: TextInputType.visiblePassword,
-      obscureText: true,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 14.h,
-      ),
-      validator: (value) {
-        return validPassword(value);
-      },
-    );
-  }
-
-  /// Section Widget
-  Widget _buildTf2() {
-    return CustomTextFormField(
-      controller: controller.tf2Controller,
-      onChanged: (value) {
-        controller.checkFromIsNotEmpty();
-      },
-      hintText: "lbl_82".tr,
-      textInputAction: TextInputAction.done,
-      textInputType: TextInputType.visiblePassword,
-      obscureText: true,
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 14.h,
-      ),
-      validator: (value) {
-        return validPassword(value);
-      },
-    );
+    return Obx(() => CustomTextFormField(
+          controller: controller.tfController,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          obscureText: controller.isDisablePwd.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwd.value = !controller.isDisablePwd.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwd.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            return validPassword(value);
+          },
+        ));
   }
 
   /// Section Widget
@@ -148,8 +121,80 @@ class One9Screen extends GetWidget<One9Controller> {
     );
   }
 
-  /// Navigates to the previous screen.
-  onTapArrowleftone() {
-    Get.back();
+  Widget _buildTf1() {
+    return Obx(() => CustomTextFormField(
+          controller: controller.tf1Controller,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          obscureText: controller.isDisablePwd.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwd.value = !controller.isDisablePwd.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwd.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            return validPassword(value);
+          },
+        ));
+  }
+
+  /// Section Widget
+  Widget _buildTf2() {
+    return Obx(() => CustomTextFormField(
+          controller: controller.tf2Controller,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          obscureText: controller.isDisablePwdConfirm.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwdConfirm.value =
+                  !controller.isDisablePwdConfirm.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwdConfirm.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null ||
+                value.isEmpty ||
+                controller.tf1Controller.text != value) {
+              return "err_msg_please_enter_same_password".tr;
+            }
+            return null;
+          },
+        ));
   }
 }

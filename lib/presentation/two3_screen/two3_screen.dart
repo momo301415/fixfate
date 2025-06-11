@@ -94,43 +94,7 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                         CustomTextStyles.bodyMediumBluegray900,
                                   ),
                                   SizedBox(height: 16.h),
-                                  Obx(() => CustomTextFormField(
-                                        controller:
-                                            controller.passwordController,
-                                        onChanged: (value) {
-                                          controller.checkFromIsNotEmpty();
-                                        },
-                                        hintText: "lbl_82".tr,
-                                        textInputAction: TextInputAction.done,
-                                        textInputType:
-                                            TextInputType.visiblePassword,
-                                        obscureText:
-                                            controller.isDisablePwd.value,
-                                        suffix: GestureDetector(
-                                          onTap: () {
-                                            controller.isDisablePwd.value =
-                                                !controller.isDisablePwd.value;
-                                          },
-                                          child: Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 12.h),
-                                            child: Icon(
-                                              controller.isDisablePwd.value
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: Colors.grey,
-                                              size: 20.h,
-                                            ),
-                                          ),
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 16.h,
-                                          vertical: 14.h,
-                                        ),
-                                        validator: (value) {
-                                          return validPassword(value);
-                                        },
-                                      )),
+                                  _buildTf(),
                                   SizedBox(height: 24.h),
                                   Text(
                                     "lbl16".tr,
@@ -138,51 +102,7 @@ class Two3Screen extends GetWidget<Two3Controller> {
                                         CustomTextStyles.bodyMediumBluegray900,
                                   ),
                                   SizedBox(height: 16.h),
-                                  Obx(() => CustomTextFormField(
-                                        controller:
-                                            controller.passwordoneController,
-                                        onChanged: (value) {
-                                          controller.checkFromIsNotEmpty();
-                                        },
-                                        hintText: "lbl_82".tr,
-                                        textInputAction: TextInputAction.done,
-                                        textInputType:
-                                            TextInputType.visiblePassword,
-                                        obscureText:
-                                            controller.isDisablePwd.value,
-                                        suffix: GestureDetector(
-                                          onTap: () {
-                                            controller.isDisablePwd.value =
-                                                !controller.isDisablePwd.value;
-                                          },
-                                          child: Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 12.h),
-                                            child: Icon(
-                                              controller.isDisablePwd.value
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: Colors.grey,
-                                              size: 20.h,
-                                            ),
-                                          ),
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 16.h,
-                                          vertical: 14.h,
-                                        ),
-                                        validator: (value) {
-                                          if (value == null ||
-                                              value.isEmpty ||
-                                              controller.passwordoneController
-                                                      .text !=
-                                                  value) {
-                                            return "err_msg_please_enter_same_password"
-                                                .tr;
-                                          }
-                                          return null;
-                                        },
-                                      )),
+                                  _buildTf1(),
                                   SizedBox(height: 48.h),
                                   Obx(
                                     () {
@@ -221,5 +141,82 @@ class Two3Screen extends GetWidget<Two3Controller> {
         ),
       ),
     );
+  }
+
+  Widget _buildTf() {
+    return Obx(() => CustomTextFormField(
+          controller: controller.passwordController,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          obscureText: controller.isDisablePwd.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwd.value = !controller.isDisablePwd.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwd.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            return validPassword(value);
+          },
+        ));
+  }
+
+  /// Section Widget
+  Widget _buildTf1() {
+    return Obx(() => CustomTextFormField(
+          controller: controller.passwordoneController,
+          onChanged: (value) {
+            controller.checkFromIsNotEmpty();
+          },
+          hintText: "lbl_82".tr,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.h,
+            vertical: 14.h,
+          ),
+          textInputAction: TextInputAction.done,
+          textInputType: TextInputType.visiblePassword,
+          obscureText: controller.isDisablePwdConfirm.value,
+          suffix: GestureDetector(
+            onTap: () {
+              controller.isDisablePwdConfirm.value =
+                  !controller.isDisablePwdConfirm.value;
+            },
+            child: Padding(
+              padding: EdgeInsets.only(right: 12.h),
+              child: Icon(
+                controller.isDisablePwdConfirm.value
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                color: Colors.grey,
+                size: 20.h,
+              ),
+            ),
+          ),
+          validator: (value) {
+            if (value == null ||
+                value.isEmpty ||
+                controller.passwordController.text != value) {
+              return "err_msg_please_enter_same_password".tr;
+            }
+            return null;
+          },
+        ));
   }
 }

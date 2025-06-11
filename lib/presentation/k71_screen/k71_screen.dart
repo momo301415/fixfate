@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
-import '../../widgets/app_bar/appbar_leading_image.dart';
-import '../../widgets/app_bar/appbar_subtitle.dart';
 import '../../widgets/app_bar/appbar_trailing_image.dart';
-import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_outlined_button.dart';
-import 'controller/k71_controller.dart'; // ignore_for_file: must_be_immutable
+import 'controller/k71_controller.dart';
+// ignore_for_file: must_be_immutable
 
 /// 分享健康數據頁面
 class K71Screen extends GetWidget<K71Controller> {
@@ -96,10 +93,5 @@ class K71Screen extends GetWidget<K71Controller> {
         ],
       ),
     );
-  }
-
-  /// Navigates to the previous screen.
-  onTapArrowleftone() {
-    Get.back();
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
-import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -442,7 +441,30 @@ class K78Controller extends GetxController {
       );
     }
 
+    double? minX;
+    double? maxX;
+
+    if (index == 0) {
+      // 日：時間（單位分鐘，最多1440分鐘）
+      minX = 0;
+      maxX = 1440;
+    } else if (index == 1) {
+      // 週：7天
+      minX = 0;
+      maxX = 6;
+    } else if (index == 2) {
+      // 月：天數取決於當月天數
+      final daysInMonth = DateUtils.getDaysInMonth(
+        currentDate.value.year,
+        currentDate.value.month,
+      );
+      minX = 1;
+      maxX = daysInMonth.toDouble();
+    }
+
     return LineChartData(
+      maxX: maxX,
+      minX: minX,
       minY: 90,
       maxY: 100,
       gridData: FlGridData(
@@ -461,6 +483,7 @@ class K78Controller extends GetxController {
           sideTitles: SideTitles(
             showTitles: true,
             interval: 2,
+            reservedSize: 36,
             getTitlesWidget: (value, meta) =>
                 Text('${value.toInt()}', style: TextStyle(fontSize: 10)),
           ),

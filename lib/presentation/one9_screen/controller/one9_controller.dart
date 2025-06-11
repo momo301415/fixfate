@@ -23,6 +23,8 @@ class One9Controller extends GetxController {
   final gc = Get.find<GlobalController>();
   final service = ApiService();
   var isValid = false.obs;
+  var isDisablePwd = true.obs;
+  var isDisablePwdConfirm = true.obs;
 
   @override
   void onClose() {
