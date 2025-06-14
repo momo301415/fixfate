@@ -30,6 +30,11 @@ class K63Controller extends GetxController {
     Get.toNamed(AppRoutes.one9Screen);
   }
 
+  ///路由到登入頁面
+  void goOne2Screen() {
+    Get.offAllNamed(AppRoutes.one2Screen);
+  }
+
   Future<void> showThree2Dialog() async {
     var result = await DialogHelper.showCustomDialog(
         Get.context!, Three2Dialog(Get.put(Three2Controller())));

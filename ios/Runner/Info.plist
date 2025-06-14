@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.pravera.flutter_foreground_task.refresh</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -29,16 +33,18 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>需要存取您的音樂資料以支援裝置同步功能</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>使用BLE權限描述</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>使用BLE權限描述</string>
 	<key>NSCameraUsageDescription</key>
 	<string>需要使用相機來拍照</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>需要存取相簿來選取圖片</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>我們需要您的允許來儲存照片至相簿</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要存取相簿來選取圖片</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>我們需要通知權限來提醒您裝置狀態變化</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -48,6 +54,7 @@
 		<string>bluetooth-central</string>
 		<string>fetch</string>
 		<string>remote-notification</string>
+		<string>processing</string>
 	</array>
 	<key>UIDeviceFamily</key>
 	<array>
@@ -65,7 +72,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSAppleMusicUsageDescription</key>
-    <string>需要存取您的音樂資料以支援裝置同步功能</string>
 </dict>
 </plist>

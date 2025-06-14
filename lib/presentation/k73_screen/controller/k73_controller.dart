@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
-import 'package:pulsedevice/core/sqliteDb/app_database.dart';
-import 'package:pulsedevice/core/sqliteDb/health_data_sync_service.dart';
 import '../../../core/app_export.dart';
 import '../models/k73_model.dart';
 
@@ -9,7 +7,7 @@ import '../models/k73_model.dart';
 ///
 /// This class manages the state of the K73Screen, including the
 /// current k73ModelObj
-class K73Controller extends GetxController {
+class K73Controller extends GetxController with WidgetsBindingObserver {
   TextEditingController searchController = TextEditingController();
   final gc = Get.find<GlobalController>();
 
@@ -20,6 +18,7 @@ class K73Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -33,6 +32,15 @@ class K73Controller extends GetxController {
   void onClose() {
     super.onClose();
     searchController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      getData();
+    }
   }
 
   /// 路由到個人頁面
@@ -50,8 +58,14 @@ class K73Controller extends GetxController {
     Get.toNamed(AppRoutes.k76Screen, arguments: index);
   }
 
+  /// 路由到開始運動頁面
   void gok5Screen() {
     Get.toNamed(AppRoutes.k5Screen);
+  }
+
+  /// 路由到我的設備頁面
+  void goK40Screen() {
+    Get.toNamed(AppRoutes.k40Screen);
   }
 
   Future<void> getData() async {
@@ -78,9 +92,9 @@ class K73Controller extends GetxController {
     k73ModelObj.value.listviewItemList.value[4].value?.value =
         res["stepCount"].toString();
     k73ModelObj.value.listviewItemList.value[5].loadTime?.value =
-        res["sleepDuration"].toString();
+        res["sleepDuration"]?.toString() ?? '';
     k73ModelObj.value.listviewItemList.value[5].value?.value =
-        res["sleepTime"].toString();
+        res["sleepTime"]?.toString() ?? '';
     k73ModelObj.value.listviewItemList.value[6].loadTime?.value =
         res["stepDuration"].toString();
     k73ModelObj.value.listviewItemList.value[6].value?.value =

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
@@ -101,6 +102,9 @@ class K48Controller extends GetxController {
   }
 
   Future<void> scheduleReminderFromUserChoice(String frequency) async {
+    if (Platform.isAndroid) {
+      await notificationService.requestExactAlarmPermission();
+    }
     await notificationService.scheduleReminder(frequency); // 根據使用者選擇的頻率設定提醒
   }
 }

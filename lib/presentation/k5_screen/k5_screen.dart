@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/presentation/k5_screen/controller/countdown_controller.dart';
 import 'package:pulsedevice/presentation/k5_screen/k5_2_page.dart';
 import 'package:pulsedevice/presentation/k5_screen/widgets/full_screen_countdown.dart';
+import 'package:yc_product_plugin/yc_product_plugin.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
 import '../../widgets/app_bar/appbar_subtitle.dart';
@@ -47,13 +49,27 @@ class K5Screen extends GetWidget<K5Controller> {
                           controller: controller.tabviewController,
                           children: [
                             K5_1Page(
-                              onStartPressed: () {
-                                _showCountdownThenStart(context);
+                              onStartPressed: () async {
+                                var res = await YcProductPlugin()
+                                    .queryDeviceBasicInfo();
+                                if (res != null && res.statusCode == 0) {
+                                  _showCountdownThenStart(context);
+                                } else {
+                                  SnackbarHelper.showBlueSnackbar(
+                                      message: "請先連接藍牙裝置");
+                                }
                               },
                             ),
                             K5_2Page(
-                              onStartPressed: () {
-                                _showCountdownThenStart(context);
+                              onStartPressed: () async {
+                                var res = await YcProductPlugin()
+                                    .queryDeviceBasicInfo();
+                                if (res != null && res.statusCode == 0) {
+                                  _showCountdownThenStart(context);
+                                } else {
+                                  SnackbarHelper.showBlueSnackbar(
+                                      message: "請先連接藍牙裝置");
+                                }
                               },
                             )
                           ],
@@ -212,27 +228,25 @@ class K5Screen extends GetWidget<K5Controller> {
   }
 
   /// 全螢幕倒數後才呼叫 startSport，並且把運動類別傳進 Controller
-  void _showCountdownThenStart(
-    BuildContext context,
-  ) {
-    // 1) 先註冊倒數 Controller
+  void _showCountdownThenStart(BuildContext context) {
+    // 保險做法：刪除舊的 Controller
+    if (Get.isRegistered<CountdownController>(tag: 'k5_sport_countdown')) {
+      Get.delete<CountdownController>(tag: 'k5_sport_countdown');
+    }
+
     Get.put<CountdownController>(
       CountdownController(
         initialCount: 3,
         onFinish: () {
-          // 倒數完成時：
           if (Get.isDialogOpen == true) {
-            Get.back(); // 關閉倒數 Dialog
+            Get.back();
           }
-          // 如果你想把 sportType 傳給 Controller 去做額外區隔：
-
           controller.startSport();
         },
       ),
       tag: 'k5_sport_countdown',
     );
 
-    // 2) 顯示全螢幕倒數
     Get.dialog(
       const FullscreenCountdown(),
       barrierDismissible: false,

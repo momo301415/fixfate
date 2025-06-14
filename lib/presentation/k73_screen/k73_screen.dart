@@ -15,6 +15,12 @@ class K73Screen extends GetWidget<K73Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseChatScaffold(
+      onEvent: () {
+        print("k73 screen onEvent");
+        Future.delayed(const Duration(milliseconds: 500), () {
+          controller.getData();
+        });
+      },
       child: Container(
         child: Container(
           width: double.maxFinite,
@@ -41,6 +47,7 @@ class K73Screen extends GetWidget<K73Controller> {
         onChanged: (value) {
           switch (value) {
             case 0:
+              controller.getData();
               break;
             case 1:
               break;
@@ -97,7 +104,9 @@ class K73Screen extends GetWidget<K73Controller> {
         children: [
           Expanded(
             child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  controller.goK40Screen();
+                },
                 child: Container(
                   height: 50.h,
                   child: Stack(

@@ -323,6 +323,7 @@ class K78Page extends GetWidget<K78Controller> {
       }
 
       return ListView.separated(
+        padding: EdgeInsets.only(top: 2.h),
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: list.length,

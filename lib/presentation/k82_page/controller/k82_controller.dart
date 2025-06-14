@@ -15,7 +15,7 @@ import 'package:pulsedevice/presentation/one7_bottomsheet/controller/one7_contro
 import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
 import 'package:pulsedevice/widgets/sleep_bar_chart.dart';
 
-class K82Controller extends GetxController {
+class K82Controller extends GetxController with WidgetsBindingObserver {
   final gc = Get.find<GlobalController>();
   final k82ModelObj = K82Model().obs;
   final userId = ''.obs;
@@ -54,11 +54,26 @@ class K82Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LoadingHelper.show();
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
     });
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      updateDateRange(currentIndex.value);
+    }
   }
 
   /// 輸入日期讀取數據

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -24,7 +25,7 @@ class ApiService {
       InterceptorsWrapper(
         onRequest: (options, handler) {
           // 自動加入 Bearer token
-          final token = getx.Get.find<GlobalController>().apiToken.value;
+          final token = getx.Get.find<GlobalController>().apiToken;
           if (token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -146,5 +147,18 @@ class ApiService {
     } on DioException catch (e) {
       throw Exception('上傳錯誤：${e.message}');
     }
+  }
+
+  Future<void> sendLog({required String json, required String logType}) async {
+    try {
+      var params = jsonEncode([
+        {
+          "userId": getx.Get.find<GlobalController>().apiId.value,
+          "logType": logType, //記錄狀態 ERROR、WARN、INFO、DEBUG
+          "logData": json
+        }
+      ]);
+      final res = await postJsonList(Api.logset, params);
+    } catch (e) {}
   }
 }

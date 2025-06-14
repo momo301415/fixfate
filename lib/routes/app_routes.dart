@@ -8,6 +8,8 @@ import 'package:pulsedevice/presentation/k76_screen/biding/k76_biding.dart';
 import 'package:pulsedevice/presentation/k76_screen/k76_screen.dart';
 import 'package:pulsedevice/presentation/k7_scrren/binding/k7_binding.dart';
 import 'package:pulsedevice/presentation/k7_scrren/k7_screen.dart';
+import 'package:pulsedevice/presentation/log_screen/binding/log_binding.dart';
+import 'package:pulsedevice/presentation/log_screen/log_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
@@ -282,6 +284,8 @@ class AppRoutes {
   static const String k6Screen = '/k6_screen';
 
   static const String k7Screen = '/k7_screen';
+
+  static const String logScreen = '/log_screen';
 
   static List<GetPage> pages = [
     /// 隱私權頁
@@ -651,5 +655,7 @@ class AppRoutes {
 
     ///運動歷史頁面-單頁
     GetPage(name: k7Screen, page: () => K7Screen(), bindings: [K7Binding()]),
+
+    GetPage(name: logScreen, page: () => LogScreen(), bindings: [LogBinding()]),
   ];
 }

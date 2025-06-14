@@ -58,7 +58,7 @@ class Two3Controller extends GetxController {
           "newPWD": passwordoneController.value.text
         },
       );
-
+      LoadingHelper.hide();
       if (resData.isNotEmpty) {
         final success = resData["success"];
         if (success == true) {
@@ -90,7 +90,6 @@ class Two3Controller extends GetxController {
               DialogHelper.showError("${resData["message"]}");
             }
           }
-          LoadingHelper.hide();
         } else {
           DialogHelper.showError("${resData["message"]}");
         }

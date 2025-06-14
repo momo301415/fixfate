@@ -55,7 +55,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
     required this.title,
     required this.child,
     this.bottomNavigationBar,
-    this.headerHeight = 100,
+    this.headerHeight = 120,
     this.backgroundImage = 'assets/images/img_header_curved.png',
     this.actions,
     this.onBack,
@@ -73,49 +73,50 @@ class BaseScaffoldImageHeader extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
+                // 背景圖：不包 SafeArea，保留圓角
                 Image.asset(
                   ImageConstant.imgUnionBg2,
-                  width: double.infinity,
-                  height: headerHeight.h,
                   fit: BoxFit.fill,
                 ),
-                Positioned(
-                  top: 40.h,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: 40.h,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Title centered
-                        Center(
-                          child: AppbarSubtitle(text: title),
-                        ),
-                        // Left leading
-                        Positioned(
-                          left: 30.h,
-                          child: AppbarLeadingImage(
-                            imagePath: ImageConstant.imgArrowLeft,
-                            onTap: onBack ?? () => Get.back(),
+
+                // 標題與功能鍵內容：SafeArea 處理瀏海擠壓
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.h),
+                    child: SizedBox(
+                      height: 40.h,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Center(
+                            child: AppbarSubtitle(text: title),
                           ),
-                        ),
-                        // Right actions
-                        if (actions != null)
                           Positioned(
-                            right: 16.h,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: actions!,
+                            left: 0,
+                            child: AppbarLeadingImage(
+                              imagePath: ImageConstant.imgArrowLeft,
+                              onTap: onBack ?? () => Get.back(),
                             ),
                           ),
-                      ],
+                          if (actions != null)
+                            Positioned(
+                              right: 0,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: actions!,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
+
+          // 內容區
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16.h),
@@ -129,104 +130,20 @@ class BaseScaffoldImageHeader extends StatelessWidget {
   }
 }
 
-class BaseScaffoldImageHeaderQr extends StatelessWidget {
-  final String title;
-  final Widget child;
-  final Widget? bottomNavigationBar;
-  final double headerHeight;
-  final String backgroundImage;
-  final List<Widget>? actions;
-
-  const BaseScaffoldImageHeaderQr({
-    Key? key,
-    required this.title,
-    required this.child,
-    this.bottomNavigationBar,
-    this.headerHeight = 100,
-    this.backgroundImage = 'assets/images/background.png', // 頁面背景
-    this.actions,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // 全頁背景圖
-          Positioned.fill(
-            child: Image.asset(
-              ImageConstant.imgQrBg,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          // 主內容 + Header 疊層
-          Column(
-            children: [
-              // Header 圖片 + 標題 + 返回鍵
-              SizedBox(
-                height: headerHeight.h,
-                width: double.infinity,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      ImageConstant.imgUnionBg2, // 這是 Header 圖片
-                      fit: BoxFit.fill,
-                    ),
-                    Positioned(
-                      top: 48.h,
-                      left: 0,
-                      right: 0,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.h),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            AppbarLeadingImage(
-                              imagePath: ImageConstant.imgArrowLeft,
-                              onTap: () => Get.back(),
-                            ),
-                            SizedBox(width: 8.h),
-                            Expanded(
-                              child: Center(
-                                child: AppbarSubtitle(text: title),
-                              ),
-                            ),
-                            if (actions != null) ...actions!,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 主內容
-              Expanded(
-                child: child,
-              ),
-            ],
-          ),
-        ],
-      ),
-      bottomNavigationBar: bottomNavigationBar,
-    );
-  }
-}
-
 class BaseChatScaffold extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final TextEditingController? controller;
   final Widget? bottomNavigationBar;
-  BaseChatScaffold({
+  final VoidCallback? onEvent;
+
+  const BaseChatScaffold({
     Key? key,
     required this.child,
     this.padding,
     this.controller,
     this.bottomNavigationBar,
+    this.onEvent,
   }) : super(key: key);
 
   @override
@@ -235,56 +152,78 @@ class BaseChatScaffold extends StatelessWidget {
       backgroundColor: appTheme.teal50,
       body: Column(
         children: [
+          // Header 區塊
           SizedBox(
             height: 178.h,
             width: double.infinity,
             child: Stack(
               fit: StackFit.expand,
               children: [
+                // 背景圖片，不要包 SafeArea，保留弧形
                 Image.asset(
                   ImageConstant.imgUnionBg2,
-                  width: double.infinity,
-                  height: 178.h,
                   fit: BoxFit.fill,
                 ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    width: double.maxFinite,
-                    margin: EdgeInsets.only(top: 28.h),
-                    padding: EdgeInsets.symmetric(horizontal: 14.h),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.h),
-                          child: Text(
-                            "lbl224".tr,
-                            style: CustomTextStyles.bodyLargeWhiteA700,
+                // SafeArea 處理瀏海 + 文字內容
+                SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 0.h),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 24.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "lbl224".tr,
+                                      style:
+                                          CustomTextStyles.bodyLargeWhiteA700,
+                                    ),
+                                    Text(
+                                      "lbl225".tr,
+                                      style:
+                                          CustomTextStyles.bodyMediumWhiteA700,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.refresh, color: Colors.white),
+                                onPressed: onEvent,
+                              ),
+                            ],
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.h),
-                          child: Text(
-                            "lbl225".tr,
-                            style: CustomTextStyles.bodyMediumWhiteA700,
+                          SizedBox(height: 8.h),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomSearchView(
+                                  controller: controller,
+                                  hintText: "lbl226".tr,
+                                  contentPadding: EdgeInsets.fromLTRB(
+                                      16.h, 12.h, 12.h, 12.h),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 14.h),
-                        CustomSearchView(
-                          controller: controller,
-                          hintText: "lbl226".tr,
-                          contentPadding:
-                              EdgeInsets.fromLTRB(16.h, 12.h, 12.h, 12.h),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
+          // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 8.h),

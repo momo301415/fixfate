@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pulsedevice/presentation/k5_screen/controller/countdown_controller.dart';
-import 'package:pulsedevice/presentation/k5_screen/widgets/full_screen_countdown.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_icon_button.dart';
 import 'controller/k5_controller.dart';
-import 'models/listeightysix_item_model.dart';
 import 'widgets/listeightysix_item_widget.dart';
 
 /// 有氧運動tab頁面
@@ -17,7 +14,7 @@ class K5_1Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 48.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 24.h),
       child: Column(
         children: [
           Expanded(

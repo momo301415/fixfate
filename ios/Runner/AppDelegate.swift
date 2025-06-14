@@ -12,6 +12,14 @@ import UIKit
         UNUserNotificationCenter.current().delegate = self
         FirebaseApp.configure()
         GeneratedPluginRegistrant.register(with: self)
+        
+        // this
+        SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback { registry in
+          GeneratedPluginRegistrant.register(with: registry)
+        }
+        if #available(iOS 10.0, *) {
+          UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+        }
         return super.application(
             application,
             didFinishLaunchingWithOptions: launchOptions

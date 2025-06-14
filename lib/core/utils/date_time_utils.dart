@@ -66,8 +66,8 @@ class DateTimeUtils {
     return "${hours.toStringAsFixed(1)}h";
   }
 
-  static String formatMaxTimestamp(int ts1, int ts2, int ts3, int ts4) {
-    final int maxTs = [ts1, ts2, ts3, ts4].reduce((a, b) => a > b ? a : b);
+  static String formatMaxTimestamp(int ts1, int ts2, int ts3) {
+    final int maxTs = [ts1, ts2, ts3].reduce((a, b) => a > b ? a : b);
     final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(maxTs * 1000);
     return DateFormat('yyyy/MM/dd HH:mm').format(dateTime);
   }

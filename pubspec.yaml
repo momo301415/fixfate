@@ -42,6 +42,7 @@ dependencies:
   http_parser: ^4.1.2 # 檔案類型判別
   firebase_core: ^3.13.0 # Firebase
   firebase_messaging: ^15.2.5 # Firebase
+  flutter_foreground_task: ^9.1.0 # 開啟前台服務
   
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:

@@ -95,8 +95,14 @@ class ListviewItemWidget extends StatelessWidget {
           left: 12.h,
           child: CustomImageView(
             imagePath: model.icon!.value,
-            height: 45.h,
-            width: 45.h,
+            height:
+                model.icon!.value.contains(ImageConstant.imgIconWhiteA70040x40)
+                    ? 55.h
+                    : 45.h,
+            width:
+                model.icon!.value.contains(ImageConstant.imgIconWhiteA70040x40)
+                    ? 55.h
+                    : 45.h,
             fit: BoxFit.contain,
           ),
         ),

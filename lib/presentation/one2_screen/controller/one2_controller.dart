@@ -38,6 +38,9 @@ class One2Controller extends GetxController {
   void initData() async {
     oneController.text = await PrefUtils().getUserId();
     tfController.text = await PrefUtils().getPassword();
+    if (oneController.text.isNotEmpty) {
+      isValid.value = true;
+    }
   }
 
   /// 路由到忘記密碼頁

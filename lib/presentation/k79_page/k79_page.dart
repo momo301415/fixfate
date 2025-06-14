@@ -341,6 +341,7 @@ class K79Page extends GetWidget<K79Controller> {
       }
 
       return ListView.separated(
+        padding: EdgeInsets.only(top: 2.h),
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: list.length,

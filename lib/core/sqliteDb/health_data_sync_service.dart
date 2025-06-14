@@ -1,11 +1,14 @@
 // services/health_data_sync_service.dart
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/blood_pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/combined_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
@@ -23,6 +26,8 @@ class HealthDataSyncService {
 
   String? get userId => _userId;
   void setUserId(String id) => _userId = id;
+
+  ApiService apiService = ApiService();
 
   HealthDataSyncService(
     this._db,
@@ -56,7 +61,15 @@ class HealthDataSyncService {
                 final stepService = StepDataService(_db);
                 if (list.last is StepDataInfo) {
                   final sdkList = list.cast<StepDataInfo>();
-                  printLongText("步數數據：$sdkList");
+                  final listJson = sdkList
+                      .map((e) => parseStepDataString(e.toString()))
+                      .toList();
+                  final wrapperdJson = {
+                    "步數數據": listJson,
+                  };
+                  String jsonStr = jsonEncode(wrapperdJson);
+                  apiService.sendLog(json: jsonStr, logType: "INFO");
+                  printLongText("步數數據：$jsonStr");
                   await stepService.syncStepData(
                       userId: _userId!, sdkData: sdkList);
                   print("步數數據寫入成功");
@@ -66,7 +79,16 @@ class HealthDataSyncService {
                 final sleepService = SleepDataService(_db);
                 if (list.last is SleepDataInfo) {
                   final sdkList = list.cast<SleepDataInfo>();
-                  printLongText("睡眠數據：$sdkList");
+                  final listJson = sdkList
+                      .map((e) => parseStepDataString(e.toString()))
+                      .toList();
+                  final wrapperdJson = {
+                    "睡眠數據": listJson,
+                  };
+
+                  String jsonStr = jsonEncode(wrapperdJson);
+                  apiService.sendLog(json: jsonStr, logType: "INFO");
+                  printLongText("睡眠數據：$jsonStr");
                   await sleepService.syncSleepData(
                       userId: _userId!, sdkData: sdkList);
 
@@ -78,7 +100,16 @@ class HealthDataSyncService {
                 final heartRateService = HeartRateDataService(_db);
                 if (list.last is HeartRateDataInfo) {
                   final sdkList = list.cast<HeartRateDataInfo>();
-                  printLongText("心率數據：$sdkList");
+                  final listJson = sdkList
+                      .map((e) => parseStepDataString(e.toString()))
+                      .toList();
+                  final wrapperdJson = {
+                    "心率數據": listJson,
+                  };
+
+                  String jsonStr = jsonEncode(wrapperdJson);
+                  apiService.sendLog(json: jsonStr, logType: "INFO");
+                  printLongText("心率數據：$jsonStr");
                   await heartRateService.syncHeartRateData(
                       userId: _userId!,
                       sdkData:
@@ -91,7 +122,16 @@ class HealthDataSyncService {
                 final bloodPressureService = BloodPressureDataService(_db);
                 if (list.last is BloodPressureDataInfo) {
                   final sdkList = list.cast<BloodPressureDataInfo>();
-                  printLongText("血壓數據：$sdkList");
+                  final listJson = sdkList
+                      .map((e) => parseStepDataString(e.toString()))
+                      .toList();
+                  final wrapperdJson = {
+                    "血壓數據": listJson,
+                  };
+
+                  String jsonStr = jsonEncode(wrapperdJson);
+                  apiService.sendLog(json: jsonStr, logType: "INFO");
+                  printLongText("血壓數據：$jsonStr");
                   await bloodPressureService.syncBloodPressureData(
                       userId: _userId!,
                       sdkData:
@@ -104,7 +144,16 @@ class HealthDataSyncService {
                 final combinedDataService = CombinedDataService(_db);
                 if (list.last is CombinedDataDataInfo) {
                   final sdkList = list.cast<CombinedDataDataInfo>();
-                  printLongText("合併數據：$sdkList");
+                  final listJson = sdkList
+                      .map((e) => parseStepDataString(e.toString()))
+                      .toList();
+                  final wrapperdJson = {
+                    "合併數據": listJson,
+                  };
+
+                  String jsonStr = jsonEncode(wrapperdJson);
+                  apiService.sendLog(json: jsonStr, logType: "INFO");
+                  printLongText("合併數據：$jsonStr");
                   await combinedDataService.syncCombinedData(
                       userId: _userId!,
                       sdkData:
@@ -239,8 +288,11 @@ class HealthDataSyncService {
     final heartList = await heartService.getByUser(_userId!);
     final combinedList = await combinedService.getByUser(_userId!);
     if (heartList.isEmpty) return {};
+
+    stepList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    heartList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    combinedList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
     final stepLast = stepList.last;
-    final sleepLast = sleepList.last;
     final heartLast = heartList.last;
     final combinedLast = combinedList.last;
     int stepCount = stepList.fold(0, (sum, d) => sum + d.step);
@@ -248,11 +300,6 @@ class HealthDataSyncService {
     final calories = stepList.fold(0, (sum, d) => sum + d.calories);
     String stepDuration =
         DateTimeUtils.getTimeDifferenceString(stepLast.endTimeStamp);
-    final sleepTime =
-        ((sleepLast.endTimeStamp - sleepLast.startTimeStamp) / 3600)
-            .toStringAsFixed(2);
-    String sleepDuration =
-        DateTimeUtils.getTimeDifferenceString(sleepLast.endTimeStamp);
     final heartRate = heartLast.heartRate;
     String heartDuration =
         DateTimeUtils.getTimeDifferenceString(heartLast.startTimeStamp);
@@ -264,17 +311,14 @@ class HealthDataSyncService {
 
     final loadDataTime = DateTimeUtils.formatMaxTimestamp(
         stepLast.startTimeStamp,
-        sleepLast.startTimeStamp,
         heartLast.startTimeStamp,
         combinedLast.startTimeStamp);
 
-    final analysis = {
+    var analysis = {
       "stepCount": stepCount,
       "stepDistance": stepDistance,
       "stepDuration": stepDuration,
       "calories": calories,
-      "sleepTime": sleepTime,
-      "sleepDuration": sleepDuration,
       "heartRate": heartRate,
       "heartDuration": heartDuration,
       "bloodOxygen": bloodOxygen,
@@ -282,6 +326,22 @@ class HealthDataSyncService {
       "temperature": temperature,
       "loadDataTime": loadDataTime
     };
+
+    if (sleepList.isNotEmpty) {
+      sleepList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+      final sleepLast = sleepList.last;
+
+      final sleepTime =
+          ((sleepLast.endTimeStamp - sleepLast.startTimeStamp) / 3600)
+              .toStringAsFixed(2);
+      String sleepDuration =
+          DateTimeUtils.getTimeDifferenceString(sleepLast.endTimeStamp);
+
+      analysis.addAll({
+        "sleepTime": sleepTime,
+        "sleepDuration": sleepDuration,
+      });
+    }
     return analysis;
   }
 
@@ -292,5 +352,36 @@ class HealthDataSyncService {
           i, i + chunkSize > text.length ? text.length : i + chunkSize);
       print(chunk);
     }
+  }
+
+  Map<String, dynamic> parseStepDataString(String str) {
+    final cleaned = str.replaceAll('\n', '').replaceAll(']', '').trim();
+    final parts = cleaned.split(',');
+
+    final map = <String, dynamic>{};
+
+    for (var part in parts) {
+      final normalized = part.replaceAll('=', ':'); // 支援等號作為 key-value 分隔
+      final kv = normalized.split(':');
+
+      if (kv.length >= 2) {
+        final key = kv[0].trim();
+        final value = kv.sublist(1).join(':').trim();
+
+        if (key == 'startTimeStamp' || key == 'endTimeStamp') {
+          final ts = int.tryParse(value);
+          if (ts != null) {
+            final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
+            map[key] = dt.format(pattern: 'yyyy-MM-dd HH:mm:ss'); // 或改用你想要的格式
+          } else {
+            map[key] = value;
+          }
+        } else {
+          map[key] = value;
+        }
+      }
+    }
+
+    return map;
   }
 }

@@ -26,8 +26,8 @@ class K1Screen extends GetWidget<K1Controller> {
               children: [
                 CustomImageView(
                   imagePath: ImageConstant.imgFrame86565,
-                  height: 154.h,
-                  width: 214.h,
+                  height: 170.h,
+                  width: 230.h,
                 ),
                 SizedBox(height: 58.h)
               ],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -72,8 +74,8 @@ class NotificationService {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: null,
       );
     }
 
@@ -115,8 +117,8 @@ class NotificationService {
               _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
           await scheduleNotification(
               _nextInstanceOfTime(baseDate, 13, 0), '中午服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 18, 0), '傍晚服藥提醒', notificationId++);
+          await scheduleNotification(_nextInstanceOfTime(baseDate, 15, 51),
+              '傍晚服藥提醒', notificationId++);
           await scheduleNotification(
               _nextInstanceOfTime(baseDate, 22, 0), '晚上服藥提醒', notificationId++);
           break;
@@ -155,6 +157,29 @@ class NotificationService {
     );
   }
 
+  Future<void> showDeviceConnectedNotification() async {
+    await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
+    await _flutterLocalNotificationsPlugin.show(
+      9997,
+      'PulesRing通知',
+      '藍芽裝置已連線通知',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'connect_channel',
+          '連線頻道',
+          channelDescription: '這是藍芽連線通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
+
   Future<void> showDeviceLowPowerNotification() async {
     await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
     await _flutterLocalNotificationsPlugin.show(
@@ -175,6 +200,57 @@ class NotificationService {
           presentSound: true,
         ),
       ),
+    );
+  }
+
+  Future<bool> canScheduleExactAlarms() async {
+    if (Platform.isAndroid) {
+      final androidPlugin = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      return await androidPlugin?.canScheduleExactNotifications() ?? false;
+    }
+    return false;
+  }
+
+  Future<void> requestExactAlarmPermission() async {
+    if (Platform.isAndroid) {
+      final androidImpl = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      final granted =
+          await androidImpl?.canScheduleExactNotifications() ?? false;
+      if (!granted) {
+        await androidImpl?.requestExactAlarmsPermission();
+      }
+    }
+  }
+
+  Future<void> testImmediateNotification() async {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduled = now.add(Duration(seconds: 10)); // 現在 + 2 分鐘
+
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      12345,
+      '測試通知',
+      '兩分鐘後應該跳出',
+      scheduled,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'test_channel',
+          '測試頻道',
+          channelDescription: '用於測試排程通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 }

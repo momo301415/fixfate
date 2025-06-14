@@ -89,9 +89,11 @@ class K29Controller extends GetxController {
 
   /// 路由到健康資訊頁面
   void go73Screen() {
-    Get.toNamed(AppRoutes.k73Screen)?.then((_) {
-      Get.find<K73Controller>().getData();
-    });
+    Get.toNamed(AppRoutes.k73Screen);
+  }
+
+  void goLog() {
+    Get.toNamed(AppRoutes.logScreen);
   }
 
   void queryDb() async {

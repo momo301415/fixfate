@@ -131,6 +131,13 @@ class K63Screen extends GetWidget<K63Controller> {
             onPressed: () async {
               controller.showThree2Dialog();
             },
+          ),
+          CustomOutlinedButton(
+            text: "lbl10_1".tr,
+            buttonTextStyle: CustomTextStyles.titleMediumPrimary,
+            onPressed: () async {
+              controller.goOne2Screen();
+            },
           )
         ],
       ),

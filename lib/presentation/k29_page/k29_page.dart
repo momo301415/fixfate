@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/service/notification_service.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
+import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import 'controller/k29_controller.dart';
@@ -104,8 +107,13 @@ class K29Page extends GetWidget<K29Controller> {
           _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {
             controller.go67SrcScreen();
           }),
-          _buildMenuItemNonDivider(
-              "lbl67".tr, ImageConstant.imgFrame2, () async {}),
+          _buildMenuItemNonDivider("lbl67".tr, ImageConstant.imgFrame2,
+              () async {
+            // final notification = NotificationService();
+            // await notification.testImmediateNotification();
+            // SnackbarHelper.showBlueSnackbar(message: "ad notification");
+            controller.goLog();
+          }),
         ],
       ),
     );

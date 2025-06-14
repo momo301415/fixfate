@@ -106,7 +106,9 @@ class K30Screen extends GetWidget<K30Controller> {
                       if (path.isNotEmpty) {
                         return CircleAvatar(
                           radius: 20.h,
-                          backgroundImage: FileImage(File(path)),
+                          backgroundImage: path.contains('http')
+                              ? NetworkImage(path)
+                              : FileImage(File(path)),
                         );
                       } else {
                         return CustomImageView(

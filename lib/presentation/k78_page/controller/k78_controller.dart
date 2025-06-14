@@ -21,7 +21,7 @@ import '../models/k78_model.dart';
 ///
 /// This class manages the state of the K78Page, including the
 /// current k78ModelObj
-class K78Controller extends GetxController {
+class K78Controller extends GetxController with WidgetsBindingObserver {
   final k78ModelObj = K78Model().obs;
   final gc = Get.find<GlobalController>();
   final userId = ''.obs;
@@ -52,11 +52,26 @@ class K78Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LoadingHelper.show();
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
     });
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      updateDateRange(currentIndex.value);
+    }
   }
 
   /// 輸入日期讀取數據
@@ -162,121 +177,6 @@ class K78Controller extends GetxController {
     k78ModelObj.value.listItemList.value = alertList;
   }
 
-  /// 繪製圖表--日
-  List<FlSpot> buildDaySpots(List<CombinedDataData> data) {
-    if (data.isEmpty) return [];
-
-    final base =
-        DateTime.fromMillisecondsSinceEpoch(data.first.startTimeStamp * 1000);
-    return data.map((e) {
-      final current =
-          DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-      final diffMinutes = current.difference(base).inMinutes.toDouble();
-      return FlSpot(diffMinutes, e.bloodOxygen.toDouble());
-    }).toList();
-  }
-
-  /// 繪製圖表--週
-  List<FlSpot> buildWeeklySpots(
-      List<CombinedDataData> data, DateTime startDate) {
-    List<FlSpot> spots = [];
-    for (int i = 0; i < 7; i++) {
-      final day = startDate.add(Duration(days: i));
-      final dayStart = DateTime(day.year, day.month, day.day);
-      final dayEnd =
-          dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
-      final dayData = data.where((e) {
-        final timestamp =
-            DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-        return timestamp
-                .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
-            timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
-      }).toList();
-
-      if (dayData.isNotEmpty) {
-        final avg = dayData.map((e) => e.bloodOxygen).reduce((a, b) => a + b) /
-            dayData.length;
-        spots.add(FlSpot(i.toDouble(), avg));
-      } else {
-        spots.add(FlSpot(i.toDouble(), 0));
-      }
-    }
-    return spots;
-  }
-
-  /// 繪製圖表--月
-  List<FlSpot> buildMonthlySpots(
-      List<CombinedDataData> data, DateTime startDate) {
-    List<FlSpot> spots = [];
-    final daysInMonth =
-        DateUtils.getDaysInMonth(startDate.year, startDate.month);
-    for (int i = 0; i < daysInMonth; i++) {
-      final day = DateTime(startDate.year, startDate.month, i + 1);
-      final dayStart = DateTime(day.year, day.month, day.day);
-      final dayEnd =
-          dayStart.add(Duration(days: 1)).subtract(Duration(milliseconds: 1));
-      final dayData = data.where((e) {
-        final timestamp =
-            DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
-        return timestamp
-                .isAfter(dayStart.subtract(Duration(milliseconds: 1))) &&
-            timestamp.isBefore(dayEnd.add(Duration(milliseconds: 1)));
-      }).toList();
-
-      if (dayData.isNotEmpty) {
-        final avg = dayData.map((e) => e.bloodOxygen).reduce((a, b) => a + b) /
-            dayData.length;
-        spots.add(FlSpot((i + 1).toDouble(), avg));
-      } else {
-        spots.add(FlSpot((i + 1).toDouble(), 0));
-      }
-    }
-    return spots;
-  }
-
-  SideTitles getDailyTitles(DateTime baseTime) {
-    return SideTitles(
-      showTitles: true,
-      interval: 240, // 每 4 小時 = 240 分鐘
-      getTitlesWidget: (value, meta) {
-        final time = baseTime.add(Duration(minutes: value.toInt()));
-        return Text(
-          time.format(pattern: 'HH:mm'),
-          style: const TextStyle(fontSize: 10),
-        );
-      },
-    );
-  }
-
-  SideTitles getWeeklyTitles() {
-    const weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return SideTitles(
-      showTitles: true,
-      interval: 1,
-      getTitlesWidget: (value, meta) {
-        final index = value.toInt();
-        if (index >= 0 && index < weekLabels.length) {
-          return Text(weekLabels[index], style: TextStyle(fontSize: 10));
-        }
-        return Text('');
-      },
-    );
-  }
-
-  SideTitles getMonthlyTitles() {
-    return SideTitles(
-      showTitles: true,
-      interval: 5,
-      getTitlesWidget: (value, meta) {
-        final day = value.toInt();
-        if (day % 5 == 0 || day == 1) {
-          return Text('$day', style: TextStyle(fontSize: 10));
-        }
-        return Text('');
-      },
-    );
-  }
-
   Future<void> updateDateRange(int index) async {
     if (index == 0) {
       formattedRange.value =
@@ -351,10 +251,12 @@ class K78Controller extends GetxController {
           interval: 240, // 每 240 分鐘（即 4 小時）
           getTitlesWidget: (value, meta) {
             final timestamp = base.add(Duration(minutes: value.toInt()));
-            return Text(
-              timestamp.format(pattern: 'HH:mm'),
-              style: const TextStyle(fontSize: 10),
-            );
+            return Transform.translate(
+                offset: Offset(0, 12.h),
+                child: Text(
+                  timestamp.format(pattern: 'HH:mm'),
+                  style: const TextStyle(fontSize: 10),
+                ));
           },
         );
       }
@@ -364,8 +266,12 @@ class K78Controller extends GetxController {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        final startOfWeek = currentDate.value
-            .subtract(Duration(days: currentDate.value.weekday - 1));
+        final startOfWeek = DateTime(
+          currentDate.value.year,
+          currentDate.value.month,
+          currentDate.value.day,
+        ).subtract(Duration(days: currentDate.value.weekday - 1));
+
         final Map<int, List<int>> dayData = {};
 
         for (var e in bloodOxData) {
@@ -388,8 +294,10 @@ class K78Controller extends GetxController {
           interval: 1,
           getTitlesWidget: (value, meta) {
             if (value.toInt() >= 0 && value.toInt() < weekLabels.length) {
-              return Text(weekLabels[value.toInt()],
-                  style: TextStyle(fontSize: 10));
+              return Transform.translate(
+                  offset: Offset(0, 12.h),
+                  child: Text(weekLabels[value.toInt()],
+                      style: TextStyle(fontSize: 10)));
             }
             return Text('');
           },
@@ -423,10 +331,14 @@ class K78Controller extends GetxController {
           showTitles: true,
           interval: 5,
           getTitlesWidget: (value, meta) {
-            if (value.toInt() % 5 == 0) {
-              return Text('${value.toInt()}', style: TextStyle(fontSize: 10));
+            final day = value.toInt();
+            if (day == 1 || day % 5 == 0) {
+              return Transform.translate(
+                  offset: Offset(0, 12.h),
+                  child:
+                      Text('${value.toInt()}', style: TextStyle(fontSize: 10)));
             }
-            return Text('');
+            return const SizedBox.shrink();
           },
         );
       }
@@ -472,10 +384,26 @@ class K78Controller extends GetxController {
         drawHorizontalLine: true,
         drawVerticalLine: false,
         horizontalInterval: 2,
-        getDrawingHorizontalLine: (value) => FlLine(
-          color: Colors.grey,
-          strokeWidth: 1,
-        ),
+        getDrawingHorizontalLine: (value) {
+          if (value == 90 || value == 100) {
+            return FlLine(color: Colors.grey, strokeWidth: 1);
+          }
+          return FlLine(color: Colors.grey, strokeWidth: 1);
+        },
+      ),
+      extraLinesData: ExtraLinesData(
+        horizontalLines: [
+          HorizontalLine(
+            y: 90,
+            color: Colors.grey,
+            strokeWidth: 1,
+          ),
+          HorizontalLine(
+            y: 100,
+            color: Colors.grey,
+            strokeWidth: 1,
+          ),
+        ],
       ),
       titlesData: FlTitlesData(
         bottomTitles: AxisTitles(sideTitles: titles),

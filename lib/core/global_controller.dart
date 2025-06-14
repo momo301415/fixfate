@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -29,6 +30,8 @@ import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.da
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
+import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
@@ -62,8 +65,6 @@ class GlobalController extends GetxController {
   ///--- Firebase Token
   var firebaseToken = ''.obs;
 
-  Timer? _syncTimer;
-
   ///--- 記錄bottombar index
   var bottomBarIndex = 2.obs;
 
@@ -79,7 +80,7 @@ class GlobalController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    stopSyncTimer();
+
     db.close();
   }
 
@@ -105,11 +106,19 @@ class GlobalController extends GetxController {
           print(" ====== 初始化sqlite ====== ");
           if (userId.value.isNotEmpty) {
             /// 只初始化一次
-            startSyncTimer();
+            startForegroundTask();
+            // ✅ 藍牙連上後立即同步一次
+            syncDataService.runBackgroundSync();
+            getBlueToothDeviceInfo();
             isSqfliteInit.value = true;
+            Future.delayed(const Duration(milliseconds: 500), () {
+              SnackbarHelper.showBlueSnackbar(
+                  message: "snackbar_bluetooth_connect".tr);
+            });
           }
         } else if (isSqfliteInit.value && st != 2 && st != 1) {
           NotificationService().showDeviceDisconnectedNotification();
+          stopForegroundTask();
         }
       }
     });
@@ -165,21 +174,59 @@ class GlobalController extends GetxController {
 
     //  請求通知權限
     PermissionHelper.checkNotificationPermission();
+    // Initialize port for communication between TaskHandler and UI.
+    FlutterForegroundTask.initCommunicationPort();
+    FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
   }
 
-  void startSyncTimer() {
-    stopSyncTimer();
-    _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+  void _onReceiveTaskData(Object data) {
+    final map = data as Map<String, dynamic>;
+    if (map['trigger'] == true) {
+      // 由 Task 驅動的同步邏輯
       syncDataService.runBackgroundSync();
-
-      ///電量偵測推播
       getBlueToothDeviceInfo();
-    });
-    syncDataService.runBackgroundSync(); // ✅ 初始執行一次
+    }
   }
 
-  void stopSyncTimer() {
-    _syncTimer?.cancel();
+  Future<void> startForegroundTask() async {
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'sync_task',
+        channelName: 'Background Sync',
+        channelDescription: 'Background sync every 5 minutes',
+        onlyAlertOnce: true,
+      ),
+      iosNotificationOptions: IOSNotificationOptions(showNotification: false),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.repeat(300000), // 5 分鐘
+        autoRunOnBoot: true,
+        autoRunOnMyPackageReplaced: true,
+      ),
+    );
+
+    if (await FlutterForegroundTask.isRunningService) {
+      await FlutterForegroundTask.restartService();
+    } else {
+      await FlutterForegroundTask.startService(
+        serviceId: 1,
+        notificationTitle: '同步服務正在運行',
+        notificationText: '每 5 分鐘同步資料',
+        callback: startCallback,
+      );
+    }
+  }
+
+  Future<void> stopForegroundTask() async {
+    FlutterForegroundTask.removeTaskDataCallback(_onReceiveTaskData);
+  }
+
+  Future<void> pauseBackgroundSync() async {
+    FlutterForegroundTask.removeTaskDataCallback(_onReceiveTaskData);
+    await FlutterForegroundTask.stopService();
+  }
+
+  Future<void> resumeBackgroundSync() async {
+    await startForegroundTask(); // 你原本的邏輯
   }
 
   Future<void> getBlueToothDeviceInfo() async {

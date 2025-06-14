@@ -51,6 +51,7 @@ class K5Controller extends GetxController
   @override
   void onInit() {
     super.onInit();
+    print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
     syncData();
     _registerSdkListener();
   }
@@ -201,7 +202,7 @@ class K5Controller extends GetxController
     SnackbarHelper.showBlueSnackbar(message: "結束運動，已儲存本次記錄");
 
     /// 結束運動後，重新打開同步定時器
-    gc.startSyncTimer();
+    gc.resumeBackgroundSync();
   }
 
   void goK6Screen(int index) {
@@ -215,7 +216,7 @@ class K5Controller extends GetxController
     }
 
     /// 啟動運動時暫停背景五分鐘執行同步資料，不然會打架
-    gc.stopSyncTimer();
+    gc.pauseBackgroundSync();
 
     if (isStart.value) return;
     _isListening = true;

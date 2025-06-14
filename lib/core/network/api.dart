@@ -12,4 +12,7 @@ class Api {
   static const String measurementGet = "measurementSettings/get";
   static const String updatePWD = "user/updatePWD";
   static const String delete = "user/delete";
+  static const String sendFirebase = "sendFirebase";
+  static const String logset = "log/set";
+  static const String logget = "log/get";
 }

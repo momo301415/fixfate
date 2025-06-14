@@ -1,6 +1,7 @@
 final Map<String, String> en = {
   "lbl": "使用者條款",
   "lbl10": "登入",
+  "lbl10_1": "登出",
   "lbl100": "不愛喝水",
   "lbl101": "常吃宵夜",
   "lbl102": "過往病史",
@@ -535,6 +536,7 @@ final Map<String, String> en = {
   "msg_id": "ID",
   "snackbar_title": "提示",
   "snackbar_bluetooth_disconnect": "藍芽連結已斷開",
+  "snackbar_bluetooth_connect": "藍芽連結已建立",
   "snackbar_account_delete": "帳號已刪除",
   "snackbar_no_account_delete": "無帳號可以刪除",
   "snackbar_save_success": "保存成功",

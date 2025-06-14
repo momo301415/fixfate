@@ -1,3 +1,4 @@
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/two4_dialog/controller/two4_controller.dart';
@@ -13,6 +14,7 @@ import '../models/k45_model.dart';
 class K45Controller extends GetxController {
   Rx<K45Model> k45ModelObj = K45Model().obs;
   final device = Get.arguments as DeviceProfile;
+  final gc = Get.find<GlobalController>();
   var power = ''.obs;
   var deviceId = ''.obs;
   var createdAt = ''.obs;
@@ -27,16 +29,17 @@ class K45Controller extends GetxController {
         await YcProductPlugin().queryDeviceBasicInfo();
     if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
       power.value = "${deviceBasicInfo.data.batteryPower} %";
-      deviceId.value = '${device.macAddress}';
-      createdAt.value = '${device.createdAt}';
+      gc.blueToolStatus.value = 2;
     }
+    deviceId.value = '${device.macAddress}';
+    createdAt.value = '${device.createdAt}';
   }
 
   Future<void> showDelete() async {
     await DialogHelper.showCustomDialog(
       Get.context!,
       Two4Dialog(
-        Get.put(Two4Controller(deviceId.value)),
+        Get.put(Two4Controller(device.macAddress)),
       ),
     );
   }

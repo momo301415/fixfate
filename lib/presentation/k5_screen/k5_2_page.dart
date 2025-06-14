@@ -15,7 +15,7 @@ class K5_2Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 48.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 24.h),
       child: Column(
         children: [
           Expanded(
