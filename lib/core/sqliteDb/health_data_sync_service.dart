@@ -62,7 +62,7 @@ class HealthDataSyncService {
                 if (list.last is StepDataInfo) {
                   final sdkList = list.cast<StepDataInfo>();
                   final listJson = sdkList
-                      .map((e) => parseStepDataString(e.toString()))
+                      .map((e) => parseSdkDataString(e.toString()))
                       .toList();
                   final wrapperdJson = {
                     "步數數據": listJson,
@@ -73,6 +73,8 @@ class HealthDataSyncService {
                   await stepService.syncStepData(
                       userId: _userId!, sdkData: sdkList);
                   print("步數數據寫入成功");
+                  //// 寫入成功後刪除戒指數據
+                  await deleteDeviceData(HealthDataType.step);
                 }
                 break;
               case HealthDataType.sleep:
@@ -80,7 +82,7 @@ class HealthDataSyncService {
                 if (list.last is SleepDataInfo) {
                   final sdkList = list.cast<SleepDataInfo>();
                   final listJson = sdkList
-                      .map((e) => parseStepDataString(e.toString()))
+                      .map((e) => parseSdkDataString(e.toString()))
                       .toList();
                   final wrapperdJson = {
                     "睡眠數據": listJson,
@@ -93,6 +95,8 @@ class HealthDataSyncService {
                       userId: _userId!, sdkData: sdkList);
 
                   print("睡眠數據寫入成功");
+                  //// 寫入成功後刪除戒指數據
+                  await deleteDeviceData(HealthDataType.sleep);
                 }
 
                 break;
@@ -101,7 +105,7 @@ class HealthDataSyncService {
                 if (list.last is HeartRateDataInfo) {
                   final sdkList = list.cast<HeartRateDataInfo>();
                   final listJson = sdkList
-                      .map((e) => parseStepDataString(e.toString()))
+                      .map((e) => parseSdkDataString(e.toString()))
                       .toList();
                   final wrapperdJson = {
                     "心率數據": listJson,
@@ -115,6 +119,8 @@ class HealthDataSyncService {
                       sdkData:
                           sdkList); // await heartRateService.insertHeartRateDataIfNotExists(companion);
                   print("心率數據寫入成功");
+                  //// 寫入成功後刪除戒指數據
+                  await deleteDeviceData(HealthDataType.heartRate);
                 }
 
                 break;
@@ -123,7 +129,7 @@ class HealthDataSyncService {
                 if (list.last is BloodPressureDataInfo) {
                   final sdkList = list.cast<BloodPressureDataInfo>();
                   final listJson = sdkList
-                      .map((e) => parseStepDataString(e.toString()))
+                      .map((e) => parseSdkDataString(e.toString()))
                       .toList();
                   final wrapperdJson = {
                     "血壓數據": listJson,
@@ -137,6 +143,8 @@ class HealthDataSyncService {
                       sdkData:
                           sdkList); // await bloodPressureService.insertBloodPressureDataIfNotExists(companion);
                   print("血壓數據寫入成功");
+                  //// 寫入成功後刪除戒指數據
+                  await deleteDeviceData(HealthDataType.bloodPressure);
                 }
 
                 break;
@@ -145,7 +153,7 @@ class HealthDataSyncService {
                 if (list.last is CombinedDataDataInfo) {
                   final sdkList = list.cast<CombinedDataDataInfo>();
                   final listJson = sdkList
-                      .map((e) => parseStepDataString(e.toString()))
+                      .map((e) => parseSdkDataString(e.toString()))
                       .toList();
                   final wrapperdJson = {
                     "合併數據": listJson,
@@ -159,6 +167,8 @@ class HealthDataSyncService {
                       sdkData:
                           sdkList); // await combinedDataService.insertCombinedDataIfNotExists(companion);
                   print("合併數據寫入成功");
+                  //// 寫入成功後刪除戒指數據
+                  await deleteDeviceData(HealthDataType.combinedData);
                 }
 
                 break;
@@ -345,6 +355,13 @@ class HealthDataSyncService {
     return analysis;
   }
 
+  Future<void> deleteDeviceData(int type) async {
+    final res = await YcProductPlugin().deleteDeviceHealthData(type);
+    if (res != null && res.statusCode == PluginState.succeed) {
+      printLongText("刪除健康數據成功");
+    }
+  }
+
   void printLongText(String text) {
     const int chunkSize = 800;
     for (var i = 0; i < text.length; i += chunkSize) {
@@ -354,14 +371,18 @@ class HealthDataSyncService {
     }
   }
 
-  Map<String, dynamic> parseStepDataString(String str) {
-    final cleaned = str.replaceAll('\n', '').replaceAll(']', '').trim();
-    final parts = cleaned.split(',');
+  Map<String, dynamic> parseSdkDataString(String str) {
+    final isCommaSeparated = str.contains(',');
+
+    // 根據格式選擇分隔字串
+    final segments = isCommaSeparated
+        ? str.replaceAll('\n', '').replaceAll(']', '').trim().split(',')
+        : str.trim().split('\n');
 
     final map = <String, dynamic>{};
 
-    for (var part in parts) {
-      final normalized = part.replaceAll('=', ':'); // 支援等號作為 key-value 分隔
+    for (var segment in segments) {
+      final normalized = segment.replaceAll('=', ':'); // 支援 = 和 : 分隔
       final kv = normalized.split(':');
 
       if (kv.length >= 2) {
@@ -372,7 +393,7 @@ class HealthDataSyncService {
           final ts = int.tryParse(value);
           if (ts != null) {
             final dt = DateTime.fromMillisecondsSinceEpoch(ts * 1000);
-            map[key] = dt.format(pattern: 'yyyy-MM-dd HH:mm:ss'); // 或改用你想要的格式
+            map[key] = dt.format(pattern: 'yyyy-MM-dd HH:mm:ss');
           } else {
             map[key] = value;
           }

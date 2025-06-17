@@ -49,6 +49,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
   final String backgroundImage;
   final List<Widget>? actions;
   final Function()? onBack;
+  final isShowBackButton;
 
   const BaseScaffoldImageHeader({
     Key? key,
@@ -59,6 +60,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
     this.backgroundImage = 'assets/images/img_header_curved.png',
     this.actions,
     this.onBack,
+    this.isShowBackButton = true,
   }) : super(key: key);
 
   @override
@@ -92,13 +94,15 @@ class BaseScaffoldImageHeader extends StatelessWidget {
                           Center(
                             child: AppbarSubtitle(text: title),
                           ),
-                          Positioned(
-                            left: 0,
-                            child: AppbarLeadingImage(
-                              imagePath: ImageConstant.imgArrowLeft,
-                              onTap: onBack ?? () => Get.back(),
-                            ),
-                          ),
+                          isShowBackButton
+                              ? Positioned(
+                                  left: 0,
+                                  child: AppbarLeadingImage(
+                                    imagePath: ImageConstant.imgArrowLeft,
+                                    onTap: onBack ?? () => Get.back(),
+                                  ),
+                                )
+                              : Container(),
                           if (actions != null)
                             Positioned(
                               right: 0,

@@ -57,6 +57,27 @@ class StepDataService extends BaseDbService {
     return getByUserAndRange(userId: userId, from: start, to: end);
   }
 
+  /// 取得今日總步數
+  Future<int> getTodayStepTotal(String userId) async {
+    final list = await getDaily(userId, DateTime.now());
+    final totalSteps = list.fold<int>(0, (sum, item) => sum + (item.step));
+    return totalSteps;
+  }
+
+  /// 取得今日總距離
+  Future<int> getTodayDistanceTotal(String userId) async {
+    final list = await getDaily(userId, DateTime.now());
+    final totalSteps = list.fold<int>(0, (sum, item) => sum + (item.distance));
+    return totalSteps;
+  }
+
+  /// 取得今日總卡路里
+  Future<int> getTodayCaroliesTotal(String userId) async {
+    final list = await getDaily(userId, DateTime.now());
+    final totalSteps = list.fold<int>(0, (sum, item) => sum + (item.calories));
+    return totalSteps;
+  }
+
   /// 取得尚未同步的資料
   Future<List<StepDataData>> getUnsyncedData(String userId) {
     return (db.select(db.stepData)

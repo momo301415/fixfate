@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pulsedevice/core/service/notification_service.dart';
-import 'package:pulsedevice/core/utils/snackbar_helper.dart';
-import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import 'controller/k29_controller.dart';
@@ -18,6 +15,7 @@ class K29Page extends GetWidget<K29Controller> {
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
       title: "lbl57".tr,
+      isShowBackButton: false,
       bottomNavigationBar: CustomBottomBar(
         onChanged: (value) {
           switch (value) {

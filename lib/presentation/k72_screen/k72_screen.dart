@@ -11,6 +11,7 @@ import '../../widgets/custom_elevated_button.dart';
 import '../../theme/custom_button_style.dart';
 import 'controller/k72_controller.dart';
 
+/// 新增家人頁面，掃描qr code
 class K72Screen extends GetWidget<K72Controller> {
   const K72Screen({Key? key}) : super(key: key);
 
@@ -32,7 +33,7 @@ class K72Screen extends GetWidget<K72Controller> {
 
           // ✅ 遮罩與掃描框 (header 之下)
           Positioned(
-            top: headerHeight,
+            top: headerHeight / 2.5,
             left: 0,
             right: 0,
             bottom: 0,

@@ -55,7 +55,7 @@ class K76Screen extends GetView<K76Controller> {
                       return K77Page();
                     } else if (item.label?.value == "血氧") {
                       return K78Page();
-                    } else if (item.label?.value == "體溫") {
+                    } else if (item.label!.value == "體表溫度") {
                       return K79Page();
                     } else if (item.label?.value == "壓力") {
                       return K80Page();

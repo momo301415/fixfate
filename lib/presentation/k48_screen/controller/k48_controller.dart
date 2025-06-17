@@ -89,7 +89,7 @@ class K48Controller extends GetxController {
 
   Future<void> loadReminderSettings() async {
     try {
-      LoadingHelper.show(message: '載入中...');
+      LoadingHelper.show();
       var profile = await RemiderSettingStorage.getUserProfile(gc.userId.value);
       if (profile != null) {
         isSelectedSwitch.value = profile.alertEnabled;

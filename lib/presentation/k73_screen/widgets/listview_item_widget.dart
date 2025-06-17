@@ -14,6 +14,21 @@ class ListviewItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isAlert = model.isAlert?.value ?? false;
 
+    var iconHeight = 45.h;
+    var iconWidth = 45.h;
+    var iconLeftPosition = 12.h;
+    var iconTopPosition = -12.v;
+    if (model.icon!.value.contains(ImageConstant.imgIconWhiteA70040x40)) {
+      iconWidth = 55.h;
+      iconHeight = 55.h;
+    }
+    if (model.icon!.value.contains(ImageConstant.iconSleep)) {
+      iconWidth = 70.h;
+      iconHeight = 70.h;
+      iconLeftPosition = 0.h;
+      iconTopPosition = -20.v;
+    }
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -91,18 +106,12 @@ class ListviewItemWidget extends StatelessWidget {
 
         // 圖示：超出卡片
         Positioned(
-          top: -12.v,
-          left: 12.h,
+          top: iconTopPosition,
+          left: iconLeftPosition,
           child: CustomImageView(
             imagePath: model.icon!.value,
-            height:
-                model.icon!.value.contains(ImageConstant.imgIconWhiteA70040x40)
-                    ? 55.h
-                    : 45.h,
-            width:
-                model.icon!.value.contains(ImageConstant.imgIconWhiteA70040x40)
-                    ? 55.h
-                    : 45.h,
+            height: iconHeight,
+            width: iconWidth,
             fit: BoxFit.contain,
           ),
         ),

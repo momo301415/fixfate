@@ -30,9 +30,16 @@ class K45Controller extends GetxController {
     if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
       power.value = "${deviceBasicInfo.data.batteryPower} %";
       gc.blueToolStatus.value = 2;
+      initBlueTooth();
     }
     deviceId.value = '${device.macAddress}';
     createdAt.value = '${device.createdAt}';
+  }
+
+  Future<void> initBlueTooth() async {
+    if (gc.isSqfliteInit.value == false) {
+      gc.initFunc();
+    }
   }
 
   Future<void> showDelete() async {

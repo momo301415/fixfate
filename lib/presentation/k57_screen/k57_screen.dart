@@ -123,7 +123,7 @@ class K57Screen extends GetWidget<K57Controller> {
                     Padding(
                       padding: EdgeInsets.only(left: 8.h),
                       child: Text(
-                        "lbl173".tr,
+                        "lbl173_1".tr,
                         style: CustomTextStyles.bodyMedium15,
                       ),
                     ),

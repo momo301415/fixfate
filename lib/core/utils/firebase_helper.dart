@@ -13,7 +13,6 @@ class FirebaseHelper {
     await _requestPermission();
     FirebaseMessaging.onBackgroundMessage(_handleMessage);
     FirebaseMessaging.onMessage.listen(_handleMessage);
-    // _listenToMessages();
   }
 
   static Future<void> _requestPermission() async {
@@ -33,24 +32,6 @@ class FirebaseHelper {
       print("❌ Failed to get FCM token: $e");
       return null;
     }
-  }
-
-  static void _listenToMessages() {
-    FirebaseMessaging.onMessage.listen((message) {
-      _showLocalNotification(message);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      if (kDebugMode) {
-        print("🔔 App opened from notification: ${message.data}");
-      }
-    });
-
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message != null && kDebugMode) {
-        print("🚀 Cold start from notification: ${message.data}");
-      }
-    });
   }
 
   static Future<void> _showLocalNotification(RemoteMessage message) async {

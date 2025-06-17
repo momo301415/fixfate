@@ -154,6 +154,8 @@ class ImageConstant {
   static String imgUnionWhiteA70024x36 =
       '$imagePath/img_union_white_a700_24x36.png';
 
+  static String iconSleep = '$imagePath/icon_sleep.png';
+
   static String imgFrame87029 = '$imagePath/img_frame_87029.png';
 
   static String imgIcon40x40 = '$imagePath/img_icon_40x40.png';

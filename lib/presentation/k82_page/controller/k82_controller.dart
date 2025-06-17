@@ -102,6 +102,7 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
     }
 
     res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+    print("sleep datas res -> ${res.length} ; ${res.toString()}");
     detailRes.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
     final lastData = res.last;
     loadDataTime.value =
@@ -190,7 +191,7 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
 
     /// 歷史紀錄
     final list = res.map((m) {
-      final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
+      final date = DateTime.fromMillisecondsSinceEpoch(m.endTimeStamp * 1000);
 
       return ListHistoryItemModel(
         unit: Rx(''),

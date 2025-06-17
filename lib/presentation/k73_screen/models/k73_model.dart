@@ -26,7 +26,7 @@ class K73Model {
       icon: ImageConstant.imgIconWhiteA700.obs,
       isAlert: false.obs,
       loadTime: "lbl_1".tr.obs,
-      label: "lbl173".tr.obs,
+      label: "lbl173_1".tr.obs,
       value: "".obs,
       unit: "lbl_c".tr.obs,
     ),
@@ -46,7 +46,7 @@ class K73Model {
       unit: "lbl187".tr.obs,
     ),
     ListViewItemModel(
-        icon: ImageConstant.imgUnionWhiteA70024x36.obs,
+        icon: ImageConstant.iconSleep.obs,
         isAlert: false.obs,
         loadTime: "lbl_1".tr.obs,
         label: "lbl219".tr.obs,

@@ -30,8 +30,25 @@ class SleepDataService extends BaseDbService {
     return (db.select(db.sleepData)
           ..where((tbl) =>
               tbl.userId.equals(userId) &
-              tbl.startTimeStamp.isBiggerOrEqualValue(fromSec) &
-              tbl.startTimeStamp.isSmallerOrEqualValue(toSec)))
+              tbl.endTimeStamp.isBiggerOrEqualValue(fromSec) & // 有部分結束在 today
+              tbl.startTimeStamp.isSmallerOrEqualValue(toSec))) // 有部分開始在 today
+        .get();
+  }
+
+  Future<List<SleepDataData>> getDailyByEndTime(String userId, DateTime date) {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = startOfDay
+        .add(const Duration(days: 1))
+        .subtract(const Duration(seconds: 1));
+
+    final fromSec = startOfDay.millisecondsSinceEpoch ~/ 1000;
+    final toSec = endOfDay.millisecondsSinceEpoch ~/ 1000;
+
+    return (db.select(db.sleepData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.endTimeStamp.isBiggerOrEqualValue(fromSec) &
+              tbl.endTimeStamp.isSmallerOrEqualValue(toSec)))
         .get();
   }
 
@@ -39,7 +56,7 @@ class SleepDataService extends BaseDbService {
   Future<List<SleepDataData>> getDaily(String userId, DateTime date) {
     final start = DateTime(date.year, date.month, date.day);
     final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
-    return getByUserAndRange(userId: userId, from: start, to: end);
+    return getDailyByEndTime(userId, end);
   }
 
   /// 查詢：週
@@ -55,6 +72,18 @@ class SleepDataService extends BaseDbService {
     final end =
         DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
     return getByUserAndRange(userId: userId, from: start, to: end);
+  }
+
+  /// 取得今日睡眠總秒數
+  Future<int> getTodaySleepTotalSeconds(String userId) async {
+    final list = await getDaily(userId, DateTime.now());
+
+    final totalSeconds = list.fold<int>(
+      0,
+      (sum, item) => sum + ((item.endTimeStamp - item.startTimeStamp)),
+    );
+
+    return totalSeconds;
   }
 
   /// 取得尚未同步的資料

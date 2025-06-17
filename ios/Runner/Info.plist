@@ -4,7 +4,10 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.pravera.flutter_foreground_task.refresh</string>
+		<!-- flutter_foreground_task 專用 -->
+   		<string>com.pravera.flutter_foreground_task.refresh</string>
+		<!-- flutter_background_fetch 專用 -->
+		<string>com.transistorsoft.fetch</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:hive/hive.dart';
@@ -19,6 +21,8 @@ import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
+import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
+import 'package:pulsedevice/core/service/goal_notification_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/service/sync_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
@@ -35,6 +39,9 @@ import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
+  ///--- life
+  late AppLifecycleObserver lifecycleObserver;
+
   ///---- Db相關
   late final AppDatabase db;
   late final StepDataService stepDataService;
@@ -71,16 +78,36 @@ class GlobalController extends GetxController {
   ///--- 紀錄是否已經
   var isSendSyncApi = "Y".obs;
 
+  bool _isInitFuncRunning = false;
+
+  int _previousBluetoothStatus = -1;
+
+  DateTime? _lastSyncTime;
+
+  late GoalNotificationService goalNotificationService;
+
   @override
   void onInit() {
     super.onInit();
+    lifecycleObserver = AppLifecycleObserver(this);
+    WidgetsBinding.instance.addObserver(lifecycleObserver);
     init();
+
+    // ✅ 監聽條件是否同時成立
+    everAll([userId, blueToolStatus], (_) {
+      if (userId.value.isNotEmpty && blueToolStatus.value == 2) {
+        Future.delayed(const Duration(seconds: 2), () {
+          initFunc();
+        });
+      }
+    });
   }
 
   @override
   void onClose() {
     super.onClose();
 
+    WidgetsBinding.instance.removeObserver(lifecycleObserver);
     db.close();
   }
 
@@ -90,6 +117,7 @@ class GlobalController extends GetxController {
     sqfliteInit();
     YcProductPluginInit();
     initNotification();
+    initBackgroundFetch();
   }
 
   /// 初始化穿戴式sdk
@@ -99,33 +127,15 @@ class GlobalController extends GetxController {
     // 啟動監聽
     YcProductPlugin().onListening((event) {
       if (event.keys.contains(NativeEventType.bluetoothStateChange)) {
-        final int st = event[NativeEventType.bluetoothStateChange];
-        debugPrint('藍牙狀態變更：$st');
-        blueToolStatus.value = st;
-        if (st == 2) {
-          print(" ====== 初始化sqlite ====== ");
-          if (userId.value.isNotEmpty) {
-            /// 只初始化一次
-            startForegroundTask();
-            // ✅ 藍牙連上後立即同步一次
-            syncDataService.runBackgroundSync();
-            getBlueToothDeviceInfo();
-            isSqfliteInit.value = true;
-            Future.delayed(const Duration(milliseconds: 500), () {
-              SnackbarHelper.showBlueSnackbar(
-                  message: "snackbar_bluetooth_connect".tr);
-            });
-          }
-        } else if (isSqfliteInit.value && st != 2 && st != 1) {
-          NotificationService().showDeviceDisconnectedNotification();
-          stopForegroundTask();
-        }
+        _handleBluetoothStateChange(
+            event[NativeEventType.bluetoothStateChange]);
       }
     });
   }
 
   /// 初始化sqlite
   void sqfliteInit() async {
+    if (isSqfliteInit.value) return;
     db = AppDatabase();
     stepDataService = StepDataService(db);
     sleepDataService = SleepDataService(db);
@@ -135,6 +145,7 @@ class GlobalController extends GetxController {
     invasiveComprehensiveDataService = InvasiveComprehensiveDataService(db);
     healthDataSyncService = HealthDataSyncService(db);
     syncDataService = SyncDataService(db: db, gc: this);
+    isSqfliteInit.value = true;
   }
 
   /// 初始化hive
@@ -166,8 +177,10 @@ class GlobalController extends GetxController {
     await Hive.openBox<PressureSetting>('pressure_setting');
     await Hive.openBox<SportRecord>('sport_record');
     await Hive.openBox<SportRecordList>('sport_record_list');
+    await Hive.openBox<String>('notified_goals');
   }
 
+  /// 初始化通知
   void initNotification() async {
     final service = NotificationService();
     await service.initialize();
@@ -179,12 +192,35 @@ class GlobalController extends GetxController {
     FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
   }
 
-  void _onReceiveTaskData(Object data) {
+  initGoal() async {
+    goalNotificationService = await GoalNotificationService(
+      userId: userId.value,
+      stepService: stepDataService,
+      sleepService: sleepDataService,
+    );
+  }
+
+  initFunc() async {
+    if (_isInitFuncRunning) return;
+
+    /// 只初始化一次
+    startForegroundTask();
+    // ✅ 藍牙連上後立即同步一次
+    await safeRunSync();
+    initGoal();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      getGoalTargetData(goalNotificationService);
+      _isInitFuncRunning = true;
+      SnackbarHelper.showBlueSnackbar(message: "snackbar_bluetooth_connect".tr);
+    });
+  }
+
+  void _onReceiveTaskData(Object data) async {
     final map = data as Map<String, dynamic>;
     if (map['trigger'] == true) {
       // 由 Task 驅動的同步邏輯
-      syncDataService.runBackgroundSync();
-      getBlueToothDeviceInfo();
+      await safeRunSync();
+      getGoalTargetData(goalNotificationService);
     }
   }
 
@@ -218,6 +254,7 @@ class GlobalController extends GetxController {
 
   Future<void> stopForegroundTask() async {
     FlutterForegroundTask.removeTaskDataCallback(_onReceiveTaskData);
+    await FlutterForegroundTask.stopService();
   }
 
   Future<void> pauseBackgroundSync() async {
@@ -229,13 +266,76 @@ class GlobalController extends GetxController {
     await startForegroundTask(); // 你原本的邏輯
   }
 
-  Future<void> getBlueToothDeviceInfo() async {
+  Future<bool> getBlueToothDeviceInfo() async {
+    var res = false;
     PluginResponse<DeviceBasicInfo>? deviceBasicInfo =
         await YcProductPlugin().queryDeviceBasicInfo();
     if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
       if (deviceBasicInfo.data.batteryPower < 20) {
-        NotificationService().showDeviceDisconnectedNotification();
+        NotificationService().showDeviceLowPowerNotification();
       }
+      res = true;
+    }
+    return res;
+  }
+
+  /// 背景同步，anroid沒問題，但ios有限制
+  void initBackgroundFetch() {
+    BackgroundFetch.configure(
+      BackgroundFetchConfig(
+        minimumFetchInterval: 5,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        startOnBoot: true,
+        requiredNetworkType: NetworkType.ANY,
+      ),
+      (String taskId) async {
+        print("[BackgroundFetch] Event received: $taskId");
+        await safeRunSync();
+        BackgroundFetch.finish(taskId);
+      },
+      (String taskId) async {
+        // 超時 fallback
+        BackgroundFetch.finish(taskId);
+      },
+    );
+  }
+
+  Future<void> getGoalTargetData(GoalNotificationService service) async {
+    service.checkTodayGoalsAndNotify();
+  }
+
+  Future<void> safeRunSync() async {
+    final now = DateTime.now();
+    if (_lastSyncTime != null &&
+        now.difference(_lastSyncTime!).inSeconds < 15) {
+      return;
+    }
+    _lastSyncTime = now;
+    await syncDataService.runBackgroundSync();
+    await getBlueToothDeviceInfo();
+  }
+
+  void _handleBluetoothStateChange(int newStatus) {
+    if (newStatus == _previousBluetoothStatus) return;
+    _previousBluetoothStatus = newStatus;
+
+    blueToolStatus.value = newStatus;
+    debugPrint('🔄 藍牙狀態改變：$newStatus');
+
+    switch (newStatus) {
+      case 2:
+        if (userId.value.isNotEmpty) {
+          initFunc();
+        }
+        break;
+      case 0:
+      case 3:
+        if (_isInitFuncRunning) {
+          NotificationService().showDeviceDisconnectedNotification();
+          stopForegroundTask();
+        }
+        break;
     }
   }
 }

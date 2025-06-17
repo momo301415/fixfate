@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../core/app_export.dart';
 import '../../core/utils/validation_functions.dart';
 import '../../theme/custom_button_style.dart';
@@ -32,56 +33,63 @@ class K14Screen extends GetWidget<K14Controller> {
             child: Container(
               height: 768.h,
               child: Stack(
-                alignment: Alignment.center,
+                alignment: Alignment.topCenter,
                 children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgUnionWhiteA700,
+                    height: 506.h,
+                    width: double.maxFinite,
+                  ),
                   Container(
-                    height: 768.h,
-                    child: Stack(
-                      alignment: Alignment.topCenter,
+                    width: double.maxFinite,
+                    margin: EdgeInsets.only(top: 28.h),
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: Column(
+                      spacing: 44,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgUnionWhiteA700,
-                          height: 506.h,
-                          width: double.maxFinite,
-                        ),
+                        // ✅ 調整後的圓圈背景與文字組件
                         Container(
-                          width: double.maxFinite,
-                          margin: EdgeInsets.only(top: 28.h),
-                          padding: EdgeInsets.symmetric(horizontal: 16.h),
-                          child: Column(
-                            spacing: 44,
-                            mainAxisSize: MainAxisSize.min,
+                          // padding: EdgeInsets.only(right: 40.h),
+
+                          width: 250.h,
+                          height: 200.h, // 建議與 SVG 高度一致
+                          child: Stack(
+                            alignment: Alignment.center,
                             children: [
-                              Container(
-                                width: 182.h,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 24.h,
-                                  vertical: 56.h,
-                                ),
-                                decoration: AppDecoration.column15,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 12.h),
-                                      child: Text(
-                                        "lbl40".tr,
-                                        style: CustomTextStyles.titleLarge20,
-                                      ),
-                                    ),
-                                    Text(
-                                      "lbl41".tr,
-                                      style:
-                                          CustomTextStyles.bodySmallBluegray400,
-                                    )
-                                  ],
+                              // 背景 SVG 圓圈往左偏移
+                              Positioned(
+                                left: 20.h,
+                                child: SvgPicture.asset(
+                                  ImageConstant.imgUnionWhiteA700157x180,
+                                  height: 160.h,
+                                  width: 160.h,
+                                  fit: BoxFit.fill,
                                 ),
                               ),
-                              _buildColumnone()
+                              // 置中的文字
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "lbl40".tr,
+                                    style: CustomTextStyles.titleLarge20,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  Text(
+                                    "lbl41".tr,
+                                    style:
+                                        CustomTextStyles.bodySmallBluegray400,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                        )
+                        ),
+
+                        _buildColumnone(), // 你的表單區塊
                       ],
                     ),
                   )

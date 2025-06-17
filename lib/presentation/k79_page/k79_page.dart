@@ -253,7 +253,7 @@ class K79Page extends GetWidget<K79Controller> {
                   verticalDivider(),
                   Expanded(
                       child: buildStat('${controller.lowCount.value}',
-                          'lbl242'.tr, 'lbl234'.tr)),
+                          'lbl161'.tr, 'lbl242'.tr)),
                 ],
               ),
               const SizedBox(height: 16),

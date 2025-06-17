@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+/// 步數資料表
 class StepData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
@@ -14,6 +15,7 @@ class StepData extends Table {
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
 
+/// 睡眠資料表
 class SleepData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
@@ -30,6 +32,7 @@ class SleepData extends Table {
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
 
+/// 睡眠詳細資料
 class SleepDetailData extends Table {
   TextColumn get userId => text()(); // 關聯用
   IntColumn get sleepStartTimeStamp =>
@@ -44,6 +47,7 @@ class SleepDetailData extends Table {
   Set<Column> get primaryKey => {userId, sleepStartTimeStamp, startTimeStamp};
 }
 
+/// 心率資料表
 class HeartRateData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
@@ -55,6 +59,7 @@ class HeartRateData extends Table {
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
 
+/// 血壓資料表
 class BloodPressureData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
@@ -68,6 +73,7 @@ class BloodPressureData extends Table {
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
 
+/// 綜合數據資料表
 class CombinedData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();
@@ -89,6 +95,7 @@ class CombinedData extends Table {
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
 
+/// 侵入數據資料表(目前沒有作用)
 class InvasiveComprehensiveData extends Table {
   TextColumn get userId => text()();
   IntColumn get startTimeStamp => integer()();

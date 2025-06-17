@@ -226,6 +226,27 @@ class NotificationService {
     }
   }
 
+  Future<void> showGoalNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    await FlutterLocalNotificationsPlugin().show(
+      id,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'goal_channel',
+          '目標通知',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
+  }
+
   Future<void> testImmediateNotification() async {
     final now = tz.TZDateTime.now(tz.local);
     final scheduled = now.add(Duration(seconds: 10)); // 現在 + 2 分鐘
