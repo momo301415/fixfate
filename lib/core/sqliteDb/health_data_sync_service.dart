@@ -1,7 +1,6 @@
 // services/health_data_sync_service.dart
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
@@ -193,6 +192,7 @@ class HealthDataSyncService {
     } catch (e) {
       // 錯誤處理，例如記錄日誌
       print('資料同步錯誤: $e');
+      apiService.sendLog(json: '資料同步錯誤: $e', logType: "ERROR");
     }
   }
 
@@ -297,17 +297,30 @@ class HealthDataSyncService {
     final sleepList = await sleepService.getSleepDataByUser(_userId!);
     final heartList = await heartService.getByUser(_userId!);
     final combinedList = await combinedService.getByUser(_userId!);
-    if (heartList.isEmpty) return {};
+    if (heartList.isEmpty ||
+        stepList.isEmpty ||
+        combinedList.isEmpty ||
+        sleepList.isEmpty) return {};
 
     stepList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
     heartList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
     combinedList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+
     final stepLast = stepList.last;
     final heartLast = heartList.last;
     final combinedLast = combinedList.last;
-    int stepCount = stepList.fold(0, (sum, d) => sum + d.step);
-    int stepDistance = stepList.fold(0, (sum, d) => sum + d.distance);
-    final calories = stepList.fold(0, (sum, d) => sum + d.calories);
+    int stepCount = sumLastDayValues<StepDataData>(
+        list: stepList,
+        startTimeGetter: (e) => e.startTimeStamp,
+        valueGetter: (e) => e.step);
+    int stepDistance = sumLastDayValues<StepDataData>(
+        list: stepList,
+        startTimeGetter: (e) => e.startTimeStamp,
+        valueGetter: (e) => e.distance);
+    final calories = sumLastDayValues<StepDataData>(
+        list: stepList,
+        startTimeGetter: (e) => e.startTimeStamp,
+        valueGetter: (e) => e.calories);
     String stepDuration =
         DateTimeUtils.getTimeDifferenceString(stepLast.endTimeStamp);
     final heartRate = heartLast.heartRate;
@@ -324,6 +337,29 @@ class HealthDataSyncService {
         heartLast.startTimeStamp,
         combinedLast.startTimeStamp);
 
+    ///-----
+    final heartSettings =
+        await HeartRateSettingStorage.getUserProfile(_userId!);
+    final bloodSettings =
+        await BloodOxygenSettingStorage.getUserProfile(userId!);
+    final tempSettings =
+        await BodyTemperatureSettingStorage.getUserProfile(userId!);
+    var heartAlert = false;
+    var bloodAlert = false;
+    var tempAlert = false;
+    if (heartRate <= heartSettings!.lowThreshold ||
+        heartRate >= heartSettings.highThreshold) {
+      heartAlert = true;
+    }
+    if (bloodOxygen <= bloodSettings!.lowThreshold) {
+      bloodAlert = true;
+    }
+    if (temperature <= double.parse(tempSettings!.lowThreshold) ||
+        temperature >= double.parse(tempSettings!.highThreshold)) {
+      tempAlert = true;
+    }
+
+    ///------
     var analysis = {
       "stepCount": stepCount,
       "stepDistance": stepDistance,
@@ -331,19 +367,24 @@ class HealthDataSyncService {
       "calories": calories,
       "heartRate": heartRate,
       "heartDuration": heartDuration,
+      "heartAlert": heartAlert,
       "bloodOxygen": bloodOxygen,
+      "bloodAlert": bloodAlert,
       "combinedDuration": combinedDuration,
       "temperature": temperature,
+      "tempAlert": tempAlert,
       "loadDataTime": loadDataTime
     };
 
     if (sleepList.isNotEmpty) {
       sleepList.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
-      final sleepLast = sleepList.last;
 
-      final sleepTime =
-          ((sleepLast.endTimeStamp - sleepLast.startTimeStamp) / 3600)
-              .toStringAsFixed(2);
+      final sleepLast = sleepList.last;
+      final sleepTotalSecond = calculateLastDayTotalSeconds<SleepDataData>(
+          list: sleepList,
+          startTimeGetter: (e) => e.startTimeStamp,
+          endTimeGetter: (e) => e.endTimeStamp);
+      final sleepTime = (sleepTotalSecond / 3600).toStringAsFixed(1);
       String sleepDuration =
           DateTimeUtils.getTimeDifferenceString(sleepLast.endTimeStamp);
 
@@ -404,5 +445,68 @@ class HealthDataSyncService {
     }
 
     return map;
+  }
+
+  int calculateLastDayTotalSeconds<T>({
+    required List<T> list,
+    required int Function(T item) startTimeGetter,
+    required int Function(T item) endTimeGetter,
+  }) {
+    if (list.isEmpty) return 0;
+
+    // 1. 排序
+    list.sort((a, b) => startTimeGetter(a).compareTo(startTimeGetter(b)));
+
+    // 2. 取得最後一筆的 yyyy-MM-dd 字串
+    final lastDate =
+        DateTime.fromMillisecondsSinceEpoch(startTimeGetter(list.last) * 1000)
+            .toIso8601String()
+            .substring(0, 10); // yyyy-MM-dd
+
+    // 3. 過濾出當日資料
+    final sameDayList = list.where((e) {
+      final date =
+          DateTime.fromMillisecondsSinceEpoch(startTimeGetter(e) * 1000)
+              .toIso8601String()
+              .substring(0, 10);
+      return date == lastDate;
+    });
+
+    // 4. 加總秒數
+    final totalSeconds = sameDayList.fold<int>(
+      0,
+      (sum, item) => sum + (endTimeGetter(item) - startTimeGetter(item)),
+    );
+
+    return totalSeconds;
+  }
+
+  int sumLastDayValues<T>({
+    required List<T> list,
+    required int Function(T item) startTimeGetter,
+    required int Function(T item) valueGetter,
+  }) {
+    if (list.isEmpty) return 0;
+
+    // 1. 排序
+    list.sort((a, b) => startTimeGetter(a).compareTo(startTimeGetter(b)));
+
+    // 2. 取得最後一天日期（yyyy-MM-dd）
+    final lastDate =
+        DateTime.fromMillisecondsSinceEpoch(startTimeGetter(list.last) * 1000)
+            .toIso8601String()
+            .substring(0, 10);
+
+    // 3. 過濾出同一天資料
+    final sameDayList = list.where((e) {
+      final dateStr =
+          DateTime.fromMillisecondsSinceEpoch(startTimeGetter(e) * 1000)
+              .toIso8601String()
+              .substring(0, 10);
+      return dateStr == lastDate;
+    });
+
+    // 4. 加總該欄位
+    return sameDayList.fold<int>(0, (sum, item) => sum + valueGetter(item));
   }
 }

@@ -13,32 +13,35 @@ class K29Page extends GetWidget<K29Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffoldImageHeader(
-      title: "lbl57".tr,
-      isShowBackButton: false,
-      bottomNavigationBar: CustomBottomBar(
-        onChanged: (value) {
-          switch (value) {
-            case 0:
-              controller.go73Screen();
-              break;
-            case 1:
-              break;
-            case 2:
-              break;
-          }
-        },
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildTopFeatureList(),
-          SizedBox(height: 24.h),
-          _buildMenuCard(),
-          SizedBox(height: 80.h),
-        ],
-      ),
-    );
+    return PopScope(
+        canPop: false,
+        child: BaseScaffoldImageHeader(
+          title: "lbl57".tr,
+          isShowBackButton: false,
+          // bottomNavigationBar: CustomBottomBar(
+          //   onChanged: (value) {
+          //     switch (value) {
+          //       case 0:
+          //         controller.go73Screen();
+          //         break;
+          //       case 1:
+          //         Get.toNamed(AppRoutes.bglogPage);
+          //         break;
+          //       case 2:
+          //         break;
+          //     }
+          //   },
+          // ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTopFeatureList(),
+              SizedBox(height: 24.h),
+              _buildMenuCard(),
+              SizedBox(height: 80.h),
+            ],
+          ),
+        ));
   }
 
   Widget _buildTopFeatureList() {

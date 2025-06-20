@@ -29,12 +29,12 @@ class Two4Controller extends GetxController {
     Future.delayed(const Duration(milliseconds: 500), () {
       UserProfileStorage.removeDevice(
           userId: gc.userId.value, macAddress: macAddress);
-      go29Screen();
+      goHomePage();
     });
   }
 
-  void go29Screen() {
+  void goHomePage() {
     Get.offNamedUntil(
-        AppRoutes.k29Page, ModalRoute.withName(AppRoutes.one2Screen));
+        AppRoutes.homePage, ModalRoute.withName(AppRoutes.one2Screen));
   }
 }

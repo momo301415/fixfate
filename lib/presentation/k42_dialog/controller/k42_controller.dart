@@ -31,7 +31,7 @@ class K42Controller extends GetxController {
         UserProfileStorage.saveDeviceForCurrentUser(gc.userId.value, device);
         await callApiBindDevice(device);
         Future.delayed(const Duration(milliseconds: 500), () {
-          go29Screen();
+          goHomePage();
         });
       } else {
         SnackbarHelper.showErrorSnackbar(
@@ -44,9 +44,9 @@ class K42Controller extends GetxController {
     }
   }
 
-  void go29Screen() {
+  void goHomePage() {
     Get.offNamedUntil(
-        AppRoutes.k29Page, ModalRoute.withName(AppRoutes.one2Screen));
+        AppRoutes.homePage, ModalRoute.withName(AppRoutes.one2Screen));
   }
 
   Future<bool> callApiBindDevice(BluetoothDevice device) async {

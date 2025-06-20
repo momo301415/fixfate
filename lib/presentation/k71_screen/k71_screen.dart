@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_trailing_image.dart';
 import '../../widgets/custom_outlined_button.dart';
@@ -66,10 +65,19 @@ class K71Screen extends GetWidget<K71Controller> {
         spacing: 28,
         mainAxisSize: MainAxisSize.min,
         children: [
-          QrImageView(
-            data: 'https://www.google.com',
-            size: 146.h,
-          ),
+          Obx(() {
+            final path = controller.qrPath.value;
+            if (path.isEmpty) {
+              return const CircularProgressIndicator(); // 或替代圖片
+            } else {
+              return Image.network(
+                path,
+                height: 150.h,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.broken_image, size: 80),
+              );
+            }
+          }),
           Text(
             "msg_qrcode".tr,
             maxLines: 2,
@@ -78,6 +86,9 @@ class K71Screen extends GetWidget<K71Controller> {
             style: CustomTextStyles.bodyMedium_1,
           ),
           CustomOutlinedButton(
+            onPressed: () {
+              controller.copyQrcode();
+            },
             text: "lbl214".tr,
             leftIcon: Container(
               margin: EdgeInsets.only(right: 4.h),

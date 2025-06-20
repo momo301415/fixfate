@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/presentation/k67_screen/models/k67_model.dart';
+import 'package:pulsedevice/presentation/k67_screen/widget/item_widget.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
@@ -15,29 +17,58 @@ class K67Screen extends GetWidget<K67Controller> {
 
   @override
   Widget build(BuildContext context) {
+    var mediaHeight = Get.height;
     return BaseScaffoldImageHeader(
       title: "lbl66".tr,
-      child: Container(
-        width: double.maxFinite,
-        height: Get.height * 0.85,
-        padding: EdgeInsets.symmetric(
-          horizontal: 24.h,
-          vertical: 44.h,
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 28.h),
-            CustomImageView(
-              imagePath: ImageConstant.imgBag,
-              height: 82.h,
-              width: 102.h,
+      child: Obx(() {
+        final hasFamily =
+            controller.k67ModelObj.value.itemList.value.isNotEmpty;
+        return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          if (hasFamily) ...[
+            SizedBox(height: 24.h),
+            ListView.separated(
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              separatorBuilder: (context, index) {
+                return SizedBox(
+                  height: 16.h,
+                );
+              },
+              itemCount: controller.k67ModelObj.value.itemList.value.length,
+              itemBuilder: (context, index) {
+                final item = controller.k67ModelObj.value.itemList.value[index];
+                return GestureDetector(
+                    onTap: () {
+                      controller.goTow7Screen(controller.selectFamily[index]);
+                    },
+                    child: ItemWidget(item));
+              },
+            ),
+          ] else ...[
+            Container(
+              height: 100,
+              width: double.infinity,
+              child: CustomImageView(
+                imagePath: ImageConstant.imgBag,
+                height: 82.h,
+                width: 102.h,
+              ),
             ),
             SizedBox(height: 22.h),
             Text(
               "lbl201".tr,
               style: CustomTextStyles.bodySmallPrimaryContainer,
             ),
-            Spacer(),
+            SizedBox(height: mediaHeight * 0.5),
+          ]
+        ]);
+      }),
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
             CustomElevatedButton(
               text: "lbl202".tr,
               buttonStyle: CustomButtonStyles.none,
@@ -46,26 +77,18 @@ class K67Screen extends GetWidget<K67Controller> {
                 controller.go72Screen();
               },
             ),
-            SizedBox(
-              height: 16.h,
-            ),
+            SizedBox(height: 12.h),
             CustomOutlinedButton(
               text: "lbl203".tr,
-              margin: EdgeInsets.only(bottom: 12.h),
               buttonStyle: CustomButtonStyles.outlinePrimary,
               buttonTextStyle: CustomTextStyles.titleMediumPrimary,
               onPressed: () {
                 controller.gok71Screen();
               },
-            )
+            ),
           ],
         ),
       ),
     );
-  }
-
-  /// Navigates to the previous screen.
-  onTapArrowleftone() {
-    Get.back();
   }
 }

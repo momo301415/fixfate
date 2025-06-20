@@ -15,4 +15,11 @@ class Api {
   static const String sendFirebase = "sendFirebase";
   static const String logset = "log/set";
   static const String logget = "log/get";
+  static const String familyShare = "family/share";
+  static const String familyBiding = "family/bind";
+  static const String familyList = "family/list";
+  static const String familyDelete = "family/delete";
+  static const String notifyList = "notity/List";
+  static const String notifyListSum = "notity/List/sum";
+  static const String healthRecordList = "healthRecord/list";
 }

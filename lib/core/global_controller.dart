@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/foundation.dart';
@@ -7,12 +8,14 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
+import 'package:pulsedevice/core/hiveDb/family_member.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
 import 'package:pulsedevice/core/hiveDb/listen_setting.dart';
@@ -21,6 +24,8 @@ import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
 import 'package:pulsedevice/core/service/goal_notification_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
@@ -52,6 +57,7 @@ class GlobalController extends GetxController {
   late final InvasiveComprehensiveDataService invasiveComprehensiveDataService;
   late final HealthDataSyncService healthDataSyncService;
   late final SyncDataService syncDataService;
+  ApiService apiService = ApiService();
 
   ///--- 藍牙狀態
   RxInt blueToolStatus = 0.obs;
@@ -85,6 +91,18 @@ class GlobalController extends GetxController {
   DateTime? _lastSyncTime;
 
   late GoalNotificationService goalNotificationService;
+
+  ///--- 用戶名
+  var userName = "".obs;
+
+  ///--- 從firebase取得的主用戶名
+  var mainAcc = "".obs;
+
+  ///--- 從firebase取得的副用戶名
+  var subAcc = "".obs;
+
+  ///--- 頭像url
+  var avatarUrl = "".obs;
 
   @override
   void onInit() {
@@ -164,6 +182,7 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(PressureSettingAdapter());
     Hive.registerAdapter(SportRecordAdapter());
     Hive.registerAdapter(SportRecordListAdapter());
+    Hive.registerAdapter(FamilyMemberAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -178,6 +197,7 @@ class GlobalController extends GetxController {
     await Hive.openBox<SportRecord>('sport_record');
     await Hive.openBox<SportRecordList>('sport_record_list');
     await Hive.openBox<String>('notified_goals');
+    await Hive.openBox<FamilyMember>('family_member');
   }
 
   /// 初始化通知
@@ -290,12 +310,24 @@ class GlobalController extends GetxController {
         requiredNetworkType: NetworkType.ANY,
       ),
       (String taskId) async {
-        print("[BackgroundFetch] Event received: $taskId");
-        await safeRunSync();
-        BackgroundFetch.finish(taskId);
+        try {
+          final log = "[BackgroundFetch] Event received: $taskId";
+          debugPrint(log);
+          await logToDisk(log);
+          await apiService.sendLog(json: log, logType: "DEBUG");
+          await safeRunSync(); // 你自己的任務邏輯
+        } catch (e, st) {
+          final errLog = "❌ Error: $e\n$st";
+          debugPrint(errLog);
+          await logToDisk(errLog);
+        } finally {
+          BackgroundFetch.finish(taskId);
+        }
       },
       (String taskId) async {
-        // 超時 fallback
+        final timeoutLog = "⚠️ BackgroundFetch TIMEOUT: $taskId";
+        debugPrint(timeoutLog);
+        await logToDisk(timeoutLog);
         BackgroundFetch.finish(taskId);
       },
     );
@@ -307,6 +339,10 @@ class GlobalController extends GetxController {
 
   Future<void> safeRunSync() async {
     final now = DateTime.now();
+    final time = now.toIso8601String();
+    final content = "✅ safeRunSync executed at $time";
+    debugPrint(content);
+    await logToDisk(content);
     if (_lastSyncTime != null &&
         now.difference(_lastSyncTime!).inSeconds < 15) {
       return;
@@ -336,6 +372,35 @@ class GlobalController extends GetxController {
           stopForegroundTask();
         }
         break;
+    }
+  }
+
+  Future<void> postApi(String main) async {
+    try {
+      final payload = {
+        "userId": main,
+        "familyId": apiId.value,
+        "notify": true //緊報通知
+      };
+      var res = await apiService.postJson(
+        Api.familyBiding,
+        payload,
+      );
+
+      if (res.isNotEmpty) {}
+    } catch (e) {
+      print("Notify API Error: $e");
+    }
+  }
+
+  Future<void> logToDisk(String content) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File("${dir.path}/bg_log.txt");
+      await file.writeAsString("${DateTime.now()}: $content\n",
+          mode: FileMode.append);
+    } catch (e) {
+      debugPrint("❌ Failed to write log: $e");
     }
   }
 }

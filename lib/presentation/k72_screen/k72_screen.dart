@@ -3,12 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:pulsedevice/theme/custom_button_style.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_subtitle.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_trailing_image.dart';
+import 'package:pulsedevice/widgets/custom_elevated_button.dart';
 import '../../core/app_export.dart';
-import '../../widgets/custom_elevated_button.dart';
-import '../../theme/custom_button_style.dart';
 import 'controller/k72_controller.dart';
 
 /// 新增家人頁面，掃描qr code
@@ -80,7 +80,9 @@ class K72Screen extends GetWidget<K72Controller> {
                     buttonStyle: CustomButtonStyles.fillGrayTL8,
                     buttonTextStyle:
                         CustomTextStyles.titleMediumPrimaryContainer16,
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.pickImageAndScan();
+                    },
                   ),
                   SizedBox(height: 18.h),
                 ],

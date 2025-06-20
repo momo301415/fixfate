@@ -203,6 +203,29 @@ class NotificationService {
     );
   }
 
+  Future<void> showFromFirebaseNotification(String title, String body) async {
+    await Future.delayed(Duration(milliseconds: 500)); // 等待 UI 穩定
+    await _flutterLocalNotificationsPlugin.show(
+      9990,
+      '$title',
+      '$body',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'connect_channel',
+          'firebase頻道',
+          channelDescription: '這是firebase通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
+
   Future<bool> canScheduleExactAlarms() async {
     if (Platform.isAndroid) {
       final androidPlugin = _flutterLocalNotificationsPlugin

@@ -140,7 +140,9 @@ class GoalNotificationService {
       final payload = {
         "token": gc.firebaseToken.value,
         "title": title,
-        "content": body
+        "content": body,
+        "dataKey": "",
+        "dataVal": "",
       };
       var res = await apiService.postJson(
         Api.sendFirebase,

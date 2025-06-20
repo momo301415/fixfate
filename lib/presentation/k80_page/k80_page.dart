@@ -13,16 +13,17 @@ class K80Page extends GetWidget<K80Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
-      children: [
-        buildTrendBlock(),
-        SizedBox(height: 4.h),
-        buildGrid1(),
-        SizedBox(height: 4.h),
-        buildAnalysis(),
-      ],
-    );
+    return SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
+        child: Column(
+          children: [
+            buildTrendBlock(),
+            SizedBox(height: 4.h),
+            buildGrid1(),
+            SizedBox(height: 4.h),
+            buildAnalysis(),
+          ],
+        ));
   }
 
   Widget buildTrendBlock() {

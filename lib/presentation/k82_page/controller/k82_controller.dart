@@ -2,9 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/k73_screen/models/k73_model.dart';
 import 'package:pulsedevice/presentation/k82_page/models/k82_model.dart';
 import 'package:pulsedevice/presentation/k82_page/models/list_item_model.dart';
 import 'package:pulsedevice/presentation/k87_bottomsheet/controller/k87_controller.dart';
@@ -18,6 +21,7 @@ import 'package:pulsedevice/widgets/sleep_bar_chart.dart';
 class K82Controller extends GetxController with WidgetsBindingObserver {
   final gc = Get.find<GlobalController>();
   final k82ModelObj = K82Model().obs;
+  ApiService apiService = ApiService();
   final userId = ''.obs;
   RxInt currentIndex = 0.obs; // 預設日
   RxInt recordIndex = 0.obs; // 預設報警記錄
@@ -41,6 +45,7 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
   final sleepSegments = <SleepSegment>[].obs;
 
   final sleepData = <SleepDataData>[].obs;
+  final sleepApiData = <SleepData>[].obs;
 
   // 模擬資料
   final List<FlSpot> weeklyData = [
@@ -79,132 +84,277 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
   /// 輸入日期讀取數據
   Future<void> loadDataByDate(DateTime date) async {
     userId.value = gc.userId.value;
+    final range = DateTimeUtils.getRangeByIndex(date, currentIndex.value);
+    final start = range['start']!;
+    final end = range['end']!;
 
-    List<SleepDataData> res = [];
-    List<SleepDetailDataData> detailRes = [];
-    sleepSegments.value = [];
-    if (currentIndex.value == 0) {
-      res = await gc.sleepDataService.getDaily(userId.value, date);
-      detailRes = await gc.sleepDataService.getDailyDetails(userId.value, date);
-    } else if (currentIndex.value == 1) {
-      res = await gc.sleepDataService.getWeekly(userId.value, date);
-      detailRes =
-          await gc.sleepDataService.getWeeklyDetails(userId.value, date);
-    } else if (currentIndex.value == 2) {
-      res = await gc.sleepDataService.getMonthly(userId.value, date);
-      detailRes =
-          await gc.sleepDataService.getMonthlyDetials(userId.value, date);
-    }
+    try {
+      LoadingHelper.show();
+      final payload = {
+        "startTime": start.format(pattern: 'yyyy-MM-dd'),
+        "endTime": end.format(pattern: 'yyyy-MM-dd'),
+        "userID": gc.apiId.value,
+        "type": "sleep"
+      };
+      final res = await apiService.postJson(Api.healthRecordList, payload);
+      LoadingHelper.hide();
+      if (res.isNotEmpty && res["message"] == "SUCCESS") {
+        final data = res["data"];
+        if (data == null || data["rateData"] is! List) {
+          clearData();
+          return;
+        }
+        final rateData = data["rateData"];
+        List<SleepData> parsed = [];
+        if (rateData is List) {
+          parsed = rateData.map((e) => SleepData.fromJson(e)).toList();
+        }
 
-    if (res.isEmpty) {
-      clearData();
-      return;
-    }
+        parsed.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+        final lastData = parsed.last;
+        loadDataTime.value =
+            DateTimeUtils.getTimeDifferenceString(lastData.startTimestamp);
+        int totalSleepSeconds = parsed.fold<int>(
+          0,
+          (sum, item) => sum + (item.endTimestamp - item.startTimestamp),
+        );
+        sleepVal.value =
+            (totalSleepSeconds / 3600).toStringAsFixed(1); // 單位小時顯示
 
-    res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
-    print("sleep datas res -> ${res.length} ; ${res.toString()}");
-    detailRes.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
-    final lastData = res.last;
-    loadDataTime.value =
-        DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
-    sleepVal.value = ((lastData.endTimeStamp - lastData.startTimeStamp) / 3600)
-        .toStringAsFixed(1);
+        final deepSleepSeconds = parsed.fold<int>(
+          0,
+          (sum, item) => sum + int.parse(item.deep),
+        );
+        final lightSleepSeconds = parsed.fold<int>(
+          0,
+          (sum, item) => sum + int.parse(item.light),
+        );
 
-    final deepSleepSeconds = res.fold<int>(
-      0,
-      (sum, item) => sum + item.deepSleepSeconds,
-    );
-    final lightSleepSeconds = res.fold<int>(
-      0,
-      (sum, item) => sum + item.lightSleepSeconds,
-    );
+        final remSleepSeconds = parsed.fold<int>(
+          0,
+          (sum, item) => sum + int.parse(item.rem),
+        );
 
-    final remSleepSeconds = res.fold<int>(
-      0,
-      (sum, item) => sum + item.remSleepSeconds,
-    );
+        final awakSleepSeconds = parsed.fold<int>(
+          0,
+          (sum, item) => sum + int.parse(item.awake),
+        );
 
-    deep.value = DateTimeUtils.formatSecondsToHourDecimal(deepSleepSeconds);
-    light.value = DateTimeUtils.formatSecondsToHourDecimal(lightSleepSeconds);
-    rem.value = DateTimeUtils.formatSecondsToHourDecimal(remSleepSeconds);
+        deep.value = DateTimeUtils.formatSecondsToHourDecimal(deepSleepSeconds);
+        light.value =
+            DateTimeUtils.formatSecondsToHourDecimal(lightSleepSeconds);
+        rem.value = DateTimeUtils.formatSecondsToHourDecimal(remSleepSeconds);
+        awake.value =
+            DateTimeUtils.formatSecondsToHourDecimal(awakSleepSeconds);
 
-    deepCount.value = detailRes.where((e) => e.sleepType == 241).length;
-    lightCount.value = detailRes.where((e) => e.sleepType == 242).length;
-    remCount.value = detailRes.where((e) => e.sleepType == 243).length;
-    awakeCount.value = detailRes.where((e) => e.sleepType == 244).length;
-    int totalDuration244 = detailRes
-        .where((e) => e.sleepType == 244)
-        .fold(0, (sum, e) => sum + e.duration);
-    awake.value = DateTimeUtils.formatSecondsToHourDecimal(totalDuration244);
+        deepCount.value = parsed.where((e) => e.deep.isNotEmpty).length;
+        lightCount.value = parsed.where((e) => e.light.isNotEmpty).length;
+        remCount.value = parsed.where((e) => e.rem.isNotEmpty).length;
+        awakeCount.value = parsed.where((e) => e.awake.isNotEmpty).length;
+        for (var data in parsed) {
+          final stageDurations = {
+            SleepStage.deep: int.tryParse(data.deep) ?? 0,
+            SleepStage.light: int.tryParse(data.light) ?? 0,
+            SleepStage.rem: int.tryParse(data.rem) ?? 0,
+            SleepStage.awake: int.tryParse(data.awake) ?? 0,
+          };
 
-    /// 直接將detail數據轉為橫條圖
-    for (var dic in detailRes) {
-      switch (dic.sleepType) {
-        case 241:
-          sleepSegments.add(SleepSegment(
-            stage: SleepStage.deep,
-            duration: Duration(seconds: dic.duration),
-          ));
-          break;
-        case 242:
-          sleepSegments.add(SleepSegment(
-            stage: SleepStage.light,
-            duration: Duration(seconds: dic.duration),
-          ));
-          break;
-        case 243:
-          sleepSegments.add(SleepSegment(
-            stage: SleepStage.rem,
-            duration: Duration(seconds: dic.duration),
-          ));
-          break;
-        case 244:
-          sleepSegments.add(SleepSegment(
-            stage: SleepStage.awake,
-            duration: Duration(seconds: dic.duration),
-          ));
-          break;
+          stageDurations.forEach((stage, seconds) {
+            if (seconds > 0) {
+              sleepSegments.add(SleepSegment(
+                stage: stage,
+                duration: Duration(seconds: seconds),
+              ));
+            }
+          });
+        }
+
+        switch (currentIndex.value) {
+          case 0:
+            final earliestStart = parsed
+                .map((e) => e.startTimestamp)
+                .reduce((a, b) => a < b ? a : b);
+            final latestEnd = parsed
+                .map((e) => e.endTimestamp)
+                .reduce((a, b) => a > b ? a : b);
+
+            segmentStartText.value =
+                DateTime.fromMillisecondsSinceEpoch(earliestStart * 1000)
+                        .format(pattern: "HH:mm") +
+                    '入睡';
+            segmentEndText.value =
+                DateTime.fromMillisecondsSinceEpoch(latestEnd * 1000)
+                        .format(pattern: "HH:mm") +
+                    '清醒';
+            break;
+          case 1:
+          case 2:
+            segmentStartText.value = DateTime.fromMillisecondsSinceEpoch(
+                    parsed.first.startTimestamp * 1000)
+                .format(pattern: "d日");
+            segmentEndText.value = DateTime.fromMillisecondsSinceEpoch(
+                    parsed.last.endTimestamp * 1000)
+                .format(pattern: "d日");
+            break;
+        }
+
+        /// 歷史紀錄
+        final list = parsed.map((m) {
+          final date =
+              DateTime.fromMillisecondsSinceEpoch(m.endTimestamp * 1000);
+
+          return ListHistoryItemModel(
+            unit: Rx(''),
+            value: Rx(DateTimeUtils.getDurationFormattedString(
+                m.startTimestamp, m.endTimestamp)),
+            time: Rx(date),
+          );
+        }).toList();
+        k82ModelObj.value.listItemList2.value = list;
+
+        /// 圖表
+        sleepApiData.assignAll(parsed);
       }
+    } catch (e) {
+      print("getFamilyData Error: $e");
     }
-
-    switch (currentIndex.value) {
-      case 0:
-        segmentStartText.value =
-            DateTime.fromMillisecondsSinceEpoch(lastData.startTimeStamp * 1000)
-                    .format(pattern: "HH:mm") +
-                '入睡';
-        segmentEndText.value =
-            DateTime.fromMillisecondsSinceEpoch(lastData.endTimeStamp * 1000)
-                    .format(pattern: "HH:mm") +
-                '清醒';
-        break;
-      case 1:
-      case 2:
-        segmentStartText.value =
-            DateTime.fromMillisecondsSinceEpoch(res.first.startTimeStamp * 1000)
-                .format(pattern: "d日");
-        segmentEndText.value =
-            DateTime.fromMillisecondsSinceEpoch(res.last.endTimeStamp * 1000)
-                .format(pattern: "d日");
-        break;
-    }
-
-    /// 歷史紀錄
-    final list = res.map((m) {
-      final date = DateTime.fromMillisecondsSinceEpoch(m.endTimeStamp * 1000);
-
-      return ListHistoryItemModel(
-        unit: Rx(''),
-        value: Rx(DateTimeUtils.getDurationFormattedString(
-            m.startTimeStamp, m.endTimeStamp)),
-        time: Rx(date),
-      );
-    }).toList();
-    k82ModelObj.value.listItemList2.value = list;
-
-    /// 圖表
-    sleepData.assignAll(res);
   }
+  // Future<void> loadDataByDate(DateTime date) async {
+  //   userId.value = gc.userId.value;
+
+  //   List<SleepDataData> res = [];
+  //   List<SleepDetailDataData> detailRes = [];
+  //   sleepSegments.value = [];
+  //   if (currentIndex.value == 0) {
+  //     res = await gc.sleepDataService.getDaily(userId.value, date);
+  //     detailRes = await gc.sleepDataService.getDailyDetails(userId.value, date);
+  //   } else if (currentIndex.value == 1) {
+  //     res = await gc.sleepDataService.getWeekly(userId.value, date);
+  //     detailRes =
+  //         await gc.sleepDataService.getWeeklyDetails(userId.value, date);
+  //   } else if (currentIndex.value == 2) {
+  //     res = await gc.sleepDataService.getMonthly(userId.value, date);
+  //     detailRes =
+  //         await gc.sleepDataService.getMonthlyDetials(userId.value, date);
+  //   }
+
+  //   if (res.isEmpty) {
+  //     clearData();
+  //     return;
+  //   }
+
+  //   res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+  //   print("sleep datas res -> ${res.length} ; ${res.toString()}");
+  //   detailRes.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+  //   final lastData = res.last;
+  //   loadDataTime.value =
+  //       DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
+  //   int totalSleepSeconds = res.fold<int>(
+  //     0,
+  //     (sum, item) => sum + (item.endTimeStamp - item.startTimeStamp),
+  //   );
+  //   sleepVal.value = (totalSleepSeconds / 3600).toStringAsFixed(1); // 單位小時顯示
+
+  //   final deepSleepSeconds = res.fold<int>(
+  //     0,
+  //     (sum, item) => sum + item.deepSleepSeconds,
+  //   );
+  //   final lightSleepSeconds = res.fold<int>(
+  //     0,
+  //     (sum, item) => sum + item.lightSleepSeconds,
+  //   );
+
+  //   final remSleepSeconds = res.fold<int>(
+  //     0,
+  //     (sum, item) => sum + item.remSleepSeconds,
+  //   );
+
+  //   deep.value = DateTimeUtils.formatSecondsToHourDecimal(deepSleepSeconds);
+  //   light.value = DateTimeUtils.formatSecondsToHourDecimal(lightSleepSeconds);
+  //   rem.value = DateTimeUtils.formatSecondsToHourDecimal(remSleepSeconds);
+
+  //   deepCount.value = detailRes.where((e) => e.sleepType == 241).length;
+  //   lightCount.value = detailRes.where((e) => e.sleepType == 242).length;
+  //   remCount.value = detailRes.where((e) => e.sleepType == 243).length;
+  //   awakeCount.value = detailRes.where((e) => e.sleepType == 244).length;
+  //   int totalDuration244 = detailRes
+  //       .where((e) => e.sleepType == 244)
+  //       .fold(0, (sum, e) => sum + e.duration);
+  //   awake.value = DateTimeUtils.formatSecondsToHourDecimal(totalDuration244);
+
+  //   /// 直接將detail數據轉為橫條圖
+  //   for (var dic in detailRes) {
+  //     switch (dic.sleepType) {
+  //       case 241:
+  //         sleepSegments.add(SleepSegment(
+  //           stage: SleepStage.deep,
+  //           duration: Duration(seconds: dic.duration),
+  //         ));
+  //         break;
+  //       case 242:
+  //         sleepSegments.add(SleepSegment(
+  //           stage: SleepStage.light,
+  //           duration: Duration(seconds: dic.duration),
+  //         ));
+  //         break;
+  //       case 243:
+  //         sleepSegments.add(SleepSegment(
+  //           stage: SleepStage.rem,
+  //           duration: Duration(seconds: dic.duration),
+  //         ));
+  //         break;
+  //       case 244:
+  //         sleepSegments.add(SleepSegment(
+  //           stage: SleepStage.awake,
+  //           duration: Duration(seconds: dic.duration),
+  //         ));
+  //         break;
+  //     }
+  //   }
+
+  //   switch (currentIndex.value) {
+  //     case 0:
+  //       final earliestStart =
+  //           res.map((e) => e.startTimeStamp).reduce((a, b) => a < b ? a : b);
+  //       final latestEnd =
+  //           res.map((e) => e.endTimeStamp).reduce((a, b) => a > b ? a : b);
+
+  //       segmentStartText.value =
+  //           DateTime.fromMillisecondsSinceEpoch(earliestStart * 1000)
+  //                   .format(pattern: "HH:mm") +
+  //               '入睡';
+  //       segmentEndText.value =
+  //           DateTime.fromMillisecondsSinceEpoch(latestEnd * 1000)
+  //                   .format(pattern: "HH:mm") +
+  //               '清醒';
+  //       break;
+  //     case 1:
+  //     case 2:
+  //       segmentStartText.value =
+  //           DateTime.fromMillisecondsSinceEpoch(res.first.startTimeStamp * 1000)
+  //               .format(pattern: "d日");
+  //       segmentEndText.value =
+  //           DateTime.fromMillisecondsSinceEpoch(res.last.endTimeStamp * 1000)
+  //               .format(pattern: "d日");
+  //       break;
+  //   }
+
+  //   /// 歷史紀錄
+  //   final list = res.map((m) {
+  //     final date = DateTime.fromMillisecondsSinceEpoch(m.endTimeStamp * 1000);
+
+  //     return ListHistoryItemModel(
+  //       unit: Rx(''),
+  //       value: Rx(DateTimeUtils.getDurationFormattedString(
+  //           m.startTimeStamp, m.endTimeStamp)),
+  //       time: Rx(date),
+  //     );
+  //   }).toList();
+  //   k82ModelObj.value.listItemList2.value = list;
+
+  //   /// 圖表
+  //   sleepData.assignAll(res);
+  // }
 
   Future<void> updateDateRange(int index) async {
     if (index == 0) {
@@ -334,6 +484,8 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
 
   void clearData() {
     sleepData.clear();
+    sleepApiData.clear();
+    sleepSegments.clear();
     sleepVal.value = '';
     loadDataTime.value = '';
     deep.value = '';

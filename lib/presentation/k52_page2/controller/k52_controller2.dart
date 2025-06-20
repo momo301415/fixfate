@@ -17,11 +17,13 @@ class K52Controller2 extends GetxController {
     ever(k53c.hasLoaded, (loaded) {
       if (loaded == true) {
         updateListFromRecords(k53c.filteredRecords);
+        getNotifySum(k53c.nofiyDataSum);
       }
     });
 
     ever(k53c.filteredRecords, (_) {
       updateListFromRecords(k53c.filteredRecords);
+      getNotifySum(k53c.nofiyDataSum);
     });
   }
 
@@ -35,7 +37,7 @@ class K52Controller2 extends GetxController {
       );
     }).toList();
 
-    k52ModelObj.value.listItemList.value = list;
+    // k52ModelObj.value.listItemList.value = list;
   }
 
   List<AlertStat> generateAlertStats(List<AlertRecord> records) {
@@ -59,6 +61,38 @@ class K52Controller2 extends GetxController {
     "temperature_high": "lbl164".tr,
     "temperature_low": "lbl164".tr,
   };
+
+  Future<void> getNotifySum(Map<String, num> datas) async {
+    // 1. 若 Map 為空 → 清空列表
+    if (datas.isEmpty) {
+      k52ModelObj.value.listItemList.value = [];
+      return;
+    }
+
+    // 2. 計算總和，用來算百分比
+    final total = datas.values.fold<num>(0, (sum, v) => sum + v);
+
+    // 3. 轉成 List<ListItemModel2>
+    final list = datas.entries.map((e) {
+      final label = e.key; // 例如 "體溫"
+      final count = e.value; // 例如 36
+      final percent = (count / total * 100); // 1 位小數
+      var labelName = "";
+      if (label.contains("體溫")) {
+        labelName = "體表溫度報警";
+      } else {
+        labelName = label + "報警";
+      }
+      return ListItemModel2(
+        tf: Rx("$labelName"), // 名稱
+        tf1: Rx(count.toInt()), // 數值
+        tf2: Rx(percent), // 百分比
+      );
+    }).toList();
+
+    // 4. 指回到 GetX Observable 列表
+    k52ModelObj.value.listItemList.value = list;
+  }
 }
 
 class AlertStat {

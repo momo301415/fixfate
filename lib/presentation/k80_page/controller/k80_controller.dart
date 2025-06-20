@@ -381,6 +381,7 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
     }
 
     return LineChartData(
+      clipData: FlClipData.all(),
       maxX: maxX,
       minX: minX,
       minY: 40,

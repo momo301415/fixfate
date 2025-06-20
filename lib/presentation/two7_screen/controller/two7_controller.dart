@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/k67_screen/models/k67_model.dart';
 import '../../../core/app_export.dart';
 import '../models/two7_model.dart';
 
@@ -8,6 +14,37 @@ import '../models/two7_model.dart';
 /// current two7ModelObj
 class Two7Controller extends GetxController {
   Rx<Two7Model> two7ModelObj = Two7Model().obs;
+  final gc = Get.find<GlobalController>();
+  ApiService apiService = ApiService();
+  Rx<bool> isSelectedSwitch = true.obs;
+  final model = Get.arguments as ItemModel;
 
-  Rx<bool> isSelectedSwitch = false.obs;
+  @override
+  void onInit() {
+    super.onInit();
+    isSelectedSwitch.value = model.isAlert!.value;
+  }
+
+  void showDelete() async {
+    final dialog = await DialogHelper.showFamilyDeleteDialog();
+    if (dialog == true) {
+      await deleteFamily();
+    }
+  }
+
+  Future<void> deleteFamily() async {
+    try {
+      LoadingHelper.show();
+      final payload = {
+        "id": {"userId": gc.apiId.value, "familyId": model.familyId!.value}
+      };
+      final res = await apiService.postJson(Api.familyDelete, payload);
+      LoadingHelper.hide();
+      if (res.isNotEmpty && res["message"] == "SUCCESS") {
+        Get.back(result: true);
+      }
+    } catch (e) {
+      print("deleteFamily Error: $e");
+    }
+  }
 }

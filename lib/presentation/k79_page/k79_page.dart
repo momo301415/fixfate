@@ -14,16 +14,17 @@ class K79Page extends GetWidget<K79Controller> {
         );
 
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
-      children: [
-        buildTrendBlock(),
-        SizedBox(height: 4.h),
-        buildGrid1(),
-        SizedBox(height: 4.h),
-        buildAnalysis(),
-      ],
-    );
+    return SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 24.h), // 避免底部裁切
+        child: Column(
+          children: [
+            buildTrendBlock(),
+            SizedBox(height: 4.h),
+            buildGrid1(),
+            SizedBox(height: 4.h),
+            buildAnalysis(),
+          ],
+        ));
   }
 
   Widget buildTrendBlock() {
@@ -252,7 +253,7 @@ class K79Page extends GetWidget<K79Controller> {
                           'lbl161'.tr, 'lbl232'.tr)),
                   verticalDivider(),
                   Expanded(
-                      child: buildStat('${controller.lowCount.value}',
+                      child: buildStat('${controller.highCount.value}',
                           'lbl161'.tr, 'lbl242'.tr)),
                 ],
               ),

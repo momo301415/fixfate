@@ -29,4 +29,21 @@ class AlertRecordListStorage {
   static bool exists(String userId) {
     return _box.containsKey(userId);
   }
+
+  static Future<void> markAllRecordsAsSynced(String userId) async {
+    final list = await getRecords(userId);
+    // ✅ 將每筆紀錄的 isSync 設為 true
+    final updatedRecords = list.map((record) {
+      return AlertRecord(
+          time: record.time,
+          synced: true,
+          label: record.label,
+          type: record.type,
+          value: record.value,
+          unit: record.unit);
+    }).toList();
+
+    // ✅ 更新整筆資料
+    await _box.put(userId, AlertRecordList(records: updatedRecords));
+  }
 }

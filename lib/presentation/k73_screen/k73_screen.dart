@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/presentation/k73_screen/models/family_item_model.dart';
+import 'package:pulsedevice/presentation/k73_screen/widgets/family_item_widget.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_bottom_bar.dart';
@@ -15,91 +17,67 @@ class K73Screen extends GetWidget<K73Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseChatScaffold(
+      enableScroll: false,
       onEvent: () {
         print("k73 screen onEvent");
         Future.delayed(const Duration(milliseconds: 500), () {
-          controller.getData();
+          controller.getHealthData();
         });
       },
-      child: Container(
-        child: Container(
-          width: double.maxFinite,
-          margin: EdgeInsets.only(
-            bottom: 20.h,
-          ),
-          child: Column(
-            // spacing: 12,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Obx(() => Text(
-                    "msg_update_time".tr +
-                        " : " +
-                        controller.loadDataTime.value,
-                    style: CustomTextStyles.bodySmall10,
-                  )),
-              _buildListview(),
-              _buildRowviewtwo()
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: CustomBottomBar(
-        onChanged: (value) {
-          switch (value) {
-            case 0:
-              controller.getData();
-              break;
-            case 1:
-              break;
-            case 2:
-              controller.goK29Screen();
-              break;
-          }
-        },
+      child: ListView(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(bottom: 120.h),
+        children: [
+          _buildColumnone(),
+          SizedBox(height: 12.h),
+          Obx(() => Text(
+                "msg_update_time".tr + " : " + controller.loadDataTime.value,
+                style: CustomTextStyles.bodySmall10,
+                textAlign: TextAlign.center,
+              )),
+          SizedBox(height: 12.h),
+          _buildListview(),
+          _buildRowviewtwo()
+        ],
       ),
     );
   }
 
   /// Section Widget
   Widget _buildListview() {
-    return Padding(
-      padding: EdgeInsets.only(right: 8.h),
-      child: RefreshIndicator(
-          onRefresh: () async {
-            await controller.getData();
-          },
-          child: Obx(
-            () => GridView.builder(
-              itemCount:
-                  controller.k73ModelObj.value.listviewItemList.value.length,
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 3.h,
-                mainAxisSpacing: 6.h,
-                childAspectRatio: 1.6,
-              ),
-              itemBuilder: (context, index) {
-                final item =
-                    controller.k73ModelObj.value.listviewItemList.value[index];
-                return GestureDetector(
-                    onTap: () {
-                      controller.gok76Screen(index);
-                      print("點擊了${item.label}");
-                    },
-                    child: ListviewItemWidget(model: item));
-              },
-            ),
-          )),
-    );
+    return Obx(() {
+      final items = controller.k73ModelObj.value.listviewItemList.value;
+
+      return GridView.builder(
+        itemCount: items.length,
+        shrinkWrap: true,
+        physics:
+            NeverScrollableScrollPhysics(), // ❗讓父層 SingleChildScrollView 控制滾動
+        padding: EdgeInsets.only(bottom: 4.h), // ✅ 增加底部空間，避免遮擋按鈕
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 3.h,
+          mainAxisSpacing: 6.h,
+          childAspectRatio: 1.6,
+        ),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return GestureDetector(
+            onTap: () {
+              controller.gok76Screen(index);
+              print("點擊了${item.label}");
+            },
+            child: ListviewItemWidget(model: item),
+          );
+        },
+      );
+    });
   }
 
   /// Section Widget
   Widget _buildRowviewtwo() {
     return Container(
       width: double.maxFinite,
-      margin: EdgeInsets.only(right: 8.h),
       child: Row(
         children: [
           Expanded(
@@ -108,6 +86,7 @@ class K73Screen extends GetWidget<K73Controller> {
                   controller.goK40Screen();
                 },
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.h),
                   height: 50.h,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
@@ -151,12 +130,14 @@ class K73Screen extends GetWidget<K73Controller> {
                   ),
                 )),
           ),
+          SizedBox(width: 0.h),
           Expanded(
             child: GestureDetector(
                 onTap: () {
                   controller.gok5Screen();
                 },
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.h),
                   height: 50.h,
                   child: Stack(
                     alignment: Alignment.bottomCenter,
@@ -236,5 +217,55 @@ class K73Screen extends GetWidget<K73Controller> {
         )
       ],
     );
+  }
+
+  Widget _buildColumnone() {
+    return Obx(() {
+      final list = controller.k73ModelObj.value.familyItemList.value;
+
+      if (list.isEmpty) {
+        return Container(); // 或顯示提示文字也行
+      }
+      return Container(
+        width: double.maxFinite,
+        margin: EdgeInsets.only(right: 8.h),
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        decoration: AppDecoration.fillOnPrimary.copyWith(
+          borderRadius: BorderRadiusStyle.roundedBorder24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              child: Obx(
+                () => SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    spacing: 22.h,
+                    children: List.generate(
+                      controller.k73ModelObj.value.familyItemList.value.length,
+                      (index) {
+                        FamilyItemModel model = controller
+                            .k73ModelObj.value.familyItemList.value[index];
+                        return GestureDetector(
+                            onTap: () {
+                              print(model);
+                              // controller.goTow7Screen(controller.selectFamily[index]);
+                            },
+                            child: FamilyItemWidget(
+                              model,
+                              index: index,
+                            ));
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    });
   }
 }

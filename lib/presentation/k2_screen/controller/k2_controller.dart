@@ -1,6 +1,7 @@
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -58,13 +59,18 @@ class K2Controller extends GetxController {
           gc.apiId.value = resBody['id'].toString();
           gc.userId.value = userid;
           gc.healthDataSyncService.setUserId(userid);
+          Config.apiId = resBody['id'].toString();
+          Config.userId = userid;
+          Config.userName = resBody['name'].toString();
+          gc.avatarUrl.value = resBody['avatarUrl'] ?? "";
 
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {
-            gc.apiToken.value = ftoken;
+            gc.firebaseToken.value = ftoken;
+            Config.notifyToken = ftoken;
           }
 
-          goK29Page();
+          goHomePage();
           return true;
         } else {
           DialogHelper.showError("${resData["message"]}");
@@ -86,7 +92,7 @@ class K2Controller extends GetxController {
   }
 
   /// 路由到個人中心
-  void goK29Page() {
-    Get.toNamed(AppRoutes.k29Page);
+  void goHomePage() {
+    Get.toNamed(AppRoutes.homePage);
   }
 }

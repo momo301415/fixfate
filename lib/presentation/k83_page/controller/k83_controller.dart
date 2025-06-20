@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/k73_screen/models/k73_model.dart';
 import 'package:pulsedevice/presentation/k83_page/mdoel/k83_model.dart';
 import 'package:pulsedevice/presentation/k83_page/mdoel/list_item_model.dart';
 import 'package:pulsedevice/presentation/k87_bottomsheet/controller/k87_controller.dart';
@@ -18,6 +21,7 @@ import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart'
 class K83Controller extends GetxController with WidgetsBindingObserver {
   final gc = Get.find<GlobalController>();
   final k83ModelObj = K83Model().obs;
+  ApiService apiService = ApiService();
   final userId = ''.obs;
   RxInt currentIndex = 0.obs; // 預設日
   RxInt recordIndex = 0.obs; // 預設報警記錄
@@ -28,6 +32,7 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
   final caloriesVal = ''.obs;
   final loadDataTime = ''.obs;
   final stepData = <StepDataData>[].obs;
+  final stepApiData = <CaloriesData>[].obs;
   final _maxY = 0.obs;
   final _interval = 0.obs;
 
@@ -68,50 +73,111 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
   /// 輸入日期讀取數據
   Future<void> loadDataByDate(DateTime date) async {
     userId.value = gc.userId.value;
+    final range = DateTimeUtils.getRangeByIndex(date, currentIndex.value);
+    final start = range['start']!;
+    final end = range['end']!;
 
-    List<StepDataData> res = [];
+    try {
+      LoadingHelper.show();
+      final payload = {
+        "startTime": start.format(pattern: 'yyyy-MM-dd'),
+        "endTime": end.format(pattern: 'yyyy-MM-dd'),
+        "userID": gc.apiId.value,
+        "type": "calories"
+      };
+      final res = await apiService.postJson(Api.healthRecordList, payload);
+      LoadingHelper.hide();
+      if (res.isNotEmpty && res["message"] == "SUCCESS") {
+        final data = res["data"];
+        if (data == null || data["rateData"] is! List) {
+          clearData();
+          return;
+        }
+        final rateData = data["rateData"];
+        List<CaloriesData> parsed = [];
+        if (rateData is List) {
+          parsed = rateData.map((e) => CaloriesData.fromJson(e)).toList();
+        }
 
-    if (currentIndex.value == 0) {
-      res = await gc.stepDataService.getDaily(userId.value, date);
-    } else if (currentIndex.value == 1) {
-      res = await gc.stepDataService.getWeekly(userId.value, date);
-    } else if (currentIndex.value == 2) {
-      res = await gc.stepDataService.getMonthly(userId.value, date);
+        parsed.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+        final lastData = parsed.last;
+        loadDataTime.value =
+            DateTimeUtils.getTimeDifferenceString(lastData.startTimestamp);
+        final stepList = parsed.map((e) => int.parse(e.calories)).toList();
+        caloriesVal.value =
+            stepList.fold<int>(0, (sum, e) => sum + e).toString();
+
+        final rawMax =
+            stepList.isEmpty ? 0 : stepList.reduce((a, b) => a > b ? a : b);
+        final interval = rawMax == 0 ? 200 : (rawMax / 5).ceil();
+        _interval.value = interval;
+        _maxY.value = interval * 5;
+
+        /// 歷史紀錄
+        final list = parsed.map((m) {
+          final date =
+              DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
+          return ListHistoryItemModel(
+            unit: Rx('lbl191'.tr),
+            value: Rx(m.calories.toString()),
+            time: Rx(date),
+          );
+        }).toList();
+        k83ModelObj.value.listItemList2.value = list;
+
+        /// 圖表
+        stepApiData.assignAll(parsed);
+      }
+    } catch (e) {
+      print("getFamilyData Error: $e");
     }
-
-    if (res.isEmpty) {
-      clearData();
-      return;
-    }
-
-    res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
-
-    final lastData = res.last;
-    loadDataTime.value =
-        DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
-    final stepList = res.map((e) => e.calories).toList();
-    caloriesVal.value = stepList.fold<int>(0, (sum, e) => sum + e).toString();
-
-    final rawMax =
-        stepList.isEmpty ? 0 : stepList.reduce((a, b) => a > b ? a : b);
-    final interval = rawMax == 0 ? 200 : (rawMax / 5).ceil();
-    _interval.value = interval;
-    _maxY.value = interval * 5;
-
-    /// 歷史紀錄
-    final list = res.map((m) {
-      final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
-      return ListHistoryItemModel(
-        unit: Rx('lbl191'.tr),
-        value: Rx(m.calories.toString()),
-        time: Rx(date),
-      );
-    }).toList();
-    k83ModelObj.value.listItemList2.value = list;
-
-    /// 圖表
-    stepData.assignAll(res);
   }
+  // Future<void> loadDataByDate(DateTime date) async {
+  //   userId.value = gc.userId.value;
+
+  //   List<StepDataData> res = [];
+
+  //   if (currentIndex.value == 0) {
+  //     res = await gc.stepDataService.getDaily(userId.value, date);
+  //   } else if (currentIndex.value == 1) {
+  //     res = await gc.stepDataService.getWeekly(userId.value, date);
+  //   } else if (currentIndex.value == 2) {
+  //     res = await gc.stepDataService.getMonthly(userId.value, date);
+  //   }
+
+  //   if (res.isEmpty) {
+  //     clearData();
+  //     return;
+  //   }
+
+  //   res.sort((a, b) => a.startTimeStamp.compareTo(b.startTimeStamp));
+
+  //   final lastData = res.last;
+  //   loadDataTime.value =
+  //       DateTimeUtils.getTimeDifferenceString(lastData.startTimeStamp);
+  //   final stepList = res.map((e) => e.calories).toList();
+  //   caloriesVal.value = stepList.fold<int>(0, (sum, e) => sum + e).toString();
+
+  //   final rawMax =
+  //       stepList.isEmpty ? 0 : stepList.reduce((a, b) => a > b ? a : b);
+  //   final interval = rawMax == 0 ? 200 : (rawMax / 5).ceil();
+  //   _interval.value = interval;
+  //   _maxY.value = interval * 5;
+
+  //   /// 歷史紀錄
+  //   final list = res.map((m) {
+  //     final date = DateTime.fromMillisecondsSinceEpoch(m.startTimeStamp * 1000);
+  //     return ListHistoryItemModel(
+  //       unit: Rx('lbl191'.tr),
+  //       value: Rx(m.calories.toString()),
+  //       time: Rx(date),
+  //     );
+  //   }).toList();
+  //   k83ModelObj.value.listItemList2.value = list;
+
+  //   /// 圖表
+  //   stepData.assignAll(res);
+  // }
 
   Future<void> updateDateRange(int index) async {
     if (index == 0) {
@@ -168,18 +234,18 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
 
     if (index == 0) {
       // 日：時間顯示
-      if (stepData.isEmpty) {
+      if (stepApiData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
         final base = DateTime.fromMillisecondsSinceEpoch(
-            stepData.first.startTimeStamp * 1000);
+            stepApiData.first.startTimestamp * 1000);
 
-        data = stepData.map((e) {
+        data = stepApiData.map((e) {
           final current =
-              DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+              DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
           final diffMinutes = current.difference(base).inMinutes.toDouble();
-          return FlSpot(diffMinutes, e.calories.toDouble());
+          return FlSpot(diffMinutes, double.parse(e.calories));
         }).toList();
 
         titles = SideTitles(
@@ -198,7 +264,7 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
       }
     } else if (index == 1) {
       // 週：星期
-      if (stepData.isEmpty) {
+      if (stepApiData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
@@ -209,12 +275,12 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
         ).subtract(Duration(days: currentDate.value.weekday - 1));
         final Map<int, List<int>> dayData = {};
 
-        for (var e in stepData) {
+        for (var e in stepApiData) {
           final date =
-              DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+              DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
           final diffDays = date.difference(startOfWeek).inDays;
           if (diffDays >= 0 && diffDays < 7) {
-            dayData.putIfAbsent(diffDays, () => []).add(e.calories);
+            dayData.putIfAbsent(diffDays, () => []).add(int.parse(e.calories));
           }
         }
 
@@ -240,7 +306,7 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
       }
     } else {
       // 月：日期
-      if (stepData.isEmpty) {
+      if (stepApiData.isEmpty) {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
@@ -248,12 +314,12 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
             DateTime(currentDate.value.year, currentDate.value.month, 1);
         final Map<int, List<int>> dayData = {};
 
-        for (var e in stepData) {
+        for (var e in stepApiData) {
           final date =
-              DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+              DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
           final diffDays = date.difference(startOfMonth).inDays;
           if (diffDays >= 0 && diffDays < 31) {
-            dayData.putIfAbsent(diffDays, () => []).add(e.calories);
+            dayData.putIfAbsent(diffDays, () => []).add(int.parse(e.calories));
           }
         }
 
@@ -311,6 +377,7 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
     }
 
     return LineChartData(
+      clipData: FlClipData.all(),
       maxX: maxX,
       minX: minX,
       minY: 0,
@@ -367,6 +434,213 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
       borderData: FlBorderData(show: false),
     );
   }
+
+  // LineChartData getChartData(int index) {
+  //   List<FlSpot> data;
+  //   SideTitles titles;
+
+  //   if (index == 0) {
+  //     // 日：時間顯示
+  //     if (stepData.isEmpty) {
+  //       data = [];
+  //       titles = SideTitles(showTitles: false);
+  //     } else {
+  //       final base = DateTime.fromMillisecondsSinceEpoch(
+  //           stepData.first.startTimeStamp * 1000);
+
+  //       data = stepData.map((e) {
+  //         final current =
+  //             DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //         final diffMinutes = current.difference(base).inMinutes.toDouble();
+  //         return FlSpot(diffMinutes, e.calories.toDouble());
+  //       }).toList();
+
+  //       titles = SideTitles(
+  //         showTitles: true,
+  //         interval: 240, // 每 240 分鐘（即 4 小時）
+  //         getTitlesWidget: (value, meta) {
+  //           final timestamp = base.add(Duration(minutes: value.toInt()));
+  //           return Transform.translate(
+  //               offset: Offset(0, 12.h),
+  //               child: Text(
+  //                 timestamp.format(pattern: 'HH:mm'),
+  //                 style: const TextStyle(fontSize: 10),
+  //               ));
+  //         },
+  //       );
+  //     }
+  //   } else if (index == 1) {
+  //     // 週：星期
+  //     if (stepData.isEmpty) {
+  //       data = [];
+  //       titles = SideTitles(showTitles: false);
+  //     } else {
+  //       final startOfWeek = DateTime(
+  //         currentDate.value.year,
+  //         currentDate.value.month,
+  //         currentDate.value.day,
+  //       ).subtract(Duration(days: currentDate.value.weekday - 1));
+  //       final Map<int, List<int>> dayData = {};
+
+  //       for (var e in stepData) {
+  //         final date =
+  //             DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //         final diffDays = date.difference(startOfWeek).inDays;
+  //         if (diffDays >= 0 && diffDays < 7) {
+  //           dayData.putIfAbsent(diffDays, () => []).add(e.calories);
+  //         }
+  //       }
+
+  //       data = dayData.entries.map((entry) {
+  //         final avg = entry.value.reduce((a, b) => a + b) / entry.value.length;
+  //         return FlSpot(entry.key.toDouble(), avg);
+  //       }).toList();
+
+  //       final weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  //       titles = SideTitles(
+  //         showTitles: true,
+  //         interval: 1,
+  //         getTitlesWidget: (value, meta) {
+  //           if (value.toInt() >= 0 && value.toInt() < weekLabels.length) {
+  //             return Transform.translate(
+  //                 offset: Offset(0, 12.h),
+  //                 child: Text(weekLabels[value.toInt()],
+  //                     style: TextStyle(fontSize: 10)));
+  //           }
+  //           return Text('');
+  //         },
+  //       );
+  //     }
+  //   } else {
+  //     // 月：日期
+  //     if (stepData.isEmpty) {
+  //       data = [];
+  //       titles = SideTitles(showTitles: false);
+  //     } else {
+  //       final startOfMonth =
+  //           DateTime(currentDate.value.year, currentDate.value.month, 1);
+  //       final Map<int, List<int>> dayData = {};
+
+  //       for (var e in stepData) {
+  //         final date =
+  //             DateTime.fromMillisecondsSinceEpoch(e.startTimeStamp * 1000);
+  //         final diffDays = date.difference(startOfMonth).inDays;
+  //         if (diffDays >= 0 && diffDays < 31) {
+  //           dayData.putIfAbsent(diffDays, () => []).add(e.calories);
+  //         }
+  //       }
+
+  //       data = dayData.entries.map((entry) {
+  //         final avg = entry.value.reduce((a, b) => a + b) / entry.value.length;
+  //         return FlSpot(entry.key.toDouble() + 1, avg);
+  //       }).toList();
+
+  //       titles = SideTitles(
+  //         showTitles: true,
+  //         interval: 5,
+  //         getTitlesWidget: (value, meta) {
+  //           final day = value.toInt();
+
+  //           if (day == 1 || day % 5 == 0) {
+  //             return Transform.translate(
+  //                 offset: Offset(0, 12.h),
+  //                 child:
+  //                     Text('${value.toInt()}', style: TextStyle(fontSize: 10)));
+  //           }
+  //           return const SizedBox.shrink();
+  //         },
+  //       );
+  //     }
+  //   }
+
+  //   if (data.isEmpty) {
+  //     return LineChartData(
+  //       lineBarsData: [],
+  //       titlesData: FlTitlesData(show: false),
+  //       gridData: FlGridData(show: false),
+  //       borderData: FlBorderData(show: false),
+  //     );
+  //   }
+
+  //   double? minX;
+  //   double? maxX;
+
+  //   if (index == 0) {
+  //     // 日：時間（單位分鐘，最多1440分鐘）
+  //     minX = 0;
+  //     maxX = 1440;
+  //   } else if (index == 1) {
+  //     // 週：7天
+  //     minX = 0;
+  //     maxX = 6;
+  //   } else if (index == 2) {
+  //     // 月：天數取決於當月天數
+  //     final daysInMonth = DateUtils.getDaysInMonth(
+  //       currentDate.value.year,
+  //       currentDate.value.month,
+  //     );
+  //     minX = 1;
+  //     maxX = daysInMonth.toDouble();
+  //   }
+
+  //   return LineChartData(
+  //     clipData: FlClipData.all(),
+  //     maxX: maxX,
+  //     minX: minX,
+  //     minY: 0,
+  //     maxY: _maxY.value.toDouble(),
+  //     gridData: FlGridData(
+  //       show: true,
+  //       drawHorizontalLine: true,
+  //       drawVerticalLine: false,
+  //       horizontalInterval: _interval.value.toDouble(),
+  //       getDrawingHorizontalLine: (value) {
+  //         if (value == 0 || value == _maxY.value.toDouble()) {
+  //           return FlLine(color: Colors.grey, strokeWidth: 1);
+  //         }
+  //         return FlLine(color: Colors.grey, strokeWidth: 1);
+  //       },
+  //     ),
+  //     extraLinesData: ExtraLinesData(
+  //       horizontalLines: [
+  //         HorizontalLine(
+  //           y: 0,
+  //           color: Colors.grey,
+  //           strokeWidth: 1,
+  //         ),
+  //         HorizontalLine(
+  //           y: _maxY.value.toDouble(),
+  //           color: Colors.grey,
+  //           strokeWidth: 1,
+  //         ),
+  //       ],
+  //     ),
+  //     titlesData: FlTitlesData(
+  //       bottomTitles: AxisTitles(sideTitles: titles),
+  //       leftTitles: AxisTitles(
+  //         sideTitles: SideTitles(
+  //           showTitles: true,
+  //           interval: _interval.value.toDouble(),
+  //           reservedSize: 36,
+  //           getTitlesWidget: (value, meta) =>
+  //               Text('${value.toInt()}', style: TextStyle(fontSize: 10)),
+  //         ),
+  //       ),
+  //       topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  //       rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  //     ),
+  //     lineBarsData: [
+  //       LineChartBarData(
+  //         spots: data,
+  //         isCurved: true,
+  //         color: Colors.teal,
+  //         barWidth: 2,
+  //         dotData: FlDotData(show: false),
+  //       )
+  //     ],
+  //     borderData: FlBorderData(show: false),
+  //   );
+  // }
 
   //----- 日期選擇器
   Future<void> datePicker(int index) async {
@@ -432,6 +706,7 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
 
   void clearData() {
     stepData.clear();
+    stepApiData.clear();
     caloriesVal.value = '';
     loadDataTime.value = '';
 

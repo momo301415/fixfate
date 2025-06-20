@@ -223,7 +223,7 @@ class One2Screen extends GetWidget<One2Controller> {
             if (_formKey.currentState!.validate()) {
               var res = await controller.pressFetchLogin();
               if (res) {
-                controller.goK29Page();
+                controller.goHomePage();
               }
             } else {}
           },

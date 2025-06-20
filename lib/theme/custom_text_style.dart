@@ -180,6 +180,10 @@ class CustomTextStyles {
         color: appTheme.whiteA700,
         fontSize: 13.fSize,
       );
+  static TextStyle get bodyMediumWhite => theme.textTheme.bodyMedium!.copyWith(
+        color: Colors.white,
+        fontSize: 13.fSize,
+      );
   static get bodyMedium_1 => theme.textTheme.bodyMedium!;
   static TextStyle get bodySmall10 => theme.textTheme.bodySmall!.copyWith(
         fontSize: 10.fSize,

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record.dart';
+import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
@@ -36,6 +38,22 @@ class SyncDataService {
       await PrefUtils().setIsSyncApi("Y");
       isSyncValue = "Y";
     }
+    final records = await AlertRecordListStorage.getRecords(gc.userId.value);
+    List<AlertRecord> rateRecords = [];
+    List<AlertRecord> bloodRecords = [];
+    List<AlertRecord> tempRecords = [];
+    for (var record in records) {
+      if (record.type.contains("heart_rate") && record.synced == false) {
+        rateRecords.add(record);
+      } else if (record.type.contains("blood_oxygen") &&
+          record.synced == false) {
+        bloodRecords.add(record);
+      } else if (record.type.contains("temperature") &&
+          record.synced == false) {
+        tempRecords.add(record);
+      }
+    }
+
     // 步數資料
     final unsyncedSteps =
         await gc.stepDataService.getUnsyncedData(gc.userId.value);
@@ -52,7 +70,8 @@ class SyncDataService {
     final unsyncedHeartRate =
         await gc.heartRateDataService.getUnsyncedData(gc.userId.value);
     if (unsyncedHeartRate.isNotEmpty) {
-      final success = await uploadHeartRate(unsyncedHeartRate, isSyncValue);
+      final success =
+          await uploadHeartRate(unsyncedHeartRate, isSyncValue, a: rateRecords);
       if (success) {
         await gc.heartRateDataService.markAsSynced(unsyncedHeartRate);
       }
@@ -64,8 +83,11 @@ class SyncDataService {
     final unsyncedSleepDetails =
         await gc.sleepDataService.getUnsyncedDetailsData(gc.userId.value);
     if (unsyncedSleep.isNotEmpty) {
-      final success =
-          await uploadSleep(unsyncedSleep, unsyncedSleepDetails, isSyncValue);
+      final success = await uploadSleep(
+        unsyncedSleep,
+        unsyncedSleepDetails,
+        isSyncValue,
+      );
       if (success) {
         await gc.sleepDataService.markAsSynced(unsyncedSleep);
         await gc.sleepDataService.markDetailsAsSynced(unsyncedSleepDetails);
@@ -76,15 +98,17 @@ class SyncDataService {
     final unsyncedBloodOxygen =
         await gc.combinedDataService.getUnsyncedData(gc.userId.value);
     if (unsyncedBloodOxygen.isNotEmpty) {
-      final success = await uploadOxygen(unsyncedBloodOxygen, isSyncValue);
-      final success2 =
-          await uploadTemperature(unsyncedBloodOxygen, isSyncValue);
+      final success =
+          await uploadOxygen(unsyncedBloodOxygen, isSyncValue, a: bloodRecords);
+      final success2 = await uploadTemperature(unsyncedBloodOxygen, isSyncValue,
+          a: tempRecords);
       if (success && success2) {
         await gc.combinedDataService.markAsSynced(unsyncedBloodOxygen);
       }
     }
 
-    // 同理為其他資料類型加上處理邏輯
+    // 最後把recodes的isSync設為true
+    await AlertRecordListStorage.markAllRecordsAsSynced(gc.userId.value);
   }
 
   Future<bool> uploadSteps(List<StepDataData> datas, String isSyncApi) async {
@@ -143,10 +167,11 @@ class SyncDataService {
     return false;
   }
 
-  Future<bool> uploadHeartRate(
-      List<HeartRateDataData> datas, String isSyncApi) async {
+  Future<bool> uploadHeartRate(List<HeartRateDataData> datas, String isSyncApi,
+      {List<AlertRecord>? a}) async {
     final data = convertToPayload<HeartRateDataData>(
       datas,
+      alertRecords: a,
       "rate",
       (data) => gc.apiId.value,
       (data) => data.heartRate.toString(),
@@ -162,10 +187,11 @@ class SyncDataService {
     return false;
   }
 
-  Future<bool> uploadOxygen(
-      List<CombinedDataData> datas, String isSyncApi) async {
+  Future<bool> uploadOxygen(List<CombinedDataData> datas, String isSyncApi,
+      {List<AlertRecord>? a}) async {
     final data = convertToPayload<CombinedDataData>(
       datas,
+      alertRecords: a,
       "oxygen",
       (data) => gc.apiId.value,
       (data) => data.bloodOxygen.toString(),
@@ -181,10 +207,11 @@ class SyncDataService {
     return false;
   }
 
-  Future<bool> uploadTemperature(
-      List<CombinedDataData> datas, String isSyncApi) async {
+  Future<bool> uploadTemperature(List<CombinedDataData> datas, String isSyncApi,
+      {List<AlertRecord>? a}) async {
     final data = convertToPayload<CombinedDataData>(
       datas,
+      alertRecords: a,
       "temperature",
       (data) => gc.apiId.value,
       (data) => data.temperature.toString(),
@@ -266,18 +293,45 @@ class SyncDataService {
     String recordType,
     String Function(T) userIdExtractor,
     String Function(T) valueExtractor,
-    int Function(T) timestampExtractor,
-  ) {
+    int Function(T) timestampExtractor, {
+    List<AlertRecord>? alertRecords,
+  }) {
+    // 用 Map<int, String> 儲存 timestamp 與對應的 type 字串
+    final Map<int, String> alertTypeMap = {};
+    if (alertRecords != null) {
+      for (final alert in alertRecords) {
+        final ts = alert.time.millisecondsSinceEpoch ~/ 1000;
+        alertTypeMap[ts] = alert.type;
+      }
+    }
+
     return dataList.map((data) {
-      return {
+      final timestamp = timestampExtractor(data);
+      final baseMap = {
         "userID": userIdExtractor(data),
         "recordType": recordType,
         "value": valueExtractor(data),
-        "dataAt":
-            DateTime.fromMillisecondsSinceEpoch(timestampExtractor(data) * 1000)
-                    .format(pattern: "yyyy-MM-dd HH:mm") +
-                ":00"
+        "dataAt": DateTime.fromMillisecondsSinceEpoch(timestamp * 1000)
+                .format(pattern: "yyyy-MM-dd HH:mm") +
+            ":00"
       };
+
+      // 若 alertRecord 有對應 timestamp，就進一步解析 type
+      if (alertTypeMap.containsKey(timestamp)) {
+        final typeString = alertTypeMap[timestamp]!.toLowerCase();
+
+        if (typeString.contains("low")) {
+          baseMap["type"] = "2";
+        } else if (typeString.contains("high")) {
+          baseMap["type"] = "1";
+        } else {
+          baseMap["type"] = "0";
+        }
+      } else {
+        baseMap["type"] = "0";
+      }
+
+      return baseMap;
     }).toList();
   }
 }

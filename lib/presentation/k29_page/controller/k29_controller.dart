@@ -25,6 +25,10 @@ class K29Controller extends GetxController {
     }
   }
 
+  Future<bool> onWillPop() async {
+    return false;
+  }
+
   void onTopCardTap(ListOneItemModel model) {
     // 可依 model.id 判斷導頁
     print('點擊功能卡片：${model.title}');

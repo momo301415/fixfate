@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -154,11 +155,17 @@ class FourController extends GetxController with CodeAutoFill {
           gc.userId.value = phone;
           gc.apiToken.value = resBody['token'].toString();
           gc.apiId.value = resBody['id'].toString();
+          gc.userName.value = resBody['name'].toString();
           gc.healthDataSyncService.setUserId(phone);
+          Config.apiId = resBody['id'].toString();
+          Config.userId = phone;
+          Config.userName = resBody['name'].toString();
+          gc.avatarUrl.value = resBody['avatarUrl'] ?? "";
 
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {
-            gc.apiToken.value = ftoken;
+            gc.firebaseToken.value = ftoken;
+            Config.notifyToken = ftoken;
           }
           return true;
         } else {

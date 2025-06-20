@@ -21,6 +21,10 @@ class K76Screen extends GetView<K76Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
+        onBack: () {
+          Get.back(result: true);
+        },
+        enableScroll: false,
         title: "lbl243".tr,
         child: Container(
           height: 796.h,

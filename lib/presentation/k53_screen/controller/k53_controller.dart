@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/controller/one7_controller.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
@@ -12,6 +14,7 @@ class K53Controller extends GetxController
     with GetSingleTickerProviderStateMixin {
   Rx<K53Model> k53ModelObj = K53Model().obs;
   final gc = Get.find<GlobalController>();
+  ApiService apiService = ApiService();
 
   late TabController tabviewController;
   Rx<int> tabIndex = 0.obs;
@@ -23,6 +26,9 @@ class K53Controller extends GetxController
   final selectedYear = DateTime.now().year.obs;
   final selectedMonth = DateTime.now().month.obs;
   final pickDate = ''.obs;
+  final List<Map<String, dynamic>> notifyDataList =
+      <Map<String, dynamic>>[].obs;
+  final Map<String, num> nofiyDataSum = <String, num>{}.obs;
 
   @override
   void onInit() {
@@ -35,7 +41,13 @@ class K53Controller extends GetxController
       }
     });
 
-    Future.delayed(Duration.zero, () => getRecords());
+    Future.delayed(Duration.zero, () async {
+      final nList = await getNotifyList();
+      notifyDataList.assignAll(nList);
+      final nSum = await getNotifyListSum();
+      nofiyDataSum.assignAll(nSum);
+      await getRecords();
+    });
   }
 
   @override
@@ -59,9 +71,13 @@ class K53Controller extends GetxController
     }
   }
 
-  void setSelectedDate(int year, int month) {
+  void setSelectedDate(int year, int month) async {
     selectedYear.value = year;
     selectedMonth.value = month;
+    final list = await getNotifyList();
+    final sum = await getNotifyListSum();
+    notifyDataList.assignAll(list);
+    nofiyDataSum.assignAll(sum);
     _filterRecords();
     _updatePickDate();
   }
@@ -90,5 +106,60 @@ class K53Controller extends GetxController
         },
       ),
     );
+  }
+
+  //INFO:通知消息, WARN 警報紀錄
+  Future<List<Map<String, dynamic>>> getNotifyList() async {
+    // LoadingHelper.show();
+    var month = selectedMonth.value.toString().padLeft(2, '0');
+
+    try {
+      final payload = {
+        "type": "WARN", //INFO:通知消息, WARN 警報紀錄
+        "date": "${selectedYear.value}-${month}",
+        "userID": gc.apiId.value
+      };
+      var res = await apiService.postJson(
+        Api.notifyList,
+        payload,
+      );
+      // LoadingHelper.hide();
+      if (res.isNotEmpty) {
+        if (res["message"] == "SUCCESS") {
+          final data = res["data"];
+          if (data != null) {
+            return List<Map<String, dynamic>>.from(data);
+          }
+        }
+      }
+      return [];
+    } catch (e) {
+      print("Notify API Error: $e");
+      return [];
+    }
+  }
+
+  Future<Map<String, num>> getNotifyListSum() async {
+    try {
+      var month = selectedMonth.value.toString().padLeft(2, '0');
+      final payload = {
+        "date": "$selectedYear-$month",
+        "userID": gc.apiId.value
+      };
+
+      var res = await apiService.postJson(Api.notifyListSum, payload);
+
+      if (res.isNotEmpty && res["message"] == "SUCCESS") {
+        final data = res["data"];
+        if (data != null && data is Map) {
+          return Map<String, num>.from(data);
+        }
+      }
+    } catch (e) {
+      print("Notify API Error: $e");
+    }
+
+    // 保底 return（一定要有）
+    return {};
   }
 }

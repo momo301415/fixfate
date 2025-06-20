@@ -63,6 +63,9 @@ class DateTimeUtils {
   /// 只取小數表示，回傳「2.3h」這種格式（保留 1 位小數）
   static String formatSecondsToHourDecimal(int seconds) {
     final hours = seconds / 3600;
+    if (seconds < 1000) {
+      return "${hours.toStringAsFixed(2)}h";
+    }
     return "${hours.toStringAsFixed(1)}h";
   }
 
@@ -75,5 +78,56 @@ class DateTimeUtils {
   /// 取得兩個時間點之間的秒數
   static int getDurationInSeconds(int startTimestamp, int endTimestamp) {
     return endTimestamp - startTimestamp;
+  }
+
+  static formatToChineseDate(String rawDate) {
+    final inputFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    final dateTime = inputFormat.parse(rawDate);
+    return "${dateTime.month}月${dateTime.day}日";
+  }
+
+  /// 查詢：日的時間區間
+  Map<String, DateTime> getDailyRange(DateTime date) {
+    final start = DateTime(date.year, date.month, date.day);
+    final end = start.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+    return {"start": start, "end": end};
+  }
+
+  /// 查詢：週的時間區間（從週一開始）
+  Map<String, DateTime> getWeeklyRange(DateTime date) {
+    final start = date.subtract(Duration(days: date.weekday - 1));
+    final end = start.add(Duration(days: 7)).subtract(Duration(seconds: 1));
+    return {"start": start, "end": end};
+  }
+
+  /// 查詢：月的時間區間
+  Map<String, DateTime> getMonthlyRange(DateTime date) {
+    final start = DateTime(date.year, date.month, 1);
+    final end =
+        DateTime(date.year, date.month + 1, 1).subtract(Duration(seconds: 1));
+    return {"start": start, "end": end};
+  }
+
+  /// 查詢：日，週，月
+  static Map<String, DateTime> getRangeByIndex(DateTime date, int index) {
+    late DateTime start;
+    late DateTime end;
+
+    if (index == 0) {
+      start = DateTime(date.year, date.month, date.day);
+      end = start
+          .add(const Duration(days: 1))
+          .subtract(const Duration(seconds: 1));
+    } else if (index == 1) {
+      start = date.subtract(Duration(days: date.weekday - 1));
+      end = start
+          .add(const Duration(days: 7))
+          .subtract(const Duration(seconds: 1));
+    } else {
+      start = DateTime(date.year, date.month, 1);
+      end = DateTime(date.year, date.month + 1, 1)
+          .subtract(const Duration(seconds: 1));
+    }
+    return {"start": start, "end": end};
   }
 }

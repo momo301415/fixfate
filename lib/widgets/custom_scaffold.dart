@@ -50,6 +50,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
   final List<Widget>? actions;
   final Function()? onBack;
   final isShowBackButton;
+  final bool enableScroll;
 
   const BaseScaffoldImageHeader({
     Key? key,
@@ -61,6 +62,7 @@ class BaseScaffoldImageHeader extends StatelessWidget {
     this.actions,
     this.onBack,
     this.isShowBackButton = true,
+    this.enableScroll = true,
   }) : super(key: key);
 
   @override
@@ -122,11 +124,16 @@ class BaseScaffoldImageHeader extends StatelessWidget {
 
           // 內容區
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.h),
-              child: child,
-            ),
-          ),
+            child: enableScroll
+                ? SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: child,
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: child,
+                  ),
+          )
         ],
       ),
       bottomNavigationBar: bottomNavigationBar,
@@ -140,6 +147,7 @@ class BaseChatScaffold extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? bottomNavigationBar;
   final VoidCallback? onEvent;
+  final bool enableScroll;
 
   const BaseChatScaffold({
     Key? key,
@@ -148,17 +156,30 @@ class BaseChatScaffold extends StatelessWidget {
     this.controller,
     this.bottomNavigationBar,
     this.onEvent,
+    this.enableScroll = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = SizeUtils.height; // 或 Get.height，等價
+    double headerHeight;
+
+    if (deviceHeight < 700) {
+      headerHeight = 0.25 * deviceHeight;
+    } else if (deviceHeight < 800) {
+      headerHeight = 0.23 * deviceHeight;
+    } else if (deviceHeight < 900) {
+      headerHeight = 0.20 * deviceHeight;
+    } else {
+      headerHeight = 0.18 * deviceHeight;
+    }
     return Scaffold(
       backgroundColor: appTheme.teal50,
       body: Column(
         children: [
           // Header 區塊
           SizedBox(
-            height: 178.h,
+            height: headerHeight.h,
             width: double.infinity,
             child: Stack(
               fit: StackFit.expand,
@@ -229,11 +250,16 @@ class BaseChatScaffold extends StatelessWidget {
           ),
           // Scrollable Content
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 8.h),
-              child: child,
-            ),
-          ),
+            child: enableScroll
+                ? SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: child,
+                  )
+                : Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.h),
+                    child: child,
+                  ),
+          )
         ],
       ),
       bottomNavigationBar: bottomNavigationBar,

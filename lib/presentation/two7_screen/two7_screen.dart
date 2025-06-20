@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
-import '../../widgets/app_bar/appbar_leading_image.dart';
-import '../../widgets/app_bar/appbar_subtitle.dart';
-import '../../widgets/app_bar/custom_app_bar.dart';
+
 import '../../widgets/custom_outlined_button.dart';
 import '../../widgets/custom_switch.dart';
 import 'controller/two7_controller.dart'; // ignore_for_file: must_be_immutable
 
+/// 家人設定頁面
 class Two7Screen extends GetWidget<Two7Controller> {
   const Two7Screen({Key? key})
       : super(
@@ -16,71 +16,23 @@ class Two7Screen extends GetWidget<Two7Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        child: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                height: 430.h,
-                width: double.maxFinite,
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [_buildStackunionone(), _buildColumnone()],
-                ),
-              ),
-              Spacer(),
-              CustomOutlinedButton(
-                text: "lbl211".tr,
-                margin: EdgeInsets.symmetric(horizontal: 24.h),
-                buttonStyle: CustomButtonStyles.outlinePrimary,
-                buttonTextStyle: CustomTextStyles.titleMediumPrimary,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildStackunionone() {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Container(
-        height: 90.h,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgUnion90x374,
-              height: 90.h,
-              width: double.maxFinite,
+    return BaseScaffoldImageHeader(
+        title: "lbl209".tr,
+        child: _buildColumnone(),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.h),
+            child: CustomOutlinedButton(
+              text: "lbl211".tr,
+              margin: EdgeInsets.symmetric(horizontal: 24.h),
+              buttonStyle: CustomButtonStyles.outlinePrimary,
+              buttonTextStyle: CustomTextStyles.titleMediumPrimary,
+              onPressed: () {
+                controller.showDelete();
+              },
             ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: CustomAppBar(
-                leadingWidth: 55.h,
-                leading: AppbarLeadingImage(
-                  imagePath: ImageConstant.imgArrowLeft,
-                  margin: EdgeInsets.only(left: 31.h),
-                  onTap: () {
-                    onTapArrowleftone();
-                  },
-                ),
-                centerTitle: true,
-                title: AppbarSubtitle(
-                  text: "lbl209".tr,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   /// Section Widget
@@ -107,19 +59,20 @@ class Two7Screen extends GetWidget<Two7Controller> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CustomImageView(
-                  imagePath: ImageConstant.imgEllipse8296x96,
-                  height: 96.h,
-                  width: 98.h,
+                  imagePath: controller.model.path?.value,
+                  height: 100.h,
+                  width: 100.h,
+                  fit: BoxFit.cover,
                   radius: BorderRadius.circular(
                     48.h,
                   ),
                 ),
                 Text(
-                  "lbl204".tr,
+                  controller.model.two!.value,
                   style: CustomTextStyles.titleMediumManropePrimaryContainer,
                 ),
                 Text(
-                  "msg_2023_03_24".tr,
+                  controller.model.tf!.value,
                   style: CustomTextStyles.bodySmall10,
                 )
               ],
@@ -156,10 +109,5 @@ class Two7Screen extends GetWidget<Two7Controller> {
         ],
       ),
     );
-  }
-
-  /// Navigates to the previous screen.
-  onTapArrowleftone() {
-    Get.back();
   }
 }

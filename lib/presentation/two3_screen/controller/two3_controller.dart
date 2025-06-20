@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -78,13 +79,16 @@ class Two3Controller extends GetxController {
               gc.apiToken.value = resBody2['token'].toString();
               gc.healthDataSyncService.setUserId(phone);
               gc.apiId.value = resBody2['id'].toString();
-
+              Config.apiId = resBody2['id'].toString();
+              Config.userId = phone;
+              Config.userName = resBody2['name'].toString();
+              gc.avatarUrl.value = resBody2['avatarUrl'] ?? "";
               final ftoken = await FirebaseHelper.getDeviceToken();
               if (ftoken != null) {
-                gc.apiToken.value = ftoken;
+                gc.firebaseToken.value = ftoken;
               }
               Future.delayed(const Duration(milliseconds: 500), () {
-                gok29Screen();
+                goHomePage();
               });
             } else {
               DialogHelper.showError("${resData["message"]}");
@@ -100,7 +104,7 @@ class Two3Controller extends GetxController {
     }
   }
 
-  void gok29Screen() {
-    Get.toNamed(AppRoutes.k29Page);
+  void goHomePage() {
+    Get.toNamed(AppRoutes.homePage);
   }
 }

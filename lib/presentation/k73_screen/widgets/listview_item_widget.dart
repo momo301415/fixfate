@@ -28,6 +28,12 @@ class ListviewItemWidget extends StatelessWidget {
       iconLeftPosition = 0.h;
       iconTopPosition = -20.v;
     }
+    if (model.icon!.value.contains(ImageConstant.imgIcon40x40)) {
+      iconWidth = 35.h;
+      iconHeight = 35.h;
+      iconLeftPosition = 15.h;
+      iconTopPosition = -10.v;
+    }
 
     return Stack(
       clipBehavior: Clip.none,
@@ -51,30 +57,12 @@ class ListviewItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 顯示時間與異常
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (isAlert)
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 6.h, vertical: 2.v),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8.h),
-                      ),
-                      child: Text(
-                        "lbl216".tr,
-                        style:
-                            TextStyle(color: Colors.white, fontSize: 12.fSize),
-                      ),
-                    ),
-                  SizedBox(width: 4.h),
-                  Text(
-                    model.loadTime!.value,
-                    style:
-                        TextStyle(fontSize: 12.fSize, color: appTheme.cyan700),
-                  ),
-                ],
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  model.loadTime!.value,
+                  style: TextStyle(fontSize: 12.fSize, color: appTheme.cyan700),
+                ),
               ),
               SizedBox(height: 8.v),
               // Label + Value + Unit
@@ -103,6 +91,23 @@ class ListviewItemWidget extends StatelessWidget {
             ],
           ),
         ),
+        // 右上紅色警示 Badge
+        if (isAlert)
+          Positioned(
+            top: 0,
+            right: 12.v,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 2.v),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(8.h),
+              ),
+              child: Text(
+                "lbl216".tr,
+                style: TextStyle(color: Colors.white, fontSize: 12.fSize),
+              ),
+            ),
+          ),
 
         // 圖示：超出卡片
         Positioned(
