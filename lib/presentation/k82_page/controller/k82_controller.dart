@@ -101,9 +101,9 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
-          clearData();
           return;
         }
+        clearData();
         final rateData = data["rateData"];
         List<SleepData> parsed = [];
         if (rateData is List) {
@@ -503,6 +503,7 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
     sleepSegments.clear();
 
     k82ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k82ModelObj.value.listItemList2.refresh();
   }
 
   /// 將sleepData & sleepDetail 轉換為 SleepSegment

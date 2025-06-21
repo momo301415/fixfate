@@ -91,7 +91,7 @@ class K10Screen extends GetWidget<K10Controller> {
           SizedBox(height: 22.h),
           GestureDetector(
               onTap: () {
-                Get.offNamedUntil(AppRoutes.k29Page,
+                Get.offNamedUntil(AppRoutes.homePage,
                     ModalRoute.withName(AppRoutes.one2Screen));
               },
               child: Text(

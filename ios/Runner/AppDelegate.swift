@@ -10,16 +10,16 @@ import UIKit
             .LaunchOptionsKey: Any]?
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+
         FirebaseApp.configure()
         GeneratedPluginRegistrant.register(with: self)
-        
+
         // this
-        SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback { registry in
-          GeneratedPluginRegistrant.register(with: registry)
+        SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback {
+            registry in
+            GeneratedPluginRegistrant.register(with: registry)
         }
-        if #available(iOS 10.0, *) {
-          UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
-        }
+   
         return super.application(
             application,
             didFinishLaunchingWithOptions: launchOptions
@@ -36,12 +36,54 @@ import UIKit
 
     override func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (
-            UNNotificationPresentationOptions
-        ) -> Void
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        print("📲 通知將呈現")
-        completionHandler([.alert, .sound])
+        let userInfo = response.notification.request.content.userInfo
+        print("📥 背景點通知 userInfo: \(userInfo)")
+
+        if let data = userInfo["alertDialog"] as? String {
+            if let controller = window?.rootViewController
+                as? FlutterViewController
+            {
+                let channel = FlutterMethodChannel(
+                    name: "com.pulesDevice/notifications",
+                    binaryMessenger: controller.binaryMessenger
+                )
+                DispatchQueue.main.async {
+                    channel.invokeMethod("alertDialog", arguments: data)
+                }
+            }
+        }
+
+        completionHandler()
+    }
+
+    override func userNotificationCenter(
+      _ center: UNUserNotificationCenter,
+      willPresent notification: UNNotification,
+      withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        let userInfo = notification.request.content.userInfo
+        print("📲 前景通知收到 userInfo: \(userInfo)")
+
+        if let controller = window?.rootViewController as? FlutterViewController {
+            let channel = FlutterMethodChannel(
+                name: "test_channel",
+                binaryMessenger: controller.binaryMessenger
+            )
+
+            if let data = userInfo["alertDialog"] as? String {
+                DispatchQueue.main.async {
+                    channel.invokeMethod("alertDialog", arguments: data)
+                }
+            }
+        }
+
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            completionHandler([.sound, .badge])
+        }
     }
 }

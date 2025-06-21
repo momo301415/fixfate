@@ -104,9 +104,9 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
-          clearData();
           return;
         }
+        clearData();
         final rateData = data["rateData"];
         List<TemperatureData> parsed = [];
         if (rateData is List) {
@@ -132,7 +132,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
         hightMinCount.value = max.toStringAsFixed(1);
         lowMinCount.value = min.toStringAsFixed(1);
 
-        if (lastData.type == "1" && lastData.type == "2") {
+        if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
 
           highCount.value = parsed.where((e) => e.type == "1").length;
@@ -393,7 +393,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
           currentDate.value.day,
         ).subtract(Duration(days: currentDate.value.weekday - 1));
 
-        final Map<int, List<int>> dayData = {};
+        final Map<int, List<double>> dayData = {};
 
         for (var e in tempratureApiData) {
           final date =
@@ -402,7 +402,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
           if (diffDays >= 0 && diffDays < 7) {
             dayData
                 .putIfAbsent(diffDays, () => [])
-                .add(int.parse(e.temperature));
+                .add(double.parse(e.temperature));
           }
         }
 
@@ -434,7 +434,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
       } else {
         final startOfMonth =
             DateTime(currentDate.value.year, currentDate.value.month, 1);
-        final Map<int, List<int>> dayData = {};
+        final Map<int, List<double>> dayData = {};
 
         for (var e in tempratureApiData) {
           final date =
@@ -443,7 +443,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
           if (diffDays >= 0 && diffDays < 31) {
             dayData
                 .putIfAbsent(diffDays, () => [])
-                .add(int.parse(e.temperature));
+                .add(double.parse(e.temperature));
           }
         }
 
@@ -846,5 +846,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
 
     k79ModelObj.value.listItemList.value.clear(); // 報警紀錄
     k79ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k79ModelObj.value.listItemList2.refresh();
+    k79ModelObj.value.listItemList.refresh();
   }
 }

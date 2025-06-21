@@ -51,10 +51,10 @@ class K67Controller extends GetxController {
 
   Future<void> getFamilyData() async {
     try {
-      LoadingHelper.show();
+      // LoadingHelper.show();
       final payload = {"userID": gc.apiId.value};
       final res = await apiService.postJson(Api.familyList, payload);
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null) return;

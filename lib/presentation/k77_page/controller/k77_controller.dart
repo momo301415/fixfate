@@ -100,9 +100,9 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
-          clearData();
           return;
         }
+        clearData();
         final rateData = data["rateData"];
         List<RateData> parsed = [];
         if (rateData is List) {
@@ -128,7 +128,7 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
         hightMinCount.value = max;
         lowMinCount.value = min;
 
-        if (lastData.type == "1" && lastData.type == "2") {
+        if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
 
           highCount.value = parsed.where((e) => e.type == "1").length;
@@ -835,5 +835,7 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
 
     k77ModelObj.value.listItemList.value.clear(); // 報警紀錄
     k77ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k77ModelObj.value.listItemList2.refresh();
+    k77ModelObj.value.listItemList.refresh();
   }
 }

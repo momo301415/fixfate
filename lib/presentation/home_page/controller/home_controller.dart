@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pulsedevice/presentation/k29_page/controller/k29_controller.dart';
+
 import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 
 class HomeController extends GetxController {

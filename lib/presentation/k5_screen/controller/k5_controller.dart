@@ -206,6 +206,7 @@ class K5Controller extends GetxController
   }
 
   void goK6Screen(int index) {
+    stopSport();
     Get.toNamed(AppRoutes.k6Screen, arguments: index);
   }
 

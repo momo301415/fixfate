@@ -16,8 +16,9 @@ class FirebaseHelper {
   static Future<void> init() async {
     await getDeviceToken();
     await _requestPermission();
-    FirebaseMessaging.onBackgroundMessage(_handleMessage);
-    FirebaseMessaging.onMessage.listen(_handleMessage);
+    FirebaseMessaging.onBackgroundMessage(handleMessage);
+    FirebaseMessaging.onMessage.listen(handleMessage);
+    FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   }
 
   static Future<void> _requestPermission() async {
@@ -39,33 +40,7 @@ class FirebaseHelper {
     }
   }
 
-  static Future<void> _showLocalNotification(RemoteMessage message) async {
-    final notification = message.notification;
-    if (notification == null) return;
-
-    const androidDetails = AndroidNotificationDetails(
-      'default_channel',
-      '推播通知',
-      channelDescription: '用於展示推播訊息',
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: '@drawable/ic_notification',
-    );
-
-    const platformDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: DarwinNotificationDetails(),
-    );
-
-    await _localNotifications.show(
-      notification.hashCode,
-      notification.title,
-      notification.body,
-      platformDetails,
-    );
-  }
-
-  static Future<void> _handleMessage(RemoteMessage message) async {
+  static Future<void> handleMessage(RemoteMessage message) async {
     var title = "";
     var body = "";
     if (message.notification != null) {
@@ -100,6 +75,10 @@ class FirebaseHelper {
       if (title.isEmpty || body.isEmpty) return;
       NotificationService().showFromFirebaseNotification(title, body);
     }
+  }
+
+  static Future<void> backgroundHandler(RemoteMessage message) async {
+    await handleMessage(message); // 共用同邏輯
   }
 
   /// 檢查是否應該顯示對話框

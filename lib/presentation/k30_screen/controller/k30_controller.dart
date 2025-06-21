@@ -7,7 +7,6 @@ import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
-import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -261,6 +260,7 @@ class K30Controller extends GetxController {
     required String subTitle,
     required RxList<T> list,
     required T Function(String text) createModel,
+    required HabitType habitType,
     RxList<T>? Function()? onRefresh, // 若需特殊 refresh 可擴展
     void Function(T model)? onToggle,
   }) async {
@@ -278,9 +278,17 @@ class K30Controller extends GetxController {
       );
 
       if (result != null && result.trim().isNotEmpty) {
-        list.insert(lastIndex, createModel(result));
+        final newModel = createModel(result);
+        final selectedField = _getIsSelectedField(newModel);
+        selectedField?.value = true;
+
+        list.insert(lastIndex, newModel);
+        // onToggle?.call(newModel);
         onRefresh?.call()?.refresh();
-        // 👉 清除 K36 的輸入框文字
+
+        // ✅ 根據 list 來源更新對應保存陣列
+        _updateHabitsList(habitType, newModel);
+
         final dialogController = Get.find<K36Controller>();
         dialogController.inputlightoneController.clear();
         dialogController.inputedText.value = '';
@@ -541,10 +549,10 @@ class K30Controller extends GetxController {
 
   /// call api取得個人資訊
   Future<UserProfile> getUserProfile(String phone) async {
-    LoadingHelper.show();
+    // LoadingHelper.show();
     try {
       final res = await api.postJson(Api.userProfile, {'phone': phone});
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
@@ -593,10 +601,8 @@ class K30Controller extends GetxController {
         }
       }
     } catch (e) {
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
-    } finally {
-      LoadingHelper.hide();
     }
     return UserProfile();
   }
@@ -678,6 +684,12 @@ class K30Controller extends GetxController {
             });
             return true;
           }
+        } else {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            SnackbarHelper.showBlueSnackbar(
+                message: "snackbar_save_success".tr);
+          });
+          return true;
         }
       } else {
         var res = await updateUserProfile('');
@@ -692,4 +704,47 @@ class K30Controller extends GetxController {
     }
     return false;
   }
+
+  Rx<bool>? _getIsSelectedField(dynamic model) {
+    if (model is ChipviewItemModel) return model.isSelected;
+    if (model is ChipviewOneItemModel) return model.isSelected;
+    if (model is ChipviewTwoItemModel) return model.isSelected;
+    if (model is ChipviewThreeItemModel) return model.isSelected;
+    if (model is ChipviewFourItemModel) return model.isSelected;
+    return null;
+  }
+
+  String? _getTextFromModel(dynamic model) {
+    if (model is ChipviewItemModel) return model.five?.value;
+    if (model is ChipviewOneItemModel) return model.one?.value;
+    if (model is ChipviewTwoItemModel) return model.two?.value;
+    if (model is ChipviewThreeItemModel) return model.three?.value;
+    if (model is ChipviewFourItemModel) return model.four?.value;
+    return null;
+  }
+
+  void _updateHabitsList<T>(HabitType type, T model) {
+    final text = _getTextFromModel(model);
+    if (text == null || text.isEmpty) return;
+
+    switch (type) {
+      case HabitType.food:
+        foodHabits.add(text);
+        break;
+      case HabitType.cook:
+        cookHabits.add(text);
+        break;
+      case HabitType.pastDisease:
+        pastDiseases.add(text);
+        break;
+      case HabitType.familyDisease:
+        familyDiseases.add(text);
+        break;
+      case HabitType.drugAllergy:
+        drugAllergies.add(text);
+        break;
+    }
+  }
 }
+
+enum HabitType { food, cook, pastDisease, familyDisease, drugAllergy }

@@ -49,8 +49,8 @@ class K30Screen extends GetWidget<K30Controller> {
           SizedBox(height: 16),
           _buildColumnone6(),
           SizedBox(height: 16),
-          _buildRowfidownload(),
-          SizedBox(height: 16),
+          // _buildRowfidownload(),
+          // SizedBox(height: 16),
           _buildColumn(),
           SizedBox(height: 36.h),
         ],
@@ -374,13 +374,17 @@ class K30Screen extends GetWidget<K30Controller> {
                             context: Get.context!,
                             title: "lbl308_2".tr,
                             subTitle: "lbl132".tr,
+                            habitType: HabitType.food,
                             createModel: (text) => ChipviewItemModel(
                               five: text.obs,
                               isSelected: true.obs,
                             ),
                             onRefresh: () =>
                                 controller.k30ModelObj.value.chipviewItemList,
-                            onToggle: (m) => m.isSelected?.toggle(),
+                            onToggle: (m) {
+                              m.isSelected?.toggle();
+                              controller.updateSelectedFoodHabits();
+                            },
                           );
                         } else if (index == 0) {
                           // Toggle index 0 並取消其他選中狀態
@@ -455,13 +459,17 @@ class K30Screen extends GetWidget<K30Controller> {
                             context: Get.context!,
                             title: "lbl315_2".tr,
                             subTitle: "lbl132".tr,
+                            habitType: HabitType.cook,
                             createModel: (text) => ChipviewOneItemModel(
                               one: text.obs,
                               isSelected: true.obs,
                             ),
                             onRefresh: () => controller
                                 .k30ModelObj.value.chipviewOneItemList,
-                            onToggle: (m) => m.isSelected?.toggle(),
+                            onToggle: (m) {
+                              m.isSelected?.toggle();
+                              controller.updateSelectedCookHabits();
+                            },
                           );
                         } else if (index == 0) {
                           // Toggle index 0 並取消其他選中狀態
@@ -536,13 +544,17 @@ class K30Screen extends GetWidget<K30Controller> {
                             context: Get.context!,
                             title: "lbl131".tr,
                             subTitle: "lbl132".tr,
+                            habitType: HabitType.pastDisease,
                             createModel: (text) => ChipviewTwoItemModel(
                               two: text.obs,
                               isSelected: true.obs,
                             ),
                             onRefresh: () => controller
                                 .k30ModelObj.value.chipviewTwoItemList,
-                            onToggle: (m) => m.isSelected?.toggle(),
+                            onToggle: (m) {
+                              m.isSelected?.toggle();
+                              controller.updateSelectedPastDiseases();
+                            },
                           );
                         } else if (index == 0) {
                           // Toggle index 0 並取消其他選中狀態
@@ -617,13 +629,17 @@ class K30Screen extends GetWidget<K30Controller> {
                             context: Get.context!,
                             title: "lbl112_1".tr,
                             subTitle: "lbl132".tr,
+                            habitType: HabitType.familyDisease,
                             createModel: (text) => ChipviewThreeItemModel(
                               three: text.obs,
                               isSelected: true.obs,
                             ),
                             onRefresh: () => controller
                                 .k30ModelObj.value.chipviewThreeItemList,
-                            onToggle: (m) => m.isSelected?.toggle(),
+                            onToggle: (m) {
+                              m.isSelected?.toggle();
+                              controller.updateSelectedFamilyDiseases();
+                            },
                           );
                         } else if (index == 0) {
                           // Toggle index 0 並取消其他選中狀態
@@ -698,13 +714,17 @@ class K30Screen extends GetWidget<K30Controller> {
                             context: Get.context!,
                             title: "lbl113_1".tr,
                             subTitle: "lbl132".tr,
+                            habitType: HabitType.drugAllergy,
                             createModel: (text) => ChipviewFourItemModel(
                               four: text.obs,
                               isSelected: true.obs,
                             ),
                             onRefresh: () => controller
                                 .k30ModelObj.value.chipviewFourItemList,
-                            onToggle: (m) => m.isSelected?.toggle(),
+                            onToggle: (m) {
+                              m.isSelected?.toggle();
+                              controller.updateSelectedDrugAllergies();
+                            },
                           );
                         } else if (index == 0) {
                           // Toggle index 0 並取消其他選中狀態

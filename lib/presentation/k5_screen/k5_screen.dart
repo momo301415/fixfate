@@ -256,6 +256,7 @@ class K5Screen extends GetWidget<K5Controller> {
 
   /// Navigates to the previous screen.
   onTapArrowleftone() {
+    controller.stopSport();
     Get.back();
   }
 }

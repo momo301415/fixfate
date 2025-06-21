@@ -35,9 +35,6 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   void onReady() {
     super.onReady();
     print("k73 controller onInit");
-    getFamilyData();
-    getHealthData();
-    // getData();
   }
 
   @override
@@ -297,10 +294,10 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   /// 取得家族清單-api
   Future<void> getFamilyData() async {
     try {
-      LoadingHelper.show();
+      // LoadingHelper.show();
       final payload = {"userID": gc.apiId.value};
       final res = await apiService.postJson(Api.familyList, payload);
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null) return;
@@ -333,7 +330,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   ///取得健康資料-api
   Future<void> getHealthData({String? familyId}) async {
     try {
-      LoadingHelper.show();
+      // LoadingHelper.show();
       final nowStr = DateTime.now().format(pattern: 'yyyy-MM-dd');
       final payload = {
         "startTime": nowStr,
@@ -342,7 +339,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
         "type": "ALL"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null) return;

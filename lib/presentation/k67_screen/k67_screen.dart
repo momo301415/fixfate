@@ -46,6 +46,7 @@ class K67Screen extends GetWidget<K67Controller> {
               },
             ),
           ] else ...[
+            SizedBox(height: mediaHeight * 0.2),
             Container(
               height: 100,
               width: double.infinity,

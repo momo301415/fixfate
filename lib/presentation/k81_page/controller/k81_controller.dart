@@ -90,9 +90,9 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
-          clearData();
           return;
         }
+        clearData();
         final rateData = data["rateData"];
         List<StepData> parsed = [];
         if (rateData is List) {
@@ -712,5 +712,6 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
     loadDataTime.value = '';
 
     k81ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k81ModelObj.value.listItemList2.refresh();
   }
 }

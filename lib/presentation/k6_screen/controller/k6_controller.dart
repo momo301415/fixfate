@@ -3,7 +3,6 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list_storage.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
-import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/controller/one7_controller.dart';
 import 'package:pulsedevice/presentation/one7_bottomsheet/one7_bottomsheet.dart';
 import '../../../core/app_export.dart';
@@ -91,7 +90,6 @@ class K6Controller extends GetxController
   /// 讀取資料
   Future<void> getRecords() async {
     try {
-      LoadingHelper.show();
       final records = await SportRecordListStorage.getRecords(gc.userId.value);
 
       final arecords = records.where((r) => r.sportType == "aerobic").toList();
@@ -107,9 +105,7 @@ class K6Controller extends GetxController
       hasLoaded.value = true;
     } catch (e) {
       print("❌ 讀取錯誤: $e");
-    } finally {
-      LoadingHelper.hide();
-    }
+    } finally {}
   }
 
   List<SportRecordGroup> _groupByDate(List<SportRecord> records) {

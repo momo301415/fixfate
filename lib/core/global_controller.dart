@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pulsedevice/core/app_export.dart';
@@ -38,12 +37,15 @@ import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
+  static const platform = MethodChannel('test_channel');
+
   ///--- life
   late AppLifecycleObserver lifecycleObserver;
 
@@ -61,6 +63,7 @@ class GlobalController extends GetxController {
 
   ///--- 藍牙狀態
   RxInt blueToolStatus = 0.obs;
+  RxBool isBleConnect = false.obs;
 
   ///--- 用戶資料
   RxString userEmail = ''.obs;
@@ -104,6 +107,9 @@ class GlobalController extends GetxController {
   ///--- 頭像url
   var avatarUrl = "".obs;
 
+  ///--- 藍牙資料同步是否準備就緒
+  final isBleDataReady = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -136,6 +142,10 @@ class GlobalController extends GetxController {
     YcProductPluginInit();
     initNotification();
     initBackgroundFetch();
+    if (Platform.isIOS) {
+      setupIosMessageChannel();
+      print("✅ setupIosMessageChannel called from GlobalController");
+    }
   }
 
   /// 初始化穿戴式sdk
@@ -350,6 +360,7 @@ class GlobalController extends GetxController {
     _lastSyncTime = now;
     await syncDataService.runBackgroundSync();
     await getBlueToothDeviceInfo();
+    isBleDataReady.value = true;
   }
 
   void _handleBluetoothStateChange(int newStatus) {
@@ -362,11 +373,13 @@ class GlobalController extends GetxController {
     switch (newStatus) {
       case 2:
         if (userId.value.isNotEmpty) {
+          isBleConnect.value = true;
           initFunc();
         }
         break;
       case 0:
       case 3:
+        isBleConnect.value = false;
         if (_isInitFuncRunning) {
           NotificationService().showDeviceDisconnectedNotification();
           stopForegroundTask();
@@ -402,5 +415,31 @@ class GlobalController extends GetxController {
     } catch (e) {
       debugPrint("❌ Failed to write log: $e");
     }
+  }
+
+  /// channel
+  void setupIosMessageChannel() {
+    platform.setMethodCallHandler((call) async {
+      if (call.method == 'alertDialog') {
+        final raw = call.arguments as String;
+        print("📨 iOS 收到資料: $raw");
+
+        // 解析自訂格式的資料
+        if (raw.contains(';')) {
+          final split = raw.split(';');
+          final main = split[0];
+          final nickName = split[1];
+          final relation = split[2];
+          final notifyToken = split[3];
+
+          final payload = {
+            "alertDialog": "$main;$nickName;$relation;$notifyToken"
+          };
+
+          final fakeMessage = RemoteMessage(data: payload);
+          await FirebaseHelper.handleMessage(fakeMessage);
+        }
+      }
+    });
   }
 }

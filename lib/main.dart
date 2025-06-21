@@ -13,7 +13,7 @@ void main() async {
     Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
     await Firebase.initializeApp();
     Get.put(GlobalController()); // 註冊為全域單例
-
+    GlobalController().setupIosMessageChannel();
     runApp(MyApp());
   });
 }

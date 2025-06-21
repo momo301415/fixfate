@@ -28,6 +28,7 @@ class K40Screen extends GetWidget<K40Controller> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (!hasDevice) ...[
+              SizedBox(height: mediaHeight * 0.2),
               Container(
                 height: 100,
                 width: double.infinity,

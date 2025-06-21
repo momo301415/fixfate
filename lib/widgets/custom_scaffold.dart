@@ -161,87 +161,73 @@ class BaseChatScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = SizeUtils.height; // 或 Get.height，等價
-    double headerHeight;
-
-    if (deviceHeight < 700) {
-      headerHeight = 0.25 * deviceHeight;
-    } else if (deviceHeight < 800) {
-      headerHeight = 0.23 * deviceHeight;
-    } else if (deviceHeight < 900) {
-      headerHeight = 0.20 * deviceHeight;
-    } else {
-      headerHeight = 0.18 * deviceHeight;
-    }
+    final mediaQuery = MediaQuery.of(context);
+    final safeTop = mediaQuery.padding.top; // 避免瀏海遮住內容
+    final figmaheaderH = 176.0; // 設計稿 Header 高度
     return Scaffold(
       backgroundColor: appTheme.teal50,
       body: Column(
         children: [
           // Header 區塊
           SizedBox(
-            height: headerHeight.h,
-            width: double.infinity,
+            height: figmaheaderH,
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // 背景圖片，不要包 SafeArea，保留弧形
-                Image.asset(
+                Positioned.fill(
+                    child:
+                        // 背景圖片，不要包 SafeArea，保留弧形
+                        Image.asset(
                   ImageConstant.imgUnionBg2,
                   fit: BoxFit.fill,
-                ),
-                // SafeArea 處理瀏海 + 文字內容
-                SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 0.h),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(horizontal: 24.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "lbl224".tr,
-                                      style:
-                                          CustomTextStyles.bodyLargeWhiteA700,
-                                    ),
-                                    Text(
-                                      "lbl225".tr,
-                                      style:
-                                          CustomTextStyles.bodyMediumWhiteA700,
-                                    ),
-                                  ],
-                                ),
+                )),
+                Padding(
+                  padding: EdgeInsets.only(top: safeTop),
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "lbl224".tr,
+                                    style: CustomTextStyles.bodyLargeWhiteA700,
+                                  ),
+                                  Text(
+                                    "lbl225".tr,
+                                    style: CustomTextStyles.bodyMediumWhiteA700,
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: Icon(Icons.refresh, color: Colors.white),
-                                onPressed: onEvent,
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.refresh, color: Colors.white),
+                              onPressed: onEvent,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: CustomSearchView(
+                                controller: controller,
+                                hintText: "lbl226".tr,
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(16.h, 12.h, 12.h, 12.h),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 8.h),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomSearchView(
-                                  controller: controller,
-                                  hintText: "lbl226".tr,
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                      16.h, 12.h, 12.h, 12.h),
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
