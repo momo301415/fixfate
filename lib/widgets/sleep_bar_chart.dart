@@ -5,34 +5,27 @@ import 'package:flutter/material.dart';
 class SleepTimelineBarChartWidget extends StatelessWidget {
   final List<SleepSegment> segments;
   final double barHeight;
-  final double pixelsPerMinute;
-  final Map<SleepStage, Color>? stageColors; // 可選的自訂顏色映射
+  final Map<SleepStage, Color>? stageColors;
 
   const SleepTimelineBarChartWidget({
     Key? key,
     required this.segments,
     this.barHeight = 20.0,
-    this.pixelsPerMinute = 3.0,
     this.stageColors,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // 計算總持續時間（分鐘）
-    int totalMinutes =
-        segments.map((seg) => seg.duration.inMinutes).fold(0, (a, b) => a + b);
-    // 根據總分鐘數計算繪圖需要的總寬度
-    double totalWidth = totalMinutes * pixelsPerMinute;
+    final totalWidth = MediaQuery.of(context).size.width;
 
     return SizedBox(
       width: totalWidth,
-      height: barHeight * 4, // 四個階段的垂直總高度 (清醒、REM、淺睡、深睡)
+      height: barHeight * 4,
       child: CustomPaint(
-        size: Size(totalWidth, barHeight * 4),
         painter: SleepTimelinePainter(
           segments: segments,
           barHeight: barHeight,
-          pixelsPerMinute: pixelsPerMinute,
+          totalWidth: totalWidth,
           customStageColor: stageColors,
         ),
       ),
@@ -44,40 +37,37 @@ class SleepTimelineBarChartWidget extends StatelessWidget {
 class SleepTimelinePainter extends CustomPainter {
   final List<SleepSegment> segments;
   final double barHeight;
-  final double pixelsPerMinute;
+  final double totalWidth;
   final Map<SleepStage, Color> stageColor;
 
   SleepTimelinePainter({
     required this.segments,
-    this.barHeight = 20.0,
-    this.pixelsPerMinute = 3.0,
+    required this.barHeight,
+    required this.totalWidth,
     Map<SleepStage, Color>? customStageColor,
   }) : stageColor = customStageColor ??
             {
-              // 預設藍色系配色，可自訂
-              SleepStage.awake: Color(0xFF90E0EF), // 淡藍 (清醒)
-              SleepStage.rem: Color(0xFF3DDCFF), // 亮藍 (快速動眼期)
-              SleepStage.light: Color(0xFF219EBC), // 藍色 (淺睡)
-              SleepStage.deep: Color(0xFF123E48), // 深藍 (深睡)
+              SleepStage.awake: Color(0xFF90E0EF),
+              SleepStage.rem: Color(0xFF3DDCFF),
+              SleepStage.light: Color(0xFF219EBC),
+              SleepStage.deep: Color(0xFF123E48),
             };
 
   @override
   void paint(Canvas canvas, Size size) {
-    double xOffset = 0.0;
-    final Paint paint = Paint()..style = PaintingStyle.fill;
+    final totalSeconds = segments.fold<int>(
+        0, (sum, segment) => sum + segment.duration.inSeconds);
+    double xOffset = 0;
+    final paint = Paint()..style = PaintingStyle.fill;
 
-    // 繪製每個睡眠階段的矩形區塊
-    for (var segment in segments) {
-      // 決定此段的顏色
-      paint.color = stageColor[segment.stage] ?? Colors.blue;
-      // 計算此段的寬度（分鐘數 * 每分鐘像素比例）
-      double segmentWidth = segment.duration.inMinutes * pixelsPerMinute;
+    for (var seg in segments) {
+      paint.color = stageColor[seg.stage] ?? Colors.blue;
+      final width = (seg.duration.inSeconds / totalSeconds) * totalWidth;
 
-      // 計算此段的垂直位置 (依睡眠階段決定列的位置)
       double yOffset;
-      switch (segment.stage) {
+      switch (seg.stage) {
         case SleepStage.awake:
-          yOffset = 0.0;
+          yOffset = 0;
           break;
         case SleepStage.rem:
           yOffset = barHeight;
@@ -90,22 +80,17 @@ class SleepTimelinePainter extends CustomPainter {
           break;
       }
 
-      // 繪製代表該睡眠區段的矩形
-      Rect rect = Rect.fromLTWH(xOffset, yOffset, segmentWidth, barHeight);
+      final rect = Rect.fromLTWH(xOffset, yOffset, width, barHeight);
       canvas.drawRect(rect, paint);
-
-      // 水平位移累加，緊接畫下一個區段
-      xOffset += segmentWidth;
+      xOffset += width;
     }
   }
 
   @override
   bool shouldRepaint(covariant SleepTimelinePainter oldDelegate) {
-    // 當資料列表或相關參數改變時才重繪
     return oldDelegate.segments != segments ||
-        oldDelegate.barHeight != barHeight ||
-        oldDelegate.pixelsPerMinute != pixelsPerMinute ||
-        oldDelegate.stageColor != stageColor;
+        oldDelegate.totalWidth != totalWidth ||
+        oldDelegate.barHeight != barHeight;
   }
 }
 

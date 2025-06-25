@@ -49,6 +49,31 @@ class DateTimeUtils {
     }
   }
 
+  /// 將「總秒數」轉換為中文格式時間字串
+  /// 支援輸出：
+  /// - "h小時m分鐘s秒"
+  /// - "h小時m分鐘"
+  /// - "h小時s秒"
+  /// - "h小時"
+  /// - "m分鐘s秒"
+  /// - "m分鐘"
+  /// - "s秒"
+  static String formatDurationCN(int totalSeconds) {
+    if (totalSeconds < 0) totalSeconds = 0;
+
+    final int hours = totalSeconds ~/ 3600;
+    final int minutes = (totalSeconds % 3600) ~/ 60;
+    final int seconds = totalSeconds % 60;
+
+    final List<String> parts = [];
+
+    if (hours > 0) parts.add('${hours}小時');
+    if (minutes > 0) parts.add('${minutes}分鐘');
+    if (seconds > 0 || parts.isEmpty) parts.add('${seconds}秒');
+
+    return parts.join('');
+  }
+
   /// 比對兩個時間點並計算出時間差，返回「8 小時 23 分鐘」格式
   static String getDurationFormattedString(
       int startTimestamp, int endTimestamp) {

@@ -17,6 +17,10 @@ class K5Screen extends GetWidget<K5Controller> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ 確保只執行一次
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.startPage();
+    });
     return Scaffold(
       backgroundColor: theme.colorScheme.onPrimary,
       appBar: _buildAppBar(),
@@ -46,6 +50,7 @@ class K5Screen extends GetWidget<K5Controller> {
                     Expanded(
                       child: Container(
                         child: TabBarView(
+                          physics: NeverScrollableScrollPhysics(),
                           controller: controller.tabviewController,
                           children: [
                             K5_1Page(
@@ -256,7 +261,7 @@ class K5Screen extends GetWidget<K5Controller> {
 
   /// Navigates to the previous screen.
   onTapArrowleftone() {
-    controller.stopSport();
+    // controller.stopSport();
     Get.back();
   }
 }

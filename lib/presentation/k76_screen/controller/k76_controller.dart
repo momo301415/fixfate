@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/presentation/k76_screen/model/k76_model.dart';
 import 'package:pulsedevice/presentation/k77_page/controller/k77_controller.dart';
 import 'package:pulsedevice/presentation/k78_page/controller/k78_controller.dart';
@@ -17,6 +18,7 @@ import '../../k82_page/controller/k82_controller.dart';
 class K76Controller extends GetxController
     with GetSingleTickerProviderStateMixin {
   Rx<K76Model> K76ModelObj = K76Model().obs;
+  final gc = Get.find<GlobalController>();
   RxInt selectedIndex = 0.obs;
   late TabController tabController;
   late ScrollController iconScrollController;

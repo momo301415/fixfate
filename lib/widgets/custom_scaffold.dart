@@ -164,13 +164,24 @@ class BaseChatScaffold extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final safeTop = mediaQuery.padding.top; // 避免瀏海遮住內容
     final figmaheaderH = 176.0; // 設計稿 Header 高度
+    final deviceHeight = mediaQuery.size.height;
+    var deviceH = 0;
+    if (deviceHeight >= 600 && deviceHeight <= 700) {
+      deviceH = 10;
+    } else if (deviceHeight > 700 && deviceHeight <= 800) {
+      deviceH = 15;
+    } else if (deviceHeight > 800 && deviceHeight <= 900) {
+      deviceH = 25;
+    } else if (deviceHeight > 900) {
+      deviceH = 35;
+    }
     return Scaffold(
       backgroundColor: appTheme.teal50,
       body: Column(
         children: [
           // Header 區塊
           SizedBox(
-            height: figmaheaderH,
+            height: figmaheaderH + deviceH.h,
             child: Stack(
               fit: StackFit.expand,
               children: [

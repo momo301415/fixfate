@@ -32,6 +32,11 @@ class Two7Controller extends GetxController {
     }
   }
 
+  void switchChange(bool value) {
+    isSelectedSwitch.value = value;
+    postApi(gc.apiId.value, model.familyId!.value, model.two!.value);
+  }
+
   Future<void> deleteFamily() async {
     try {
       LoadingHelper.show();
@@ -45,6 +50,27 @@ class Two7Controller extends GetxController {
       }
     } catch (e) {
       print("deleteFamily Error: $e");
+    }
+  }
+
+  Future<void> postApi(String main, String sub, String nickName) async {
+    try {
+      final payload = {
+        "id": {
+          "userId": main,
+          "familyId": sub,
+        },
+        "notify": isSelectedSwitch.value, //緊報通知
+        "abbreviation": nickName
+      };
+      var res = await ApiService().postJson(
+        Api.familyBiding,
+        payload,
+      );
+
+      if (res.isNotEmpty) {}
+    } catch (e) {
+      print("Notify API Error: $e");
     }
   }
 }

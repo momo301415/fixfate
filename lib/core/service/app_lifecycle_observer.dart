@@ -10,9 +10,9 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       var res = await gc.getBlueToothDeviceInfo();
-      if (res) {
+      if (res && !gc.isSporting.value) {
         // App 回到前景，觸發一次同步
-        gc.syncDataService.runBackgroundSync();
+        gc.safeRunSync();
       }
       debugPrint("App 回到前景，已執行資料同步");
     }

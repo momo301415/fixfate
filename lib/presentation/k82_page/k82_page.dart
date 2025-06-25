@@ -276,7 +276,7 @@ class K82Page extends GetWidget<K82Controller> {
                     child: SleepTimelineBarChartWidget(
                       segments: controller.sleepSegments,
                       barHeight: 20.0,
-                      pixelsPerMinute: 3.0,
+                      // pixelsPerMinute: 3.0,
                     ),
                   ),
                 ),

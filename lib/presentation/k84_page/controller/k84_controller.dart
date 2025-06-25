@@ -82,7 +82,8 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
       final payload = {
         "startTime": start.format(pattern: 'yyyy-MM-dd'),
         "endTime": end.format(pattern: 'yyyy-MM-dd'),
-        "userID": gc.apiId.value,
+        "userID":
+            gc.familyId.value.isEmpty ? gc.apiId.value : gc.familyId.value,
         "type": "distance"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
@@ -112,6 +113,7 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
         final interval = rawMax == 0 ? 200 : (rawMax / 5).ceil();
         _interval.value = interval;
         _maxY.value = interval * 5;
+        parsed.sort((a, b) => b.startTimestamp.compareTo(a.startTimestamp));
 
         /// 歷史紀錄
         final list = parsed.map((m) {

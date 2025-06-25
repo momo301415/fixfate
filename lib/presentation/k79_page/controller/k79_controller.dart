@@ -96,7 +96,8 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
       final payload = {
         "startTime": start.format(pattern: 'yyyy-MM-dd'),
         "endTime": end.format(pattern: 'yyyy-MM-dd'),
-        "userID": gc.apiId.value,
+        "userID":
+            gc.familyId.value.isEmpty ? gc.apiId.value : gc.familyId.value,
         "type": "temperature"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
@@ -144,7 +145,7 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
 
         /// 圖表
         tempratureApiData.assignAll(parsed);
-
+        parsed.sort((a, b) => b.startTimestamp.compareTo(a.startTimestamp));
         final history = parsed.map((e) {
           final dt =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);

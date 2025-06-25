@@ -18,12 +18,13 @@ class K73Screen extends GetWidget<K73Controller> {
   Widget build(BuildContext context) {
     return BaseChatScaffold(
       enableScroll: false,
-      // onEvent: () {
-      //   print("k73 screen onEvent");
-      //   Future.delayed(const Duration(milliseconds: 500), () {
-      //     controller.getHealthData();
-      //   });
-      // },
+      onEvent: () {
+        print("k73 screen onEvent");
+        Future.delayed(const Duration(milliseconds: 500), () {
+          controller.getFamilyData();
+          controller.getHealthData();
+        });
+      },
       child: ListView(
         physics: BouncingScrollPhysics(),
         padding: EdgeInsets.only(bottom: 120.h),

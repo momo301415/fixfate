@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -13,11 +14,28 @@ class FirebaseHelper {
   static final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
+  /// 儲存需要延遲處理的訊息（背景或關閉 App 點推播）
+  static RemoteMessage? _pendingDialogMessage;
   static Future<void> init() async {
     await getDeviceToken();
     await _requestPermission();
-    FirebaseMessaging.onBackgroundMessage(handleMessage);
+    // 🔴 關閉 App 點推播啟動
+    final initMsg = await _messaging.getInitialMessage();
+    if (initMsg != null && shouldShowDialog(initMsg)) {
+      _pendingDialogMessage = initMsg;
+    }
+
+    // 🟠 App 背景 → 點推播 → 返回 App
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (shouldShowDialog(message)) {
+        _pendingDialogMessage = message;
+      }
+    });
+
+    // 🟢 App 前景收到推播
     FirebaseMessaging.onMessage.listen(handleMessage);
+
+    // 🟤 後台推播（主要用於 Android background handler）
     FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   }
 
@@ -77,6 +95,7 @@ class FirebaseHelper {
     }
   }
 
+  @pragma('vm:entry-point')
   static Future<void> backgroundHandler(RemoteMessage message) async {
     await handleMessage(message); // 共用同邏輯
   }
@@ -86,6 +105,15 @@ class FirebaseHelper {
     final flag = message.data['alertDialog']?.toString().toLowerCase();
     if (flag == null) return false;
     return true;
+  }
+
+  /// 提供給首頁呼叫，顯示 Dialog 用
+  static RemoteMessage? consumePendingDialogMessage() {
+    debugPrint("enter consumePendingDialogMessage");
+    final msg = _pendingDialogMessage;
+    debugPrint("consumePendingDialogMessage -> msg: $msg");
+    _pendingDialogMessage = null;
+    return msg;
   }
 
   static Future<void> postApi(

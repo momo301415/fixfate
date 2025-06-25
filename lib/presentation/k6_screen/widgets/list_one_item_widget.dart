@@ -82,16 +82,12 @@ class ListOneItemWidget extends StatelessWidget {
 
                     SizedBox(width: 16.h),
 
-                    // 時長
-                    Text(
-                      listOneItemModelObj.m0kcaltwo4!,
-                      style: CustomTextStyles.titleMediumPrimary_1,
-                    ),
-
-                    SizedBox(width: 2.h),
-                    Text(
-                      listOneItemModelObj.m0kcaltwo5!,
-                      style: CustomTextStyles.bodySmallPrimaryContainer_4,
+                    // ── ❷ 時長：直接 RichText
+                    buildDurationText(
+                      seconds:
+                          int.parse(listOneItemModelObj.m0kcaltwo4!), // ✅ 你的秒數
+                      numberStyle: CustomTextStyles.titleMediumPrimary_1,
+                      unitStyle: CustomTextStyles.bodySmallPrimaryContainer_4,
                     ),
                   ],
                 ),
@@ -101,5 +97,39 @@ class ListOneItemWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// 將「秒」轉成中文時間 + RichText
+  RichText buildDurationText({
+    required int seconds,
+    required TextStyle numberStyle, // 藍色
+    required TextStyle unitStyle, // 黑色
+  }) {
+    // 先把秒數換成想要的字串 ─ 例如 3661 ➜ 1小時1分鐘1秒
+    String _format(int sec) {
+      if (sec <= 0) return '0秒';
+      final h = sec ~/ 3600;
+      final m = (sec % 3600) ~/ 60;
+      final s = sec % 60;
+
+      final parts = <String>[];
+      if (h > 0) parts.add('$h小時');
+      if (m > 0) parts.add('$m分鐘');
+      if (s > 0) parts.add('$s秒');
+      return parts.join('');
+    }
+
+    final str = _format(seconds);
+
+    // 用 RegExp 把「數值」與「中文字單位」拆開
+    final spans = <TextSpan>[];
+    final reg = RegExp(r'(\d+|[^0-9]+)'); // 抓連續數字或連續非數字
+    for (final m in reg.allMatches(str)) {
+      final txt = m.group(0)!;
+      final isNum = RegExp(r'^\d+$').hasMatch(txt); // 純數字？
+      spans.add(TextSpan(text: txt, style: isNum ? numberStyle : unitStyle));
+    }
+
+    return RichText(text: TextSpan(children: spans));
   }
 }

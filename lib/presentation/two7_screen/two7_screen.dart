@@ -99,7 +99,7 @@ class Two7Screen extends GetWidget<Two7Controller> {
                   () => CustomSwitch(
                     value: controller.isSelectedSwitch.value,
                     onChange: (value) {
-                      controller.isSelectedSwitch.value = value;
+                      controller.switchChange(value);
                     },
                   ),
                 )

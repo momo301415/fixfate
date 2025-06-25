@@ -92,7 +92,8 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
       final payload = {
         "startTime": start.format(pattern: 'yyyy-MM-dd'),
         "endTime": end.format(pattern: 'yyyy-MM-dd'),
-        "userID": gc.apiId.value,
+        "userID":
+            gc.familyId.value.isEmpty ? gc.apiId.value : gc.familyId.value,
         "type": "oxygen"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
@@ -132,7 +133,7 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
 
         /// 圖表
         oxyApiData.assignAll(parsed);
-
+        parsed.sort((a, b) => b.startTimestamp.compareTo(a.startTimestamp));
         final history = parsed.map((e) {
           final dt =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);

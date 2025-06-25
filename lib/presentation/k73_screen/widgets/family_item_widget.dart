@@ -25,7 +25,9 @@ class FamilyItemWidget extends StatelessWidget {
         onTap: () {
           controller.familySelectedIndex.value = index!;
 
-          controller.getHealthData(familyId: itemModelObj.familyId?.value);
+          controller.getHealthData(
+              familyId: itemModelObj.familyId?.value,
+              familyName: itemModelObj.two?.value);
         },
         child: SizedBox(
           width: 50.h,
@@ -33,12 +35,14 @@ class FamilyItemWidget extends StatelessWidget {
             opacity: isSelected ? 1.0 : 0.5,
             child: Column(
               children: [
-                CustomImageView(
+                ClipOval(
+                    child: CustomImageView(
                   imagePath: itemModelObj.path?.value ??
                       ImageConstant.imgEllipse8236x36,
+                  fit: BoxFit.cover,
                   height: 36.h,
                   width: 36.h,
-                ),
+                )),
                 SizedBox(height: 4.v),
                 Text(
                   itemModelObj.two!.value,

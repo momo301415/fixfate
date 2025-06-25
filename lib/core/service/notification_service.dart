@@ -41,97 +41,109 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> scheduleReminder(String frequency) async {
-    await _flutterLocalNotificationsPlugin.cancelAll(); // 清除舊通知
-
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    int notificationId = 0;
-
-    tz.TZDateTime _nextInstanceOfTime(
-        tz.TZDateTime from, int hour, int minute) {
-      tz.TZDateTime scheduledDate = tz.TZDateTime(
-          tz.local, from.year, from.month, from.day, hour, minute);
-      if (scheduledDate.isBefore(from)) {
-        scheduledDate = scheduledDate.add(const Duration(days: 1));
-      }
-      return scheduledDate;
-    }
-
-    Future<void> scheduleNotification(
-        tz.TZDateTime scheduledTime, String title, int id) async {
-      await _flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        '用藥提醒',
-        title,
-        scheduledTime,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'medication_channel',
-            '用藥提醒',
-            channelDescription: '提醒您按時服藥',
-            importance: Importance.max,
-            priority: Priority.high,
-          ),
-          iOS: DarwinNotificationDetails(),
+  // 單一通知排程
+  Future<void> _scheduleNotification({
+    required int id,
+    required tz.TZDateTime dateTime,
+    required String title,
+  }) async {
+    print('⏰ 排程通知: id=$id time=$dateTime title=$title');
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      '用藥提醒',
+      title,
+      dateTime,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'medication_channel',
+          '用藥提醒',
+          channelDescription: '提醒您按時服藥',
+          importance: Importance.max,
+          priority: Priority.high,
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        matchDateTimeComponents: null,
-      );
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+    );
+  }
+
+  /// 主排程方法
+  Future<void> scheduleReminder(String frequency) async {
+    // 清除所有相關通知（但不是 cancelAll）
+    for (int id = 1000; id < 1100; id++) {
+      await _flutterLocalNotificationsPlugin.cancel(id);
     }
+
+    final now = tz.TZDateTime.now(tz.local);
+    int id = 1000;
 
     for (int i = 0; i < 30; i++) {
-      final baseDate = now.add(Duration(days: i));
+      final base = now.add(Duration(days: i));
       switch (frequency) {
         case '三天一次':
           if (i % 3 == 0) {
-            final time = _nextInstanceOfTime(baseDate, 8, 0);
-            await scheduleNotification(time, '三天一次服藥提醒', notificationId++);
+            await _scheduleNotification(
+              id: id++,
+              dateTime: _nextAt(base, 8, 0),
+              title: '三天一次服藥提醒',
+            );
           }
           break;
         case '兩天一次':
           if (i % 2 == 0) {
-            final time = _nextInstanceOfTime(baseDate, 8, 0);
-            await scheduleNotification(time, '兩天一次服藥提醒', notificationId++);
+            await _scheduleNotification(
+              id: id++,
+              dateTime: _nextAt(base, 8, 0),
+              title: '兩天一次服藥提醒',
+            );
           }
           break;
         case '每天一次':
-          final time = _nextInstanceOfTime(baseDate, 8, 0);
-          await scheduleNotification(time, '每天服藥提醒', notificationId++);
+          await _scheduleNotification(
+            id: id++,
+            dateTime: _nextAt(base, 9, 39),
+            title: '每天服藥提醒',
+          );
           break;
         case '一天兩次':
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 8, 0), title: '早上服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 18, 0), title: '晚上服藥提醒');
           break;
         case '一天三次':
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 13, 0), '中午服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 8, 0), title: '早上服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 13, 0), title: '中午服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 18, 0), title: '晚上服藥提醒');
           break;
         case '一天四次':
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 8, 0), '早上服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 13, 0), '中午服藥提醒', notificationId++);
-          await scheduleNotification(_nextInstanceOfTime(baseDate, 15, 51),
-              '傍晚服藥提醒', notificationId++);
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 22, 0), '晚上服藥提醒', notificationId++);
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 8, 0), title: '早上服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 13, 0), title: '中午服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 18, 0), title: '傍晚服藥提醒');
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 22, 0), title: '晚上服藥提醒');
           break;
         case '每晚一次':
-          await scheduleNotification(
-              _nextInstanceOfTime(baseDate, 18, 0), '晚上服藥提醒', notificationId++);
-          break;
-        default:
-          final time = _nextInstanceOfTime(baseDate, 8, 0);
-          await scheduleNotification(time, '預設服藥提醒', notificationId++);
+          await _scheduleNotification(
+              id: id++, dateTime: _nextAt(base, 18, 0), title: '晚上服藥提醒');
           break;
       }
     }
+  }
+
+  /// 傳回距離 base 最近的某時間點（今天還沒到就今天，否則明天）
+  tz.TZDateTime _nextAt(tz.TZDateTime base, int hour, int minute) {
+    final dt =
+        tz.TZDateTime(tz.local, base.year, base.month, base.day, hour, minute);
+    return dt.isBefore(tz.TZDateTime.now(tz.local))
+        ? dt.add(const Duration(days: 1))
+        : dt;
   }
 
   Future<void> showDeviceDisconnectedNotification() async {
@@ -277,7 +289,7 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.zonedSchedule(
       12345,
       '測試通知',
-      '兩分鐘後應該跳出',
+      '十秒後應該跳出',
       scheduled,
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -293,7 +305,7 @@ class NotificationService {
           presentSound: true,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }

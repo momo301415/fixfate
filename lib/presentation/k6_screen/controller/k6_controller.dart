@@ -167,13 +167,7 @@ class K6Controller extends GetxController
   }
 
   String getTimeUnitLabel(int totalSeconds) {
-    if (totalSeconds >= 3600) {
-      return '小時';
-    } else if (totalSeconds >= 60) {
-      return '分鐘';
-    } else {
-      return '秒';
-    }
+    return DateTimeUtils.formatDurationCN(totalSeconds);
   }
 
   Future<void> selectHistoryDate() async {

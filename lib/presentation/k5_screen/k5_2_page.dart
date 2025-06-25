@@ -10,7 +10,7 @@ import 'widgets/listeightysix_item_widget.dart';
 class K5_2Page extends StatelessWidget {
   K5_2Page({Key? key, required this.onStartPressed}) : super(key: key);
   final VoidCallback onStartPressed;
-  final controller = Get.put(K5Controller());
+  final controller = Get.find<K5Controller>();
 
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,7 @@ class K2Controller extends GetxController {
   }
 
   void initData() async {
-    FirebaseHelper.init().then((value) => autoLogin());
+    autoLogin();
   }
 
   /// 路由登入頁面

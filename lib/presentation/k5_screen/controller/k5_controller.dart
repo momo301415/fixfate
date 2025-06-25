@@ -15,12 +15,10 @@ import '../models/k5_model.dart';
 /// This class manages the state of the K5Screen, including the
 /// current k5ModelObj
 class K5Controller extends GetxController
-    with GetSingleTickerProviderStateMixin {
+    with GetSingleTickerProviderStateMixin, WidgetsBindingObserver {
   Rx<K5Model> k5ModelObj = K5Model().obs;
   final gc = Get.find<GlobalController>();
-  late TabController tabviewController = Get.put(
-    TabController(vsync: this, length: 2),
-  );
+  late TabController tabviewController;
 
   /// 0 = 有氧, 1 = 重訓
   Rx<int> tabIndex = 0.obs;
@@ -48,17 +46,41 @@ class K5Controller extends GetxController
   RxInt maxBpm = 0.obs;
   RxInt minBpm = 0.obs;
 
+  /// 快取最後一次 onListening 的即時資料，方便 Resume 時刷新
+  Map<String, int> _lastSportCache = {};
+
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    tabviewController = TabController(vsync: this, length: 2);
     print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
-    syncData();
-    _registerSdkListener();
   }
 
   @override
   void onClose() {
     super.onClose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // ✅ App 回前景，強制刷新資料
+      /// 1) 回前景先確認 Listener 是否還在（有時會被系統回收）
+      _registerSdkListener();
+
+      /// 2) 若正在運動，把「快取的最後數值」再寫回一次，
+      ///    觸發 Rx <=> UI 重新 build
+      if (isStart.value && _lastSportCache.isNotEmpty) {
+        bpm.value = _lastSportCache['bpm'] ?? bpm.value;
+        distance.value = _lastSportCache['distance'] ?? distance.value;
+        steps.value = _lastSportCache['steps'] ?? steps.value;
+        calories.value = _lastSportCache['cal'] ?? calories.value;
+
+        _updateTimeFields(_lastSportCache['sec'] ?? 0);
+      }
+    }
   }
 
   void syncData() async {
@@ -112,6 +134,14 @@ class K5Controller extends GetxController
         steps.value = int.tryParse(sportInfo["step"].toString()) ?? 0;
         calories.value = int.tryParse(sportInfo["calories"].toString()) ?? 0;
 
+        _lastSportCache = {
+          'sec': totalSec,
+          'bpm': bpm.value,
+          'distance': distance.value,
+          'steps': steps.value,
+          'cal': calories.value,
+        };
+
         final model =
             SportRecord(sportType: '', time: DateTime.now(), bpm: bpm.value);
         records.add(model);
@@ -120,6 +150,12 @@ class K5Controller extends GetxController
         _updateTimeFields(totalSec);
       }
     });
+  }
+
+  /// 運動頁首次開啟時，主動呼叫 startPage()
+  void startPage() {
+    syncData();
+    _registerSdkListener();
   }
 
   void switchMode(int idx) {
@@ -206,7 +242,7 @@ class K5Controller extends GetxController
   }
 
   void goK6Screen(int index) {
-    stopSport();
+    // stopSport();
     Get.toNamed(AppRoutes.k6Screen, arguments: index);
   }
 
@@ -215,6 +251,7 @@ class K5Controller extends GetxController
       SnackbarHelper.showBlueSnackbar(message: "請先連接藍牙裝置");
       return;
     }
+    gc.isSporting.value = true;
 
     /// 啟動運動時暫停背景五分鐘執行同步資料，不然會打架
     gc.pauseBackgroundSync();
@@ -238,6 +275,7 @@ class K5Controller extends GetxController
   Future<void> stopSport() async {
     try {
       if (!isStart.value) return;
+      gc.isSporting.value = false;
       isStart.value = false;
       YcProductPlugin()
           .appControlSport(DeviceSportState.stop, DeviceSportType.fitness)

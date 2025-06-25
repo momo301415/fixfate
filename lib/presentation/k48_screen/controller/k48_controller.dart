@@ -75,7 +75,7 @@ class K48Controller extends GetxController {
 
   Future<void> saveReminderSettings() async {
     try {
-      LoadingHelper.show(message: '儲存中...');
+      LoadingHelper.show();
       profile = RemiderSetting(
         frequency: alertTime.value,
         timing: eatTime.value,
@@ -89,16 +89,13 @@ class K48Controller extends GetxController {
 
   Future<void> loadReminderSettings() async {
     try {
-      LoadingHelper.show();
       var profile = await RemiderSettingStorage.getUserProfile(gc.userId.value);
       if (profile != null) {
         isSelectedSwitch.value = profile.alertEnabled;
         alertTime.value = profile.frequency;
         eatTime.value = profile.timing;
       }
-    } finally {
-      LoadingHelper.hide();
-    }
+    } finally {}
   }
 
   Future<void> scheduleReminderFromUserChoice(String frequency) async {

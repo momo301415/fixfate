@@ -70,7 +70,8 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     if (res != null) {
       // getData();
       await getFamilyData();
-      await getHealthData();
+      await getHealthData(
+          familyId: gc.familyId.value, familyName: gc.familyName.value);
     }
   }
 
@@ -304,6 +305,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
         if (data is List) {
           final modelList = data.map<FamilyItemModel>((e) {
             final map = e as Map<String, dynamic>; // 安全轉型
+            gc.familyName.value = map["abbreviation"] ?? '';
             return FamilyItemModel(
               two: RxString(map["abbreviation"] ?? ''),
               tf: RxString("更新時間：${map["create_at"] ?? ''}"),
@@ -328,14 +330,24 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   }
 
   ///取得健康資料-api
-  Future<void> getHealthData({String? familyId}) async {
+  Future<void> getHealthData({String? familyId, String? familyName}) async {
     try {
+      var fId = "";
+      if (familyId != null) {
+        fId = familyId;
+        gc.familyId.value = fId;
+        gc.familyName.value = familyName!;
+      } else {
+        gc.familyId.value = "";
+        gc.familyName.value = "";
+      }
+
       // LoadingHelper.show();
       final nowStr = DateTime.now().format(pattern: 'yyyy-MM-dd');
       final payload = {
         "startTime": nowStr,
         "endTime": nowStr,
-        "userID": familyId ?? gc.apiId.value,
+        "userID": fId.isEmpty ? gc.apiId.value : fId,
         "type": "ALL"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);

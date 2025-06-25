@@ -11,7 +11,7 @@ class CustomBottomBar extends StatelessWidget {
           key: key,
         );
 
-  RxInt selectedIndex = 2.obs;
+  RxInt selectedIndex = 1.obs;
   final gc = Get.find<GlobalController>();
 
   List<BottomMenuModel> bottomMenuList = [
@@ -21,12 +21,12 @@ class CustomBottomBar extends StatelessWidget {
       title: "lbl68".tr,
       type: BottomBarEnum.tf,
     ),
-    BottomMenuModel(
-      icon: ImageConstant.imgNav,
-      activeIcon: ImageConstant.imgNav,
-      title: "lbl69".tr,
-      type: BottomBarEnum.tf,
-    ),
+    // BottomMenuModel(
+    //   icon: ImageConstant.imgNav,
+    //   activeIcon: ImageConstant.imgNav,
+    //   title: "lbl69".tr,
+    //   type: BottomBarEnum.tf,
+    // ),
     BottomMenuModel(
       icon: ImageConstant.imgNavGray50024x24,
       activeIcon: ImageConstant.imgNavGray50024x24,

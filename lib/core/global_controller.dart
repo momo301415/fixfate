@@ -41,6 +41,7 @@ import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
+import 'package:pulsedevice/presentation/k5_screen/controller/k5_controller.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
@@ -82,7 +83,7 @@ class GlobalController extends GetxController {
   var firebaseToken = ''.obs;
 
   ///--- 記錄bottombar index
-  var bottomBarIndex = 2.obs;
+  var bottomBarIndex = 1.obs;
 
   ///--- 紀錄是否已經
   var isSendSyncApi = "Y".obs;
@@ -109,6 +110,13 @@ class GlobalController extends GetxController {
 
   ///--- 藍牙資料同步是否準備就緒
   final isBleDataReady = false.obs;
+
+  ///--- 是否在運動
+  final isSporting = false.obs;
+
+  ///--- 家族ID
+  final familyId = "".obs;
+  final familyName = "".obs;
 
   @override
   void onInit() {
@@ -155,6 +163,8 @@ class GlobalController extends GetxController {
     // 啟動監聽
     YcProductPlugin().onListening((event) {
       if (event.keys.contains(NativeEventType.bluetoothStateChange)) {
+        debugPrint(
+            "=== onListening Event: ${event[NativeEventType.bluetoothStateChange]}");
         _handleBluetoothStateChange(
             event[NativeEventType.bluetoothStateChange]);
       }
@@ -241,7 +251,7 @@ class GlobalController extends GetxController {
     Future.delayed(const Duration(milliseconds: 500), () {
       getGoalTargetData(goalNotificationService);
       _isInitFuncRunning = true;
-      SnackbarHelper.showBlueSnackbar(message: "snackbar_bluetooth_connect".tr);
+      NotificationService().showDeviceConnectedNotification();
     });
   }
 
@@ -363,7 +373,7 @@ class GlobalController extends GetxController {
     isBleDataReady.value = true;
   }
 
-  void _handleBluetoothStateChange(int newStatus) {
+  void _handleBluetoothStateChange(int newStatus) async {
     if (newStatus == _previousBluetoothStatus) return;
     _previousBluetoothStatus = newStatus;
 
@@ -375,15 +385,18 @@ class GlobalController extends GetxController {
         if (userId.value.isNotEmpty) {
           isBleConnect.value = true;
           initFunc();
+          await apiService.sendLog(json: "藍牙連線成功", logType: "DEBUG");
         }
         break;
       case 0:
       case 3:
+      case 4:
         isBleConnect.value = false;
         if (_isInitFuncRunning) {
           NotificationService().showDeviceDisconnectedNotification();
           stopForegroundTask();
         }
+        await apiService.sendLog(json: "藍牙連線中斷", logType: "WARN");
         break;
     }
   }

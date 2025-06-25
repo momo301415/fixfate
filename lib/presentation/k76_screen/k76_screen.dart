@@ -25,7 +25,9 @@ class K76Screen extends GetView<K76Controller> {
           Get.back(result: true);
         },
         enableScroll: false,
-        title: "lbl243".tr,
+        title: controller.gc.familyId.value.isEmpty
+            ? "lbl243".tr
+            : controller.gc.familyName.value + " 的數據偵測",
         child: Container(
           height: 796.h,
           child: Column(

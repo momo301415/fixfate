@@ -51,7 +51,6 @@ class GoalNotificationService {
         }
       }
     }
-
     // -------- 睡眠目標通知 --------
     if (profile.isEnablesleepHours == true && hour == 12) {
       final totalSeconds = await sleepService.getTodaySleepTotalSeconds(userId);
@@ -86,7 +85,7 @@ class GoalNotificationService {
       final todayDistance = await stepService.getTodayDistanceTotal(userId);
       if (todayDistance >= (profile.distance ?? 6000)) {
         if (!NotificationRecordStorage.hasNotified(
-            now, GoalType.sleepAchieved)) {
+            now, GoalType.distanceAchieved)) {
           await sendFirebaseNotify(
             title: '運動距離目標 達成！',
             body: '太棒了🎉 今天運動距離已達 $todayDistance 公尺，為健康多走了一段！',
@@ -96,7 +95,7 @@ class GoalNotificationService {
         }
       } else if (hour == 12 || hour == 20) {
         if (!NotificationRecordStorage.hasNotified(
-            now, GoalType.sleepAchieved)) {
+            now, GoalType.distancePending)) {
           await sendFirebaseNotify(
             title: '運動距離目標 努力中',
             body: '運動距離累積到 $todayDistance 公尺，繼續向目標前進！😊',
@@ -112,7 +111,7 @@ class GoalNotificationService {
       final todayCalories = await stepService.getTodayCaroliesTotal(userId);
       if (todayCalories >= (profile.calories ?? 2500)) {
         if (!NotificationRecordStorage.hasNotified(
-            now, GoalType.sleepAchieved)) {
+            now, GoalType.caloriesAchieved)) {
           await sendFirebaseNotify(
             title: '熱量目標 達成！',
             body: '恭喜 🎉 今天已消耗 $todayCalories 大卡了，你的努力身體都知道！',
@@ -122,7 +121,7 @@ class GoalNotificationService {
         }
       } else if (hour == 12 || hour == 20) {
         if (!NotificationRecordStorage.hasNotified(
-            now, GoalType.sleepAchieved)) {
+            now, GoalType.caloriesPending)) {
           await sendFirebaseNotify(
             title: '熱量目標 努力中',
             body: '目前消耗了 $todayCalories 大卡，離目標差一點！每次累積都是為健康加分 💪',

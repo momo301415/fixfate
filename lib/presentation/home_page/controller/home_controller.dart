@@ -1,9 +1,35 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/firebase_helper.dart';
 
 import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 
 class HomeController extends GetxController {
-  final bottomBarIndex = 2.obs;
+  final bottomBarIndex = 1.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    FirebaseHelper.init();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final message = FirebaseHelper.consumePendingDialogMessage();
+        if (message != null) {
+          print("🔑 Showing dialog from push message: $message");
+          await Future.delayed(Duration(milliseconds: 500));
+          await FirebaseHelper.handleMessage(message);
+        }
+      } catch (e) {
+        print("❌ Error showing dialog from push message: $e");
+      }
+    });
+  }
 
   void onTabChanged(int index) {
     bottomBarIndex.value = index;

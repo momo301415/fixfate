@@ -12,7 +12,7 @@ class HomePage extends GetView<HomeController> {
 
   final List<Widget> pages = [
     K73Screen(),
-    BgLogPage(),
+    // BgLogPage(),
     K29Page(),
   ];
 
