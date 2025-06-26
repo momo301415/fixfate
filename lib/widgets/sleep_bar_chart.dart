@@ -16,7 +16,15 @@ class SleepTimelineBarChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final totalMinutes = segments.fold<int>(
+      0,
+      (sum, segment) => sum + segment.duration.inMinutes,
+    );
+
+    final pixelsPerMinute = totalMinutes > 0 ? screenWidth / totalMinutes : 1.0;
+    final clampedPixelsPerMinute = pixelsPerMinute.clamp(1.0, 10.0);
+    final totalWidth = totalMinutes * clampedPixelsPerMinute;
 
     return SizedBox(
       width: totalWidth,
@@ -55,14 +63,17 @@ class SleepTimelinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final totalSeconds = segments.fold<int>(
-        0, (sum, segment) => sum + segment.duration.inSeconds);
+    final totalMinutes = segments.fold<int>(
+      0,
+      (sum, segment) => sum + segment.duration.inMinutes,
+    );
+
     double xOffset = 0;
     final paint = Paint()..style = PaintingStyle.fill;
 
     for (var seg in segments) {
       paint.color = stageColor[seg.stage] ?? Colors.blue;
-      final width = (seg.duration.inSeconds / totalSeconds) * totalWidth;
+      final width = (seg.duration.inMinutes / totalMinutes) * totalWidth;
 
       double yOffset;
       switch (seg.stage) {

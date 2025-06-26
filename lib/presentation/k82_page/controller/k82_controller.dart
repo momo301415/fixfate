@@ -162,9 +162,10 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
 
           stageDurations.forEach((stage, seconds) {
             if (seconds > 0) {
+              final minutes = (seconds / 60).ceil(); // 四捨五入成分鐘
               sleepSegments.add(SleepSegment(
                 stage: stage,
-                duration: Duration(seconds: seconds),
+                duration: Duration(minutes: minutes),
               ));
             }
           });

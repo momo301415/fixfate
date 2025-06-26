@@ -516,31 +516,7 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                           onTapScreenTitle: () =>
                               onTapScreenTitle(AppRoutes.k77Page),
                         ),
-                        _buildScreenTitle(
-                          screenTitle: "3-健康-血氧(日)",
-                          onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k80Screen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-體溫(日)",
-                          onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k81Screen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-壓力(日)",
-                          onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k82Screen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-步數(日)",
-                          onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k83Screen),
-                        ),
-                        _buildScreenTitle(
-                          screenTitle: "2-健康-睡眠(日)",
-                          onTapScreenTitle: () =>
-                              onTapScreenTitle(AppRoutes.k84Screen),
-                        ),
+
                         _buildScreenTitle(
                           screenTitle: "2-健康-卡路里(日)",
                           onTapScreenTitle: () =>

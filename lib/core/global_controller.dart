@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
@@ -118,6 +119,9 @@ class GlobalController extends GetxController {
   final familyId = "".obs;
   final familyName = "".obs;
 
+  ///--- 是否登出，影響自動登入
+  final isLogout = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -230,6 +234,7 @@ class GlobalController extends GetxController {
     // Initialize port for communication between TaskHandler and UI.
     FlutterForegroundTask.initCommunicationPort();
     FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
+    await AndroidAlarmManager.initialize();
   }
 
   initGoal() async {

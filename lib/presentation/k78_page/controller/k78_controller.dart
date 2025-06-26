@@ -482,13 +482,13 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
       clipData: FlClipData.all(),
       maxX: maxX,
       minX: minX,
-      minY: 90,
+      minY: 70,
       maxY: 100,
       gridData: FlGridData(
         show: true,
         drawHorizontalLine: true,
         drawVerticalLine: false,
-        horizontalInterval: 2,
+        horizontalInterval: 5,
         getDrawingHorizontalLine: (value) {
           if (value == 90 || value == 100) {
             return FlLine(color: Colors.grey, strokeWidth: 1);
@@ -499,7 +499,7 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
       extraLinesData: ExtraLinesData(
         horizontalLines: [
           HorizontalLine(
-            y: 90,
+            y: 70,
             color: Colors.grey,
             strokeWidth: 1,
           ),
@@ -515,7 +515,7 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 2,
+            interval: 5,
             reservedSize: 36,
             getTitlesWidget: (value, meta) =>
                 Text('${value.toInt()}', style: TextStyle(fontSize: 10)),

@@ -6,6 +6,7 @@ import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_elevated_button.dart';
 import 'controller/k0_controller.dart'; // ignore_for_file: must_be_immutable
 
+///使用者條款
 class K0Screen extends GetWidget<K0Controller> {
   const K0Screen({Key? key})
       : super(

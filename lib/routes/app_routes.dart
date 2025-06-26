@@ -76,16 +76,7 @@ import '../presentation/k73_screen/binding/k73_binding.dart';
 import '../presentation/k73_screen/k73_screen.dart';
 import '../presentation/k77_page/binding/k77_binding.dart';
 import '../presentation/k77_page/k77_page.dart';
-import '../presentation/k80_screen/binding/k80_binding.dart';
-import '../presentation/k80_screen/k80_screen.dart';
-import '../presentation/k81_screen/binding/k81_binding.dart';
-import '../presentation/k81_screen/k81_screen.dart';
-import '../presentation/k82_screen/binding/k82_binding.dart';
-import '../presentation/k82_screen/k82_screen.dart';
-import '../presentation/k83_screen/binding/k83_binding.dart';
-import '../presentation/k83_screen/k83_screen.dart';
-import '../presentation/k84_screen/binding/k84_binding.dart';
-import '../presentation/k84_screen/k84_screen.dart';
+
 import '../presentation/k85_screen/binding/k85_binding.dart';
 import '../presentation/k85_screen/k85_screen.dart';
 import '../presentation/k86_screen/binding/k86_binding.dart';
@@ -247,24 +238,6 @@ class AppRoutes {
 
   static const String k79Page = '/k79_page';
 
-  static const String k80Screen = '/k80_screen';
-
-  static const String initialTab1Page = '/initial_tab1_page';
-
-  static const String k81Screen = '/k81_screen';
-
-  static const String initialTab2Page = '/initial_tab2_page';
-
-  static const String k82Screen = '/k82_screen';
-
-  static const String initialTab3Page = '/initial_tab3_page';
-
-  static const String k83Screen = '/k83_screen';
-
-  static const String initialTab4Page = '/initial_tab4_page';
-
-  static const String k84Screen = '/k84_screen';
-
   static const String initialTab5Page = '/initial_tab5_page';
 
   static const String k85Screen = '/k85_screen';
@@ -323,26 +296,6 @@ class AppRoutes {
       page: () => OneScreen(),
       bindings: [OneBinding()],
     ),
-    GetPage(
-      name: twoScreen,
-      page: () => TwoScreen(),
-      bindings: [TwoBinding()],
-    ),
-    GetPage(
-      name: fourScreen,
-      page: () => FourScreen(),
-      bindings: [FourBinding()],
-    ),
-    GetPage(
-      name: sixScreen,
-      page: () => SixScreen(),
-      bindings: [SixBinding()],
-    ),
-    GetPage(
-      name: k9Screen,
-      page: () => K9Screen(),
-      bindings: [K9Binding()],
-    ),
 
     /// 註冊設備頁面
     GetPage(
@@ -357,11 +310,6 @@ class AppRoutes {
       page: () => One2Screen(),
       bindings: [One2Binding()],
     ),
-    GetPage(
-      name: k14Screen,
-      page: () => K14Screen(),
-      bindings: [K14Binding()],
-    ),
 
     /// 忘記密碼頁
     GetPage(
@@ -369,22 +317,12 @@ class AppRoutes {
       page: () => One3Screen(),
       bindings: [One3Binding()],
     ),
-    GetPage(
-      name: two2Screen,
-      page: () => Two2Screen(),
-      bindings: [Two2Binding()],
-    ),
 
     /// 重設密碼頁
     GetPage(
       name: two3Screen,
       page: () => Two3Screen(),
       bindings: [Two3Binding()],
-    ),
-    GetPage(
-      name: three1Screen,
-      page: () => Three1Screen(),
-      bindings: [Three1Binding()],
     ),
 
     /// 個人中心
@@ -396,32 +334,12 @@ class AppRoutes {
       page: () => K30Screen(),
       bindings: [K30Binding()],
     ),
-    GetPage(
-      name: k38Screen,
-      page: () => K38Screen(),
-      bindings: [K38Binding()],
-    ),
-    GetPage(
-      name: k39Screen,
-      page: () => K39Screen(),
-      bindings: [K39Binding()],
-    ),
 
     /// 我的設備頁面
     GetPage(
       name: k40Screen,
       page: () => K40Screen(),
       bindings: [K40Binding()],
-    ),
-    GetPage(
-      name: one4Screen,
-      page: () => One4Screen(),
-      bindings: [One4Binding()],
-    ),
-    GetPage(
-      name: k44Screen,
-      page: () => K44Screen(),
-      bindings: [K44Binding()],
     ),
 
     /// 戒指資訊頁面
@@ -430,22 +348,12 @@ class AppRoutes {
       page: () => K45Screen(),
       bindings: [K45Binding()],
     ),
-    GetPage(
-      name: one5Screen,
-      page: () => One5Screen(),
-      bindings: [One5Binding()],
-    ),
 
     /// 用要提醒頁面
     GetPage(
       name: k48Screen,
       page: () => K48Screen(),
       bindings: [K48Binding()],
-    ),
-    GetPage(
-      name: one6Screen,
-      page: () => One6Screen(),
-      bindings: [One6Binding()],
     ),
 
     /// 警報紀錄頁面
@@ -461,11 +369,6 @@ class AppRoutes {
       page: () => K55Screen(),
       bindings: [K55Binding()],
     ),
-    GetPage(
-      name: k56Screen,
-      page: () => K56Screen(),
-      bindings: [K56Binding()],
-    ),
 
     /// 個人中心-量測設定頁面
     GetPage(
@@ -479,11 +382,6 @@ class AppRoutes {
       name: k58Screen,
       page: () => K58Screen(),
       bindings: [K58Binding()],
-    ),
-    GetPage(
-      name: one8Screen,
-      page: () => One8Screen(),
-      bindings: [One8Binding()],
     ),
 
     /// 血氧測量告警設定頁面
@@ -534,27 +432,12 @@ class AppRoutes {
       page: () => One9Screen(),
       bindings: [One9Binding()],
     ),
-    GetPage(
-      name: two6Screen,
-      page: () => Two6Screen(),
-      bindings: [Two6Binding()],
-    ),
 
     /// 家人管理頁面
     GetPage(
       name: k67Screen,
       page: () => K67Screen(),
       bindings: [K67Binding()],
-    ),
-    GetPage(
-      name: one10Screen,
-      page: () => One10Screen(),
-      bindings: [One10Binding()],
-    ),
-    GetPage(
-      name: two7Screen,
-      page: () => Two7Screen(),
-      bindings: [Two7Binding()],
     ),
 
     /// 分享健康數據頁面
@@ -576,66 +459,6 @@ class AppRoutes {
       name: k73Screen,
       page: () => K73Screen(),
       bindings: [K73Binding()],
-    ),
-    GetPage(
-      name: one11Screen,
-      page: () => One11Screen(),
-      bindings: [One11Binding()],
-    ),
-    GetPage(
-      name: two8Screen,
-      page: () => Two8Screen(),
-      bindings: [Two8Binding()],
-    ),
-    GetPage(
-      name: three4Screen,
-      page: () => Three4Screen(),
-      bindings: [Three4Binding()],
-    ),
-    GetPage(
-      name: k77Page,
-      page: () => K77Page(),
-      bindings: [K77Binding()],
-    ),
-    GetPage(
-      name: k80Screen,
-      page: () => K80Screen(),
-      bindings: [K80Binding()],
-    ),
-    GetPage(
-      name: k81Screen,
-      page: () => K81Screen(),
-      bindings: [K81Binding()],
-    ),
-    GetPage(
-      name: k82Screen,
-      page: () => K82Screen(),
-      bindings: [K82Binding()],
-    ),
-    GetPage(
-      name: k83Screen,
-      page: () => K83Screen(),
-      bindings: [K83Binding()],
-    ),
-    GetPage(
-      name: k84Screen,
-      page: () => K84Screen(),
-      bindings: [K84Binding()],
-    ),
-    GetPage(
-      name: k85Screen,
-      page: () => K85Screen(),
-      bindings: [K85Binding()],
-    ),
-    GetPage(
-      name: k86Screen,
-      page: () => K86Screen(),
-      bindings: [K86Binding()],
-    ),
-    GetPage(
-      name: rulePickerTestScreen,
-      page: () => RulerPickerTestScreen(),
-      bindings: [RulerPikerTestBinding()],
     ),
 
     /// 所有畫面導航
@@ -673,5 +496,144 @@ class AppRoutes {
 
     ///app主頁父級別頁面
     GetPage(name: homePage, page: () => HomePage(), bindings: [HomeBinding()]),
+
+    GetPage(
+      name: twoScreen,
+      page: () => TwoScreen(),
+      bindings: [TwoBinding()],
+    ),
+    GetPage(
+      name: fourScreen,
+      page: () => FourScreen(),
+      bindings: [FourBinding()],
+    ),
+    GetPage(
+      name: sixScreen,
+      page: () => SixScreen(),
+      bindings: [SixBinding()],
+    ),
+    GetPage(
+      name: k9Screen,
+      page: () => K9Screen(),
+      bindings: [K9Binding()],
+    ),
+
+    GetPage(
+      name: k14Screen,
+      page: () => K14Screen(),
+      bindings: [K14Binding()],
+    ),
+
+    GetPage(
+      name: two2Screen,
+      page: () => Two2Screen(),
+      bindings: [Two2Binding()],
+    ),
+
+    GetPage(
+      name: three1Screen,
+      page: () => Three1Screen(),
+      bindings: [Three1Binding()],
+    ),
+
+    GetPage(
+      name: k38Screen,
+      page: () => K38Screen(),
+      bindings: [K38Binding()],
+    ),
+    GetPage(
+      name: k39Screen,
+      page: () => K39Screen(),
+      bindings: [K39Binding()],
+    ),
+
+    GetPage(
+      name: one4Screen,
+      page: () => One4Screen(),
+      bindings: [One4Binding()],
+    ),
+    GetPage(
+      name: k44Screen,
+      page: () => K44Screen(),
+      bindings: [K44Binding()],
+    ),
+
+    GetPage(
+      name: one5Screen,
+      page: () => One5Screen(),
+      bindings: [One5Binding()],
+    ),
+
+    GetPage(
+      name: one6Screen,
+      page: () => One6Screen(),
+      bindings: [One6Binding()],
+    ),
+
+    GetPage(
+      name: k56Screen,
+      page: () => K56Screen(),
+      bindings: [K56Binding()],
+    ),
+
+    GetPage(
+      name: one8Screen,
+      page: () => One8Screen(),
+      bindings: [One8Binding()],
+    ),
+
+    GetPage(
+      name: two6Screen,
+      page: () => Two6Screen(),
+      bindings: [Two6Binding()],
+    ),
+
+    GetPage(
+      name: one10Screen,
+      page: () => One10Screen(),
+      bindings: [One10Binding()],
+    ),
+    GetPage(
+      name: two7Screen,
+      page: () => Two7Screen(),
+      bindings: [Two7Binding()],
+    ),
+
+    GetPage(
+      name: one11Screen,
+      page: () => One11Screen(),
+      bindings: [One11Binding()],
+    ),
+    GetPage(
+      name: two8Screen,
+      page: () => Two8Screen(),
+      bindings: [Two8Binding()],
+    ),
+    GetPage(
+      name: three4Screen,
+      page: () => Three4Screen(),
+      bindings: [Three4Binding()],
+    ),
+    GetPage(
+      name: k77Page,
+      page: () => K77Page(),
+      bindings: [K77Binding()],
+    ),
+
+    GetPage(
+      name: k85Screen,
+      page: () => K85Screen(),
+      bindings: [K85Binding()],
+    ),
+    GetPage(
+      name: k86Screen,
+      page: () => K86Screen(),
+      bindings: [K86Binding()],
+    ),
+    GetPage(
+      name: rulePickerTestScreen,
+      page: () => RulerPickerTestScreen(),
+      bindings: [RulerPikerTestBinding()],
+    ),
   ];
 }

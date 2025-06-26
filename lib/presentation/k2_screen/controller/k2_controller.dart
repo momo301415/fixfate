@@ -25,6 +25,7 @@ class K2Controller extends GetxController {
   }
 
   void initData() async {
+    if (gc.isLogout.value) return;
     autoLogin();
   }
 

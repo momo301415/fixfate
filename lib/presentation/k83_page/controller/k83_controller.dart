@@ -113,6 +113,9 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
         final interval = rawMax == 0 ? 200 : (rawMax / 5).ceil();
         _interval.value = interval;
         _maxY.value = interval * 5;
+
+        /// 圖表
+        stepApiData.assignAll(parsed);
         parsed.sort((a, b) => b.startTimestamp.compareTo(a.startTimestamp));
 
         /// 歷史紀錄
@@ -126,9 +129,6 @@ class K83Controller extends GetxController with WidgetsBindingObserver {
           );
         }).toList();
         k83ModelObj.value.listItemList2.value = list;
-
-        /// 圖表
-        stepApiData.assignAll(parsed);
       }
     } catch (e) {
       print("getFamilyData Error: $e");

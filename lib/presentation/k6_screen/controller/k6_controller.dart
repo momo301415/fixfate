@@ -46,7 +46,9 @@ class K6Controller extends GetxController
   void onInit() {
     super.onInit();
     argIndex = Get.arguments as int;
-    tabviewController = TabController(length: 2, vsync: this, initialIndex: 0);
+    tabIndex.value = argIndex;
+    tabviewController =
+        TabController(length: 2, vsync: this, initialIndex: argIndex);
     tabviewController.addListener(() {
       if (!tabviewController.indexIsChanging) {
         tabIndex.value = tabviewController.index;

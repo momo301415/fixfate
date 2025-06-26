@@ -30,9 +30,10 @@ class K63Controller extends GetxController {
     Get.toNamed(AppRoutes.one9Screen);
   }
 
-  ///路由到登入頁面
-  void goOne2Screen() {
-    Get.offAllNamed(AppRoutes.one2Screen);
+  ///路由到登入/註冊頁面
+  void goK2Screen() {
+    gc.isLogout.value = true;
+    Get.offAllNamed(AppRoutes.k2Screen);
   }
 
   Future<void> showThree2Dialog() async {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -55,15 +56,20 @@ class NotificationService {
       dateTime,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'medication_channel',
-          '用藥提醒',
-          channelDescription: '提醒您按時服藥',
+          'test_channel',
+          '測試頻道',
+          channelDescription: '用於測試排程通知',
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
@@ -101,9 +107,11 @@ class NotificationService {
         case '每天一次':
           await _scheduleNotification(
             id: id++,
-            dateTime: _nextAt(base, 9, 39),
+            dateTime: _nextAt(base, 8, 0),
             title: '每天服藥提醒',
           );
+          // await testImmediateNotification();
+          // scheduleAlarmNotification();
           break;
         case '一天兩次':
           await _scheduleNotification(
@@ -308,5 +316,41 @@ class NotificationService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+  }
+
+  @pragma('vm:entry-point')
+  Future<void> testNotification() async {
+    print("scheduleAlarmNotification");
+    // 發送通知
+    await _flutterLocalNotificationsPlugin.show(
+      88888, // 任意 id
+      '鬧鐘通知',
+      '這是在 kill app 後跳出的通知',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'alarm_channel',
+          '鬧鐘通知',
+          channelDescription: '在 kill app 後觸發的鬧鐘通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+    );
+  }
+
+  void scheduleAlarmNotification() async {
+    final now = DateTime.now();
+    final target = now.add(Duration(seconds: 10));
+
+    final success = await AndroidAlarmManager.oneShotAt(
+      target,
+      99999, // alarm 的唯一 ID
+      testNotification,
+      exact: true,
+      wakeup: true,
+      rescheduleOnReboot: true,
+    );
+
+    print('alarm schedule result: $success');
   }
 }

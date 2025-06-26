@@ -136,7 +136,7 @@ class K63Screen extends GetWidget<K63Controller> {
             text: "lbl10_1".tr,
             buttonTextStyle: CustomTextStyles.titleMediumPrimary,
             onPressed: () async {
-              controller.goOne2Screen();
+              controller.goK2Screen();
             },
           )
         ],
