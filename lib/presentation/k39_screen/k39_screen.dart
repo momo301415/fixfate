@@ -4,8 +4,6 @@ import '../../widgets/app_bar/appbar_subtitle_one.dart';
 import '../../widgets/app_bar/appbar_subtitle_two.dart';
 import '../../widgets/app_bar/appbar_trailing_image.dart';
 import '../../widgets/app_bar/custom_app_bar.dart';
-import '../k24_dialog/controller/k24_controller.dart';
-import '../k24_dialog/k24_dialog.dart';
 import 'controller/k39_controller.dart';
 import 'models/chipview1_item_model.dart';
 import 'models/chipview_item_model.dart';
@@ -399,11 +397,6 @@ class K39Screen extends GetWidget<K39Controller> {
     Get.dialog(AlertDialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.zero,
-      content: K24Dialog(
-        Get.put(
-          K24Controller(),
-        ),
-      ),
     ));
   }
 }

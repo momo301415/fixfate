@@ -187,6 +187,14 @@ class CustomButtonStyles {
         ),
         padding: EdgeInsets.zero,
       );
+  // Outline button style
+  static ButtonStyle get outlineGray => OutlinedButton.styleFrom(
+        backgroundColor: Colors.transparent,
+        side: BorderSide(color: appTheme.gray200, width: 1),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.h)),
+        padding: EdgeInsets.zero,
+      );
 // text button style
   static ButtonStyle get none => ButtonStyle(
       backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),

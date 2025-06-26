@@ -150,6 +150,8 @@ class CustomTextStyles {
       theme.textTheme.bodyMedium!.copyWith(
         color: theme.colorScheme.primary,
       );
+  static TextStyle get bodyMediumPrimary13 => theme.textTheme.bodyMedium!
+      .copyWith(color: theme.colorScheme.primary, fontSize: 13.fSize);
   static TextStyle get bodyMediumPrimaryContainer =>
       theme.textTheme.bodyMedium!.copyWith(
         color: theme.colorScheme.primaryContainer,
@@ -312,6 +314,11 @@ class CustomTextStyles {
         color: theme.colorScheme.errorContainer,
         fontWeight: FontWeight.w400,
       ).pingFangTC;
+  static TextStyle get pingFangTC1Bluegray400 => TextStyle(
+        color: appTheme.blueGray400.withValues(alpha: 0.8),
+        fontSize: 7.fSize,
+        fontWeight: FontWeight.w400,
+      ).pingFangTC;
 // Title text style
   static TextStyle get titleMediumPrimary_1 => theme.textTheme.titleMedium!
       .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.85));
@@ -353,6 +360,9 @@ class CustomTextStyles {
         fontSize: 17.fSize,
         fontWeight: FontWeight.w600,
       );
+
+  static TextStyle get titleMediumSemiBold => theme.textTheme.titleMedium!
+      .copyWith(fontSize: 16.fSize, fontWeight: FontWeight.w600);
   static TextStyle get titleMediumGray500 =>
       theme.textTheme.titleMedium!.copyWith(
         color: appTheme.gray500,

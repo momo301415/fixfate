@@ -38,14 +38,12 @@ import '../presentation/k2_screen/binding/k2_binding.dart';
 import '../presentation/k2_screen/k2_screen.dart';
 import '../presentation/k30_screen/binding/k30_binding.dart';
 import '../presentation/k30_screen/k30_screen.dart';
-import '../presentation/k38_screen/binding/k38_binding.dart';
-import '../presentation/k38_screen/k38_screen.dart';
+
 import '../presentation/k39_screen/binding/k39_binding.dart';
 import '../presentation/k39_screen/k39_screen.dart';
 import '../presentation/k40_screen/binding/k40_binding.dart';
 import '../presentation/k40_screen/k40_screen.dart';
-import '../presentation/k44_screen/binding/k44_binding.dart';
-import '../presentation/k44_screen/k44_screen.dart';
+
 import '../presentation/k45_screen/binding/k45_binding.dart';
 import '../presentation/k45_screen/k45_screen.dart';
 import '../presentation/k48_screen/binding/k48_binding.dart';
@@ -54,8 +52,7 @@ import '../presentation/k53_screen/binding/k53_binding.dart';
 import '../presentation/k53_screen/k53_screen.dart';
 import '../presentation/k55_screen/binding/k55_binding.dart';
 import '../presentation/k55_screen/k55_screen.dart';
-import '../presentation/k56_screen/binding/k56_binding.dart';
-import '../presentation/k56_screen/k56_screen.dart';
+
 import '../presentation/k57_screen/binding/k57_binding.dart';
 import '../presentation/k57_screen/k57_screen.dart';
 import '../presentation/k58_screen/binding/k58_binding.dart';
@@ -77,52 +74,23 @@ import '../presentation/k73_screen/k73_screen.dart';
 import '../presentation/k77_page/binding/k77_binding.dart';
 import '../presentation/k77_page/k77_page.dart';
 
-import '../presentation/k85_screen/binding/k85_binding.dart';
-import '../presentation/k85_screen/k85_screen.dart';
-import '../presentation/k86_screen/binding/k86_binding.dart';
-import '../presentation/k86_screen/k86_screen.dart';
-import '../presentation/k9_screen/binding/k9_binding.dart';
-import '../presentation/k9_screen/k9_screen.dart';
-import '../presentation/one10_screen/binding/one10_binding.dart';
-import '../presentation/one10_screen/one10_screen.dart';
-import '../presentation/one11_screen/binding/one11_binding.dart';
-import '../presentation/one11_screen/one11_screen.dart';
 import '../presentation/one2_screen/binding/one2_binding.dart';
 import '../presentation/one2_screen/one2_screen.dart';
 import '../presentation/one3_screen/binding/one3_binding.dart';
 import '../presentation/one3_screen/one3_screen.dart';
-import '../presentation/one4_screen/binding/one4_binding.dart';
-import '../presentation/one4_screen/one4_screen.dart';
-import '../presentation/one5_screen/binding/one5_binding.dart';
-import '../presentation/one5_screen/one5_screen.dart';
-import '../presentation/one6_screen/binding/one6_binding.dart';
-import '../presentation/one6_screen/one6_screen.dart';
-import '../presentation/one8_screen/binding/one8_binding.dart';
-import '../presentation/one8_screen/one8_screen.dart';
+
 import '../presentation/one9_screen/binding/one9_binding.dart';
 import '../presentation/one9_screen/one9_screen.dart';
 import '../presentation/one_screen/binding/one_binding.dart';
 import '../presentation/one_screen/one_screen.dart';
-import '../presentation/six_screen/binding/six_binding.dart';
-import '../presentation/six_screen/six_screen.dart';
-import '../presentation/three1_screen/binding/three1_binding.dart';
-import '../presentation/three1_screen/three1_screen.dart';
-import '../presentation/three4_screen/binding/three4_binding.dart';
-import '../presentation/three4_screen/three4_screen.dart';
-import '../presentation/two2_screen/binding/two2_binding.dart';
-import '../presentation/two2_screen/two2_screen.dart';
+
 import '../presentation/two3_screen/binding/two3_binding.dart';
 import '../presentation/two3_screen/two3_screen.dart';
 import '../presentation/two5_screen/binding/two5_binding.dart';
 import '../presentation/two5_screen/two5_screen.dart';
-import '../presentation/two6_screen/binding/two6_binding.dart';
-import '../presentation/two6_screen/two6_screen.dart';
+
 import '../presentation/two7_screen/binding/two7_binding.dart';
 import '../presentation/two7_screen/two7_screen.dart';
-import '../presentation/two8_screen/binding/two8_binding.dart';
-import '../presentation/two8_screen/two8_screen.dart';
-import '../presentation/two_screen/binding/two_binding.dart';
-import '../presentation/two_screen/two_screen.dart';
 
 // ignore_for_file: must_be_immutable
 class AppRoutes {
@@ -139,8 +107,6 @@ class AppRoutes {
   static const String fourScreen = '/four_screen';
 
   static const String sixScreen = '/six_screen';
-
-  static const String k9Screen = '/k9_screen';
 
   static const String k10Screen = '/k10_screen';
 
@@ -160,15 +126,11 @@ class AppRoutes {
 
   static const String k30Screen = '/k30_screen';
 
-  static const String k38Screen = '/k38_screen';
-
   static const String k39Screen = '/k39_screen';
 
   static const String k40Screen = '/k40_screen';
 
   static const String one4Screen = '/one4_screen';
-
-  static const String k44Screen = '/k44_screen';
 
   static const String k45Screen = '/k45_screen';
 
@@ -178,15 +140,11 @@ class AppRoutes {
 
   static const String one6Screen = '/one6_screen';
 
-  static const String k52Page = '/k52_page';
-
   static const String k53Screen = '/k53_screen';
 
   static const String inTabPage = '/in_tab_page';
 
   static const String k55Screen = '/k55_screen';
-
-  static const String k56Screen = '/k56_screen';
 
   static const String k57Screen = '/k57_screen';
 
@@ -234,19 +192,7 @@ class AppRoutes {
 
   static const String initialTabPage = '/initial_tab_page';
 
-  static const String k78Page = '/k78_page';
-
-  static const String k79Page = '/k79_page';
-
   static const String initialTab5Page = '/initial_tab5_page';
-
-  static const String k85Screen = '/k85_screen';
-
-  static const String initiTabPage = '/initi_tab_page';
-
-  static const String k86Screen = '/k86_screen';
-
-  static const String initiaTabPage = '/initia_tab_page';
 
   static const String appNavigationScreen = '/app_navigation_screen';
 
@@ -498,24 +444,9 @@ class AppRoutes {
     GetPage(name: homePage, page: () => HomePage(), bindings: [HomeBinding()]),
 
     GetPage(
-      name: twoScreen,
-      page: () => TwoScreen(),
-      bindings: [TwoBinding()],
-    ),
-    GetPage(
       name: fourScreen,
       page: () => FourScreen(),
       bindings: [FourBinding()],
-    ),
-    GetPage(
-      name: sixScreen,
-      page: () => SixScreen(),
-      bindings: [SixBinding()],
-    ),
-    GetPage(
-      name: k9Screen,
-      page: () => K9Screen(),
-      bindings: [K9Binding()],
     ),
 
     GetPage(
@@ -525,74 +456,11 @@ class AppRoutes {
     ),
 
     GetPage(
-      name: two2Screen,
-      page: () => Two2Screen(),
-      bindings: [Two2Binding()],
-    ),
-
-    GetPage(
-      name: three1Screen,
-      page: () => Three1Screen(),
-      bindings: [Three1Binding()],
-    ),
-
-    GetPage(
-      name: k38Screen,
-      page: () => K38Screen(),
-      bindings: [K38Binding()],
-    ),
-    GetPage(
       name: k39Screen,
       page: () => K39Screen(),
       bindings: [K39Binding()],
     ),
 
-    GetPage(
-      name: one4Screen,
-      page: () => One4Screen(),
-      bindings: [One4Binding()],
-    ),
-    GetPage(
-      name: k44Screen,
-      page: () => K44Screen(),
-      bindings: [K44Binding()],
-    ),
-
-    GetPage(
-      name: one5Screen,
-      page: () => One5Screen(),
-      bindings: [One5Binding()],
-    ),
-
-    GetPage(
-      name: one6Screen,
-      page: () => One6Screen(),
-      bindings: [One6Binding()],
-    ),
-
-    GetPage(
-      name: k56Screen,
-      page: () => K56Screen(),
-      bindings: [K56Binding()],
-    ),
-
-    GetPage(
-      name: one8Screen,
-      page: () => One8Screen(),
-      bindings: [One8Binding()],
-    ),
-
-    GetPage(
-      name: two6Screen,
-      page: () => Two6Screen(),
-      bindings: [Two6Binding()],
-    ),
-
-    GetPage(
-      name: one10Screen,
-      page: () => One10Screen(),
-      bindings: [One10Binding()],
-    ),
     GetPage(
       name: two7Screen,
       page: () => Two7Screen(),
@@ -600,36 +468,11 @@ class AppRoutes {
     ),
 
     GetPage(
-      name: one11Screen,
-      page: () => One11Screen(),
-      bindings: [One11Binding()],
-    ),
-    GetPage(
-      name: two8Screen,
-      page: () => Two8Screen(),
-      bindings: [Two8Binding()],
-    ),
-    GetPage(
-      name: three4Screen,
-      page: () => Three4Screen(),
-      bindings: [Three4Binding()],
-    ),
-    GetPage(
       name: k77Page,
       page: () => K77Page(),
       bindings: [K77Binding()],
     ),
 
-    GetPage(
-      name: k85Screen,
-      page: () => K85Screen(),
-      bindings: [K85Binding()],
-    ),
-    GetPage(
-      name: k86Screen,
-      page: () => K86Screen(),
-      bindings: [K86Binding()],
-    ),
     GetPage(
       name: rulePickerTestScreen,
       page: () => RulerPickerTestScreen(),

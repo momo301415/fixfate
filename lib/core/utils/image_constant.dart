@@ -252,4 +252,26 @@ class ImageConstant {
   static String imgGray500 = '$imagePath/img__gray_500.svg';
 
   static String imgIcon12162x162 = '$imagePath/img_icon_1_2_162x162.png';
+
+  static String imgUnion772x374 = '$imagePath/img_union_772x374.png';
+
+  static String imgUChartLine = '$imagePath/img_u_chart_line.svg';
+
+  static String imgFiWind = '$imagePath/img_fi_wind.svg';
+
+  static String imgFiBookOpen = '$imagePath/img_fi_book_open.svg';
+
+  static String imgClock = '$imagePath/img_clock.svg';
+
+  static String imgArrowUpPrimary = '$imagePath/img_arrow_up_primary.svg';
+
+  static String imgArrowUp = '$imagePath/img_arrow_up.svg';
+
+  static String imgWhiteA7001 = '$imagePath/img__white_a700_1.svg';
+
+  static String imgMusicPrimary = '$imagePath/img_music_primary.svg';
+
+  static String imgUuploadalt = '$imagePath/img_uuploadalt.svg';
+
+  static String imgMenu = '$imagePath/img_menu.svg';
 }

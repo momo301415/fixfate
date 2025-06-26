@@ -12,6 +12,11 @@ extension TextFormFieldStyleHelper on CustomTextFormField {
         borderRadius: BorderRadius.circular(5.h),
         borderSide: BorderSide.none,
       );
+
+  static OutlineInputBorder get fillWhiteA => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24.h),
+        borderSide: BorderSide.none,
+      );
 }
 
 class CustomTextFormField extends StatelessWidget {

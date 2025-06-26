@@ -195,6 +195,7 @@ class LightCodeColors {
   Color get blueGray400 => Color(0XFF878787);
   Color get blueGray900 => Color(0XFF333333);
   Color get blueGray90001 => Color(0XFF0D3238);
+  Color get gray90066 => Color(0X660A2226);
 // Cyan
   Color get cyan300 => Color(0XFF61CCDF);
   Color get cyan30001 => Color(0XFF4CD4EB);

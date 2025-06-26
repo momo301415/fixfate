@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 import 'controller/five_controller.dart';
 
+/// 共用dialog
 // ignore_for_file: must_be_immutable
 class FiveDialog extends StatelessWidget {
   final String message;

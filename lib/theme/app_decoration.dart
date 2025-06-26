@@ -137,6 +137,17 @@ class AppDecoration {
           width: 1.h,
         ),
       );
+  static BoxDecoration get outlineGray90066 => BoxDecoration(
+        boxShadow: [
+          BoxShadow(color: appTheme.gray90066),
+          BoxShadow(
+            color: appTheme.whiteA700,
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      );
   static BoxDecoration get outlineGrayC => BoxDecoration(
         color: appTheme.whiteA700,
         boxShadow: [
@@ -304,12 +315,18 @@ class BorderRadiusStyle {
   static BorderRadius get circleBorder20 => BorderRadius.circular(
         20.h,
       );
+  static BorderRadius get circleBorder32 => BorderRadius.circular(32.h);
   static BorderRadius get circleBorder48 => BorderRadius.circular(
         48.h,
       );
 // Custom borders
   static BorderRadius get customBorderTL12 => BorderRadius.vertical(
         top: Radius.circular(12.h),
+      );
+  static BorderRadius get customBorderTL161 => BorderRadius.only(
+        topLeft: Radius.circular(16.h),
+        topRight: Radius.circular(16.h),
+        bottomRight: Radius.circular(16.h),
       );
 // Rounded borders
   static BorderRadius get roundedBorder16 => BorderRadius.circular(
