@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:485992804744:android:30793b9cf88aa110e4ca3d",
+        "android_client_info": {
+          "package_name": "com.fixfate.futurelab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBWTPQIIGImEL_qzR2o_4lNOVe1Kv5Mnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:485992804744:android:d92b8b451b546437e4ca3d",
         "android_client_info": {
           "package_name": "com.pulsedevice.app"

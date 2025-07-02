@@ -17,7 +17,12 @@ class K73Screen extends GetWidget<K73Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseChatScaffold(
+      controller: controller.searchController,
       enableScroll: false,
+      snedChatEvent: () {
+        FocusScope.of(context).unfocus();
+        controller.onSendPressed();
+      },
       onEvent: () {
         print("k73 screen onEvent");
         Future.delayed(const Duration(milliseconds: 500), () {

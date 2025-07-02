@@ -2,6 +2,10 @@ import 'package:pulsedevice/presentation/bg_log_page/bg_log_page.dart';
 import 'package:pulsedevice/presentation/bg_log_page/binding/bg_log_biding.dart';
 import 'package:pulsedevice/presentation/home_page/binding/home_binding.dart';
 import 'package:pulsedevice/presentation/home_page/home_page.dart';
+import 'package:pulsedevice/presentation/k19_screen/binding/k19_binding.dart';
+import 'package:pulsedevice/presentation/k19_screen/k19_screen.dart';
+import 'package:pulsedevice/presentation/k20_screen/binding/k20_binding.dart';
+import 'package:pulsedevice/presentation/k20_screen/k20_screen.dart';
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
 import 'package:pulsedevice/presentation/k5_screen/binding/k5_binding.dart';
@@ -213,6 +217,10 @@ class AppRoutes {
   static const String bglogPage = '/bg_log_page';
 
   static const String homePage = '/home_page';
+
+  static const String k19Screen = '/k19_screen';
+
+  static const String k20Screen = '/k20_screen';
 
   static List<GetPage> pages = [
     /// 隱私權頁
@@ -442,6 +450,12 @@ class AppRoutes {
 
     ///app主頁父級別頁面
     GetPage(name: homePage, page: () => HomePage(), bindings: [HomeBinding()]),
+
+    ///諮詢頁面-預設
+    GetPage(name: k19Screen, page: () => K19Screen(), bindings: [K19Binding()]),
+
+    ///諮詢頁面-歷史
+    GetPage(name: k20Screen, page: () => K20Screen(), bindings: [K20Binding()]),
 
     GetPage(
       name: fourScreen,

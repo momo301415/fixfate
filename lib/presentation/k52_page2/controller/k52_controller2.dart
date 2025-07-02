@@ -79,9 +79,9 @@ class K52Controller2 extends GetxController {
       final percent = (count / total * 100); // 1 位小數
       var labelName = "";
       if (label.contains("體溫")) {
-        labelName = "體表溫度報警";
+        labelName = "體表溫度警報";
       } else {
-        labelName = label + "報警";
+        labelName = label + "警報";
       }
       return ListItemModel2(
         tf: Rx("$labelName"), // 名稱

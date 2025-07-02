@@ -36,6 +36,8 @@ class AppDecoration {
   static BoxDecoration get fillWhiteA => BoxDecoration(
         color: appTheme.whiteA700,
       );
+  static BoxDecoration get fillBlueGray =>
+      BoxDecoration(color: appTheme.blueGray90001);
 // Gradient decorations，splash page
   static BoxDecoration get gradientCyanToOnErrorContainer => BoxDecoration(
         gradient: LinearGradient(

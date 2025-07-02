@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/health_data_sync_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/presentation/k19_screen/controller/k19_controller.dart';
 import 'package:pulsedevice/presentation/k67_screen/models/k67_model.dart';
 import 'package:pulsedevice/presentation/k73_screen/models/family_item_model.dart';
 import '../../../core/app_export.dart';
@@ -17,6 +19,8 @@ import '../models/k73_model.dart';
 class K73Controller extends GetxController with WidgetsBindingObserver {
   TextEditingController searchController = TextEditingController();
   final gc = Get.find<GlobalController>();
+  final chatScreenController = Get.find<ChatScreenController>();
+  final k19Controller = Get.find<K19Controller>();
   ApiService apiService = ApiService();
 
   Rx<K73Model> k73ModelObj = K73Model().obs;
@@ -83,6 +87,19 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   /// 路由到我的設備頁面
   void goK40Screen() {
     Get.toNamed(AppRoutes.k40Screen);
+  }
+
+  /// 路由到諮詢頁面
+  void goK19Screen() {
+    Get.toNamed(AppRoutes.k19Screen);
+  }
+
+  /// 展開諮詢頁面
+  void onSendPressed() {
+    final str = searchController.value.text.trim();
+    gc.chatInput.value = str;
+    searchController.clear();
+    k19Controller.handleIncomingChatFromK73(gc.chatInput.value);
   }
 
   Future<void> getData(Map<String, dynamic> res) async {

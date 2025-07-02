@@ -122,6 +122,9 @@ class GlobalController extends GetxController {
   ///--- 是否登出，影響自動登入
   final isLogout = false.obs;
 
+  ///--- 諮詢暫存輸入字串
+  final chatInput = "".obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -234,7 +237,9 @@ class GlobalController extends GetxController {
     // Initialize port for communication between TaskHandler and UI.
     FlutterForegroundTask.initCommunicationPort();
     FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
-    await AndroidAlarmManager.initialize();
+    if (Platform.isAndroid) {
+      await AndroidAlarmManager.initialize();
+    }
   }
 
   initGoal() async {
@@ -376,6 +381,9 @@ class GlobalController extends GetxController {
     await syncDataService.runBackgroundSync();
     await getBlueToothDeviceInfo();
     isBleDataReady.value = true;
+    Future.delayed(const Duration(milliseconds: 500), () {
+      NotificationService().showDeviceSyncDataNotification();
+    });
   }
 
   void _handleBluetoothStateChange(int newStatus) async {

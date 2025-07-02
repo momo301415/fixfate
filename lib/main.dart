@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/presentation/k5_screen/controller/k5_controller.dart';
 
@@ -16,6 +17,8 @@ void main() async {
     Get.put(GlobalController()); // 註冊為全域單例
     // 將運動controller放在這裡，全 app 可用
     Get.put(K5Controller(), permanent: true);
+    // 全局縮放聊天室
+    Get.put(ChatScreenController());
     GlobalController().setupIosMessageChannel();
     runApp(MyApp());
   });

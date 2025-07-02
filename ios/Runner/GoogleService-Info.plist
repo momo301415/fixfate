@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.pulsedevice.app.testProject</string>
+	<string>com.fixfate.futurelab</string>
 	<key>PROJECT_ID</key>
 	<string>smartwearplatform-test</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:485992804744:ios:d1f20f04ff6d015fe4ca3d</string>
+	<string>1:485992804744:ios:4ccc1b431f330e67e4ca3d</string>
 </dict>
 </plist>

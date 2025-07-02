@@ -20,19 +20,22 @@ class RemiderSettingAdapter extends TypeAdapter<RemiderSetting> {
       alertEnabled: fields[0] as bool,
       frequency: fields[1] as String,
       timing: fields[2] as String,
+      lastUpdated: fields[3] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RemiderSetting obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.alertEnabled)
       ..writeByte(1)
       ..write(obj.frequency)
       ..writeByte(2)
-      ..write(obj.timing);
+      ..write(obj.timing)
+      ..writeByte(3)
+      ..write(obj.lastUpdated);
   }
 
   @override

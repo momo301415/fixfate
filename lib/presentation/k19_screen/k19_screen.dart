@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:pulsedevice/presentation/k19_screen/models/chat_message_model.dart';
 import '../../core/app_export.dart';
-import '../../theme/custom_button_style.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
 import '../../widgets/app_bar/appbar_title_one.dart';
 import '../../widgets/app_bar/appbar_trailing_image.dart';
 import '../../widgets/app_bar/custom_app_bar.dart';
-import '../../widgets/custom_outlined_button.dart';
 import '../../widgets/custom_text_form_field.dart';
 import 'controller/k19_controller.dart'; // ignore_for_file: must_be_immutable
 
@@ -17,323 +14,165 @@ class K19Screen extends GetWidget<K19Controller> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final deviceHeight = mediaQuery.size.height;
+    var deviceH = 0;
+    if (deviceHeight >= 600 && deviceHeight <= 700) {
+      deviceH = 30;
+    } else if (deviceHeight > 700 && deviceHeight <= 800) {
+      deviceH = 50;
+    } else if (deviceHeight > 800 && deviceHeight <= 900) {
+      deviceH = 70;
+    } else if (deviceHeight > 900) {
+      deviceH = 70;
+    }
+    return Obx(() {
+      if (controller.cc.isK19Visible.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.ensureWebSocketConnected();
+        });
+      }
+
+      return _buildScaffold(deviceH); // 這是你原本那段畫面邏輯抽成的 method
+    });
+  }
+
+  Widget _buildScaffold(int bottomHeight) {
     return Scaffold(
       backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        child: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Container(
-              height: 720.h,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 502.h,
-                    margin: EdgeInsets.only(bottom: 68.h),
-                    padding: EdgeInsets.symmetric(horizontal: 16.h),
-                    child: Chat(
-                      showUserNames: false,
-                      disableImageGallery: false,
-                      dateHeaderThreshold: 86400000,
-                      messages: controller.messageList.value,
-                      user: controller.chatUser.value,
-                      bubbleBuilder: (
-                        child, {
-                        required message,
-                        required nextMessageInGroup,
-                      }) {
-                        return message.author.id == controller.chatUser.value.id
-                            ? Container(
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.onError,
-                                  borderRadius: BorderRadius.circular(9.5.h),
-                                ),
-                                child: child,
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  color: appTheme.deepOrangeA200,
-                                  borderRadius: BorderRadius.circular(9.5.h),
-                                ),
-                                child: child,
-                              );
-                      },
-                      textMessageBuilder: (
-                        textMessage, {
-                        required messageWidth,
-                        required showName,
-                      }) {
-                        return textMessage.author.id ==
-                                controller.chatUser.value.id
-                            ? Container(
-                                width: double.maxFinite,
-                                padding: EdgeInsets.only(right: 10.h),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      textMessage.text.toString(),
-                                      style: CustomTextStyles
-                                          .labelMediumWhiteA700
-                                          .copyWith(color: appTheme.whiteA700),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10.h),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      textMessage.text.toString(),
-                                      style: CustomTextStyles
-                                          .labelMediumWhiteA700
-                                          .copyWith(color: appTheme.whiteA700),
-                                    ),
-                                  ],
-                                ),
-                              );
-                      },
-                      onSendPressed: (types.PartialText text) {},
-                      customBottomWidget: Container(
-                        width: double.maxFinite,
-                        padding: EdgeInsets.symmetric(horizontal: 54.h),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(bottom: 12.h),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 48.h,
-                                vertical: 12.h,
-                              ),
-                              decoration: AppDecoration.outlineGrayC.copyWith(
-                                borderRadius: BorderRadiusStyle.circleBorder32,
-                              ),
-                              width: double.maxFinite,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CustomImageView(
-                                        imagePath:
-                                            ImageConstant.imgNavPrimary24x24,
-                                        height: 24.h,
-                                        width: 24.h,
-                                      ),
-                                      Text(
-                                        "lbl68".tr,
-                                        style:
-                                            CustomTextStyles.labelMediumPrimary,
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CustomImageView(
-                                        imagePath: ImageConstant.imgNav,
-                                        height: 24.h,
-                                        width: 24.h,
-                                      ),
-                                      Text(
-                                        "lbl69".tr,
-                                        style: theme.textTheme.labelMedium,
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CustomImageView(
-                                        imagePath:
-                                            ImageConstant.imgNavGray50024x24,
-                                        height: 24.h,
-                                        width: 24.h,
-                                      ),
-                                      Text(
-                                        "lbl70".tr,
-                                        style: theme.textTheme.labelMedium,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      customStatusBuilder: (message, {required context}) {
-                        return Container();
-                      },
-                    ),
-                  ),
-                  Container(
-                    height: 772.h,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgUnion772x374,
-                          height: 772.h,
-                          width: double.maxFinite,
-                        ),
-                        Container(
-                          width: double.maxFinite,
-                          margin: EdgeInsets.symmetric(horizontal: 16.h),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: double.maxFinite,
-                                child: _buildAppbar(),
-                              ),
-                              SizedBox(height: 16.h),
-                              Container(
-                                width: double.maxFinite,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12.h,
-                                  vertical: 24.h,
-                                ),
-                                decoration:
-                                    AppDecoration.outlineGray90066.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder16,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _buildRowmusicone(),
-                                    SizedBox(height: 26.h),
-                                    Container(
-                                      width: double.maxFinite,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 32.h,
-                                      ),
-                                      child: _buildRowfiwindOne(
-                                        fiwindOne: ImageConstant.imgUChartLine,
-                                        one: "lbl306".tr,
-                                      ),
-                                    ),
-                                    SizedBox(height: 14.h),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12.h,
-                                        vertical: 4.h,
-                                      ),
-                                      decoration:
-                                          AppDecoration.outlineGray.copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.circleBorder12,
-                                      ),
-                                      child: Text(
-                                        "msg21".tr,
-                                        textAlign: TextAlign.left,
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8.h),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12.h,
-                                        vertical: 4.h,
-                                      ),
-                                      decoration:
-                                          AppDecoration.outlineGray.copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.circleBorder12,
-                                      ),
-                                      child: Text(
-                                        "msg22".tr,
-                                        textAlign: TextAlign.left,
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ),
-                                    SizedBox(height: 26.h),
-                                    Container(
-                                      width: double.maxFinite,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 32.h,
-                                      ),
-                                      child: _buildRowfiwindOne(
-                                        fiwindOne: ImageConstant.imgFiWind,
-                                        one: "lbl307".tr,
-                                      ),
-                                    ),
-                                    SizedBox(height: 14.h),
-                                    _buildTf(),
-                                    SizedBox(height: 8.h),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12.h,
-                                        vertical: 4.h,
-                                      ),
-                                      decoration: AppDecoration.outlineGray2001
-                                          .copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.circleBorder12,
-                                      ),
-                                      child: Text(
-                                        "msg24".tr,
-                                        textAlign: TextAlign.left,
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                    ),
-                                    SizedBox(height: 26.h),
-                                    Container(
-                                      width: double.maxFinite,
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 32.h,
-                                      ),
-                                      child: _buildRowfiwindOne(
-                                        fiwindOne: ImageConstant.imgFiBookOpen,
-                                        one: "lbl308".tr,
-                                      ),
-                                    ),
-                                    SizedBox(height: 14.h),
-                                    _buildTf1(),
-                                    SizedBox(height: 8.h),
-                                    _buildTf2(),
-                                    SizedBox(height: 104.h),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                              _buildSearchone(),
-                              SizedBox(height: 32.h),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "lbl303".tr,
-                                    style: CustomTextStyles.bodyMediumPrimary13,
-                                  ),
-                                  CustomImageView(
-                                    imagePath: ImageConstant.imgArrowUp,
-                                    height: 20.h,
-                                    width: 20.h,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+      resizeToAvoidBottomInset: true,
+      body: Stack(
+        children: [
+          // 背景圖片
+          Positioned.fill(
+            bottom: bottomHeight.h,
+            child: CustomImageView(
+              imagePath: ImageConstant.imgUnion772x374,
+              fit: BoxFit.fill,
             ),
           ),
-        ),
+          SafeArea(
+            top: true,
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: EdgeInsets.only(top: 30.h, left: 16.h, right: 16.h),
+                  child: _buildAppbar(),
+                ),
+                SizedBox(height: 16.h),
+
+                // 對話區塊（白底 + 自動滾動）
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 16.h),
+                    decoration: AppDecoration.outlineGray90066.copyWith(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Obx(() {
+                      final messages = controller.messages;
+                      final presetWidgets = [
+                        _buildRowmusicone(),
+                        SizedBox(height: 24.h),
+                        _buildRowfiwindOne(
+                          fiwindOne: ImageConstant.imgUChartLine,
+                          one: "lbl336".tr,
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildBubble("msg21".tr),
+                        _buildBubble("msg22".tr),
+                        SizedBox(height: 24.h),
+                        _buildRowfiwindOne(
+                          fiwindOne: ImageConstant.imgFiWind,
+                          one: "lbl337".tr,
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildBubble("msg23".tr),
+                        _buildBubble("msg24".tr),
+                        SizedBox(height: 24.h),
+                        _buildRowfiwindOne(
+                          fiwindOne: ImageConstant.imgFiBookOpen,
+                          one: "lbl338".tr,
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildBubble("msg25".tr),
+                        _buildBubble("msg26".tr),
+                      ];
+
+                      if (controller.isHistoryLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        controller.scrollToBottom();
+                      });
+
+                      return ListView.builder(
+                        controller: controller.scrollController,
+                        padding: EdgeInsets.all(16.h),
+                        itemCount: presetWidgets.length + messages.length,
+                        itemBuilder: (context, index) {
+                          if (index < presetWidgets.length) {
+                            return presetWidgets[index];
+                          }
+
+                          final msg = messages[index - presetWidgets.length];
+                          return msg.isUser
+                              ? Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _buildChatBubble(msg),
+                                )
+                              : _buildAiBubbleWithFeedback(msg);
+                        },
+                      );
+                    }),
+                  ),
+                ),
+
+                // 輸入欄
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.v),
+                  child: _buildSearchone(),
+                ),
+
+                SizedBox(height: 16.h),
+
+                // 關閉對話按鈕
+                _closeChat(),
+
+                SizedBox(height: 12.h),
+              ],
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildBubble(String text) {
+    return GestureDetector(
+        onTap: () {
+          controller.searchoneController.text = text;
+          controller.sendUserMessage();
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.h),
+          decoration: BoxDecoration(
+            color: Colors.white, // 建議明確設背景色，否則可能看不到陰影效果
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // 陰影顏色與透明度
+                blurRadius: 4, // 模糊程度
+                offset: Offset(0, 2), // 陰影位移 (x, y)
+              ),
+            ],
+          ),
+          child: Text(text, style: theme.textTheme.bodySmall),
+        ));
   }
 
   /// Section Widget
@@ -354,6 +193,9 @@ class K19Screen extends GetWidget<K19Controller> {
         AppbarTrailingImage(
           imagePath: ImageConstant.imgWhiteA7001,
           margin: EdgeInsets.only(right: 7.h),
+          onTap: () {
+            controller.goK20Screen();
+          },
         ),
       ],
     );
@@ -405,40 +247,7 @@ class K19Screen extends GetWidget<K19Controller> {
     );
   }
 
-  /// Section Widget
-  Widget _buildTf() {
-    return CustomOutlinedButton(
-      height: 24.h,
-      text: "msg23".tr,
-      margin: EdgeInsets.symmetric(horizontal: 20.h),
-      buttonStyle: CustomButtonStyles.outlineGray,
-      buttonTextStyle: theme.textTheme.bodySmall!,
-    );
-  }
-
-  /// Section Widget
-  Widget _buildTf1() {
-    return CustomOutlinedButton(
-      height: 24.h,
-      text: "msg25".tr,
-      margin: EdgeInsets.symmetric(horizontal: 20.h),
-      buttonStyle: CustomButtonStyles.outlineGray,
-      buttonTextStyle: theme.textTheme.bodySmall!,
-    );
-  }
-
-  /// Section Widget
-  Widget _buildTf2() {
-    return CustomOutlinedButton(
-      height: 24.h,
-      text: "msg26".tr,
-      margin: EdgeInsets.symmetric(horizontal: 20.h),
-      buttonStyle: CustomButtonStyles.outlineGray,
-      buttonTextStyle: theme.textTheme.bodySmall!,
-    );
-  }
-
-  /// Section Widget
+  /// 輸入匡
   Widget _buildSearchone() {
     return CustomTextFormField(
       controller: controller.searchoneController,
@@ -446,25 +255,54 @@ class K19Screen extends GetWidget<K19Controller> {
       hintStyle: CustomTextStyles.bodyMediumGray50013,
       textInputAction: TextInputAction.done,
       suffix: Padding(
-        padding: EdgeInsets.fromLTRB(30.h, 12.h, 12.h, 12.h),
+        padding: EdgeInsets.only(right: 8.h), // 整體右側留點空間
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomImageView(
-              imagePath: ImageConstant.imgUuploadalt,
-              height: 24.h,
-              width: 24.h,
-              margin: EdgeInsets.symmetric(horizontal: 30.h, vertical: 12.h),
-            ),
-            CustomImageView(
-              imagePath: ImageConstant.imgMenu,
-              height: 24.h,
-              width: 24.h,
-            ),
-            CustomImageView(
-              imagePath: ImageConstant.imgSend,
-              height: 24.h,
-              width: 24.h,
+            // 上傳圖示
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 4.h),
+            //   child: CustomImageView(
+            //     imagePath: ImageConstant.imgUuploadalt,
+            //     height: 24.h,
+            //     width: 24.h,
+            //   ),
+            // ),
+
+            // // 功能選單圖示
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 4.h),
+            //   child: CustomImageView(
+            //     imagePath: ImageConstant.imgMenu,
+            //     height: 24.h,
+            //     width: 24.h,
+            //   ),
+            // ),
+
+            // 傳送按鈕
+            Padding(
+              padding: EdgeInsets.only(left: 8.h), // 與前兩個圖示稍拉開
+              child: GestureDetector(
+                onTap: () {
+                  print("send message");
+                  controller.sendUserMessage();
+                },
+                child: Container(
+                  width: 40.h,
+                  height: 40.h,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgSend,
+                      height: 17.h,
+                      width: 17.h,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -476,35 +314,222 @@ class K19Screen extends GetWidget<K19Controller> {
     );
   }
 
-  /// Common widget
-  Widget _buildColumnfileOne({required String fileOne, required String one}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CustomImageView(imagePath: fileOne, height: 24.h, width: 24.h),
-        Text(
-          one,
-          style: theme.textTheme.labelMedium!.copyWith(color: appTheme.gray500),
+  /// 通用預設widget
+  Widget _buildRowfiwindOne({required String fiwindOne, required String one}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.h),
+      child: Row(
+        children: [
+          CustomImageView(imagePath: fiwindOne, height: 16.h, width: 16.h),
+          Padding(
+            padding: EdgeInsets.only(left: 8.h),
+            child: Text(
+              one,
+              style: theme.textTheme.labelLarge!.copyWith(
+                color: theme.colorScheme.errorContainer,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 關閉chat事件
+  Widget _closeChat() {
+    return GestureDetector(
+        onTap: () {
+          controller.onClosePressed();
+        },
+        child: Padding(
+          padding: EdgeInsets.only(top: 8.h, bottom: 8.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Text(
+                "lbl330".tr,
+                style: CustomTextStyles.bodyMediumPrimary15,
+              ),
+              CustomImageView(
+                imagePath: ImageConstant.imgArrowUp,
+                height: 20.h,
+                width: 20.h,
+              ),
+            ],
+          ),
+        ));
+  }
+
+  /// 使用者的發話泡泡
+  Widget _buildChatBubble(ChatMessageModel message) {
+    final isUser = message.isUser;
+
+    return Align(
+      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
+        constraints: BoxConstraints(maxWidth: 260.h),
+        decoration: BoxDecoration(
+          color: isUser ? theme.colorScheme.primary : appTheme.gray200,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+            bottomLeft: Radius.circular(isUser ? 12 : 0),
+            bottomRight: Radius.circular(isUser ? 0 : 12),
+          ),
         ),
+        child: Text(
+          message.text,
+          style: TextStyle(
+            color: isUser ? Colors.white : Colors.black87,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// AI 的回覆泡泡
+  Widget _buildAiBubbleWithFeedback(ChatMessageModel message) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 左側 AI icon
+        Padding(
+          padding: EdgeInsets.only(top: 4.h),
+          child: CustomImageView(
+            imagePath: ImageConstant.imgMusicPrimary, // 換成 AI LOGO 圖示
+            height: 24.h,
+            width: 24.h,
+          ),
+        ),
+        SizedBox(width: 8.h),
+
+        // 右側內容
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 回覆泡泡
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: appTheme.gray200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  message.text,
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              SizedBox(height: 4.h),
+
+              // 互動按鈕列
+              Row(
+                children: [
+                  _buildFeedbackButton(
+                    label: "lbl333".tr,
+                    imagePath: ImageConstant.imgFeedbackGood,
+                    feedbackType: 1,
+                    message: message,
+                    onFeedbackTap: _onFeedbackAndSendMessage,
+                  ),
+                  SizedBox(width: 4.h),
+                  _buildFeedbackButton(
+                      label: "lbl334".tr,
+                      imagePath: ImageConstant.imgFeedbackSoso,
+                      feedbackType: 2,
+                      message: message,
+                      onFeedbackTap: _onFeedbackAndSendMessage),
+                  SizedBox(width: 4.h),
+                  _buildFeedbackButton(
+                      label: "lbl335".tr,
+                      imagePath: ImageConstant.imgFeedbackBad,
+                      feedbackType: 0,
+                      message: message,
+                      onFeedbackTap: _onFeedbackAndSendMessage),
+                ],
+              )
+            ],
+          ),
+        )
       ],
     );
   }
 
-  /// Common widget
-  Widget _buildRowfiwindOne({required String fiwindOne, required String one}) {
-    return Row(
-      children: [
-        CustomImageView(imagePath: fiwindOne, height: 16.h, width: 16.h),
-        Padding(
-          padding: EdgeInsets.only(left: 8.h),
-          child: Text(
-            one,
-            style: theme.textTheme.labelLarge!.copyWith(
-              color: theme.colorScheme.errorContainer,
-            ),
-          ),
+  Widget _buildFeedbackButton({
+    required String label,
+    required String imagePath,
+    required int feedbackType, // 0: 差, 1: 好, 2: 還好
+    required ChatMessageModel message,
+    required void Function(String text, int rating)? onFeedbackTap,
+  }) {
+    final isSelected = message.feedbackRating == feedbackType;
+
+    // 動態樣式
+    late Color borderColor;
+    late Color textColor;
+    late Color? iconColor;
+
+    switch (feedbackType) {
+      case 0: // 不好
+        borderColor = isSelected ? Colors.red : appTheme.gray300;
+        textColor = isSelected ? Colors.red : appTheme.gray600;
+        iconColor = isSelected ? Colors.red : null;
+        break;
+      case 1: // 好
+        borderColor = isSelected ? Colors.green : appTheme.gray300;
+        textColor = isSelected ? Colors.green : appTheme.gray600;
+        iconColor = isSelected ? Colors.green : null;
+        break;
+      case 2: // 還好
+        borderColor = isSelected ? Colors.orange : appTheme.gray300;
+        textColor = isSelected ? Colors.orange : appTheme.gray600;
+        iconColor = isSelected ? Colors.orange : null;
+        break;
+      default:
+        borderColor = appTheme.gray300;
+        textColor = appTheme.gray600;
+        iconColor = null;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        onFeedbackTap?.call(label, feedbackType);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.circular(16),
         ),
-      ],
+        child: Row(
+          children: [
+            CustomImageView(
+              imagePath: imagePath,
+              height: 16.h,
+              width: 16.h,
+              color: iconColor, // ✅ 只有選中才加顏色
+            ),
+            SizedBox(width: 4.h),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11, color: textColor),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  void _onFeedbackAndSendMessage(String text, int rating) {
+    print("Feedback: $text, Rating: $rating");
+    controller.sendUserMessageByFeedback(text, rating);
   }
 }

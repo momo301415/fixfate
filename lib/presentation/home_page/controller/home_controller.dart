@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 
@@ -7,7 +9,7 @@ import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.da
 
 class HomeController extends GetxController {
   final bottomBarIndex = 1.obs;
-
+  final cc = Get.find<ChatScreenController>();
   @override
   void onInit() {
     super.onInit();

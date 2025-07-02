@@ -51,19 +51,23 @@ class BaseScaffoldImageHeader extends StatelessWidget {
   final Function()? onBack;
   final isShowBackButton;
   final bool enableScroll;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
-  const BaseScaffoldImageHeader({
-    Key? key,
-    required this.title,
-    required this.child,
-    this.bottomNavigationBar,
-    this.headerHeight = 120,
-    this.backgroundImage = 'assets/images/img_header_curved.png',
-    this.actions,
-    this.onBack,
-    this.isShowBackButton = true,
-    this.enableScroll = true,
-  }) : super(key: key);
+  const BaseScaffoldImageHeader(
+      {Key? key,
+      required this.title,
+      required this.child,
+      this.bottomNavigationBar,
+      this.headerHeight = 120,
+      this.backgroundImage = 'assets/images/img_header_curved.png',
+      this.actions,
+      this.onBack,
+      this.isShowBackButton = true,
+      this.enableScroll = true,
+      this.floatingActionButton,
+      this.floatingActionButtonLocation})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +141,8 @@ class BaseScaffoldImageHeader extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }
@@ -148,6 +154,7 @@ class BaseChatScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final VoidCallback? onEvent;
   final bool enableScroll;
+  final Function()? snedChatEvent;
 
   const BaseChatScaffold({
     Key? key,
@@ -157,6 +164,7 @@ class BaseChatScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.onEvent,
     this.enableScroll = true,
+    this.snedChatEvent,
   }) : super(key: key);
 
   @override
@@ -229,6 +237,7 @@ class BaseChatScaffold extends StatelessWidget {
                           children: [
                             Expanded(
                               child: CustomSearchView(
+                                snedChatEvent: snedChatEvent,
                                 controller: controller,
                                 hintText: "lbl226".tr,
                                 contentPadding:

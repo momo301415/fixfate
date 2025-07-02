@@ -152,6 +152,8 @@ class CustomTextStyles {
       );
   static TextStyle get bodyMediumPrimary13 => theme.textTheme.bodyMedium!
       .copyWith(color: theme.colorScheme.primary, fontSize: 13.fSize);
+  static TextStyle get bodyMediumPrimary15 => theme.textTheme.bodyMedium!
+      .copyWith(color: theme.colorScheme.primary, fontSize: 15.fSize);
   static TextStyle get bodyMediumPrimaryContainer =>
       theme.textTheme.bodyMedium!.copyWith(
         color: theme.colorScheme.primaryContainer,

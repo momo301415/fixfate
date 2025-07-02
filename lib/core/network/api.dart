@@ -1,5 +1,7 @@
 class Api {
+  ///-------- api
   static const String baseUrl = "http://60.250.109.71:38080/";
+
   static const String login = "login";
   static const String register = "register";
   static const String sms = "getSMSCode";
@@ -22,4 +24,11 @@ class Api {
   static const String notifyList = "notity/List";
   static const String notifyListSum = "notity/List/sum";
   static const String healthRecordList = "healthRecord/list";
+
+  ///-------- aws api
+  static const String awsUrl =
+      "https://q9xezrperc.execute-api.us-east-1.amazonaws.com/prod/";
+  static const String socketUrl =
+      "wss://pletmsw3sc.execute-api.us-east-1.amazonaws.com/prod";
+  static const String chatHistory = "chat-history";
 }

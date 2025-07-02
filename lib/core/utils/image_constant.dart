@@ -274,4 +274,14 @@ class ImageConstant {
   static String imgUuploadalt = '$imagePath/img_uuploadalt.svg';
 
   static String imgMenu = '$imagePath/img_menu.svg';
+
+  static String imgUPlusWhiteA700 = '$imagePath/img_u_plus_white_a700.svg';
+
+  static String imgUserPrimary = '$imagePath/img_user_primary.svg';
+
+  static String imgFeedbackGood = '$imagePath/img_feedback_good.svg';
+
+  static String imgFeedbackSoso = '$imagePath/img_feedback_soso.svg';
+
+  static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
 }

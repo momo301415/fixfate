@@ -23,7 +23,6 @@ dependencies:
   fl_chart: ^0.70.0  # 畫圖表用的 (線圖、圓餅圖、柱狀圖)
   image_picker: ^1.1.2  # 開啟相機、選取相簿圖片
   permission_handler: ^11.0.1  # 權限請求與檢查 (相機、藍牙、儲存)
-  flutter_blue_plus: ^1.35.5  # 藍牙掃描
   device_info_plus: ^11.4.0  # 取得裝置資訊 (機型/系統版本)
   flutter_spinkit: ^5.2.1  # 載入中動畫
   flutter_local_notifications: ^19.1.0  # 設定本地通知
@@ -47,6 +46,8 @@ dependencies:
   zxing2: ^0.2.4 # QRCode掃描
   flutter_chat_ui: ^1.6.15  # Flutter聊天UI
   flutter_chat_types: ^3.6.2  # Flutter聊天類型
+  web_socket_channel: ^3.0.3  # WebSocket連線
+  collection: ^1.19.1  # 集合操作
   
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:

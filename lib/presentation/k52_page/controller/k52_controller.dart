@@ -48,9 +48,10 @@ class K52Controller extends GetxController {
   Future<void> getNotifyList(List<Map<String, dynamic>> datas) async {
     if (datas.length > 0) {
       final list = datas.map((record) {
+        DateTime date = DateTime.parse(record["createdAt"]);
         return ListItemModel(
           tf: Rx(record["title"]),
-          tf1: Rx(record["createdAt"]),
+          tf1: Rx(date.format(pattern: 'yyyy/MM/dd HH:mm')),
           id: Rx(''),
         );
       }).toList();

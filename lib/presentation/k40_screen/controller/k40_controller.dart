@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue_plus;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
@@ -96,15 +95,6 @@ class K40Controller extends GetxController {
       }
     } catch (e) {
       rethrow;
-    }
-  }
-
-  void checkIosBluetoothState() async {
-    final state = await blue_plus.FlutterBluePlus.adapterState.first;
-    if (state == blue_plus.BluetoothAdapterState.on) {
-      goK10Screen();
-    } else {
-      showBlueTooth();
     }
   }
 }

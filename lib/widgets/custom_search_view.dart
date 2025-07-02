@@ -25,7 +25,8 @@ class CustomSearchView extends StatelessWidget {
       this.fillColor,
       this.filled = true,
       this.validator,
-      this.onChanged})
+      this.onChanged,
+      this.snedChatEvent})
       : super(
           key: key,
         );
@@ -73,6 +74,8 @@ class CustomSearchView extends StatelessWidget {
   final FormFieldValidator<String>? validator;
 
   final Function(String)? onChanged;
+
+  final Function()? snedChatEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -125,22 +128,27 @@ class CustomSearchView extends StatelessWidget {
               maxHeight: 48.h,
             ),
         suffixIcon: suffix ??
-            Container(
-              width: 40.h,
-              height: 40.h,
-              margin: EdgeInsets.only(right: 6.h),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                shape: BoxShape.circle, // ✅ 重點：使用 circle
-              ),
-              child: Center(
-                child: CustomImageView(
-                  imagePath: ImageConstant.imgSend,
-                  height: 17.h,
-                  width: 17.h,
-                ),
-              ),
-            ),
+            GestureDetector(
+                onTap: () {
+                  print("send message");
+                  snedChatEvent?.call();
+                },
+                child: Container(
+                  width: 40.h,
+                  height: 40.h,
+                  margin: EdgeInsets.only(right: 6.h),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle, // ✅ 重點：使用 circle
+                  ),
+                  child: Center(
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgSend,
+                      height: 17.h,
+                      width: 17.h,
+                    ),
+                  ),
+                )),
         suffixIconConstraints: suffixConstraints ??
             BoxConstraints(
               maxHeight: 48.h,
