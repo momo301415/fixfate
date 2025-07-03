@@ -96,7 +96,7 @@ class K58Controller extends GetxController {
     LoadingHelper.show();
     try {
       final payload = {
-        "codeType": "heartRate",
+        "codeType": "rate",
         "userId": gc.apiId.value,
       };
       var res = await service.postJson(

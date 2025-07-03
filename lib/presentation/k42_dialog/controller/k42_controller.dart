@@ -3,6 +3,7 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/yc_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -64,6 +65,8 @@ class K42Controller extends GetxController {
       if (res.isNotEmpty) {
         var resBody = res['data'];
         if (resBody != null) {
+          /// 設定裝置偵測時間，在連線成功後綁定api設定
+          YcService.setListeningTime(10);
           return true;
         } else {
           DialogHelper.showError("${res["message"]}");

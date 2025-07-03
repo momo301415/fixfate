@@ -105,16 +105,16 @@ class K29Page extends GetWidget<K29Controller> {
           _buildMenuItem("lbl65".tr, ImageConstant.imgUShieldCheck, () {
             controller.go63Screen();
           }),
-          _buildMenuItem("lbl66".tr, ImageConstant.imgFrame, () {
+          _buildMenuItemNonDivider("lbl66".tr, ImageConstant.imgFrame, () {
             controller.go67SrcScreen();
           }),
-          _buildMenuItemNonDivider("lbl67".tr, ImageConstant.imgFrame2,
-              () async {
-            // final notification = NotificationService();
-            // await notification.testImmediateNotification();
-            // SnackbarHelper.showBlueSnackbar(message: "ad notification");
-            controller.goLog();
-          }),
+          // _buildMenuItemNonDivider("lbl67".tr, ImageConstant.imgFrame2,
+          //     () async {
+          //   // final notification = NotificationService();
+          //   // await notification.testImmediateNotification();
+          //   // SnackbarHelper.showBlueSnackbar(message: "ad notification");
+          //   controller.goLog();
+          // }),
         ],
       ),
     );

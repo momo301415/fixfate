@@ -242,8 +242,11 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        final base = DateTime.fromMillisecondsSinceEpoch(
-            pressureData.first.startTimeStamp * 1000);
+        final base = DateTime(
+          currentDate.value.year,
+          currentDate.value.month,
+          currentDate.value.day,
+        );
 
         data = pressureData.map((e) {
           final current =
@@ -256,13 +259,15 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
           showTitles: true,
           interval: 240, // 每 240 分鐘（即 4 小時）
           getTitlesWidget: (value, meta) {
-            final timestamp = base.add(Duration(minutes: value.toInt()));
+            // 固定顯示整點時間
+            final hours = (value ~/ 60) % 24;
             return Transform.translate(
-                offset: Offset(0, 12.h),
-                child: Text(
-                  timestamp.format(pattern: 'HH:mm'),
-                  style: const TextStyle(fontSize: 10),
-                ));
+              offset: Offset(0, 12.h),
+              child: Text(
+                '${hours.toString().padLeft(2, '0')}:00',
+                style: const TextStyle(fontSize: 10),
+              ),
+            );
           },
         );
       }

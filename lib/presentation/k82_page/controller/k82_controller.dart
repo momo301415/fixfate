@@ -151,7 +151,10 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
         deepCount.value = parsed.where((e) => e.deep.isNotEmpty).length;
         lightCount.value = parsed.where((e) => e.light.isNotEmpty).length;
         remCount.value = parsed.where((e) => e.rem.isNotEmpty).length;
-        awakeCount.value = parsed.where((e) => e.awake.isNotEmpty).length;
+
+        /// 排除awake為0的資料，因為戒指不一定會有給資料
+        awakeCount.value =
+            parsed.where((e) => e.awake.isNotEmpty && e.awake != '0').length;
         for (var data in parsed) {
           final stageDurations = {
             SleepStage.deep: int.tryParse(data.deep) ?? 0,

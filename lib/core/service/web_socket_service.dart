@@ -14,6 +14,9 @@ class WebSocketService {
   final String url;
   WebSocketChannel? _channel;
   String? sessionId;
+  bool _isConnecting = false;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 5;
 
   OnChunkCallback? onChunk;
   OnMessageStartCallback? onStart;
@@ -24,33 +27,94 @@ class WebSocketService {
   OnFeedbackResultCallback? onFeedbackResult;
 
   bool get isConnected => _channel != null && _channel!.closeCode == null;
+  bool get canSendMessage =>
+      isConnected && sessionId != null && sessionId!.isNotEmpty;
 
   WebSocketService(this.url);
 
   void connect() {
-    _channel = WebSocketChannel.connect(safeParseUrl(url));
+    if (_isConnecting || isConnected) {
+      print('⚠️ WebSocket 已在連線中或已連接');
+      return;
+    }
 
-    _channel!.stream.listen(
-      (event) {
-        _handleIncomingMessage(event);
-      },
-      onError: (error) {
-        onError?.call(error);
-        reconnect();
-      },
-      onDone: () {
-        reconnect();
-      },
-    );
+    _isConnecting = true;
+    print('🔄 WebSocket 連線中... (嘗試 ${_reconnectAttempts + 1})');
 
-    // 初始化 session_id
-    _send({"type": "sendmessage", "action": "get_session_id"});
+    try {
+      _channel = WebSocketChannel.connect(safeParseUrl(url));
+
+      _channel!.stream.listen(
+        (event) {
+          _handleIncomingMessage(event);
+          _reconnectAttempts = 0; // 連線成功，重置重連計數
+        },
+        onError: (error) {
+          print('❌ WebSocket 錯誤: $error');
+          _isConnecting = false;
+          onError?.call(error);
+          _handleConnectionLoss();
+        },
+        onDone: () {
+          print('📡 WebSocket 連線關閉');
+          _isConnecting = false;
+          _handleConnectionLoss();
+        },
+      );
+
+      _isConnecting = false;
+
+      // 只在沒有有效 session 時才請求
+      _requestSessionIfNeeded();
+    } catch (e) {
+      _isConnecting = false;
+      print('❌ WebSocket 連線失敗: $e');
+      onError?.call(e);
+      _handleConnectionLoss();
+    }
   }
 
-  void reconnect() {
-    Future.delayed(const Duration(seconds: 3), () {
-      connect();
+  void _requestSessionIfNeeded() {
+    if (sessionId == null || sessionId!.isEmpty) {
+      print('📋 請求新的 session_id...');
+      _send({"type": "sendmessage", "action": "get_session_id"});
+    } else {
+      print('✅ 重用現有 session_id: $sessionId');
+      // 直接觸發回調，session 已可用
+      Future.microtask(() => onSessionIdReceived?.call(sessionId!));
+    }
+  }
+
+  void _handleConnectionLoss() {
+    if (_reconnectAttempts >= _maxReconnectAttempts) {
+      print('❌ 達到最大重連次數 ($_maxReconnectAttempts)，停止重連');
+      _reconnectAttempts = 0;
+      return;
+    }
+
+    final delaySeconds = _getReconnectDelay();
+    print(
+        '⏳ ${delaySeconds}秒後嘗試重連... (${_reconnectAttempts + 1}/$_maxReconnectAttempts)');
+
+    Future.delayed(Duration(seconds: delaySeconds), () {
+      if (!isConnected && !_isConnecting) {
+        _reconnectAttempts++;
+        connect();
+      }
     });
+  }
+
+  int _getReconnectDelay() {
+    switch (_reconnectAttempts) {
+      case 0:
+        return 1; // 第一次重連：1秒
+      case 1:
+        return 3; // 第二次重連：3秒
+      case 2:
+        return 5; // 第三次重連：5秒
+      default:
+        return 10; // 後續重連：10秒
+    }
   }
 
   /// 使用者發問
@@ -60,9 +124,12 @@ class WebSocketService {
     required String topicId,
     String ragType = 'health',
   }) {
-    if (sessionId == null) return;
+    if (!canSendMessage) {
+      print('❌ WebSocket 未準備好，無法發送訊息');
+      return;
+    }
 
-    _send({
+    final payload = {
       "type": "sendmessage",
       "action": "ask",
       "user_id": userId,
@@ -70,7 +137,10 @@ class WebSocketService {
       "session_id": sessionId,
       "topic_id": topicId,
       "rag_type": ragType,
-    });
+    };
+
+    print('📤 發送提問: topic=$topicId, session=$sessionId');
+    _send(payload);
   }
 
   /// 查詢歷史紀錄
@@ -108,7 +178,7 @@ class WebSocketService {
 
   void _handleIncomingMessage(String data) {
     final json = jsonDecode(data);
-    // 若 type 存在就走 switch
+
     if (json.containsKey('type')) {
       switch (json['type']) {
         case 'start':
@@ -121,8 +191,11 @@ class WebSocketService {
           onEnd?.call(json['id']);
           break;
         case 'session_id':
-          sessionId = json['session_id'];
-          print('🎯 WebSocket session_id 初始化成功: $sessionId');
+          final newSessionId = json['session_id'];
+          if (sessionId == null || sessionId != newSessionId) {
+            sessionId = newSessionId;
+            print('🎯 更新 session_id: $sessionId');
+          }
           onSessionIdReceived?.call(sessionId!);
           break;
         case 'history_result':
@@ -134,7 +207,7 @@ class WebSocketService {
           onFeedbackResult?.call(success);
           break;
         default:
-          print('🔔 Unhandled WebSocket message: $json');
+          print('🔔 未處理的 WebSocket 訊息: ${json['type']}');
       }
     }
     // 若沒有 type，但有 history，就當作 history 結果處理
@@ -160,8 +233,28 @@ class WebSocketService {
     }
   }
 
+  void manualReconnect() {
+    print('🔄 手動重連...');
+    _reconnectAttempts = 0;
+    disconnect();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      connect();
+    });
+  }
+
+  void forceNewSession() {
+    sessionId = null;
+    if (isConnected) {
+      print('🔄 強制請求新 session...');
+      _send({"type": "sendmessage", "action": "get_session_id"});
+    }
+  }
+
   void disconnect() {
+    _isConnecting = false;
+    _reconnectAttempts = 0;
     _channel?.sink.close();
+    print('📤 WebSocket 已斷線');
   }
 
   Uri safeParseUrl(String url) {

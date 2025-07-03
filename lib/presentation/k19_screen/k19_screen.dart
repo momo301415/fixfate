@@ -22,9 +22,9 @@ class K19Screen extends GetWidget<K19Controller> {
     } else if (deviceHeight > 700 && deviceHeight <= 800) {
       deviceH = 50;
     } else if (deviceHeight > 800 && deviceHeight <= 900) {
-      deviceH = 70;
+      deviceH = 55;
     } else if (deviceHeight > 900) {
-      deviceH = 70;
+      deviceH = 55;
     }
     return Obx(() {
       if (controller.cc.isK19Visible.value) {
@@ -48,7 +48,7 @@ class K19Screen extends GetWidget<K19Controller> {
             bottom: bottomHeight.h,
             child: CustomImageView(
               imagePath: ImageConstant.imgUnion772x374,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
           ),
           SafeArea(
@@ -57,10 +57,10 @@ class K19Screen extends GetWidget<K19Controller> {
               children: [
                 // Header
                 Padding(
-                  padding: EdgeInsets.only(top: 30.h, left: 16.h, right: 16.h),
+                  padding: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
                   child: _buildAppbar(),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 4.h),
 
                 // 對話區塊（白底 + 自動滾動）
                 Expanded(
@@ -100,9 +100,9 @@ class K19Screen extends GetWidget<K19Controller> {
                         _buildBubble("msg26".tr),
                       ];
 
-                      if (controller.isHistoryLoading.value) {
-                        return Center(child: CircularProgressIndicator());
-                      }
+                      // if (controller.isHistoryLoading.value) {
+                      //   return Center(child: CircularProgressIndicator());
+                      // }
 
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         controller.scrollToBottom();

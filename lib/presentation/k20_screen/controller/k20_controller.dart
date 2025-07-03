@@ -21,6 +21,7 @@ class K20Controller extends GetxController {
   }
 
   RxList<ChatMessageModel> allMessages = <ChatMessageModel>[].obs;
+  RxList<ChatTopicGroup> topicGroups = <ChatTopicGroup>[].obs;
   RxList<ChatGroupedSection> groupedSections = <ChatGroupedSection>[].obs;
 
   Future<void> getHistory() async {
@@ -49,45 +50,97 @@ class K20Controller extends GetxController {
     allMessages.value = history
         .map((e) => ChatMessageModel.fromJson(e as Map<String, dynamic>))
         .toList();
-    groupMessagesByDay();
+    groupMessagesByTopicAndSession();
   }
 
-  void groupMessagesByDay() {
-    final now = DateTime.now();
-    final Map<int, List<ChatMessageModel>> grouped = {};
+  void groupMessagesByTopicAndSession() {
+    final Map<String, List<ChatMessageModel>> grouped = {};
 
     for (final msg in allMessages) {
-      final ts = DateTime.tryParse(msg.timestamp?.value ?? '');
-      if (ts == null) continue;
+      final topicId = msg.topicId?.value ?? '未知主題';
+      final sessionId = msg.sessionId?.value ?? '';
+      final groupKey = '${topicId}_${sessionId}';
 
-      final daysAgo = now.difference(ts).inDays;
-      final key = daysAgo;
-
-      grouped.putIfAbsent(key, () => []).add(msg);
+      grouped.putIfAbsent(groupKey, () => []).add(msg);
     }
 
-    final sortedKeys = grouped.keys.toList()..sort();
+    for (final messages in grouped.values) {
+      messages.sort((a, b) {
+        final aTime = DateTime.tryParse(a.timestamp?.value ?? '');
+        final bTime = DateTime.tryParse(b.timestamp?.value ?? '');
+        if (aTime == null || bTime == null) return 0;
+        return aTime.compareTo(bTime);
+      });
+    }
 
-    groupedSections.value = sortedKeys.map((day) {
-      return ChatGroupedSection(
-        dayOffset: day,
-        messages: grouped[day]!,
+    final groups = grouped.entries.map((entry) {
+      final messages = entry.value;
+      final firstMsg = messages.first;
+      final lastMsg = messages.last;
+      final lastTime = DateTime.tryParse(lastMsg.timestamp?.value ?? '');
+
+      return ChatTopicGroup(
+        topicId: firstMsg.topicId?.value ?? '未知主題',
+        sessionId: firstMsg.sessionId?.value ?? '',
+        messages: messages,
+        lastMessageTime: lastTime ?? DateTime.now(),
+        messageCount: messages.length,
       );
     }).toList();
+
+    groups.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+
+    topicGroups.value = groups;
+    _groupByTimeOffset();
+    print('🔍 分組完成：共 ${groups.length} 個對話群組');
   }
-}
 
-class ChatGroupedSection {
-  final int dayOffset; // 0: 今天, 1: 昨天, ..., 999: 更久前
-  final List<ChatMessageModel> messages;
+  void _groupByTimeOffset() {
+    final now = DateTime.now();
+    final Map<int, List<ChatTopicGroup>> timeGroups = {};
 
-  ChatGroupedSection({required this.dayOffset, required this.messages});
-}
+    for (final group in topicGroups) {
+      final diff = now.difference(group.lastMessageTime);
+      final dayOffset = diff.inDays;
 
-String dayLabel(int dayOffset) {
-  if (dayOffset == 0) return '今天';
-  if (dayOffset == 1) return '1天前';
-  if (dayOffset <= 999) return '過去 $dayOffset 天前';
+      timeGroups.putIfAbsent(dayOffset, () => []).add(group);
+    }
 
-  return '更久前';
+    final sections = timeGroups.entries.map((entry) {
+      return ChatGroupedSection(
+        dayOffset: entry.key,
+        messages: entry.value,
+      );
+    }).toList();
+
+    // 按時間排序：最近的在前
+    sections.sort((a, b) => a.dayOffset.compareTo(b.dayOffset));
+
+    groupedSections.value = sections;
+  }
+
+  String dayLabel(int dayOffset) {
+    if (dayOffset == 0) {
+      return '今天';
+    } else if (dayOffset == 1) {
+      return '昨天';
+    } else if (dayOffset < 7) {
+      return '${dayOffset}天前';
+    } else if (dayOffset < 30) {
+      return '${dayOffset}天前';
+    } else {
+      return '30天前';
+    }
+  }
+
+  void continueConversation(ChatTopicGroup group) {
+    print('📱 點擊繼續對話 - Topic: ${group.topicId}, Session: ${group.sessionId}');
+
+    // 改用 Get.back(result) 而不是 Get.toNamed
+    Get.back(result: {
+      'topicId': group.topicId,
+      'sessionId': group.sessionId,
+      'messages': group.messages,
+    });
+  }
 }

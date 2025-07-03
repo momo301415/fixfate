@@ -245,8 +245,6 @@ class GlobalController extends GetxController {
   initGoal() async {
     goalNotificationService = await GoalNotificationService(
       userId: userId.value,
-      stepService: stepDataService,
-      sleepService: sleepDataService,
     );
   }
 

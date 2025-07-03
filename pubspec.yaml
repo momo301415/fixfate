@@ -48,6 +48,7 @@ dependencies:
   flutter_chat_types: ^3.6.2  # Flutter聊天類型
   web_socket_channel: ^3.0.3  # WebSocket連線
   collection: ^1.19.1  # 集合操作
+  uuid: ^4.5.1  # UUID生成工具，用於生成對話主題ID
   
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:

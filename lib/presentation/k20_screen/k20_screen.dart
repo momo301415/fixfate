@@ -84,14 +84,17 @@ class K20Screen extends GetWidget<K20Controller> {
               Padding(
                 padding: EdgeInsets.only(left: 4.h, bottom: 8.h),
                 child: Text(
-                  dayLabel(section.dayOffset),
+                  controller.dayLabel(section.dayOffset),
                   style: theme.textTheme.bodySmall,
                 ),
               ),
               ...section.messages.map(
-                (msg) => Padding(
+                (topicGroup) => Padding(
                   padding: EdgeInsets.only(bottom: 8.h),
-                  child: ChatRecordItemWidget(msg.message?.value ?? ''),
+                  child: GestureDetector(
+                    onTap: () => controller.continueConversation(topicGroup),
+                    child: ChatRecordItemWidget(topicGroup.groupTitle),
+                  ),
                 ),
               ),
             ],

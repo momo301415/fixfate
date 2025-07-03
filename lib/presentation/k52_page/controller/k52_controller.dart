@@ -51,7 +51,7 @@ class K52Controller extends GetxController {
         DateTime date = DateTime.parse(record["createdAt"]);
         return ListItemModel(
           tf: Rx(record["title"]),
-          tf1: Rx(date.format(pattern: 'yyyy/MM/dd HH:mm')),
+          tf1: Rx(date.format(pattern: 'yyyy/MM/dd\nHH:mm')),
           id: Rx(''),
         );
       }).toList();
