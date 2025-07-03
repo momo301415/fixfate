@@ -28,6 +28,10 @@ class K19Controller extends GetxController {
   bool _isSocketInitialized = false;
   final RxBool isHistoryLoading = true.obs;
 
+  // 🔥 添加會話超時管理
+  DateTime? lastInteractionTime;
+  static const Duration sessionTimeout = Duration(minutes: 10);
+
   @override
   void onInit() {
     super.onInit();
@@ -90,6 +94,8 @@ class K19Controller extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToBottom();
     });
+
+    // 🔥 注意：載入歷史對話不算真正互動，lastInteractionTime 將在用戶實際發送訊息時才更新
   }
 
   // 🔥 生成新的對話 ID
@@ -103,7 +109,54 @@ class K19Controller extends GetxController {
     return uuid.v4();
   }
 
+  // 🔥 檢查會話是否超時並重置
+  void _checkAndResetIfTimeout() {
+    if (lastInteractionTime != null) {
+      final now = DateTime.now();
+      final timeSinceLastInteraction = now.difference(lastInteractionTime!);
+
+      if (timeSinceLastInteraction > sessionTimeout) {
+        print('⏰ 會話超時 ${timeSinceLastInteraction.inMinutes} 分鐘，開始新會話');
+        _startNewSession();
+      } else {
+        final remainingMinutes =
+            sessionTimeout.inMinutes - timeSinceLastInteraction.inMinutes;
+        print('✅ 會話仍有效，剩餘 $remainingMinutes 分鐘');
+      }
+    } else {
+      print('🆕 首次進入聊天，準備開始新會話');
+    }
+  }
+
+  // 🔥 開始新會話
+  void _startNewSession() {
+    // 1. 清空對話
+    messages.clear();
+
+    // 2. 生成新的 topic_id
+    _generateNewTopicId();
+
+    // 3. 重置 WebSocket 狀態（確保獲取新 session_id）
+    socketService.sessionId = null;
+    _isSocketInitialized = false;
+    socketService.disconnect();
+
+    // 4. 重置時間
+    lastInteractionTime = null;
+
+    print('🆕 新會話已開始，Topic ID: $topicId');
+  }
+
+  // 🔥 更新互動時間
+  void _updateInteractionTime() {
+    lastInteractionTime = DateTime.now();
+    print('🕐 互動時間已更新: ${lastInteractionTime!.toLocal()}');
+  }
+
   void ensureWebSocketConnected() {
+    // 🔥 檢查會話是否超時，需要重置
+    _checkAndResetIfTimeout();
+
     if (_isSocketInitialized && socketService.isConnected) {
       print('✅ WebSocket 已連接且已初始化');
       return;
@@ -134,6 +187,7 @@ class K19Controller extends GetxController {
     };
 
     socketService.onEnd = (id) {
+      _updateInteractionTime();
       _currentMessageId = null;
     };
 
@@ -175,6 +229,9 @@ class K19Controller extends GetxController {
     final content = searchoneController.text.trim();
     if (content.isEmpty) return;
 
+    // 🔥 用戶發送訊息時更新互動時間
+    _updateInteractionTime();
+
     if (!socketService.canSendMessage) {
       print('❌ WebSocket 未準備好，無法發送訊息');
       return;
@@ -208,6 +265,9 @@ class K19Controller extends GetxController {
 
   /// 傳送使用者訊息從回饋按鈕發送
   void sendUserMessageByFeedback(String text, int rating) {
+    // 🔥 用戶透過回饋發送訊息時更新互動時間
+    _updateInteractionTime();
+
     final latestBotMessage = messages.lastWhereOrNull((m) => !m.isUser);
     if (latestBotMessage != null) {
       onFeedbackPressed(latestBotMessage.id, rating);
@@ -250,7 +310,8 @@ class K19Controller extends GetxController {
   void closeEvent() {
     socketService.disconnect();
     _isSocketInitialized = false;
-    print('📝 對話已關閉，topic_id: $topicId');
+    // 🔥 關閉對話時保持 lastInteractionTime，用於下次檢查是否超時
+    print('📝 對話已關閉，topic_id: $topicId，最後互動時間: $lastInteractionTime');
   }
 
   ///路由到歷史訊息

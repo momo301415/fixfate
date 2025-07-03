@@ -56,17 +56,18 @@ class K63Screen extends GetWidget<K63Controller> {
                     children: [
                       Obx(
                         () {
-                          if (controller.eamil.value.isEmpty) {
-                            return Text(
-                              "lbl194".tr,
-                              style: CustomTextStyles.bodyMedium15,
-                            );
-                          } else {
-                            return Text(
-                              controller.eamil.value,
-                              style: CustomTextStyles.bodyMedium15,
-                            );
-                          }
+                          return Text(
+                            "lbl194".tr,
+                            style: CustomTextStyles.bodyMedium15,
+                          );
+                        },
+                      ),
+                      Obx(
+                        () {
+                          return Text(
+                            controller.gc.userId.value,
+                            style: CustomTextStyles.bodyMedium15,
+                          );
                         },
                       ),
                     ],

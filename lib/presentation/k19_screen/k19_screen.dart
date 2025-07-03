@@ -22,9 +22,9 @@ class K19Screen extends GetWidget<K19Controller> {
     } else if (deviceHeight > 700 && deviceHeight <= 800) {
       deviceH = 50;
     } else if (deviceHeight > 800 && deviceHeight <= 900) {
-      deviceH = 55;
+      deviceH = 60;
     } else if (deviceHeight > 900) {
-      deviceH = 55;
+      deviceH = 60;
     }
     return Obx(() {
       if (controller.cc.isK19Visible.value) {
@@ -142,7 +142,7 @@ class K19Screen extends GetWidget<K19Controller> {
                 // 關閉對話按鈕
                 _closeChat(),
 
-                SizedBox(height: 12.h),
+                SizedBox(height: 4.h),
               ],
             ),
           ),
