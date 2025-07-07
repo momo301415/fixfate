@@ -29,28 +29,12 @@ class Two5Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {
-      // YcProductPlugin()
-      //     .setDeviceBloodOxygenAlarm(
-      //   isEnable: isSelectedSwitch.value,
-      //   minimum: lowThreshold.value.toInt(),
-      // )
-      //     .then((value) {
-      //   if (value?.statusCode == PluginState.succeed) {
-      //     print("血氧設定成功！！！！！！！");
-      //   } else {
-      //     print("血氧設定失敗！ -> ${value?.statusCode} ; ");
-      //   }
-      // });
-      profile = BloodOxygenSetting(
-        lowThreshold: lowThreshold.value.toInt(),
-        alertEnabled: isSelectedSwitch.value,
-      );
-      BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
-      await settingApi();
-    } else {
-      Get.back();
-    }
+    profile = BloodOxygenSetting(
+      lowThreshold: lowThreshold.value.toInt(),
+      alertEnabled: isSelectedSwitch.value,
+    );
+    BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
+    await settingApi();
   }
 
   void getData() async {
@@ -66,7 +50,6 @@ class Two5Controller extends GetxController {
   }
 
   Future<void> settingApi() async {
-    LoadingHelper.show();
     try {
       final payload = {
         "codeType": "oxygen",
@@ -79,11 +62,10 @@ class Two5Controller extends GetxController {
         Api.measurementSet,
         payload,
       );
-      LoadingHelper.hide();
+
       Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
-      LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
   }

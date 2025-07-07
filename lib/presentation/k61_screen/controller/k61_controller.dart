@@ -30,27 +30,13 @@ class K61Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {
-      // YcProductPlugin()
-      //     .setDeviceTemperatureAlarm(isSelectedSwitch.value,
-      //         "${highThreshold.value}", "${lowThreshold.value}")
-      //     .then((value) {
-      //   if (value?.statusCode == PluginState.succeed) {
-      //     print("體溫設定成功！！！！！！！");
-      //   } else {
-      //     print("體溫設定失敗！ -> ${value?.statusCode} ; ");
-      //   }
-      // });
-      profile = BodyTemperatureSetting(
-        highThreshold: "${highThreshold.value}",
-        lowThreshold: "${lowThreshold.value}",
-        alertEnabled: isSelectedSwitch.value,
-      );
-      BodyTemperatureSettingStorage.saveUserProfile(gc.userId.value, profile);
-      await settingApi();
-    } else {
-      Get.back();
-    }
+    profile = BodyTemperatureSetting(
+      highThreshold: "${highThreshold.value}",
+      lowThreshold: "${lowThreshold.value}",
+      alertEnabled: isSelectedSwitch.value,
+    );
+    BodyTemperatureSettingStorage.saveUserProfile(gc.userId.value, profile);
+    await settingApi();
   }
 
   void getData() async {
@@ -66,7 +52,6 @@ class K61Controller extends GetxController {
   }
 
   Future<void> settingApi() async {
-    LoadingHelper.show();
     try {
       final payload = {
         "codeType": "temperature",
@@ -79,11 +64,10 @@ class K61Controller extends GetxController {
         Api.measurementSet,
         payload,
       );
-      LoadingHelper.hide();
+
       Get.back();
       if (res.isNotEmpty) {}
     } catch (e) {
-      LoadingHelper.hide();
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
   }

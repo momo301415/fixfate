@@ -31,29 +31,13 @@ class K58Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {
-      // YcProductPlugin()
-      //     .setDeviceHeartRateAlarm(
-      //         isEnable: isSelectedSwitch.value,
-      //         maxHeartRate: highThreshold.value.toInt(),
-      //         minHeartRate: lowThreshold.value.toInt())
-      //     .then((value) {
-      //   if (value?.statusCode == PluginState.succeed) {
-      //     print("心率設定成功！！！！！！！");
-      //   } else {
-      //     print("心率設定失敗！ -> ${value?.statusCode} ; ");
-      //   }
-      // });
-      profile = HeartRateSetting(
-        highThreshold: highThreshold.value.toInt(),
-        lowThreshold: lowThreshold.value.toInt(),
-        alertEnabled: isSelectedSwitch.value,
-      );
-      HeartRateSettingStorage.saveUserProfile(gc.userId.value, profile);
-      settingApi();
-    } else {
-      Get.back();
-    }
+    profile = HeartRateSetting(
+      highThreshold: highThreshold.value.toInt(),
+      lowThreshold: lowThreshold.value.toInt(),
+      alertEnabled: isSelectedSwitch.value,
+    );
+    HeartRateSettingStorage.saveUserProfile(gc.userId.value, profile);
+    settingApi();
   }
 
   void getData() async {
@@ -70,7 +54,6 @@ class K58Controller extends GetxController {
   }
 
   Future<void> settingApi() async {
-    LoadingHelper.show();
     try {
       final payload = {
         "codeType": "rate",
@@ -83,13 +66,10 @@ class K58Controller extends GetxController {
         Api.measurementSet,
         payload,
       );
-      LoadingHelper.hide();
+
       Get.back();
       if (res.isNotEmpty) {}
-    } catch (e) {
-      LoadingHelper.hide();
-      DialogHelper.showError("服務錯誤，請稍後再試");
-    }
+    } catch (e) {}
   }
 
   Future<void> gettingApi() async {

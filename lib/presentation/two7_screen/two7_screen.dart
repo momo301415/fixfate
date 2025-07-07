@@ -17,6 +17,9 @@ class Two7Screen extends GetWidget<Two7Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
+        onBack: () {
+          Get.back(result: true);
+        },
         title: "lbl209".tr,
         child: _buildColumnone(),
         bottomNavigationBar: SafeArea(

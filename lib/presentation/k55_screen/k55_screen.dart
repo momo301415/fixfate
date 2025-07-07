@@ -18,8 +18,8 @@ class K55Screen extends GetWidget<K55Controller> {
       title: "lbl60".tr,
       child: Container(
         width: double.maxFinite,
-        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 18.h),
-        height: 530.v,
+        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.h),
+        height: 600.v,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [

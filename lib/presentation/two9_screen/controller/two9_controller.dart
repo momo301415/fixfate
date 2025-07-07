@@ -28,16 +28,12 @@ class Two9Controller extends GetxController {
   }
 
   void saveData() async {
-    if (isSelectedSwitch.value) {
-      profile = PressureSetting(
-        highThreshold: highThreshold.value.toInt(),
-        alertEnabled: isSelectedSwitch.value,
-      );
-      PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
-      await settingApi();
-    } else {
-      Get.back();
-    }
+    profile = PressureSetting(
+      highThreshold: highThreshold.value.toInt(),
+      alertEnabled: isSelectedSwitch.value,
+    );
+    PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
+    await settingApi();
   }
 
   void getData() async {
@@ -53,7 +49,6 @@ class Two9Controller extends GetxController {
   }
 
   Future<void> settingApi() async {
-    LoadingHelper.show();
     try {
       final payload = {
         "codeType": "pressure",
@@ -65,13 +60,9 @@ class Two9Controller extends GetxController {
         Api.measurementSet,
         payload,
       );
-      LoadingHelper.hide();
       Get.back();
       if (res.isNotEmpty) {}
-    } catch (e) {
-      LoadingHelper.hide();
-      DialogHelper.showError("服務錯誤，請稍後再試");
-    }
+    } catch (e) {}
   }
 
   Future<void> gettingApi() async {

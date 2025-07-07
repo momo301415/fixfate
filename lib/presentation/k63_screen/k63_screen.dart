@@ -45,34 +45,27 @@ class K63Screen extends GetWidget<K63Controller> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 8.h,
-                    vertical: 16.h,
-                  ),
-                  decoration: AppDecoration.outlineGray,
-                  width: double.maxFinite,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Obx(
-                        () {
-                          return Text(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.h,
+                      vertical: 16.h,
+                    ),
+                    decoration: AppDecoration.outlineGray,
+                    width: double.maxFinite,
+                    child: Obx(
+                      () => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
                             "lbl194".tr,
                             style: CustomTextStyles.bodyMedium15,
-                          );
-                        },
-                      ),
-                      Obx(
-                        () {
-                          return Text(
+                          ),
+                          Text(
                             controller.gc.userId.value,
                             style: CustomTextStyles.bodyMedium15,
-                          );
-                        },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    )),
                 GestureDetector(
                     onTap: () {
                       controller.goOne9Screen();

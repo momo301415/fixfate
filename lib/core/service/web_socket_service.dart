@@ -26,15 +26,26 @@ class WebSocketService {
   OnSessionIdCallback? onSessionIdReceived;
   OnFeedbackResultCallback? onFeedbackResult;
 
-  bool get isConnected => _channel != null && _channel!.closeCode == null;
+  bool get isConnected {
+    return _channel != null &&
+        _channel!.closeCode == null &&
+        _channel!.closeReason == null;
+  }
+
   bool get canSendMessage =>
       isConnected && sessionId != null && sessionId!.isNotEmpty;
 
   WebSocketService(this.url);
 
   void connect() {
-    if (_isConnecting || isConnected) {
-      print('⚠️ WebSocket 已在連線中或已連接');
+    // 🔥 確保舊連接完全清理
+    if (_channel != null) {
+      _channel!.sink.close();
+      _channel = null;
+    }
+
+    if (_isConnecting) {
+      print('⚠️ WebSocket 正在連線中');
       return;
     }
 
@@ -80,7 +91,7 @@ class WebSocketService {
       _send({"type": "sendmessage", "action": "get_session_id"});
     } else {
       print('✅ 重用現有 session_id: $sessionId');
-      // 直接觸發回調，session 已可用
+      // 🔥 直接觸發回調，session 已可用，支援會話延續
       Future.microtask(() => onSessionIdReceived?.call(sessionId!));
     }
   }
@@ -253,8 +264,14 @@ class WebSocketService {
   void disconnect() {
     _isConnecting = false;
     _reconnectAttempts = 0;
-    _channel?.sink.close();
-    print('📤 WebSocket 已斷線');
+
+    // 🔥 完全清理 WebSocket 資源
+    if (_channel != null) {
+      _channel!.sink.close();
+      _channel = null; // 🔥 關鍵：清空 channel 引用
+    }
+
+    print('📤 WebSocket 已斷線並清理資源');
   }
 
   Uri safeParseUrl(String url) {

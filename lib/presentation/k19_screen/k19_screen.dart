@@ -152,11 +152,13 @@ class K19Screen extends GetWidget<K19Controller> {
   }
 
   Widget _buildBubble(String text) {
-    return GestureDetector(
-        onTap: () {
-          controller.searchoneController.text = text;
-          controller.sendUserMessage();
-        },
+    return Obx(() => GestureDetector(
+        onTap: controller.isAiReplying.value
+            ? null // 🔥 AI回覆時禁用
+            : () {
+                controller.searchoneController.text = text;
+                controller.sendUserMessage();
+              },
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.h),
           padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.h),
@@ -172,7 +174,7 @@ class K19Screen extends GetWidget<K19Controller> {
             ],
           ),
           child: Text(text, style: theme.textTheme.bodySmall),
-        ));
+        )));
   }
 
   /// Section Widget
@@ -282,27 +284,35 @@ class K19Screen extends GetWidget<K19Controller> {
             // 傳送按鈕
             Padding(
               padding: EdgeInsets.only(left: 8.h), // 與前兩個圖示稍拉開
-              child: GestureDetector(
-                onTap: () {
-                  print("send message");
-                  controller.sendUserMessage();
-                },
-                child: Container(
-                  width: 40.h,
-                  height: 40.h,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: CustomImageView(
-                      imagePath: ImageConstant.imgSend,
-                      height: 17.h,
-                      width: 17.h,
+              child: Obx(() => GestureDetector(
+                    onTap: controller.isAiReplying.value
+                        ? null // 🔥 AI回覆時禁用
+                        : () {
+                            print("send message");
+                            controller.sendUserMessage();
+                          },
+                    child: Container(
+                      width: 40.h,
+                      height: 40.h,
+                      decoration: BoxDecoration(
+                        color: controller.isAiReplying.value
+                            ? theme.colorScheme.primary
+                                .withOpacity(0.5) // 🔥 禁用時半透明
+                            : theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: CustomImageView(
+                          imagePath: ImageConstant.imgSend,
+                          height: 17.h,
+                          width: 17.h,
+                          color: controller.isAiReplying.value
+                              ? Colors.white.withOpacity(0.7) // 🔥 禁用時圖示也半透明
+                              : Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
+                  )),
             ),
           ],
         ),
@@ -419,42 +429,45 @@ class K19Screen extends GetWidget<K19Controller> {
                   color: appTheme.gray200,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  message.text,
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 13,
-                  ),
-                ),
+                child: message.isLoading
+                    ? _buildTypingIndicator() // 🔥 Loading動畫
+                    : Text(
+                        message.text,
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 13,
+                        ),
+                      ),
               ),
               SizedBox(height: 4.h),
 
-              // 互動按鈕列
-              Row(
-                children: [
-                  _buildFeedbackButton(
-                    label: "lbl333".tr,
-                    imagePath: ImageConstant.imgFeedbackGood,
-                    feedbackType: 1,
-                    message: message,
-                    onFeedbackTap: _onFeedbackAndSendMessage,
-                  ),
-                  SizedBox(width: 4.h),
-                  _buildFeedbackButton(
-                      label: "lbl334".tr,
-                      imagePath: ImageConstant.imgFeedbackSoso,
-                      feedbackType: 2,
+              // 🔥 只有非loading狀態且AI沒有在回覆時才顯示互動按鈕
+              if (!message.isLoading && !controller.isAiReplying.value)
+                Row(
+                  children: [
+                    _buildFeedbackButton(
+                      label: "lbl333".tr,
+                      imagePath: ImageConstant.imgFeedbackGood,
+                      feedbackType: 1,
                       message: message,
-                      onFeedbackTap: _onFeedbackAndSendMessage),
-                  SizedBox(width: 4.h),
-                  _buildFeedbackButton(
-                      label: "lbl335".tr,
-                      imagePath: ImageConstant.imgFeedbackBad,
-                      feedbackType: 0,
-                      message: message,
-                      onFeedbackTap: _onFeedbackAndSendMessage),
-                ],
-              )
+                      onFeedbackTap: _onFeedbackAndSendMessage,
+                    ),
+                    SizedBox(width: 4.h),
+                    _buildFeedbackButton(
+                        label: "lbl334".tr,
+                        imagePath: ImageConstant.imgFeedbackSoso,
+                        feedbackType: 2,
+                        message: message,
+                        onFeedbackTap: _onFeedbackAndSendMessage),
+                    SizedBox(width: 4.h),
+                    _buildFeedbackButton(
+                        label: "lbl335".tr,
+                        imagePath: ImageConstant.imgFeedbackBad,
+                        feedbackType: 0,
+                        message: message,
+                        onFeedbackTap: _onFeedbackAndSendMessage),
+                  ],
+                )
             ],
           ),
         )
@@ -498,33 +511,60 @@ class K19Screen extends GetWidget<K19Controller> {
         iconColor = null;
     }
 
-    return GestureDetector(
-      onTap: () {
-        onFeedbackTap?.call(label, feedbackType);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 4.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: borderColor),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            CustomImageView(
-              imagePath: imagePath,
-              height: 16.h,
-              width: 16.h,
-              color: iconColor, // ✅ 只有選中才加顏色
+    return Obx(() => GestureDetector(
+          onTap: controller.isAiReplying.value
+              ? null // 🔥 AI回覆時禁用
+              : () {
+                  onFeedbackTap?.call(label, feedbackType);
+                },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: borderColor),
+              borderRadius: BorderRadius.circular(16),
             ),
-            SizedBox(width: 4.h),
-            Text(
-              label,
-              style: TextStyle(fontSize: 11, color: textColor),
+            child: Row(
+              children: [
+                CustomImageView(
+                  imagePath: imagePath,
+                  height: 16.h,
+                  width: 16.h,
+                  color: iconColor, // ✅ 只有選中才加顏色
+                ),
+                SizedBox(width: 4.h),
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 11, color: textColor),
+                ),
+              ],
             ),
-          ],
+          ),
+        ));
+  }
+
+  /// 🔥 Loading動畫
+  Widget _buildTypingIndicator() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          "正在查詢中",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 13,
+          ),
         ),
-      ),
+        SizedBox(width: 8.h),
+        SizedBox(
+          width: 20.h,
+          height: 20.h,
+          child: CircularProgressIndicator(
+            strokeWidth: 2.0,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+          ),
+        ),
+      ],
     );
   }
 
