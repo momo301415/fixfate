@@ -442,32 +442,38 @@ class K19Screen extends GetWidget<K19Controller> {
               SizedBox(height: 4.h),
 
               // 🔥 只有非loading狀態且AI沒有在回覆時才顯示互動按鈕
-              if (!message.isLoading && !controller.isAiReplying.value)
-                Row(
-                  children: [
-                    _buildFeedbackButton(
-                      label: "lbl333".tr,
-                      imagePath: ImageConstant.imgFeedbackGood,
-                      feedbackType: 1,
-                      message: message,
-                      onFeedbackTap: _onFeedbackAndSendMessage,
-                    ),
-                    SizedBox(width: 4.h),
-                    _buildFeedbackButton(
-                        label: "lbl334".tr,
-                        imagePath: ImageConstant.imgFeedbackSoso,
-                        feedbackType: 2,
-                        message: message,
-                        onFeedbackTap: _onFeedbackAndSendMessage),
-                    SizedBox(width: 4.h),
-                    _buildFeedbackButton(
-                        label: "lbl335".tr,
-                        imagePath: ImageConstant.imgFeedbackBad,
-                        feedbackType: 0,
-                        message: message,
-                        onFeedbackTap: _onFeedbackAndSendMessage),
-                  ],
-                )
+              if (!message.isLoading)
+                Obx(() {
+                  if (!controller.isAiReplying.value) {
+                    return Row(
+                      children: [
+                        _buildFeedbackButton(
+                          label: "lbl333".tr,
+                          imagePath: ImageConstant.imgFeedbackGood,
+                          feedbackType: 1,
+                          message: message,
+                          onFeedbackTap: _onFeedbackAndSendMessage,
+                        ),
+                        SizedBox(width: 4.h),
+                        _buildFeedbackButton(
+                            label: "lbl334".tr,
+                            imagePath: ImageConstant.imgFeedbackSoso,
+                            feedbackType: 2,
+                            message: message,
+                            onFeedbackTap: _onFeedbackAndSendMessage),
+                        SizedBox(width: 4.h),
+                        _buildFeedbackButton(
+                            label: "lbl335".tr,
+                            imagePath: ImageConstant.imgFeedbackBad,
+                            feedbackType: 0,
+                            message: message,
+                            onFeedbackTap: _onFeedbackAndSendMessage),
+                      ],
+                    );
+                  } else {
+                    return SizedBox.shrink(); // AI回覆中時隱藏
+                  }
+                })
             ],
           ),
         )
