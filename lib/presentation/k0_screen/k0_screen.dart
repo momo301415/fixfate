@@ -223,7 +223,7 @@ class K0Screen extends GetWidget<K0Controller> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Obx(() => CustomElevatedButton(
-                text: "lbl9".tr,
+                text: "lbl26_1".tr,
                 margin: EdgeInsets.only(bottom: 12.h),
                 buttonStyle: controller.isBottomReached.value
                     ? CustomButtonStyles.none

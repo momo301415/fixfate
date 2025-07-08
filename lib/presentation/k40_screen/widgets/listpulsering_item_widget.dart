@@ -39,6 +39,12 @@ class ListpulseringItemWidget extends StatelessWidget {
                 ),
                 Obx(
                   () => Text(
+                    listpulseringItemModelObj.power!.value,
+                    style: CustomTextStyles.bodySmall10,
+                  ),
+                ),
+                Obx(
+                  () => Text(
                     listpulseringItemModelObj.id!.value,
                     style: CustomTextStyles.bodySmall10,
                   ),

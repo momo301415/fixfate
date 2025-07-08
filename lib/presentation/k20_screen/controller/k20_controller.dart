@@ -124,12 +124,8 @@ class K20Controller extends GetxController {
       return '今天';
     } else if (dayOffset == 1) {
       return '昨天';
-    } else if (dayOffset < 7) {
-      return '${dayOffset}天前';
-    } else if (dayOffset < 30) {
-      return '${dayOffset}天前';
     } else {
-      return '30天前';
+      return '${dayOffset}天前';
     }
   }
 

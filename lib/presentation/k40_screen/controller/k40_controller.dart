@@ -21,26 +21,40 @@ class K40Controller extends GetxController {
   Rx<K40Model> k40ModelObj = K40Model().obs;
   final gc = Get.find<GlobalController>();
   var selectDevice = [].obs;
+  final power = "".obs;
 
   @override
   void onInit() {
     super.onInit();
     loadDevices();
+    Future.delayed(const Duration(microseconds: 500), () {
+      getBlueToothDeviceInfo();
+    });
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
   }
 
   void loadDevices() async {
+    print("laodDevices");
+
     UserProfileStorage.getDevicesForUser(gc.userId.value).then((devices) {
+      print("loading db devices");
       if (devices.isNotEmpty) {
         for (var device in devices) {
           final item = ListpulseringItemModel(
-            pulsering: Rx("lbl_pulsering3".tr),
-            id: Rx(device.deviceIdentifier),
-            tf: Rx(device.createdAt),
-            pulsering1: Rx(ImageConstant.imgFrame86618),
-          );
+              pulsering: Rx("lbl_pulsering3".tr),
+              id: Rx("msg_device_id".tr + " : " + device.deviceIdentifier),
+              tf: Rx("msg_update_time".tr + " : " + device.createdAt),
+              pulsering1: Rx(ImageConstant.imgFrame86618),
+              power: Rx("msg_power".tr + " : " + power.value));
           k40ModelObj.value.listpulseringItemList.value.add(item);
+
           selectDevice.add(device);
         }
+
         k40ModelObj.value.listpulseringItemList.refresh();
       }
     });
@@ -95,6 +109,22 @@ class K40Controller extends GetxController {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> getBlueToothDeviceInfo() async {
+    k40ModelObj.value.listpulseringItemList.refresh();
+    try {
+      PluginResponse<DeviceBasicInfo>? deviceBasicInfo =
+          await YcProductPlugin().queryDeviceBasicInfo();
+      if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
+        power.value = "${deviceBasicInfo.data.batteryPower} %";
+        k40ModelObj.value.listpulseringItemList.value[0].power =
+            Rx("msg_power".tr + " : " + power.value);
+        k40ModelObj.value.listpulseringItemList.refresh();
+      }
+    } catch (e) {
+      power.value = "";
     }
   }
 }

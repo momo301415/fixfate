@@ -150,29 +150,13 @@ class FourScreen extends GetWidget<FourController> {
             width: double.maxFinite,
             child: Row(
               children: [
-                Obx(
-                  () {
-                    final isValid = controller.isReadPrivacyPolicy.value;
-                    return isValid
-                        ? CustomImageView(
-                            imagePath: ImageConstant.imgUCheckCirclePrimary,
-                            height: 16.h,
-                            width: 16.h,
-                          )
-                        : CustomImageView(
-                            imagePath: ImageConstant.imgUCheckCircle,
-                            height: 16.h,
-                            width: 16.h,
-                          );
-                  },
-                ),
                 Padding(
                   padding: EdgeInsets.only(left: 8.h),
                   child: RichText(
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: "lbl24".tr,
+                          text: "lbl24_1".tr,
                           style: theme.textTheme.bodyMedium,
                         ),
                         TextSpan(
@@ -181,7 +165,11 @@ class FourScreen extends GetWidget<FourController> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 controller.goPravacyPolicyScreen();
-                              })
+                              }),
+                        TextSpan(
+                          text: "lbl25_1".tr,
+                          style: theme.textTheme.bodyMedium,
+                        ),
                       ],
                     ),
                     textAlign: TextAlign.left,
