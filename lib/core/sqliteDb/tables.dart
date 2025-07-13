@@ -116,3 +116,16 @@ class InvasiveComprehensiveData extends Table {
   @override
   Set<Column> get primaryKey => {userId, startTimeStamp};
 }
+
+/// 壓力數據資料表
+class PressureData extends Table {
+  TextColumn get userId => text()();
+  IntColumn get startTimeStamp => integer()();
+  RealColumn get totalStressScore => real()(); // total_stress_score
+  TextColumn get stressLevel => text()(); // stress_level
+  BoolColumn get isSynced =>
+      boolean().withDefault(const Constant(false))(); // ✅ 預設未同步
+
+  @override
+  Set<Column> get primaryKey => {userId, startTimeStamp};
+}

@@ -59,7 +59,7 @@ class K76Screen extends GetView<K76Controller> {
                       .map((item) {
                     if (item.label?.value == "心率") {
                       return K77Page();
-                    } else if (item.label?.value == "血氧") {
+                    } else if (item.label?.value == "血氧飽和度") {
                       return K78Page();
                     } else if (item.label!.value == "體表溫度") {
                       return K79Page();

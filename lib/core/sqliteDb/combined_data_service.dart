@@ -67,6 +67,19 @@ class CombinedDataService extends BaseDbService {
         .get();
   }
 
+  /// 取得指定時間戳之後的數據
+  Future<List<CombinedDataData>> getDataAfterTimestamp({
+    required String userId,
+    required int afterTimestamp,
+  }) {
+    return (db.select(db.combinedData)
+          ..where((tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.startTimeStamp.isBiggerThanValue(afterTimestamp))
+          ..orderBy([(tbl) => OrderingTerm.asc(tbl.startTimeStamp)]))
+        .get();
+  }
+
   /// 標記為已同步
   Future<void> markAsSynced(List<CombinedDataData> list) async {
     await db.batch((batch) {

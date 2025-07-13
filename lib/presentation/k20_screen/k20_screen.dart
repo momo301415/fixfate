@@ -19,7 +19,23 @@ class K20Screen extends GetWidget<K20Controller> {
       child: SafeArea(
         top: false,
         child: Container(
-          child: buildGroupedChatView(controller),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ✅ 添加上方文字區域
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
+                child: Text(
+                  "msg_keep_data_date".tr,
+                  style: TextStyle(color: appTheme.cyan700, fontSize: 15.fSize),
+                ),
+              ),
+              // ✅ 使用 Expanded 包裝 ListView
+              Expanded(
+                child: buildGroupedChatView(controller),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: _floatingActionButton(),

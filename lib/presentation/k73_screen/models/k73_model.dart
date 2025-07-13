@@ -21,7 +21,7 @@ class K73Model {
         icon: ImageConstant.imgIcon.obs,
         isAlert: false.obs,
         loadTime: "lbl_1".tr.obs,
-        label: "lbl172".tr.obs,
+        label: "lbl172_1".tr.obs,
         value: "".obs,
         unit: "lbl182".tr.obs),
     ListViewItemModel(
@@ -216,6 +216,7 @@ class HealthDataSet {
   final List<RateData> rateData;
   final List<OxygenData> oxygenData;
   final List<DistanceData> distanceData;
+  final List<PressureData> pressureData;
 
   HealthDataSet({
     required this.caloriesData,
@@ -225,6 +226,7 @@ class HealthDataSet {
     required this.rateData,
     required this.oxygenData,
     required this.distanceData,
+    required this.pressureData,
   });
 
   factory HealthDataSet.fromJson(Map<String, dynamic> json) {
@@ -250,6 +252,28 @@ class HealthDataSet {
       distanceData: (json['distanceData'] as List<dynamic>)
           .map((e) => DistanceData.fromJson(e))
           .toList(),
+      pressureData: (json['pressureData'] as List<dynamic>)
+          .map((e) => PressureData.fromJson(e))
+          .toList(),
+    );
+  }
+}
+
+class PressureData {
+  final int startTimestamp;
+  final int totalStressScore;
+  final String? type;
+  PressureData(
+      {required this.startTimestamp,
+      required this.totalStressScore,
+      this.type});
+
+  factory PressureData.fromJson(Map<String, dynamic> json) {
+    print("pressure json : ${json}");
+    return PressureData(
+      startTimestamp: json['starttimestamp'],
+      totalStressScore: double.parse(json['distance'].toString()).toInt(),
+      type: json['type'],
     );
   }
 }

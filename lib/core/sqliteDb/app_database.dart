@@ -16,12 +16,26 @@ part 'app_database.g.dart';
   BloodPressureData,
   CombinedData,
   InvasiveComprehensiveData,
+  PressureData,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) async {
+          await m.createAll();
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from == 1 && to == 2) {
+            // 升級到版本 2：新增 pressure_data 表
+            await m.createTable(pressureData);
+          }
+        },
+      );
 }
 
 LazyDatabase _openConnection() {

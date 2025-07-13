@@ -16,7 +16,7 @@ class Two5Screen extends GetWidget<Two5Controller> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
-      title: "lbl180".tr,
+      title: "lbl180_1".tr,
       child: Container(
         padding: EdgeInsets.all(36.h),
         decoration: AppDecoration.fillWhiteA.copyWith(

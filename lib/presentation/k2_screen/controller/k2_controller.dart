@@ -64,6 +64,7 @@ class K2Controller extends GetxController {
           Config.userId = userid;
           Config.userName = resBody['name'].toString();
           gc.avatarUrl.value = resBody['avatarUrl'] ?? "";
+          gc.userGender.value = resBody['gender'] ?? "";
 
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {

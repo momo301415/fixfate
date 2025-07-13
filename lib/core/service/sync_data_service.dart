@@ -3,9 +3,19 @@ import 'dart:convert';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
+import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
+import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
+import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
+import 'package:pulsedevice/core/hiveDb/body_temperature_setting_storage.dart';
+import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
+import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
+import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
+import 'package:pulsedevice/core/hiveDb/pressure_setting_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
+import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/pref_utils.dart';
 
@@ -13,6 +23,7 @@ class SyncDataService {
   final AppDatabase db;
   final GlobalController gc;
   ApiService service = ApiService();
+  ApiAwsService2 awsService = ApiAwsService2();
   SyncDataService({required this.db, required this.gc});
 
   final Map<int, String> sleepTypeToRecordType = {
@@ -25,11 +36,24 @@ class SyncDataService {
   Future<void> runBackgroundSync() async {
     await gc.healthDataSyncService.fetchAndStoreData();
     await Future.delayed(Duration.zero);
+
+    // ✅ 新增：計算壓力數據
+    await gc.pressureCalculationService.calculatePressureData();
+    await Future.delayed(Duration.zero);
+
+    final pRes = await PrefUtils().getIsSyncApi();
+    if (pRes.isEmpty) {
+      await syncAlertToApi();
+      await PrefUtils().setIsSyncAlertApi("true");
+    }
+
+    await Future.delayed(Duration.zero);
     await gc.healthDataSyncService.syncHealthData();
     await Future.delayed(Duration.zero);
     await syncToApi();
   }
 
+  ///------ 同步資料到API -----
   Future<void> syncToApi() async {
     if (gc.userId.value.isEmpty) return;
     var isSyncValue = "N";
@@ -42,6 +66,7 @@ class SyncDataService {
     List<AlertRecord> rateRecords = [];
     List<AlertRecord> bloodRecords = [];
     List<AlertRecord> tempRecords = [];
+    List<AlertRecord> pressureRecords = [];
     for (var record in records) {
       if (record.type.contains("heart_rate") && record.synced == false) {
         rateRecords.add(record);
@@ -51,6 +76,8 @@ class SyncDataService {
       } else if (record.type.contains("temperature") &&
           record.synced == false) {
         tempRecords.add(record);
+      } else if (record.type.contains("pressure") && record.synced == false) {
+        pressureRecords.add(record);
       }
     }
 
@@ -104,6 +131,18 @@ class SyncDataService {
           a: tempRecords);
       if (success && success2) {
         await gc.combinedDataService.markAsSynced(unsyncedBloodOxygen);
+        Future.delayed(const Duration(milliseconds: 500), () {
+          NotificationService().showDeviceSyncDataNotification();
+        });
+      }
+    }
+    // ✅ 新增：壓力數據上傳
+    final unsyncedPressure =
+        await gc.pressureDataService.getUnsyncedData(gc.userId.value);
+    if (unsyncedPressure.isNotEmpty) {
+      final success = await uploadPressure(unsyncedPressure, isSyncValue);
+      if (success) {
+        await gc.pressureDataService.markAsSynced(unsyncedPressure);
       }
     }
 
@@ -227,6 +266,26 @@ class SyncDataService {
     return false;
   }
 
+  Future<bool> uploadPressure(List<PressureDataData> datas, String isSyncApi,
+      {List<AlertRecord>? a}) async {
+    final data = convertToPayload<PressureDataData>(
+      datas,
+      alertRecords: a,
+      "pressure",
+      (data) => gc.apiId.value,
+      (data) => data.totalStressScore.toString(),
+      (data) => data.startTimeStamp,
+    );
+    final payload = {"init": isSyncApi, "datas": data};
+    try {
+      await service.postJsonList(Api.sethealthRecord, jsonEncode(payload));
+      return true;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
   Future<bool> uploadSleep(List<SleepDataData> datas,
       List<SleepDetailDataData> detailsDatas, String isSyncApi) async {
     final dataList = buildSleepPayload(datas, detailsDatas, gc.apiId.value);
@@ -333,5 +392,242 @@ class SyncDataService {
 
       return baseMap;
     }).toList();
+  }
+
+  ///----- 同步警報設定到db ------
+  Future<void> syncAlertToApi() async {
+    final rateAlert = await getRateAlert();
+    final oxyAlert = await getOxyAlert();
+    final tempAlert = await getTempAlert();
+    final pressurAlert = await getPressureAlert();
+
+    if (rateAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "rate",
+          maxVal: rateAlert["maxVal"],
+          miniVal: rateAlert["miniVal"],
+          alert: rateAlert["alert"]);
+    }
+    if (oxyAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "oxygen",
+          miniVal: oxyAlert["miniVal"],
+          alert: oxyAlert["alert"]);
+    }
+    if (tempAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "temperature",
+          maxVal: tempAlert["maxVal"],
+          miniVal: tempAlert["miniVal"],
+          alert: tempAlert["alert"]);
+    }
+    if (pressurAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "pressure",
+          maxVal: pressurAlert["maxVal"],
+          alert: pressurAlert["alert"]);
+    }
+  }
+
+  Future<void> updateAlert(
+      {String? codeType, double? maxVal, double? miniVal, bool? alert}) async {
+    switch (codeType) {
+      case "rate":
+        HeartRateSetting profile = HeartRateSetting(
+          highThreshold: maxVal!.toInt(),
+          lowThreshold: miniVal!.toInt(),
+          alertEnabled: alert!,
+        );
+        HeartRateSettingStorage.saveUserProfile(gc.userId.value, profile);
+        break;
+      case "oxygen":
+        BloodOxygenSetting profile = BloodOxygenSetting(
+          lowThreshold: miniVal!.toInt(),
+          alertEnabled: alert!,
+        );
+        BloodOxygenSettingStorage.saveUserProfile(gc.userId.value, profile);
+        break;
+      case "temperature":
+        BodyTemperatureSetting profile = BodyTemperatureSetting(
+          highThreshold: "${maxVal!}",
+          lowThreshold: "${miniVal!}",
+          alertEnabled: alert!,
+        );
+        BodyTemperatureSettingStorage.saveUserProfile(gc.userId.value, profile);
+        break;
+      case "pressure":
+        PressureSetting profile = PressureSetting(
+          highThreshold: maxVal!.toInt(),
+          alertEnabled: alert!,
+        );
+        PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
+        break;
+      default:
+        break;
+    }
+  }
+
+  ///------ call api 取得心率警示
+  Future<Map<String, dynamic>> getRateAlert() async {
+    try {
+      final payload = {
+        "codeType": "rate",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "miniVal": data["miniVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  ///------ call api 取得血氧警示
+  Future<Map<String, dynamic>> getOxyAlert() async {
+    try {
+      final payload = {
+        "codeType": "oxygen",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "miniVal": data["miniVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  ///------ call api 取得体温警示
+  Future<Map<String, dynamic>> getTempAlert() async {
+    try {
+      final payload = {
+        "codeType": "temperature",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "miniVal": data["miniVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  ///------ call api 取得壓力警示
+  Future<Map<String, dynamic>> getPressureAlert() async {
+    try {
+      final payload = {
+        "codeType": "pressure",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "miniVal": data["miniVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  ///------ call api 取得壓力計算
+  Future<Map<String, dynamic>> getPressureAnalys(
+      {int? rateVal, int? oxyVal}) async {
+    try {
+      Map<String, dynamic> payload = {
+        "heart_rate": rateVal,
+        "blood_oxygen": oxyVal,
+      };
+      if (gc.userGender.value.length > 0) {
+        payload["gender"] = gc.userGender.value == "男" ? "male" : "female";
+      }
+      var res = await awsService.postJson(
+        Api.getPressure,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        // 檢查新格式：直接包含 total_stress_score 和 stress_level
+        if (res.containsKey("total_stress_score") &&
+            res.containsKey("stress_level")) {
+          return res; // 直接返回完整的回應數據
+        }
+
+        // 檢查舊格式：包含 message 和 data 包裝
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
   }
 }

@@ -3322,6 +3322,330 @@ class InvasiveComprehensiveDataCompanion
   }
 }
 
+class $PressureDataTable extends PressureData
+    with TableInfo<$PressureDataTable, PressureDataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PressureDataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _startTimeStampMeta =
+      const VerificationMeta('startTimeStamp');
+  @override
+  late final GeneratedColumn<int> startTimeStamp = GeneratedColumn<int>(
+      'start_time_stamp', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _totalStressScoreMeta =
+      const VerificationMeta('totalStressScore');
+  @override
+  late final GeneratedColumn<double> totalStressScore = GeneratedColumn<double>(
+      'total_stress_score', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _stressLevelMeta =
+      const VerificationMeta('stressLevel');
+  @override
+  late final GeneratedColumn<String> stressLevel = GeneratedColumn<String>(
+      'stress_level', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isSyncedMeta =
+      const VerificationMeta('isSynced');
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_synced" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [userId, startTimeStamp, totalStressScore, stressLevel, isSynced];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pressure_data';
+  @override
+  VerificationContext validateIntegrity(Insertable<PressureDataData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('start_time_stamp')) {
+      context.handle(
+          _startTimeStampMeta,
+          startTimeStamp.isAcceptableOrUnknown(
+              data['start_time_stamp']!, _startTimeStampMeta));
+    } else if (isInserting) {
+      context.missing(_startTimeStampMeta);
+    }
+    if (data.containsKey('total_stress_score')) {
+      context.handle(
+          _totalStressScoreMeta,
+          totalStressScore.isAcceptableOrUnknown(
+              data['total_stress_score']!, _totalStressScoreMeta));
+    } else if (isInserting) {
+      context.missing(_totalStressScoreMeta);
+    }
+    if (data.containsKey('stress_level')) {
+      context.handle(
+          _stressLevelMeta,
+          stressLevel.isAcceptableOrUnknown(
+              data['stress_level']!, _stressLevelMeta));
+    } else if (isInserting) {
+      context.missing(_stressLevelMeta);
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(_isSyncedMeta,
+          isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId, startTimeStamp};
+  @override
+  PressureDataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PressureDataData(
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+      startTimeStamp: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}start_time_stamp'])!,
+      totalStressScore: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}total_stress_score'])!,
+      stressLevel: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}stress_level'])!,
+      isSynced: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
+    );
+  }
+
+  @override
+  $PressureDataTable createAlias(String alias) {
+    return $PressureDataTable(attachedDatabase, alias);
+  }
+}
+
+class PressureDataData extends DataClass
+    implements Insertable<PressureDataData> {
+  final String userId;
+  final int startTimeStamp;
+  final double totalStressScore;
+  final String stressLevel;
+  final bool isSynced;
+  const PressureDataData(
+      {required this.userId,
+      required this.startTimeStamp,
+      required this.totalStressScore,
+      required this.stressLevel,
+      required this.isSynced});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['start_time_stamp'] = Variable<int>(startTimeStamp);
+    map['total_stress_score'] = Variable<double>(totalStressScore);
+    map['stress_level'] = Variable<String>(stressLevel);
+    map['is_synced'] = Variable<bool>(isSynced);
+    return map;
+  }
+
+  PressureDataCompanion toCompanion(bool nullToAbsent) {
+    return PressureDataCompanion(
+      userId: Value(userId),
+      startTimeStamp: Value(startTimeStamp),
+      totalStressScore: Value(totalStressScore),
+      stressLevel: Value(stressLevel),
+      isSynced: Value(isSynced),
+    );
+  }
+
+  factory PressureDataData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PressureDataData(
+      userId: serializer.fromJson<String>(json['userId']),
+      startTimeStamp: serializer.fromJson<int>(json['startTimeStamp']),
+      totalStressScore: serializer.fromJson<double>(json['totalStressScore']),
+      stressLevel: serializer.fromJson<String>(json['stressLevel']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'startTimeStamp': serializer.toJson<int>(startTimeStamp),
+      'totalStressScore': serializer.toJson<double>(totalStressScore),
+      'stressLevel': serializer.toJson<String>(stressLevel),
+      'isSynced': serializer.toJson<bool>(isSynced),
+    };
+  }
+
+  PressureDataData copyWith(
+          {String? userId,
+          int? startTimeStamp,
+          double? totalStressScore,
+          String? stressLevel,
+          bool? isSynced}) =>
+      PressureDataData(
+        userId: userId ?? this.userId,
+        startTimeStamp: startTimeStamp ?? this.startTimeStamp,
+        totalStressScore: totalStressScore ?? this.totalStressScore,
+        stressLevel: stressLevel ?? this.stressLevel,
+        isSynced: isSynced ?? this.isSynced,
+      );
+  PressureDataData copyWithCompanion(PressureDataCompanion data) {
+    return PressureDataData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      startTimeStamp: data.startTimeStamp.present
+          ? data.startTimeStamp.value
+          : this.startTimeStamp,
+      totalStressScore: data.totalStressScore.present
+          ? data.totalStressScore.value
+          : this.totalStressScore,
+      stressLevel:
+          data.stressLevel.present ? data.stressLevel.value : this.stressLevel,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PressureDataData(')
+          ..write('userId: $userId, ')
+          ..write('startTimeStamp: $startTimeStamp, ')
+          ..write('totalStressScore: $totalStressScore, ')
+          ..write('stressLevel: $stressLevel, ')
+          ..write('isSynced: $isSynced')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      userId, startTimeStamp, totalStressScore, stressLevel, isSynced);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PressureDataData &&
+          other.userId == this.userId &&
+          other.startTimeStamp == this.startTimeStamp &&
+          other.totalStressScore == this.totalStressScore &&
+          other.stressLevel == this.stressLevel &&
+          other.isSynced == this.isSynced);
+}
+
+class PressureDataCompanion extends UpdateCompanion<PressureDataData> {
+  final Value<String> userId;
+  final Value<int> startTimeStamp;
+  final Value<double> totalStressScore;
+  final Value<String> stressLevel;
+  final Value<bool> isSynced;
+  final Value<int> rowid;
+  const PressureDataCompanion({
+    this.userId = const Value.absent(),
+    this.startTimeStamp = const Value.absent(),
+    this.totalStressScore = const Value.absent(),
+    this.stressLevel = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PressureDataCompanion.insert({
+    required String userId,
+    required int startTimeStamp,
+    required double totalStressScore,
+    required String stressLevel,
+    this.isSynced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : userId = Value(userId),
+        startTimeStamp = Value(startTimeStamp),
+        totalStressScore = Value(totalStressScore),
+        stressLevel = Value(stressLevel);
+  static Insertable<PressureDataData> custom({
+    Expression<String>? userId,
+    Expression<int>? startTimeStamp,
+    Expression<double>? totalStressScore,
+    Expression<String>? stressLevel,
+    Expression<bool>? isSynced,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (startTimeStamp != null) 'start_time_stamp': startTimeStamp,
+      if (totalStressScore != null) 'total_stress_score': totalStressScore,
+      if (stressLevel != null) 'stress_level': stressLevel,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PressureDataCompanion copyWith(
+      {Value<String>? userId,
+      Value<int>? startTimeStamp,
+      Value<double>? totalStressScore,
+      Value<String>? stressLevel,
+      Value<bool>? isSynced,
+      Value<int>? rowid}) {
+    return PressureDataCompanion(
+      userId: userId ?? this.userId,
+      startTimeStamp: startTimeStamp ?? this.startTimeStamp,
+      totalStressScore: totalStressScore ?? this.totalStressScore,
+      stressLevel: stressLevel ?? this.stressLevel,
+      isSynced: isSynced ?? this.isSynced,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (startTimeStamp.present) {
+      map['start_time_stamp'] = Variable<int>(startTimeStamp.value);
+    }
+    if (totalStressScore.present) {
+      map['total_stress_score'] = Variable<double>(totalStressScore.value);
+    }
+    if (stressLevel.present) {
+      map['stress_level'] = Variable<String>(stressLevel.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PressureDataCompanion(')
+          ..write('userId: $userId, ')
+          ..write('startTimeStamp: $startTimeStamp, ')
+          ..write('totalStressScore: $totalStressScore, ')
+          ..write('stressLevel: $stressLevel, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3335,6 +3659,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CombinedDataTable combinedData = $CombinedDataTable(this);
   late final $InvasiveComprehensiveDataTable invasiveComprehensiveData =
       $InvasiveComprehensiveDataTable(this);
+  late final $PressureDataTable pressureData = $PressureDataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3346,7 +3671,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         heartRateData,
         bloodPressureData,
         combinedData,
-        invasiveComprehensiveData
+        invasiveComprehensiveData,
+        pressureData
       ];
 }
 
@@ -4974,6 +5300,183 @@ typedef $$InvasiveComprehensiveDataTableProcessedTableManager
         ),
         InvasiveComprehensiveDataData,
         PrefetchHooks Function()>;
+typedef $$PressureDataTableCreateCompanionBuilder = PressureDataCompanion
+    Function({
+  required String userId,
+  required int startTimeStamp,
+  required double totalStressScore,
+  required String stressLevel,
+  Value<bool> isSynced,
+  Value<int> rowid,
+});
+typedef $$PressureDataTableUpdateCompanionBuilder = PressureDataCompanion
+    Function({
+  Value<String> userId,
+  Value<int> startTimeStamp,
+  Value<double> totalStressScore,
+  Value<String> stressLevel,
+  Value<bool> isSynced,
+  Value<int> rowid,
+});
+
+class $$PressureDataTableFilterComposer
+    extends Composer<_$AppDatabase, $PressureDataTable> {
+  $$PressureDataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get startTimeStamp => $composableBuilder(
+      column: $table.startTimeStamp,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get totalStressScore => $composableBuilder(
+      column: $table.totalStressScore,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get stressLevel => $composableBuilder(
+      column: $table.stressLevel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnFilters(column));
+}
+
+class $$PressureDataTableOrderingComposer
+    extends Composer<_$AppDatabase, $PressureDataTable> {
+  $$PressureDataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get startTimeStamp => $composableBuilder(
+      column: $table.startTimeStamp,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get totalStressScore => $composableBuilder(
+      column: $table.totalStressScore,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get stressLevel => $composableBuilder(
+      column: $table.stressLevel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+      column: $table.isSynced, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PressureDataTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PressureDataTable> {
+  $$PressureDataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<int> get startTimeStamp => $composableBuilder(
+      column: $table.startTimeStamp, builder: (column) => column);
+
+  GeneratedColumn<double> get totalStressScore => $composableBuilder(
+      column: $table.totalStressScore, builder: (column) => column);
+
+  GeneratedColumn<String> get stressLevel => $composableBuilder(
+      column: $table.stressLevel, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+}
+
+class $$PressureDataTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PressureDataTable,
+    PressureDataData,
+    $$PressureDataTableFilterComposer,
+    $$PressureDataTableOrderingComposer,
+    $$PressureDataTableAnnotationComposer,
+    $$PressureDataTableCreateCompanionBuilder,
+    $$PressureDataTableUpdateCompanionBuilder,
+    (
+      PressureDataData,
+      BaseReferences<_$AppDatabase, $PressureDataTable, PressureDataData>
+    ),
+    PressureDataData,
+    PrefetchHooks Function()> {
+  $$PressureDataTableTableManager(_$AppDatabase db, $PressureDataTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PressureDataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PressureDataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PressureDataTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> userId = const Value.absent(),
+            Value<int> startTimeStamp = const Value.absent(),
+            Value<double> totalStressScore = const Value.absent(),
+            Value<String> stressLevel = const Value.absent(),
+            Value<bool> isSynced = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PressureDataCompanion(
+            userId: userId,
+            startTimeStamp: startTimeStamp,
+            totalStressScore: totalStressScore,
+            stressLevel: stressLevel,
+            isSynced: isSynced,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String userId,
+            required int startTimeStamp,
+            required double totalStressScore,
+            required String stressLevel,
+            Value<bool> isSynced = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PressureDataCompanion.insert(
+            userId: userId,
+            startTimeStamp: startTimeStamp,
+            totalStressScore: totalStressScore,
+            stressLevel: stressLevel,
+            isSynced: isSynced,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PressureDataTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PressureDataTable,
+    PressureDataData,
+    $$PressureDataTableFilterComposer,
+    $$PressureDataTableOrderingComposer,
+    $$PressureDataTableAnnotationComposer,
+    $$PressureDataTableCreateCompanionBuilder,
+    $$PressureDataTableUpdateCompanionBuilder,
+    (
+      PressureDataData,
+      BaseReferences<_$AppDatabase, $PressureDataTable, PressureDataData>
+    ),
+    PressureDataData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4993,4 +5496,6 @@ class $AppDatabaseManager {
   $$InvasiveComprehensiveDataTableTableManager get invasiveComprehensiveData =>
       $$InvasiveComprehensiveDataTableTableManager(
           _db, _db.invasiveComprehensiveData);
+  $$PressureDataTableTableManager get pressureData =>
+      $$PressureDataTableTableManager(_db, _db.pressureData);
 }

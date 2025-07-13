@@ -182,7 +182,7 @@ class K80Page extends GetWidget<K80Controller> {
                 }),
               ),
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -280,15 +280,15 @@ class K80Page extends GetWidget<K80Controller> {
               Row(
                 children: [
                   Expanded(
-                      child: buildStat('${controller.normalCount.value}',
+                      child: buildStat('${controller.lowCount.value}',
                           'lbl161'.tr, 'lbl232'.tr)),
                   verticalDivider(),
                   Expanded(
-                      child: buildStat('${controller.highCount.value}',
+                      child: buildStat('${controller.normalCount.value}',
                           'lbl161'.tr, 'lbl244'.tr)),
                   verticalDivider(),
                   Expanded(
-                      child: buildStat('${controller.lowCount.value}',
+                      child: buildStat('${controller.highCount.value}',
                           'lbl161'.tr, 'lbl245'.tr)),
                 ],
               ),

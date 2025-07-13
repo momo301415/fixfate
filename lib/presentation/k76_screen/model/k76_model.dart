@@ -8,7 +8,7 @@ class K76Model {
     ListIconBarModel(
         icon: ImageConstant.solidHeartbeat.obs, label: "lbl171".tr.obs),
     ListIconBarModel(
-        icon: ImageConstant.solidBlood.obs, label: "lbl172".tr.obs),
+        icon: ImageConstant.solidBlood.obs, label: "lbl172_1".tr.obs),
     ListIconBarModel(
         icon: ImageConstant.solidTemp.obs, label: "lbl173_1".tr.obs),
     ListIconBarModel(

@@ -14,7 +14,7 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
         // App 回到前景，觸發一次同步
         gc.safeRunSync();
       }
-      debugPrint("App 回到前景，已執行資料同步");
+      print("App 回到前景，已執行資料同步");
     }
   }
 }

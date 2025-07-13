@@ -52,6 +52,11 @@ class PrefUtils {
     return _sharedPreferences!.setString('isSyncApi', isSyncApi);
   }
 
+  /// 第一次sync告警設定資料到db
+  Future<void> setIsSyncAlertApi(String isSyncApi) {
+    return _sharedPreferences!.setString('isSyncAlertApi', isSyncApi);
+  }
+
   String getUserId() {
     try {
       return _sharedPreferences!.getString('currentUserId')!;
@@ -79,6 +84,14 @@ class PrefUtils {
   String getIsSyncApi() {
     try {
       return _sharedPreferences!.getString('isSyncApi')!;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String getIsSyncAlertApi() {
+    try {
+      return _sharedPreferences!.getString('isSyncAlertApi')!;
     } catch (e) {
       return '';
     }

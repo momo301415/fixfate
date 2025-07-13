@@ -125,8 +125,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     k73ModelObj.value.listviewItemList.value[2].isAlert?.value =
         res["tempAlert"];
     k73ModelObj.value.listviewItemList.value[3].loadTime?.value =
-        res["combinedDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[3].value?.value = "0";
+        res["pressureDuration"].toString();
+    k73ModelObj.value.listviewItemList.value[3].value?.value =
+        res["pressure"].toString();
+    k73ModelObj.value.listviewItemList.value[3].isAlert?.value =
+        res["pressureAlert"];
     k73ModelObj.value.listviewItemList.value[4].loadTime?.value =
         res["stepDuration"].toString();
     k73ModelObj.value.listviewItemList.value[4].value?.value =
@@ -156,6 +159,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     final tempList = healthData.temperatureData;
     final caloriesList = healthData.caloriesData;
     final distanceList = healthData.distanceData;
+    final pressureList = healthData.pressureData;
 
     // Sort
     stepList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
@@ -164,12 +168,14 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     tempList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
     caloriesList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
     distanceList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    pressureList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
 
     // 最後一筆時間點
     final stepLast = stepList.last;
     final heartLast = heartList.last;
     final oxygenLast = oxygenList.last;
     final tempLast = tempList.last;
+    final presLast = pressureList.last;
 
     // 統計
     int stepCount = sumLastDayValues<StepData>(
@@ -198,6 +204,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     String combinedDuration =
         DateTimeUtils.getTimeDifferenceString(tempLast.startTimestamp);
     int bloodOxygen = int.parse(oxygenLast.bloodoxygen);
+    int pressure = presLast.totalStressScore.toInt();
 
     final loadDataTime = DateTimeUtils.formatMaxTimestamp(
       stepLast.startTimestamp,
@@ -208,6 +215,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     var heartAlert = heartLast.type == "1" || heartLast.type == "2";
     var bloodAlert = oxygenLast.type == "2";
     var tempAlert = tempLast.type == "1" || tempLast.type == "2";
+    var presAlert = presLast.type == "1" || presLast.type == "2";
 
     var analysis = {
       "stepCount": stepCount,
@@ -222,7 +230,10 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       "combinedDuration": combinedDuration,
       "temperature": temperature,
       "tempAlert": tempAlert,
-      "loadDataTime": loadDataTime
+      "loadDataTime": loadDataTime,
+      "pressure": pressure,
+      "pressureDuration": heartDuration,
+      "pressureAlert": presAlert,
     };
 
     if (sleepList.isNotEmpty) {

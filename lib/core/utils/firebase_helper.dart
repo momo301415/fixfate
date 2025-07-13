@@ -109,9 +109,9 @@ class FirebaseHelper {
 
   /// 提供給首頁呼叫，顯示 Dialog 用
   static RemoteMessage? consumePendingDialogMessage() {
-    debugPrint("enter consumePendingDialogMessage");
+    print("enter consumePendingDialogMessage");
     final msg = _pendingDialogMessage;
-    debugPrint("consumePendingDialogMessage -> msg: $msg");
+    print("consumePendingDialogMessage -> msg: $msg");
     _pendingDialogMessage = null;
     return msg;
   }

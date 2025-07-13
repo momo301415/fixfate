@@ -29,6 +29,7 @@ import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
 import 'package:pulsedevice/core/service/goal_notification_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
+import 'package:pulsedevice/core/service/pressure_calculation_service.dart';
 import 'package:pulsedevice/core/service/sync_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/sqliteDb/blood_pressure_data_service.dart';
@@ -36,6 +37,7 @@ import 'package:pulsedevice/core/sqliteDb/combined_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/health_data_sync_service.dart';
 import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.dart';
+import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
@@ -60,6 +62,8 @@ class GlobalController extends GetxController {
   late final CombinedDataService combinedDataService;
   late final InvasiveComprehensiveDataService invasiveComprehensiveDataService;
   late final HealthDataSyncService healthDataSyncService;
+  late final PressureDataService pressureDataService;
+  late final PressureCalculationService pressureCalculationService;
   late final SyncDataService syncDataService;
   ApiService apiService = ApiService();
 
@@ -97,8 +101,10 @@ class GlobalController extends GetxController {
 
   late GoalNotificationService goalNotificationService;
 
-  ///--- 用戶名
+  ///--- 用戶基本資料
   var userName = "".obs;
+  var userGender = "".obs;
+  var userAge = "".obs;
 
   ///--- 從firebase取得的主用戶名
   var mainAcc = "".obs;
@@ -124,6 +130,26 @@ class GlobalController extends GetxController {
 
   ///--- 諮詢暫存輸入字串
   final chatInput = "".obs;
+
+  // ✅ 添加事件分發系統
+  final Map<String, List<Function(Map)>> _eventHandlers = {};
+
+  /// 註冊事件處理器
+  void registerEventHandler(String eventType, Function(Map) handler) {
+    if (!_eventHandlers.containsKey(eventType)) {
+      _eventHandlers[eventType] = [];
+    }
+    _eventHandlers[eventType]!.add(handler);
+    print("✅ 註冊事件處理器: $eventType，目前共 ${_eventHandlers[eventType]!.length} 個");
+  }
+
+  /// 取消註冊事件處理器
+  void unregisterEventHandler(String eventType, Function(Map) handler) {
+    if (_eventHandlers.containsKey(eventType)) {
+      _eventHandlers[eventType]!.remove(handler);
+      print("❌ 取消事件處理器: $eventType，目前共 ${_eventHandlers[eventType]!.length} 個");
+    }
+  }
 
   @override
   void onInit() {
@@ -151,6 +177,8 @@ class GlobalController extends GetxController {
   }
 
   void init() async {
+    await forceStopAllTasks();
+
     /// 初始化firebase
     hiveInit();
     sqfliteInit();
@@ -169,13 +197,68 @@ class GlobalController extends GetxController {
     YcProductPlugin().initPlugin(isReconnectEnable: true, isLogEnable: true);
     // 啟動監聽
     YcProductPlugin().onListening((event) {
-      if (event.keys.contains(NativeEventType.bluetoothStateChange)) {
-        debugPrint(
-            "=== onListening Event: ${event[NativeEventType.bluetoothStateChange]}");
-        _handleBluetoothStateChange(
-            event[NativeEventType.bluetoothStateChange]);
-      }
+      print("=== GlobalController 統一監聽 Event: $event");
+      print("=== Event keys: ${event.keys}");
+
+      _distributeEvent(event);
     });
+  }
+
+  /// 事件分發核心邏輯
+  void _distributeEvent(Map event) {
+    try {
+      // 處理每個事件類型
+      for (String eventType in event.keys) {
+        print("🔄 處理事件類型: $eventType");
+
+        // 內建藍牙事件處理
+        if (eventType == NativeEventType.bluetoothStateChange) {
+          _handleInternalBluetoothEvent(event);
+        }
+
+        // 分發給註冊的處理器
+        if (_eventHandlers.containsKey(eventType)) {
+          final handlers = _eventHandlers[eventType]!;
+          print("📨 分發給 ${handlers.length} 個處理器");
+
+          for (Function(Map) handler in handlers) {
+            try {
+              handler(event);
+            } catch (e) {
+              print("❌ 事件處理器執行失敗 ($eventType): $e");
+            }
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      print("❌ 事件分發失敗: $e");
+      print("❌ Stack trace: $stackTrace");
+    }
+  }
+
+  /// 內部藍牙事件處理
+  void _handleInternalBluetoothEvent(Map event) {
+    final st = event[NativeEventType.bluetoothStateChange];
+    print("🔵 處理藍牙狀態變化: $st (${st.runtimeType})");
+
+    try {
+      int bluetoothState;
+
+      if (st is int) {
+        bluetoothState = st;
+        print("📱 使用 int 格式：$bluetoothState");
+      } else if (st is Map && st.containsKey('bluetoothStateChange')) {
+        bluetoothState = st['bluetoothStateChange'];
+        print("📱 使用 Map 格式：$bluetoothState");
+      } else {
+        print("❌ 未知的藍牙狀態數據格式：$st");
+        return;
+      }
+
+      _handleBluetoothStateChange(bluetoothState);
+    } catch (e) {
+      print("❌ 處理藍牙狀態變化時發生異常: $e");
+    }
   }
 
   /// 初始化sqlite
@@ -190,6 +273,8 @@ class GlobalController extends GetxController {
     invasiveComprehensiveDataService = InvasiveComprehensiveDataService(db);
     healthDataSyncService = HealthDataSyncService(db);
     syncDataService = SyncDataService(db: db, gc: this);
+    pressureDataService = PressureDataService(db);
+    pressureCalculationService = PressureCalculationService(db: db, gc: this);
     isSqfliteInit.value = true;
   }
 
@@ -340,13 +425,13 @@ class GlobalController extends GetxController {
       (String taskId) async {
         try {
           final log = "[BackgroundFetch] Event received: $taskId";
-          debugPrint(log);
+          print(log);
           await logToDisk(log);
           await apiService.sendLog(json: log, logType: "DEBUG");
           await safeRunSync(); // 你自己的任務邏輯
         } catch (e, st) {
           final errLog = "❌ Error: $e\n$st";
-          debugPrint(errLog);
+          print(errLog);
           await logToDisk(errLog);
         } finally {
           BackgroundFetch.finish(taskId);
@@ -354,7 +439,7 @@ class GlobalController extends GetxController {
       },
       (String taskId) async {
         final timeoutLog = "⚠️ BackgroundFetch TIMEOUT: $taskId";
-        debugPrint(timeoutLog);
+        print(timeoutLog);
         await logToDisk(timeoutLog);
         BackgroundFetch.finish(taskId);
       },
@@ -369,7 +454,7 @@ class GlobalController extends GetxController {
     final now = DateTime.now();
     final time = now.toIso8601String();
     final content = "✅ safeRunSync executed at $time";
-    debugPrint(content);
+    print(content);
     await logToDisk(content);
     if (_lastSyncTime != null &&
         now.difference(_lastSyncTime!).inSeconds < 15) {
@@ -379,22 +464,21 @@ class GlobalController extends GetxController {
     await syncDataService.runBackgroundSync();
     await getBlueToothDeviceInfo();
     isBleDataReady.value = true;
-    Future.delayed(const Duration(milliseconds: 500), () {
-      NotificationService().showDeviceSyncDataNotification();
-    });
   }
 
   void _handleBluetoothStateChange(int newStatus) async {
+    print("_handleBluetoothStateChange : $newStatus");
     if (newStatus == _previousBluetoothStatus) return;
     _previousBluetoothStatus = newStatus;
 
     blueToolStatus.value = newStatus;
-    debugPrint('🔄 藍牙狀態改變：$newStatus');
+    print('🔄 藍牙狀態改變：$newStatus');
 
     switch (newStatus) {
       case 2:
         if (userId.value.isNotEmpty) {
           isBleConnect.value = true;
+
           initFunc();
           await apiService.sendLog(json: "藍牙連線成功", logType: "DEBUG");
         }
@@ -403,6 +487,7 @@ class GlobalController extends GetxController {
       case 3:
       case 4:
         isBleConnect.value = false;
+
         if (_isInitFuncRunning) {
           NotificationService().showDeviceDisconnectedNotification();
           stopForegroundTask();
@@ -437,7 +522,7 @@ class GlobalController extends GetxController {
       await file.writeAsString("${DateTime.now()}: $content\n",
           mode: FileMode.append);
     } catch (e) {
-      debugPrint("❌ Failed to write log: $e");
+      print("❌ Failed to write log: $e");
     }
   }
 
@@ -465,5 +550,22 @@ class GlobalController extends GetxController {
         }
       }
     });
+  }
+
+  /// 強制停止所有排程任務
+  Future<void> forceStopAllTasks() async {
+    try {
+      // 停止 FlutterForegroundTask
+      if (await FlutterForegroundTask.isRunningService) {
+        await FlutterForegroundTask.stopService();
+        print("🛑 強制停止 FlutterForegroundTask");
+      }
+
+      // 停止 BackgroundFetch
+      await BackgroundFetch.stop();
+      print("🛑 強制停止 BackgroundFetch");
+    } catch (e) {
+      print("❌ 停止排程任務時發生錯誤: $e");
+    }
   }
 }

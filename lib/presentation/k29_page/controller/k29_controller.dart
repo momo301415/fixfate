@@ -126,7 +126,7 @@ class K29Controller extends GetxController {
   void querydb2() async {
     var records = await AlertRecordListStorage.getRecords(gc.userId.value);
     for (var record in records) {
-      debugPrint("${record.label} ; ${record.time} ; ${record.type}");
+      print("${record.label} ; ${record.time} ; ${record.type}");
     }
   }
 

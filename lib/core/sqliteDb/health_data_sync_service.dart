@@ -7,11 +7,14 @@ import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
+import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
+import 'package:pulsedevice/core/hiveDb/pressure_setting_storage.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/sqliteDb/blood_pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/combined_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/heart_rate_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.dart';
+import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -44,6 +47,7 @@ class HealthDataSyncService {
     HealthDataType.invasiveComprehensiveData
   ];
 
+  ///------ 同步裝置健康數據到db ------
   Future<void> fetchAndStoreData() async {
     if (_userId == null) {
       print('❌ 無 userId，取消同步');
@@ -207,6 +211,8 @@ class HealthDataSyncService {
         await BloodOxygenSettingStorage.getUserProfile(_userId!);
     final tempSettings =
         await BodyTemperatureSettingStorage.getUserProfile(_userId!);
+    final pressureSettings =
+        await PressureSettingStorage.getUserProfile(_userId!);
     final heartList = await heartService.getByUser(_userId!);
     final combinedList = await combinedService.getByUser(_userId!);
     List<AlertRecord> alertList = [];
@@ -280,6 +286,25 @@ class HealthDataSyncService {
         }
       }
     }
+
+    if (pressureSettings?.alertEnabled == true) {
+      final pressureList = await PressureDataService(_db).getByUser(_userId!);
+      for (var dic in pressureList) {
+        final dt =
+            DateTime.fromMillisecondsSinceEpoch(dic.startTimeStamp * 1000);
+        if (dic.totalStressScore > pressureSettings!.highThreshold) {
+          alertList.add(AlertRecord(
+            label: 'lbl217_1'.tr,
+            type: 'pressure_high',
+            time: dt,
+            value: dic.totalStressScore.toString(),
+            unit: '',
+            synced: false,
+          ));
+        }
+      }
+    }
+
     if (alertList.isEmpty) return;
 
     await AlertRecordListStorage.addRecords(_userId!, alertList);

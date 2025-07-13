@@ -28,6 +28,9 @@ class K5Controller extends GetxController
   /// 旗標：是否「正在運動」，只有這個為 true 時才處理運動資料
   bool _isListening = false;
 
+  /// ✅ 運動事件處理器
+  late Function(Map) _sportEventHandler;
+
   /// 上次運動時長
   RxInt lastHours = 0.obs;
   RxInt lastMinutes = 0.obs;
@@ -55,22 +58,28 @@ class K5Controller extends GetxController
     WidgetsBinding.instance.addObserver(this);
     tabviewController = TabController(vsync: this, length: 2);
     print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
+
+    // ✅ 初始化運動事件處理器
+    _sportEventHandler = _handleSportEvent;
+
+    // ✅ 註冊全局運動事件監聽
+    _registerGlobalSportListener();
   }
 
   @override
   void onClose() {
     super.onClose();
     WidgetsBinding.instance.removeObserver(this);
+
+    // ✅ 清理事件處理器
+    _unregisterGlobalSportListener();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      // ✅ App 回前景，強制刷新資料
-      /// 1) 回前景先確認 Listener 是否還在（有時會被系統回收）
-      _registerSdkListener();
-
-      /// 2) 若正在運動，把「快取的最後數值」再寫回一次，
+      // ✅ App 回前景，只刷新資料，監聽器由全局事件系統管理
+      /// 若正在運動，把「快取的最後數值」再寫回一次，
       ///    觸發 Rx <=> UI 重新 build
       if (isStart.value && _lastSportCache.isNotEmpty) {
         bpm.value = _lastSportCache['bpm'] ?? bpm.value;
@@ -113,49 +122,73 @@ class K5Controller extends GetxController
     }
   }
 
+  /// 註冊全局運動事件監聽
+  void _registerGlobalSportListener() {
+    print("✅ K5Controller 註冊全局運動事件監聽");
+    gc.registerEventHandler(
+        NativeEventType.deviceRealSport, _sportEventHandler);
+  }
+
+  /// 取消註冊全局運動事件監聽
+  void _unregisterGlobalSportListener() {
+    print("❌ K5Controller 取消全局運動事件監聽");
+    gc.unregisterEventHandler(
+        NativeEventType.deviceRealSport, _sportEventHandler);
+  }
+
+  /// 處理運動事件
+  void _handleSportEvent(Map event) {
+    print("=== K5Controller 接收運動事件: $event");
+
+    // ✅ 只有在運動中才處理
+    if (!isStart.value) {
+      print("⚠️ 運動未開始，忽略運動數據");
+      return;
+    }
+
+    // 取出運動數據
+    final Map? sportInfo = event[NativeEventType.deviceRealSport];
+    if (sportInfo == null) {
+      print("⚠️ 運動數據為空");
+      return;
+    }
+
+    // 原有的運動數據處理邏輯
+    final int totalSec = int.tryParse(sportInfo["time"].toString()) ?? 0;
+    bpm.value = int.tryParse(sportInfo["heartRate"].toString()) ?? 0;
+    distance.value = int.tryParse(sportInfo["distance"].toString()) ?? 0;
+    steps.value = int.tryParse(sportInfo["step"].toString()) ?? 0;
+    calories.value = int.tryParse(sportInfo["calories"].toString()) ?? 0;
+
+    _lastSportCache = {
+      'sec': totalSec,
+      'bpm': bpm.value,
+      'distance': distance.value,
+      'steps': steps.value,
+      'cal': calories.value,
+    };
+
+    final model =
+        SportRecord(sportType: '', time: DateTime.now(), bpm: bpm.value);
+    records.add(model);
+
+    _updateTimeFields(totalSec);
+  }
+
   /// 將 SDK 的 onListening(callback) 包成一個方法
   void _registerSdkListener() {
     if (_isListening) return;
     _isListening = true;
 
-    YcProductPlugin().onListening((event) {
-      // 一進來先 debug log 看看 event 內容長什麼樣
-      debugPrint("=== onListening Event: $event");
-
-      if (isStart.value) {
-        // 取出 sportInfo 這個 Map
-        final Map? sportInfo = event[NativeEventType.deviceRealSport];
-        if (sportInfo == null) return;
-
-        // 把它轉成 int（可能 SDK 回傳 String，也可能直接回 int）
-        final int totalSec = int.tryParse(sportInfo["time"].toString()) ?? 0;
-        bpm.value = int.tryParse(sportInfo["heartRate"].toString()) ?? 0;
-        distance.value = int.tryParse(sportInfo["distance"].toString()) ?? 0;
-        steps.value = int.tryParse(sportInfo["step"].toString()) ?? 0;
-        calories.value = int.tryParse(sportInfo["calories"].toString()) ?? 0;
-
-        _lastSportCache = {
-          'sec': totalSec,
-          'bpm': bpm.value,
-          'distance': distance.value,
-          'steps': steps.value,
-          'cal': calories.value,
-        };
-
-        final model =
-            SportRecord(sportType: '', time: DateTime.now(), bpm: bpm.value);
-        records.add(model);
-
-        //  拆成「時／分／秒」
-        _updateTimeFields(totalSec);
-      }
-    });
+    // ✅ 現在不需要直接註冊 SDK 監聽器，改為狀態管理
+    print("✅ 運動監聽器已通過全局事件系統準備就緒");
   }
 
   /// 運動頁首次開啟時，主動呼叫 startPage()
   void startPage() {
     syncData();
-    _registerSdkListener();
+    // ✅ 監聽器已在 onInit 時通過全局事件系統註冊，不需要重複註冊
+    print("✅ 運動頁面載入完成，全局監聽器已就緒");
   }
 
   void switchMode(int idx) {
@@ -234,7 +267,7 @@ class K5Controller extends GetxController
     print("新增運動紀錄 =>  步數 $s ;心率 $b ;距離 $d ;卡路里 $c ;時 $h ;分 $m ;秒 $se");
     records.clear();
     await SportRecordListStorage.addRecords(gc.userId.value, [record]);
-    debugPrint("新增運動紀錄成功");
+    print("新增運動紀錄成功");
     SnackbarHelper.showBlueSnackbar(message: "結束運動，已儲存本次記錄");
 
     /// 結束運動後，重新打開同步定時器
@@ -269,7 +302,9 @@ class K5Controller extends GetxController
       SnackbarHelper.showBlueSnackbar(message: "無法啟動運動，請稍後再試");
       return;
     }
-    _registerSdkListener();
+
+    // ✅ 運動開始，全局監聽器已準備接收運動數據
+    print("✅ 運動開始，等待接收運動數據...");
   }
 
   Future<void> stopSport() async {
@@ -281,11 +316,11 @@ class K5Controller extends GetxController
           .appControlSport(DeviceSportState.stop, DeviceSportType.fitness)
           .timeout(const Duration(seconds: 5), onTimeout: () {
         // 如果等超過 5 秒還沒返回，就先顯示通知、但不取消整個 callback
-        debugPrint("[TIMEOUT] stopSport() 超時，繼續往下執行");
+        print("[TIMEOUT] stopSport() 超時，繼續往下執行");
         return;
       });
     } catch (e) {
-      debugPrint("[ERROR] stopSport() 發生例外：$e");
+      print("[ERROR] stopSport() 發生例外：$e");
     }
 
     _saveExerciseRecordToHive();
