@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:pulsedevice/presentation/k19_screen/models/chat_message_model.dart';
 import '../../core/app_export.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
@@ -11,6 +12,64 @@ import 'controller/k19_controller.dart'; // ignore_for_file: must_be_immutable
 /// 諮詢頁面--預設首頁
 class K19Screen extends GetWidget<K19Controller> {
   const K19Screen({Key? key}) : super(key: key);
+
+  /// 建立AI訊息的Markdown樣式
+  MarkdownStyleSheet _buildAiMessageMarkdownStyle() {
+    return MarkdownStyleSheet(
+      p: TextStyle(
+        color: Colors.black87,
+        fontSize: 13,
+        height: 1.4,
+      ),
+      h1: TextStyle(
+        color: Colors.black87,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        height: 1.4,
+      ),
+      h2: TextStyle(
+        color: Colors.black87,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        height: 1.4,
+      ),
+      h3: TextStyle(
+        color: Colors.black87,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        height: 1.4,
+      ),
+      code: TextStyle(
+        backgroundColor: appTheme.gray200,
+        color: Colors.black87,
+        fontSize: 12,
+        fontFamily: 'monospace',
+      ),
+      codeblockDecoration: BoxDecoration(
+        color: appTheme.gray200,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      blockquote: TextStyle(
+        color: Colors.black54,
+        fontSize: 13,
+        fontStyle: FontStyle.italic,
+      ),
+      listBullet: TextStyle(
+        color: Colors.black87,
+        fontSize: 13,
+      ),
+      strong: TextStyle(
+        color: Colors.black87,
+        fontSize: 13,
+        fontWeight: FontWeight.bold,
+      ),
+      em: TextStyle(
+        color: Colors.black87,
+        fontSize: 13,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -431,12 +490,9 @@ class K19Screen extends GetWidget<K19Controller> {
                 ),
                 child: message.isLoading
                     ? _buildTypingIndicator() // 🔥 Loading動畫
-                    : Text(
-                        message.text,
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 13,
-                        ),
+                    : MarkdownBody(
+                        data: message.text,
+                        styleSheet: _buildAiMessageMarkdownStyle(),
                       ),
               ),
               SizedBox(height: 4.h),

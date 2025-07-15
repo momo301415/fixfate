@@ -284,4 +284,6 @@ class ImageConstant {
   static String imgFeedbackSoso = '$imagePath/img_feedback_soso.svg';
 
   static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
+
+  static String imgChat = '$imagePath/chat.png';
 }

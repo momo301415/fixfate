@@ -329,14 +329,12 @@ class K19Controller extends GetxController {
     // 🔥 監聽從 K20Screen 回傳的歷史對話資料
     if (result != null && result is Map<String, dynamic>) {
       final topicId = result['topicId'] as String?;
-      final sessionId = result['sessionId'] as String?;
       final messages = result['messages'] as List<k20.ChatMessageModel>?;
 
-      if (topicId != null && sessionId != null && messages != null) {
+      if (topicId != null && messages != null) {
         print('📱 從 K20 接收到歷史對話，準備載入...');
         loadHistoryConversation(
           historyTopicId: topicId,
-          sessionId: sessionId,
           historyMessages: messages,
         );
       }
@@ -403,13 +401,11 @@ class K19Controller extends GetxController {
   /// 載入歷史對話 - 改為公開方法，供外部調用
   void loadHistoryConversation({
     required String historyTopicId,
-    required String sessionId,
     required List<k20.ChatMessageModel> historyMessages,
   }) {
     topicId = historyTopicId;
 
-    print(
-        '📜 載入歷史對話 - Topic: $topicId, Session: $sessionId, 訊息數: ${historyMessages.length}');
+    print('📜 載入歷史對話 - Topic: $topicId, 訊息數: ${historyMessages.length}');
 
     // 🔥 將K20的ChatMessageModel轉換為K19使用的格式
     messages.clear();
@@ -437,11 +433,9 @@ class K19Controller extends GetxController {
 
     print('✅ 載入了 ${messages.length} 則歷史訊息');
 
-    // 🔥 設定 WebSocket 使用相同的 session_id（如果還有效的話）
-    if (sessionId.isNotEmpty) {
-      socketService.sessionId = sessionId;
-      print('🔄 重用 session_id: $sessionId');
-    }
+    // 🔥 關鍵修改：強制清空sessionId，讓WebSocket重新取得新的
+    socketService.sessionId = null;
+    print('🆕 強制使用新的session_id配合歷史topic_id: $topicId');
 
     // 初始化 WebSocket 連線
     ensureWebSocketConnected();

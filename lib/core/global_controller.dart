@@ -88,7 +88,7 @@ class GlobalController extends GetxController {
   var firebaseToken = ''.obs;
 
   ///--- 記錄bottombar index
-  var bottomBarIndex = 1.obs;
+  var bottomBarIndex = 2.obs;
 
   ///--- 紀錄是否已經
   var isSendSyncApi = "Y".obs;

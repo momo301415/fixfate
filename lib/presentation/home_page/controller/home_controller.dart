@@ -6,7 +6,7 @@ import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 
 class HomeController extends GetxController {
-  final bottomBarIndex = 1.obs;
+  final bottomBarIndex = 1.obs; // 改為 1，對應 K29Page
   final cc = Get.find<ChatScreenController>();
   @override
   void onInit() {
@@ -32,15 +32,24 @@ class HomeController extends GetxController {
   }
 
   void onTabChanged(int index) {
-    bottomBarIndex.value = index;
+    print('🔄 HomeController.onTabChanged: index = $index');
 
-    // 根據 index 主動刷新該 tab 頁資料
     switch (index) {
       case 0:
+        // 健康頁面
+        bottomBarIndex.value = 0;
         Get.find<K73Controller>().getFamilyData();
         Get.find<K73Controller>().getHealthData();
         break;
       case 1:
+        // 諮詢按鈕 - 打開 K19Screen
+        cc.isK19Visible.value = true;
+        print('🔥 打開諮詢頁面');
+        break;
+      case 2:
+        // 我的頁面 (實際對應 IndexedStack 的 index 1)
+        bottomBarIndex.value = 1;
+        print('📱 切換到個人中心');
         break;
     }
   }

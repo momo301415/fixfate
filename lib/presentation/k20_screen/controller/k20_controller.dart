@@ -130,12 +130,11 @@ class K20Controller extends GetxController {
   }
 
   void continueConversation(ChatTopicGroup group) {
-    print('📱 點擊繼續對話 - Topic: ${group.topicId}, Session: ${group.sessionId}');
+    print('📱 點擊繼續對話 - Topic: ${group.topicId}');
 
     // 改用 Get.back(result) 而不是 Get.toNamed
     Get.back(result: {
       'topicId': group.topicId,
-      'sessionId': group.sessionId,
       'messages': group.messages,
     });
   }
