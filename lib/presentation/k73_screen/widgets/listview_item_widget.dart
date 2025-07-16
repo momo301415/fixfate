@@ -13,7 +13,7 @@ class ListviewItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isAlert = model.isAlert?.value ?? false;
-
+    bool isLastItme = false;
     var iconHeight = 45.h;
     var iconWidth = 45.h;
     var iconLeftPosition = 12.h;
@@ -33,6 +33,7 @@ class ListviewItemWidget extends StatelessWidget {
       iconHeight = 35.h;
       iconLeftPosition = 15.h;
       iconTopPosition = -10.v;
+      isLastItme = true;
     }
 
     return Stack(
@@ -40,7 +41,9 @@ class ListviewItemWidget extends StatelessWidget {
       children: [
         // 卡片本體
         Container(
-          margin: EdgeInsets.all(8.h),
+          margin: isLastItme
+              ? EdgeInsets.symmetric(horizontal: 8.h, vertical: 1.v)
+              : EdgeInsets.all(8.h),
           padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 12.v),
           decoration: BoxDecoration(
             color: Colors.white,
