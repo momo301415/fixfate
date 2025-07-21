@@ -6,7 +6,7 @@ import 'package:pulsedevice/presentation/k78_page/models/list_item_model.dart';
 import 'package:pulsedevice/presentation/k78_page/controller/k78_controller.dart';
 import '../../core/app_export.dart';
 
-/// 健康-血氧頁面
+/// 健康-氧氣頁面
 class K78Page extends GetWidget<K78Controller> {
   const K78Page({Key? key}) : super(key: key);
 
@@ -342,7 +342,7 @@ class K78Page extends GetWidget<K78Controller> {
                 children: [
                   Text(item.label?.value ?? '',
                       style: CustomTextStyles.bodyMediumBluegray900),
-                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                  Text('${item.value?.value ?? ''}',
                       style: CustomTextStyles.bodyMediumBluegray900),
                   Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
                 ],
@@ -357,7 +357,7 @@ class K78Page extends GetWidget<K78Controller> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                  Text('${item.value?.value ?? ''}',
                       style: CustomTextStyles.bodyMediumBluegray900),
                   Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
                 ],

@@ -104,6 +104,7 @@ class K63Screen extends GetWidget<K63Controller> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
+                            textAlign: TextAlign.center,
                             "lbl".tr,
                             style: CustomTextStyles.bodyMedium15,
                           ),

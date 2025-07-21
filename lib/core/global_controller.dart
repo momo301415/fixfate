@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pulsedevice/core/app_export.dart';
@@ -28,6 +29,7 @@ import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
 import 'package:pulsedevice/core/service/goal_notification_service.dart';
+import 'package:pulsedevice/core/service/location_enhancement_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/service/pressure_calculation_service.dart';
 import 'package:pulsedevice/core/service/sync_data_service.dart';
@@ -101,6 +103,9 @@ class GlobalController extends GetxController {
 
   late GoalNotificationService goalNotificationService;
 
+  ///--- 定位增強服務
+  late LocationEnhancementService locationEnhancementService;
+
   ///--- 用戶基本資料
   var userName = "".obs;
   var userGender = "".obs;
@@ -130,6 +135,7 @@ class GlobalController extends GetxController {
 
   ///--- 諮詢暫存輸入字串
   final chatInput = "".obs;
+  final chatApiKeyValue = "".obs;
 
   // ✅ 添加事件分發系統
   final Map<String, List<Function(Map)>> _eventHandlers = {};
@@ -184,6 +190,10 @@ class GlobalController extends GetxController {
     sqfliteInit();
     YcProductPluginInit();
     initNotification();
+
+    /// 初始化定位增強服務 (只請求權限，不啟動GPS)
+    await initLocationEnhancementService(autoStart: false);
+
     initBackgroundFetch();
     if (Platform.isIOS) {
       setupIosMessageChannel();
@@ -327,6 +337,229 @@ class GlobalController extends GetxController {
     }
   }
 
+  /// 初始化定位增強服務
+  Future<void> initLocationEnhancementService({bool autoStart = true}) async {
+    try {
+      locationEnhancementService = Get.put(LocationEnhancementService());
+
+      if (autoStart) {
+        // 傳統模式：立即啟動GPS增強
+        await locationEnhancementService.requestPermissionAndInitialize();
+        print('✅ [GlobalController] 定位增強服務初始化並啟動完成');
+      } else {
+        // 智能模式：只請求權限，不啟動GPS（省電）
+        await locationEnhancementService.requestPermissionOnly();
+        print('✅ [GlobalController] 定位增強服務初始化完成（待啟動狀態）');
+      }
+    } catch (e) {
+      print('❌ [GlobalController] 定位增強服務初始化失敗: $e');
+    }
+  }
+
+  // ======================================================
+  // 🎯 新增：統一GPS策略控制接口
+  // ======================================================
+
+  /// 切換到統一GPS策略（不分前景背景都運行）
+  Future<void> enableUnifiedGpsStrategy() async {
+    try {
+      // 🎯 啟用統一GPS前，主動請求Always權限
+      final hasAlways = await hasAlwaysLocationPermission();
+      if (!hasAlways) {
+        print('💡 [GlobalController] 統一GPS需要最佳權限，主動請求Always...');
+        await requestAlwaysPermissionForUnifiedGps();
+      }
+
+      await locationEnhancementService
+          .switchStrategy(LocationStrategy.unifiedGps);
+      print('✅ [GlobalController] 已切換到統一GPS策略');
+    } catch (e) {
+      print('❌ [GlobalController] 切換到統一GPS策略失敗: $e');
+    }
+  }
+
+  /// 切換到智能切換策略（前景省電，背景增強）
+  Future<void> enableSmartSwitchStrategy() async {
+    try {
+      await locationEnhancementService
+          .switchStrategy(LocationStrategy.smartSwitch);
+      print('✅ [GlobalController] 已切換到智能切換策略');
+    } catch (e) {
+      print('❌ [GlobalController] 切換到智能切換策略失敗: $e');
+    }
+  }
+
+  /// 獲取當前定位策略
+  LocationStrategy getCurrentLocationStrategy() {
+    return locationEnhancementService.currentStrategy;
+  }
+
+  /// 獲取定位增強服務詳細狀態
+  Map<String, dynamic> getLocationEnhancementStatus() {
+    return locationEnhancementService.getDetailedServiceStatus();
+  }
+
+  /// 手動觸發統一GPS模式（測試用）
+  Future<void> testUnifiedGpsMode() async {
+    print('🧪 [GlobalController] 開始測試統一GPS模式...');
+
+    final originalStrategy = locationEnhancementService.currentStrategy;
+
+    try {
+      // 切換到統一GPS
+      await enableUnifiedGpsStrategy();
+
+      // 等待一段時間觀察效果
+      await Future.delayed(Duration(seconds: 30));
+
+      print('🧪 [GlobalController] 統一GPS模式測試完成');
+      print(
+          '📊 [GlobalController] 測試期間同步次數: ${locationEnhancementService.syncCount}');
+    } catch (e) {
+      print('❌ [GlobalController] 統一GPS模式測試失敗: $e');
+    } finally {
+      // 可選：恢復原始策略
+      // await locationEnhancementService.switchStrategy(originalStrategy);
+    }
+  }
+
+  // ======================================================
+  // 🎯 新增：定位權限升級管理接口
+  // ======================================================
+
+  /// 檢查是否應該提示權限升級
+  Future<bool> shouldPromptLocationPermissionUpgrade() async {
+    try {
+      return await locationEnhancementService.shouldPromptPermissionUpgrade();
+    } catch (e) {
+      print('❌ [GlobalController] 檢查權限升級提示失敗: $e');
+      return false;
+    }
+  }
+
+  /// 獲取當前定位權限狀態
+  Future<LocationPermission> getCurrentLocationPermission() async {
+    return await locationEnhancementService.currentPermission;
+  }
+
+  /// 檢查是否有Always權限
+  Future<bool> hasAlwaysLocationPermission() async {
+    return await locationEnhancementService.hasAlwaysPermission;
+  }
+
+  /// 檢查是否可以升級權限
+  Future<bool> canUpgradeLocationPermission() async {
+    return await locationEnhancementService.canUpgradeToAlways;
+  }
+
+  /// 獲取權限升級信息
+  Map<String, dynamic> getLocationPermissionUpgradeInfo() {
+    return locationEnhancementService.getPermissionUpgradeInfo();
+  }
+
+  /// 打開系統定位設置
+  Future<void> openLocationSettings() async {
+    try {
+      await locationEnhancementService.openLocationSettings();
+      print('✅ [GlobalController] 已引導用戶到定位設置');
+    } catch (e) {
+      print('❌ [GlobalController] 打開定位設置失敗: $e');
+    }
+  }
+
+  /// 檢查權限是否已升級
+  Future<bool> checkLocationPermissionUpgraded() async {
+    return await locationEnhancementService.checkPermissionUpgraded();
+  }
+
+  /// 獲取詳細的權限狀態報告
+  Future<Map<String, dynamic>> getLocationPermissionStatusReport() async {
+    return await locationEnhancementService.getPermissionStatusReport();
+  }
+
+  /// 智能權限升級檢查（在app啟動和重要時機調用）
+  Future<void> smartLocationPermissionCheck() async {
+    try {
+      print('🔍 [GlobalController] 執行智能權限檢查...');
+
+      final permission = await getCurrentLocationPermission();
+      print('📱 [GlobalController] 當前權限狀態: $permission');
+
+      if (permission == LocationPermission.whileInUse) {
+        final shouldPrompt = await shouldPromptLocationPermissionUpgrade();
+
+        if (shouldPrompt) {
+          print('💡 [GlobalController] 建議提示用戶升級權限');
+          // 這裡可以觸發UI顯示權限升級建議
+          // 實際實現時可以通過事件或回調通知UI層
+        } else {
+          print('⏳ [GlobalController] 暫時不需要提示權限升級');
+        }
+      } else if (permission == LocationPermission.always) {
+        print('🎉 [GlobalController] 已有Always權限，背景同步效果最佳');
+      } else {
+        print('⚠️ [GlobalController] 權限狀態需要關注: $permission');
+      }
+
+      // 記錄權限狀態到日誌
+      final report = await getLocationPermissionStatusReport();
+      print('📊 [GlobalController] 權限狀態報告: $report');
+    } catch (e) {
+      print('❌ [GlobalController] 智能權限檢查失敗: $e');
+    }
+  }
+
+  /// 主動觸發權限升級（在特定場景下調用）
+  Future<bool> triggerLocationPermissionUpgrade({String? context}) async {
+    try {
+      return await locationEnhancementService.triggerPermissionUpgradeRequest(
+          context: context);
+    } catch (e) {
+      print('❌ [GlobalController] 觸發權限升級失敗: $e');
+      return false;
+    }
+  }
+
+  /// 健康監測場景權限升級（當開始健康監測時調用）
+  Future<bool> requestAlwaysPermissionForHealthMonitoring() async {
+    try {
+      print('🏥 [GlobalController] 為健康監測功能請求Always權限...');
+
+      final success =
+          await triggerLocationPermissionUpgrade(context: '健康監測背景同步');
+
+      if (success) {
+        print('🎉 [GlobalController] 健康監測權限升級成功，將大幅提升數據穩定性！');
+      } else {
+        print('⏳ [GlobalController] 權限暫未升級，將在後續適當時機再次嘗試');
+      }
+
+      return success;
+    } catch (e) {
+      print('❌ [GlobalController] 健康監測權限升級失敗: $e');
+      return false;
+    }
+  }
+
+  /// 統一GPS模式權限升級（當啟用統一GPS時調用）
+  Future<bool> requestAlwaysPermissionForUnifiedGps() async {
+    try {
+      print('🌍 [GlobalController] 為統一GPS模式請求Always權限...');
+
+      final success =
+          await triggerLocationPermissionUpgrade(context: '統一GPS背景保活');
+
+      if (success) {
+        print('🎉 [GlobalController] 統一GPS權限升級成功，背景保活效果最佳！');
+      }
+
+      return success;
+    } catch (e) {
+      print('❌ [GlobalController] 統一GPS權限升級失敗: $e');
+      return false;
+    }
+  }
+
   initGoal() async {
     goalNotificationService = await GoalNotificationService(
       userId: userId.value,
@@ -345,6 +578,20 @@ class GlobalController extends GetxController {
       getGoalTargetData(goalNotificationService);
       _isInitFuncRunning = true;
       NotificationService().showDeviceConnectedNotification();
+    });
+
+    // 🎯 藍牙連接後執行權限升級策略
+    Future.delayed(const Duration(seconds: 5), () {
+      smartLocationPermissionCheck();
+    });
+
+    // 🎯 藍牙連接是關鍵時機，主動嘗試權限升級
+    Future.delayed(const Duration(seconds: 10), () async {
+      final canUpgrade = await canUpgradeLocationPermission();
+      if (canUpgrade) {
+        print('💡 [GlobalController] 藍牙連接後，為健康監測請求Always權限...');
+        await requestAlwaysPermissionForHealthMonitoring();
+      }
     });
   }
 

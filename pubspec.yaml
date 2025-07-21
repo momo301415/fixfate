@@ -1,6 +1,6 @@
 name: pulsedevice
 description: A new Flutter project.
-version: 1.0.0+1
+version: 1.0.1+1
 environment: 
   sdk: ^3.6.0
 dependencies: 
@@ -50,6 +50,8 @@ dependencies:
   collection: ^1.19.1  # 集合操作
   uuid: ^4.5.1  # UUID生成工具，用於生成對話主題ID
   flutter_markdown: ^0.7.7+1 # Markdown解析
+  geolocator: ^14.0.2 # 取得位置資訊
+  pedometer: ^4.1.1 # 取得步數資訊
   
   yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
     git:

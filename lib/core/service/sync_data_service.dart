@@ -7,6 +7,8 @@ import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/blood_oxygen_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting_storage.dart';
+import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
+import 'package:pulsedevice/core/hiveDb/goal_profile_storage.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting_storage.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
@@ -15,7 +17,7 @@ import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
-import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
+
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/pref_utils.dart';
 
@@ -400,6 +402,10 @@ class SyncDataService {
     final oxyAlert = await getOxyAlert();
     final tempAlert = await getTempAlert();
     final pressurAlert = await getPressureAlert();
+    final stepAlert = await getStepAlert();
+    final sleepAlert = await getSleepAlert();
+    final caloriesAlert = await getCaloriesAlert();
+    final distanceAlert = await getDistanceAlert();
 
     if (rateAlert.isNotEmpty) {
       await updateAlert(
@@ -424,6 +430,30 @@ class SyncDataService {
     if (pressurAlert.isNotEmpty) {
       await updateAlert(
           codeType: "pressure",
+          maxVal: pressurAlert["maxVal"],
+          alert: pressurAlert["alert"]);
+    }
+    if (stepAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "step",
+          maxVal: pressurAlert["maxVal"],
+          alert: pressurAlert["alert"]);
+    }
+    if (sleepAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "sleep",
+          maxVal: pressurAlert["maxVal"],
+          alert: pressurAlert["alert"]);
+    }
+    if (caloriesAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "calories",
+          maxVal: pressurAlert["maxVal"],
+          alert: pressurAlert["alert"]);
+    }
+    if (distanceAlert.isNotEmpty) {
+      await updateAlert(
+          codeType: "distance",
           maxVal: pressurAlert["maxVal"],
           alert: pressurAlert["alert"]);
     }
@@ -462,9 +492,46 @@ class SyncDataService {
         );
         PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
         break;
+      case "step":
+      case "sleep":
+      case "calories":
+      case "distance":
+        await updateGoalProfile(codeType!, maxVal, alert);
+        break;
       default:
         break;
     }
+  }
+
+  /// 更新目標設定到 GoalProfile
+  Future<void> updateGoalProfile(
+      String codeType, double? maxVal, bool? alert) async {
+    // 先取得現有的 GoalProfile，如果沒有就建立新的
+    var goalProfile = await GoalProfileStorage.getUserProfile(gc.userId.value);
+    goalProfile ??= GoalProfile();
+
+    // 根據 codeType 更新對應的目標值和推播開關
+    switch (codeType) {
+      case "step":
+        if (maxVal != null) goalProfile.steps = maxVal.toInt();
+        if (alert != null) goalProfile.isEnableSteps = alert;
+        break;
+      case "sleep":
+        if (maxVal != null) goalProfile.sleepHours = maxVal;
+        if (alert != null) goalProfile.isEnablesleepHours = alert;
+        break;
+      case "calories":
+        if (maxVal != null) goalProfile.calories = maxVal.toInt();
+        if (alert != null) goalProfile.isEnablecalories = alert;
+        break;
+      case "distance":
+        if (maxVal != null) goalProfile.distance = maxVal.toInt();
+        if (alert != null) goalProfile.isEnabledistance = alert;
+        break;
+    }
+
+    // 保存更新後的 GoalProfile
+    await GoalProfileStorage.saveUserProfile(gc.userId.value, goalProfile);
   }
 
   ///------ call api 取得心率警示
@@ -623,6 +690,130 @@ class SyncDataService {
         }
 
         // 檢查舊格式：包含 message 和 data 包裝
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getStepAlert() async {
+    try {
+      final payload = {
+        "codeType": "step",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getSleepAlert() async {
+    try {
+      final payload = {
+        "codeType": "sleep",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getCaloriesAlert() async {
+    try {
+      final payload = {
+        "codeType": "calories",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
+      }
+      return {};
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getDistanceAlert() async {
+    try {
+      final payload = {
+        "codeType": "distance",
+        "userId": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.measurementGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            Map<String, dynamic> result = {
+              "maxVal": data["maxVal"],
+              "alert": data["alert"],
+            };
+            return result;
+          }
+        }
       }
       return {};
     } catch (e) {

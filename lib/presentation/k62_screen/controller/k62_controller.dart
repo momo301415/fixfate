@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile_storage.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/presentation/k62_screen/models/list_item_model.dart';
 
@@ -15,6 +17,7 @@ import '../models/k62_model.dart';
 class K62Controller extends GetxController {
   Rx<K62Model> k62ModelObj = K62Model().obs;
   final gc = Get.find<GlobalController>();
+  ApiService service = ApiService();
   var steps = 10000.0.obs;
   var sleepHours = 8.0.obs;
   var calories = 2500.0.obs;
@@ -23,6 +26,12 @@ class K62Controller extends GetxController {
   var isEnablesleepHours = false.obs;
   var isEnablecalories = false.obs;
   var isEnabledistance = false.obs;
+
+  // 目標類型常數定義
+  static const String STEPS_CODE = "step";
+  static const String SLEEP_CODE = "sleep";
+  static const String CALORIES_CODE = "calories";
+  static const String DISTANCE_CODE = "distance";
 
   @override
   void onInit() {
@@ -88,21 +97,58 @@ class K62Controller extends GetxController {
       switch (i) {
         case 0:
           user.isEnableSteps = dic.isEnable.value;
+          isEnableSteps = dic.isEnable;
           break;
         case 1:
           user.isEnablesleepHours = dic.isEnable.value;
+          isEnablesleepHours = dic.isEnable;
           break;
         case 2:
           user.isEnablecalories = dic.isEnable.value;
+          isEnablecalories = dic.isEnable;
           break;
         case 3:
           user.isEnabledistance = dic.isEnable.value;
+          isEnabledistance = dic.isEnable;
           break;
       }
     }
+
+    // 保存到本地數據庫
     await GoalProfileStorage.saveUserProfile(gc.userId.value, user);
+
+    // 批次發送所有目標設定到API
+    await sendAllGoalsToApi();
+
     Get.back();
     SnackbarHelper.showBlueSnackbar(message: "目標設定成功".tr);
+  }
+
+  /// 批次發送所有目標設定到API
+  Future<void> sendAllGoalsToApi() async {
+    // 並行發送所有目標設定
+    await Future.wait([
+      settingApi(
+        type: STEPS_CODE,
+        val: steps.value.toInt().toString(),
+        isAlert: isEnableSteps.value,
+      ),
+      settingApi(
+        type: SLEEP_CODE,
+        val: sleepHours.value.toString(),
+        isAlert: isEnablesleepHours.value,
+      ),
+      settingApi(
+        type: CALORIES_CODE,
+        val: calories.value.toInt().toString(),
+        isAlert: isEnablecalories.value,
+      ),
+      settingApi(
+        type: DISTANCE_CODE,
+        val: distance.value.toInt().toString(),
+        isAlert: isEnabledistance.value,
+      ),
+    ]);
   }
 
   Future<void> loadGoalProfile() async {
@@ -117,5 +163,21 @@ class K62Controller extends GetxController {
       isEnablecalories = user.isEnablecalories!.obs;
       isEnabledistance = user.isEnabledistance!.obs;
     }
+  }
+
+  Future<void> settingApi({String? type, String? val, bool? isAlert}) async {
+    try {
+      final payload = {
+        "codeType": type,
+        "userId": gc.apiId.value,
+        "maxVal": val,
+        "alert": isAlert
+      };
+      var res = await service.postJson(
+        Api.measurementSet,
+        payload,
+      );
+      if (res.isNotEmpty) {}
+    } catch (e) {}
   }
 }

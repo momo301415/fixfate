@@ -16,6 +16,12 @@ allprojects {
                 details.requested.name == 'bcprov-jdk18on') {
                 details.useVersion '1.71' // ✅ 或 1.70 都可以
             }
+            
+            // ✅ 智能版本解析：確保androidx依賴兼容性
+            if (details.requested.group.startsWith('androidx.')) {
+                // 讓Gradle自動選擇最新的穩定版本，避免版本衝突
+                details.useTarget details.requested
+            }
         }
     }
 }

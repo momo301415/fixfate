@@ -54,7 +54,7 @@ class Two5Screen extends GetWidget<Two5Controller> {
             SizedBox(height: 8.h),
             Center(
               child: Obx(() => Text(
-                    '${controller.lowThreshold.value.toInt()} %',
+                    '${controller.lowThreshold.value.toInt()}',
                     style: CustomTextStyles.titleMediumPrimaryContainer_1,
                   )),
             ),

@@ -16,12 +16,12 @@ import '../../../core/app_export.dart';
 /// This class manages the state of the K19Screen, including the
 /// current k19ModelObj
 class K19Controller extends GetxController {
+  final gc = Get.find<GlobalController>();
   final WebSocketService socketService = WebSocketService(Api.socketUrl);
   final RxList<ChatMessageModel> messages = <ChatMessageModel>[].obs;
   TextEditingController searchoneController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   final chatScreenController = Get.find<ChatScreenController>();
-  final gc = Get.find<GlobalController>();
   final cc = Get.find<ChatScreenController>();
   late String topicId;
   String _currentAnswer = "";

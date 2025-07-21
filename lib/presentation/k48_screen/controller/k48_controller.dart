@@ -6,6 +6,7 @@ import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting_storage.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import '../../../core/app_export.dart';
 import '../../../core/utils/dialog_utils.dart';
 import '../../../core/utils/loading_helper.dart';
@@ -99,15 +100,8 @@ class K48Controller extends GetxController {
       if (alertTime.value.isNotEmpty) {
         print('🔔 啟用用藥提醒: ${alertTime.value}');
         await notificationService.scheduleReminder(alertTime.value);
-
-        // 顯示成功訊息
-        Get.snackbar(
-          '用藥提醒',
-          '已成功設定 ${alertTime.value} 的用藥提醒',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
+        SnackbarHelper.showBlueSnackbar(
+          message: '已成功設定 ${alertTime.value} 的用藥提醒',
         );
       }
     } catch (e) {

@@ -17,13 +17,13 @@ class K73Model {
       value: "".obs,
       unit: "lbl177".tr.obs,
     ),
-    // ListViewItemModel(
-    //     icon: ImageConstant.imgIcon.obs,
-    //     isAlert: false.obs,
-    //     loadTime: "lbl_1".tr.obs,
-    //     label: "lbl172_1".tr.obs,
-    //     value: "".obs,
-    //     unit: "lbl182".tr.obs),
+    ListViewItemModel(
+        icon: ImageConstant.imgIcon.obs,
+        isAlert: false.obs,
+        loadTime: "lbl_1".tr.obs,
+        label: "lbl172_1".tr.obs,
+        value: "".obs,
+        unit: "".obs),
     ListViewItemModel(
       icon: ImageConstant.imgIconWhiteA700.obs,
       isAlert: false.obs,

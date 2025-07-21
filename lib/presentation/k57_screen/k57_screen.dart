@@ -72,38 +72,38 @@ class K57Screen extends GetWidget<K57Controller> {
                   ],
                 ),
               )),
-          // GestureDetector(
-          //     onTap: () {
-          //       controller.goTwo5Screen();
-          //     },
-          //     child: Container(
-          //       padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
-          //       decoration: AppDecoration.outlineGray,
-          //       width: double.maxFinite,
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           CustomImageView(
-          //             imagePath: ImageConstant.imgFrame4,
-          //             height: 20.h,
-          //             width: 22.h,
-          //           ),
-          //           Padding(
-          //             padding: EdgeInsets.only(left: 8.h),
-          //             child: Text(
-          //               "lbl172_1".tr,
-          //               style: CustomTextStyles.bodyMedium15,
-          //             ),
-          //           ),
-          //           Spacer(),
-          //           CustomImageView(
-          //             imagePath: ImageConstant.imgArrowRight,
-          //             height: 16.h,
-          //             width: 18.h,
-          //           )
-          //         ],
-          //       ),
-          //     )),
+          GestureDetector(
+              onTap: () {
+                controller.goTwo5Screen();
+              },
+              child: Container(
+                padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
+                decoration: AppDecoration.outlineGray,
+                width: double.maxFinite,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomImageView(
+                      imagePath: ImageConstant.imgFrame4,
+                      height: 20.h,
+                      width: 22.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8.h),
+                      child: Text(
+                        "lbl172_1".tr,
+                        style: CustomTextStyles.bodyMedium15,
+                      ),
+                    ),
+                    Spacer(),
+                    CustomImageView(
+                      imagePath: ImageConstant.imgArrowRight,
+                      height: 16.h,
+                      width: 18.h,
+                    )
+                  ],
+                ),
+              )),
           GestureDetector(
               onTap: () {
                 controller.goK61Screen();

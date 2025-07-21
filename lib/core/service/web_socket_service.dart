@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:get/get.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:pulsedevice/core/global_controller.dart';
 
 typedef OnChunkCallback = void Function(String text);
 typedef OnMessageStartCallback = void Function(String id);
@@ -12,6 +16,7 @@ typedef OnFeedbackResultCallback = void Function(bool success);
 
 class WebSocketService {
   final String url;
+  final gc = Get.find<GlobalController>();
   WebSocketChannel? _channel;
   String? sessionId;
   bool _isConnecting = false;
@@ -37,7 +42,7 @@ class WebSocketService {
 
   WebSocketService(this.url);
 
-  void connect() {
+  Future<void> connect() async {
     // 🔥 確保舊連接完全清理
     if (_channel != null) {
       _channel!.sink.close();
@@ -53,7 +58,21 @@ class WebSocketService {
     print('🔄 WebSocket 連線中... (嘗試 ${_reconnectAttempts + 1})');
 
     try {
-      _channel = WebSocketChannel.connect(safeParseUrl(url));
+      // 準備 headers
+      final headers = <String, String>{
+        'X-API-Key': gc.chatApiKeyValue.value,
+      };
+
+      print('🔑 使用 API Key: ${gc.chatApiKeyValue.value}');
+
+      // 使用 dart:io WebSocket.connect 支援 headers
+      final webSocket = await WebSocket.connect(
+        safeParseUrl(url).toString(),
+        headers: headers,
+      );
+
+      // 包裝成 WebSocketChannel
+      _channel = IOWebSocketChannel(webSocket);
 
       _channel!.stream.listen(
         (event) {
