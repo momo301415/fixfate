@@ -14,6 +14,17 @@ class K5_2Page extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    var deviceH = 0.0;
+    if (deviceHeight >= 600 && deviceHeight <= 700) {
+      deviceH = 25;
+    } else if (deviceHeight > 700 && deviceHeight <= 800) {
+      deviceH = 25;
+    } else if (deviceHeight > 800 && deviceHeight <= 900) {
+      deviceH = 35;
+    } else if (deviceHeight > 900) {
+      deviceH = 40;
+    }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 24.h),
       child: Column(
@@ -23,7 +34,7 @@ class K5_2Page extends StatelessWidget {
               child: SizedBox(
                 width: double.maxFinite,
                 child: Column(
-                  spacing: 40,
+                  spacing: deviceH,
                   children: [
                     CustomImageView(
                       imagePath: ImageConstant.imgIcon12,
@@ -32,7 +43,7 @@ class K5_2Page extends StatelessWidget {
                     ),
                     Container(
                       // 容器總高度大約 94v，可依 Figma 微調
-                      height: 124.v,
+                      height: 134.v,
                       width: double.infinity,
                       margin:
                           EdgeInsets.symmetric(horizontal: 62.h), // 左右各留 62h

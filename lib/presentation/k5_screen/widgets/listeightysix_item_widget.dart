@@ -27,47 +27,53 @@ class ListeightysixItemWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // 心率 (直接傳 RxInt)
-          Expanded(
-            child: _StatColumn(
-              imagePath: ImageConstant.imgFavoriteWhiteA700,
-              valueRx: controller.bpm, // RxInt
-              unit: 'lbl_bpm'.tr,
+      child: Obx(() {
+        // 🎯 根據GPS模式動態顯示標籤（使用公開的RxBool）
+        final isGpsMode = controller.isUsingGpsModeRx.value;
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // 心率 - GPS模式顯示"---"
+            Expanded(
+              child: _StatColumn(
+                imagePath: ImageConstant.imgFavoriteWhiteA700,
+                valueRx: controller.bpm,
+                unit: 'lbl_bpm'.tr,
+                showDashWhenZero: isGpsMode, // GPS模式下0顯示為"---"
+              ),
             ),
-          ),
-          Container(
-            width: 1.h,
-            height: 48.v,
-            color: Colors.white24,
-          ),
-          // 距離 (傳 RxInt)
-          Expanded(
-            child: _StatColumn(
-              imagePath: ImageConstant.imgURulerWhiteA700,
-              valueRx: controller.distance, // RxInt
-              unit: 'lbl193'.tr,
-              formatWithComma: true, // 如果要千分位逗號
+            Container(
+              width: 1.h,
+              height: 48.v,
+              color: Colors.white24,
             ),
-          ),
-          Container(
-            width: 1.h,
-            height: 48.v,
-            color: Colors.white24,
-          ),
-          // 步數 (傳 RxInt)
-          Expanded(
-            child: _StatColumn(
-              imagePath: ImageConstant.imgSettings,
-              valueRx: controller.steps, // RxInt
-              unit: 'lbl187'.tr,
-              formatWithComma: true,
+            // 距離 - 動態標籤
+            Expanded(
+              child: _StatColumn(
+                imagePath: ImageConstant.imgURulerWhiteA700,
+                valueRx: controller.distance,
+                unit: isGpsMode ? 'GPS距離' : 'lbl193'.tr,
+                formatWithComma: true,
+              ),
             ),
-          ),
-        ],
-      ),
+            Container(
+              width: 1.h,
+              height: 48.v,
+              color: Colors.white24,
+            ),
+            // 步數 - 動態標籤
+            Expanded(
+              child: _StatColumn(
+                imagePath: ImageConstant.imgSettings,
+                valueRx: controller.steps,
+                unit: isGpsMode ? '手機步數' : 'lbl187'.tr,
+                formatWithComma: true,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
@@ -78,6 +84,7 @@ class _StatColumn extends StatelessWidget {
   final RxInt valueRx;
   final String unit;
   final bool formatWithComma;
+  final bool showDashWhenZero; // 🎯 新增：當值為0時是否顯示"---"
 
   const _StatColumn({
     Key? key,
@@ -85,6 +92,7 @@ class _StatColumn extends StatelessWidget {
     required this.valueRx,
     required this.unit,
     this.formatWithComma = false, // 是否要做千分位格式
+    this.showDashWhenZero = false, // 🎯 GPS模式下心率顯示"---"
   }) : super(key: key);
 
   @override
@@ -98,10 +106,17 @@ class _StatColumn extends StatelessWidget {
         ),
         SizedBox(height: 8.v),
         Obx(() {
-          String valStr = valueRx.value.toString();
-          if (formatWithComma) {
-            valStr = _formatWithComma(valueRx.value);
+          // 🎯 根據條件決定顯示內容
+          String valStr;
+          if (showDashWhenZero && valueRx.value == 0) {
+            valStr = '---'; // GPS模式下心率和卡路里顯示"---"
+          } else {
+            valStr = valueRx.value.toString();
+            if (formatWithComma) {
+              valStr = _formatWithComma(valueRx.value);
+            }
           }
+
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

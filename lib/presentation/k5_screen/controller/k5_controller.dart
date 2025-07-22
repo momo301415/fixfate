@@ -6,6 +6,8 @@ import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list_storage.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
+import 'package:pedometer/pedometer.dart';
+import 'package:pulsedevice/core/service/gps_distance_tracker.dart';
 import '../../../core/app_export.dart';
 import '../models/initial_tab_model.dart';
 import '../models/k5_model.dart';
@@ -52,6 +54,19 @@ class K5Controller extends GetxController
   /// 快取最後一次 onListening 的即時資料，方便 Resume 時刷新
   Map<String, int> _lastSportCache = {};
 
+  // 🎯 GPS模式相關變數
+  final RxBool _isUsingGpsMode = false.obs; // 🔄 改為Rx變量
+  GpsDistanceTracker? _gpsTracker;
+
+  // 🚶‍♂️ 計步器相關
+  StreamSubscription<StepCount>? _stepCountStream;
+  int _initialStepCount = 0;
+  int _exerciseSteps = 0;
+
+  // ⏱️ GPS模式時間計算
+  DateTime? _gpsStartTime;
+  Timer? _gpsTimer;
+
   @override
   void onInit() {
     super.onInit();
@@ -66,6 +81,12 @@ class K5Controller extends GetxController
     _registerGlobalSportListener();
   }
 
+  // 🎯 提供給UI的getter
+  bool get isUsingGpsMode => _isUsingGpsMode.value;
+
+  // 🎯 提供給UI的Rx變量（用於Obx監聽）
+  RxBool get isUsingGpsModeRx => _isUsingGpsMode;
+
   @override
   void onClose() {
     super.onClose();
@@ -73,6 +94,9 @@ class K5Controller extends GetxController
 
     // ✅ 清理事件處理器
     _unregisterGlobalSportListener();
+
+    // 🎯 清理GPS模式資源
+    _cleanupGpsMode();
   }
 
   @override
@@ -210,12 +234,179 @@ class K5Controller extends GetxController
   }
 
   void clearData() {
-    bpm.value = 0;
     distance.value = 0;
     steps.value = 0;
     lastHours.value = 0;
     lastMinutes.value = 0;
     lastSeconds.value = 0;
+
+    // 🎯 根據模式設置心率和卡路里
+    if (_isUsingGpsMode.value) {
+      bpm.value = 0; // GPS模式：心率顯示"---"
+      calories.value = 0; // GPS模式：卡路里顯示"---"
+
+      // 重置GPS模式的內部變數
+      _initialStepCount = 0;
+      _exerciseSteps = 0;
+    } else {
+      bpm.value = 0; // 設備模式：等待設備數據
+      calories.value = 0; // 設備模式：等待設備數據
+    }
+  }
+
+  // ======================================================
+  // 🎯 GPS模式相關方法
+  // ======================================================
+
+  /// 清理GPS模式資源
+  void _cleanupGpsMode() {
+    _gpsTracker?.stopTracking();
+    _gpsTracker = null;
+    _stepCountStream?.cancel();
+    _stepCountStream = null;
+    _gpsTimer?.cancel();
+    _gpsTimer = null;
+    _gpsStartTime = null;
+  }
+
+  /// 啟動GPS模式
+  Future<void> _startGpsMode() async {
+    try {
+      print("🗺️ 啟動GPS運動模式");
+
+      // 🗺️ 啟動GPS距離追蹤（核心功能，必須成功）
+      _gpsTracker = GpsDistanceTracker();
+      _gpsTracker!.setDistanceCallback((distanceInMeters) {
+        distance.value = distanceInMeters;
+      });
+      await _gpsTracker!.startTracking();
+      print('✅ GPS距離追蹤啟動成功');
+
+      // 🚶‍♂️ 嘗試啟動計步器（非核心功能，允許失敗）
+      try {
+        await _startStepCounter();
+      } catch (e) {
+        print('⚠️ 計步器啟動失敗，但GPS模式繼續運行: $e');
+        // 計步器失敗不影響GPS模式
+      }
+
+      // ⏱️ 啟動時間計算
+      _startGpsTimeCounter();
+
+      // 🎯 設置GPS模式的固定值
+      bpm.value = 0; // 心率顯示 "---"
+      calories.value = 0; // 卡路里顯示 "---"
+
+      print('🎯 GPS模式啟動成功（GPS距離 + 時間計算 + 計步器嘗試）');
+    } catch (e) {
+      print('❌ GPS模式啟動失敗: $e');
+      if (e.toString().contains('定位')) {
+        SnackbarHelper.showBlueSnackbar(message: "GPS定位失敗，請檢查定位權限並移動到開放區域");
+      } else {
+        SnackbarHelper.showBlueSnackbar(message: "GPS運動模式啟動失敗，請稍後再試");
+      }
+      rethrow;
+    }
+  }
+
+  /// 啟動設備模式（原有邏輯）
+  Future<void> _startDeviceMode() async {
+    print("🔵 啟動設備運動模式");
+    gc.isSporting.value = true;
+    gc.pauseBackgroundSync();
+
+    final res = await YcProductPlugin()
+        .appControlSport(DeviceSportState.start, DeviceSportType.fitness);
+
+    if (res == null || res.statusCode != PluginState.succeed) {
+      throw Exception("無法啟動運動，請稍後再試");
+    }
+  }
+
+  /// 開始計步器
+  Future<void> _startStepCounter() async {
+    try {
+      // 🔍 首先檢查計步器是否可用
+      print('🔍 檢查計步器支持狀態...');
+
+      // 🔑 Android需要運動感測器權限，iOS自動獲得
+      if (GetPlatform.isAndroid) {
+        print('🤖 Android平台，計步器權限將自動請求');
+      }
+
+      // 🎯 監聽計步器
+      _stepCountStream = Pedometer.stepCountStream.listen(
+        _onStepCount,
+        onError: _onStepCountError,
+      );
+
+      print('🚶‍♂️ 計步器啟動成功');
+    } catch (e) {
+      print('❌ 計步器啟動失敗: $e');
+      _handleStepCounterFailure(e);
+    }
+  }
+
+  /// 處理計步器失敗情況
+  void _handleStepCounterFailure(dynamic error) {
+    String errorMsg = error.toString();
+
+    if (errorMsg.contains('Step Count is not available')) {
+      print('📱 設備不支持計步器功能（可能是模擬器或舊設備）');
+      print('💡 GPS運動模式將繼續運行，步數顯示為0');
+    } else if (errorMsg.contains('permission')) {
+      print('📱 計步器權限被拒絕，步數將顯示為0');
+    } else if (errorMsg.contains('PlatformException')) {
+      print('📱 計步器平台異常，可能設備不支持或服務未啟用');
+    } else {
+      print('📱 計步器未知錯誤: $errorMsg');
+    }
+
+    // 🎯 設置固定步數為0，確保GPS運動正常進行
+    steps.value = 0;
+    _exerciseSteps = 0;
+    _initialStepCount = 0;
+  }
+
+  /// 計步器數據回調
+  void _onStepCount(StepCount event) {
+    if (_initialStepCount == 0) {
+      // 記錄運動開始時的步數
+      _initialStepCount = event.steps;
+      _exerciseSteps = 0;
+    } else {
+      // 計算運動期間的步數
+      _exerciseSteps = event.steps - _initialStepCount;
+      if (_exerciseSteps < 0) _exerciseSteps = 0; // 防止負數
+    }
+
+    // 🎯 更新UI顯示
+    steps.value = _exerciseSteps;
+    print('📊 運動步數更新: ${_exerciseSteps}步');
+  }
+
+  /// 計步器錯誤處理
+  void _onStepCountError(error) {
+    print('❌ 計步器運行時錯誤: $error');
+    _handleStepCounterFailure(error);
+  }
+
+  /// 開始GPS模式的時間計算
+  void _startGpsTimeCounter() {
+    _gpsStartTime = DateTime.now();
+
+    // 每秒更新一次時間顯示
+    _gpsTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (isStart.value && _gpsStartTime != null) {
+        final elapsed = DateTime.now().difference(_gpsStartTime!);
+        final totalSeconds = elapsed.inSeconds;
+
+        // 🎯 更新時間顯示
+        _updateTimeFields(totalSeconds);
+      }
+    });
+
+    print('⏱️ GPS時間計算器已啟動');
   }
 
   /// 把最後一次「運動資料」寫到 Hive
@@ -264,14 +455,19 @@ class K5Controller extends GetxController
       minBpm: minBpm,
     );
 
-    print("新增運動紀錄 =>  步數 $s ;心率 $b ;距離 $d ;卡路里 $c ;時 $h ;分 $m ;秒 $se");
+    print(
+        "新增運動紀錄 => 模式: ${_isUsingGpsMode.value ? 'GPS' : '設備'}, 步數: $s, 心率: $b, 距離: $d, 卡路里: $c, 時間: $h:$m:$se");
     records.clear();
     await SportRecordListStorage.addRecords(gc.userId.value, [record]);
     print("新增運動紀錄成功");
-    SnackbarHelper.showBlueSnackbar(message: "結束運動，已儲存本次記錄");
 
-    /// 結束運動後，重新打開同步定時器
-    gc.resumeBackgroundSync();
+    String message = _isUsingGpsMode.value ? "結束GPS運動，已儲存本次記錄" : "結束運動，已儲存本次記錄";
+    SnackbarHelper.showBlueSnackbar(message: message);
+
+    /// 結束運動後，重新打開同步定時器（僅設備模式需要）
+    if (!_isUsingGpsMode.value) {
+      gc.resumeBackgroundSync();
+    }
   }
 
   void goK6Screen(int index) {
@@ -280,48 +476,79 @@ class K5Controller extends GetxController
   }
 
   Future<void> startSport() async {
-    if (gc.blueToolStatus.value != 2) {
-      SnackbarHelper.showBlueSnackbar(message: "請先連接藍牙裝置");
-      return;
-    }
-    gc.isSporting.value = true;
-
-    /// 啟動運動時暫停背景五分鐘執行同步資料，不然會打架
-    gc.pauseBackgroundSync();
-
     if (isStart.value) return;
-    _isListening = true;
-    isStart.value = true;
-    clearData(); // 先把畫面上的上次資料歸零
 
-    final res = await YcProductPlugin()
-        .appControlSport(DeviceSportState.start, DeviceSportType.fitness);
-    if (res == null || res.statusCode != PluginState.succeed) {
-      // 啟動失敗就把 flag 關回去
+    // 🔍 檢查藍牙狀態決定使用哪種模式
+    _isUsingGpsMode.value = (gc.blueToolStatus.value != 2);
+
+    try {
+      isStart.value = true;
+      clearData(); // 先把畫面上的上次資料歸零
+
+      if (_isUsingGpsMode.value) {
+        // 📍 GPS模式：藍牙設備未連接
+        print("🗺️ 藍牙設備未連接，使用GPS運動模式");
+        await _startGpsMode();
+      } else {
+        // 🔵 設備模式：藍牙設備已連接
+        print("🔵 藍牙設備已連接，使用設備運動模式");
+        await _startDeviceMode();
+        _isListening = true; // 設備模式需要監聽
+      }
+
+      print("✅ 運動開始，模式: ${_isUsingGpsMode.value ? 'GPS' : '設備'}");
+    } catch (e) {
+      // 啟動失敗，重置狀態
       isStart.value = false;
-      SnackbarHelper.showBlueSnackbar(message: "無法啟動運動，請稍後再試");
-      return;
-    }
+      _isUsingGpsMode.value = false;
+      print("❌ 運動啟動失敗: $e");
 
-    // ✅ 運動開始，全局監聽器已準備接收運動數據
-    print("✅ 運動開始，等待接收運動數據...");
+      if (e.toString().contains('定位')) {
+        SnackbarHelper.showBlueSnackbar(message: "GPS定位失敗，請檢查定位權限並移動到開放區域");
+      } else {
+        SnackbarHelper.showBlueSnackbar(message: "無法啟動運動，請稍後再試");
+      }
+    }
   }
 
   Future<void> stopSport() async {
     try {
       if (!isStart.value) return;
-      gc.isSporting.value = false;
+
       isStart.value = false;
-      YcProductPlugin()
-          .appControlSport(DeviceSportState.stop, DeviceSportType.fitness)
-          .timeout(const Duration(seconds: 5), onTimeout: () {
-        // 如果等超過 5 秒還沒返回，就先顯示通知、但不取消整個 callback
-        print("[TIMEOUT] stopSport() 超時，繼續往下執行");
-        return;
-      });
+
+      if (_isUsingGpsMode.value) {
+        // 🗺️ GPS模式停止
+        print("🛑 停止GPS運動模式");
+
+        // 獲取最終時間數據
+        final totalSeconds = _gpsStartTime != null
+            ? DateTime.now().difference(_gpsStartTime!).inSeconds
+            : 0;
+
+        // 清理GPS模式資源
+        _cleanupGpsMode();
+
+        print(
+            '📊 GPS運動結束 - 距離: ${distance.value}m, 步數: ${steps.value}步, 時間: ${totalSeconds}秒');
+      } else {
+        // 🔵 設備模式停止（原有邏輯）
+        print("🛑 停止設備運動模式");
+        gc.isSporting.value = false;
+
+        YcProductPlugin()
+            .appControlSport(DeviceSportState.stop, DeviceSportType.fitness)
+            .timeout(const Duration(seconds: 5), onTimeout: () {
+          print("[TIMEOUT] stopSport() 超時，繼續往下執行");
+          return;
+        });
+      }
     } catch (e) {
       print("[ERROR] stopSport() 發生例外：$e");
     }
+
+    // 重置模式標記
+    _isUsingGpsMode.value = false;
 
     _saveExerciseRecordToHive();
   }

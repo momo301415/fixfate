@@ -27,7 +27,7 @@ class K5Screen extends GetWidget<K5Controller> {
       body: SafeArea(
         top: false,
         child: Container(
-          height: 740.h,
+          // height: 740.h,
           width: double.maxFinite,
           child: Stack(
             alignment: Alignment.center,
@@ -60,8 +60,9 @@ class K5Screen extends GetWidget<K5Controller> {
                                 if (res != null && res.statusCode == 0) {
                                   _showCountdownThenStart(context);
                                 } else {
-                                  SnackbarHelper.showBlueSnackbar(
-                                      message: "請先連接藍牙裝置");
+                                  _showCountdownThenStart(context);
+                                  // SnackbarHelper.showBlueSnackbar(
+                                  //     message: "請先連接藍牙裝置");
                                 }
                               },
                             ),
@@ -72,8 +73,9 @@ class K5Screen extends GetWidget<K5Controller> {
                                 if (res != null && res.statusCode == 0) {
                                   _showCountdownThenStart(context);
                                 } else {
-                                  SnackbarHelper.showBlueSnackbar(
-                                      message: "請先連接藍牙裝置");
+                                  _showCountdownThenStart(context);
+                                  // SnackbarHelper.showBlueSnackbar(
+                                  //     message: "請先連接藍牙裝置");
                                 }
                               },
                             )
