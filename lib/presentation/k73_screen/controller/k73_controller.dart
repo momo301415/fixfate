@@ -114,37 +114,37 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
         res["heartAlert"];
     k73ModelObj.value.listviewItemList.value[1].loadTime?.value =
         res["combinedDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[1].value?.value =
-        res["bloodOxygen"].toString();
-    k73ModelObj.value.listviewItemList.value[1].isAlert?.value =
-        res["bloodAlert"];
-    k73ModelObj.value.listviewItemList.value[2].loadTime?.value =
+    // k73ModelObj.value.listviewItemList.value[1].value?.value =
+    //     res["bloodOxygen"].toString();
+    // k73ModelObj.value.listviewItemList.value[1].isAlert?.value =
+    //     res["bloodAlert"];
+    k73ModelObj.value.listviewItemList.value[1].loadTime?.value =
         res["combinedDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[2].value?.value =
+    k73ModelObj.value.listviewItemList.value[1].value?.value =
         res["temperature"].toString();
-    k73ModelObj.value.listviewItemList.value[2].isAlert?.value =
+    k73ModelObj.value.listviewItemList.value[1].isAlert?.value =
         res["tempAlert"];
-    k73ModelObj.value.listviewItemList.value[3].loadTime?.value =
+    k73ModelObj.value.listviewItemList.value[2].loadTime?.value =
         res["pressureDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[3].value?.value =
+    k73ModelObj.value.listviewItemList.value[2].value?.value =
         res["pressure"].toString();
-    k73ModelObj.value.listviewItemList.value[3].isAlert?.value =
+    k73ModelObj.value.listviewItemList.value[2].isAlert?.value =
         res["pressureAlert"];
-    k73ModelObj.value.listviewItemList.value[4].loadTime?.value =
+    k73ModelObj.value.listviewItemList.value[3].loadTime?.value =
         res["stepDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[4].value?.value =
+    k73ModelObj.value.listviewItemList.value[3].value?.value =
         res["stepCount"].toString();
-    k73ModelObj.value.listviewItemList.value[5].loadTime?.value =
+    k73ModelObj.value.listviewItemList.value[4].loadTime?.value =
         res["sleepDuration"]?.toString() ?? '';
-    k73ModelObj.value.listviewItemList.value[5].value?.value =
+    k73ModelObj.value.listviewItemList.value[4].value?.value =
         res["sleepTime"]?.toString() ?? '';
+    k73ModelObj.value.listviewItemList.value[5].loadTime?.value =
+        res["stepDuration"].toString();
+    k73ModelObj.value.listviewItemList.value[5].value?.value =
+        res["calories"].toString();
     k73ModelObj.value.listviewItemList.value[6].loadTime?.value =
         res["stepDuration"].toString();
     k73ModelObj.value.listviewItemList.value[6].value?.value =
-        res["calories"].toString();
-    k73ModelObj.value.listviewItemList.value[7].loadTime?.value =
-        res["stepDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[7].value?.value =
         res["stepDistance"].toString();
     k73ModelObj.value.listviewItemList.refresh();
     loadDataTime.value = res["loadDataTime"].toString();

@@ -61,6 +61,7 @@ class WebSocketService {
       // 準備 headers
       final headers = <String, String>{
         'X-API-Key': gc.chatApiKeyValue.value,
+        'user_id': gc.userId.value
       };
 
       print('🔑 使用 API Key: ${gc.chatApiKeyValue.value}');

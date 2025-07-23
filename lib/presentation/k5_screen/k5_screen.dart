@@ -55,28 +55,12 @@ class K5Screen extends GetWidget<K5Controller> {
                           children: [
                             K5_1Page(
                               onStartPressed: () async {
-                                var res = await YcProductPlugin()
-                                    .queryDeviceBasicInfo();
-                                if (res != null && res.statusCode == 0) {
-                                  _showCountdownThenStart(context);
-                                } else {
-                                  _showCountdownThenStart(context);
-                                  // SnackbarHelper.showBlueSnackbar(
-                                  //     message: "請先連接藍牙裝置");
-                                }
+                                _showCountdownThenStart(context);
                               },
                             ),
                             K5_2Page(
                               onStartPressed: () async {
-                                var res = await YcProductPlugin()
-                                    .queryDeviceBasicInfo();
-                                if (res != null && res.statusCode == 0) {
-                                  _showCountdownThenStart(context);
-                                } else {
-                                  _showCountdownThenStart(context);
-                                  // SnackbarHelper.showBlueSnackbar(
-                                  //     message: "請先連接藍牙裝置");
-                                }
+                                _showCountdownThenStart(context);
                               },
                             )
                           ],
