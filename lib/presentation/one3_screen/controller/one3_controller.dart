@@ -98,4 +98,30 @@ class One3Controller extends GetxController with CodeAutoFill {
       DialogHelper.showError("服務錯誤，請稍後再試");
     }
   }
+
+  /// 簡訊驗證
+  Future<void> fetchSmsVerify(String phone, String smsCode) async {
+    LoadingHelper.show();
+    try {
+      var resData = await service.postJson(
+        Api.smsVerify,
+        {
+          'phone': phone,
+          'phone_verify': smsCode,
+        },
+      );
+      LoadingHelper.hide();
+      if (resData.isNotEmpty) {
+        final resMsg = resData["message"];
+        if (resMsg.contains("成功")) {
+          goTwo3Screen();
+        } else {
+          DialogHelper.showError("${resData["message"]}");
+        }
+      }
+    } catch (e) {
+      LoadingHelper.hide();
+      DialogHelper.showError("服務錯誤，請稍後再試");
+    }
+  }
 }

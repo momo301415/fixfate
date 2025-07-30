@@ -63,7 +63,7 @@ class K45Screen extends GetWidget<K45Controller> {
                       imagePath: ImageConstant.imgFrame86618,
                       height: 84.h,
                       width: 122.h,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                     ),
                     SizedBox(height: 34.h),
                     Text(

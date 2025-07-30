@@ -116,11 +116,9 @@ class PressureCalculationService {
       }
 
       // 用當前時間存儲壓力數據
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
       await _pressureDataService.insert(PressureDataCompanion(
         userId: Value(heartData.userId),
-        startTimeStamp: Value(currentTimestamp),
+        startTimeStamp: Value(heartData.startTimeStamp),
         totalStressScore: Value((apiResult['total_stress_score'] ??
                 apiResult['total_stress_score'] ??
                 0)

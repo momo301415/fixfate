@@ -175,7 +175,17 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     final heartLast = heartList.last;
     final oxygenLast = oxygenList.last;
     final tempLast = tempList.last;
-    final presLast = pressureList.last;
+    List<PressureData> presLast = [];
+    if (pressureList.isEmpty) {
+      PressureData data = PressureData(
+          startTimestamp: heartLast.startTimestamp,
+          totalStressScore: 0,
+          type: "0");
+
+      presLast.add(data);
+    } else {
+      presLast = pressureList;
+    }
 
     // 統計
     int stepCount = sumLastDayValues<StepData>(
@@ -204,7 +214,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     String combinedDuration =
         DateTimeUtils.getTimeDifferenceString(tempLast.startTimestamp);
     int bloodOxygen = int.parse(oxygenLast.bloodoxygen);
-    int pressure = presLast.totalStressScore.toInt();
+    int pressure = presLast.last.totalStressScore.toInt();
 
     final loadDataTime = DateTimeUtils.formatMaxTimestamp(
       stepLast.startTimestamp,
@@ -215,7 +225,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     var heartAlert = heartLast.type == "1" || heartLast.type == "2";
     var bloodAlert = oxygenLast.type == "2";
     var tempAlert = tempLast.type == "1" || tempLast.type == "2";
-    var presAlert = presLast.type == "1" || presLast.type == "2";
+    var presAlert = presLast.last.type == "1" || presLast.last.type == "2";
 
     var analysis = {
       "stepCount": stepCount,

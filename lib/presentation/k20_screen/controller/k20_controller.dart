@@ -59,7 +59,7 @@ class K20Controller extends GetxController {
     for (final msg in allMessages) {
       final topicId = msg.topicId?.value ?? '未知主題';
       final sessionId = msg.sessionId?.value ?? '';
-      final groupKey = '${topicId}_${sessionId}';
+      final groupKey = '${topicId}';
 
       grouped.putIfAbsent(groupKey, () => []).add(msg);
     }
@@ -81,7 +81,7 @@ class K20Controller extends GetxController {
 
       return ChatTopicGroup(
         topicId: firstMsg.topicId?.value ?? '未知主題',
-        sessionId: firstMsg.sessionId?.value ?? '',
+        sessionId: '',
         messages: messages,
         lastMessageTime: lastTime ?? DateTime.now(),
         messageCount: messages.length,
@@ -135,7 +135,7 @@ class K20Controller extends GetxController {
     // 改用 Get.back(result) 而不是 Get.toNamed
     Get.back(result: {
       'topicId': group.topicId,
-      'sessionId': group.sessionId,
+      'sessionId': '',
       'messages': group.messages,
     });
   }

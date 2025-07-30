@@ -188,13 +188,28 @@ class K19Controller extends GetxController {
   }
 
   /// 傳送使用者訊息
-  void sendUserMessage() {
+  Future<void> sendUserMessage() async {
     final content = searchoneController.text.trim();
     if (content.isEmpty) return;
 
     // 🔥 防呆：如果AI正在回覆，不允許發送新訊息
     if (isAiReplying.value) {
       print('⚠️ AI正在回覆中，請稍後再發送');
+      return;
+    }
+
+    // 🔥 檢查 WebSocket 是否準備就緒
+    if (!socketService.canSendMessage) {
+      print('⏳ WebSocket 正在準備中，等待連線完成...');
+
+      // 等待連線完成
+      final success = await _waitForWebSocketReady(context: '用戶發送訊息');
+      if (!success) {
+        print('❌ WebSocket 準備失敗，無法發送訊息');
+        return;
+      }
+      // 連線完成後重新調用
+      sendUserMessage();
       return;
     }
 
@@ -244,10 +259,25 @@ class K19Controller extends GetxController {
   }
 
   /// 傳送使用者訊息從回饋按鈕發送
-  void sendUserMessageByFeedback(String text, int rating) {
+  Future<void> sendUserMessageByFeedback(String text, int rating) async {
     // 🔥 防呆：如果AI正在回覆，不允許發送新訊息
     if (isAiReplying.value) {
       print('⚠️ AI正在回覆中，請稍後再發送');
+      return;
+    }
+
+    // 🔥 檢查 WebSocket 是否準備就緒
+    if (!socketService.canSendMessage) {
+      print('⏳ WebSocket 正在準備中，等待連線完成...');
+
+      // 等待連線完成
+      final success = await _waitForWebSocketReady(context: '回饋發送訊息');
+      if (!success) {
+        print('❌ WebSocket 準備失敗，無法發送訊息');
+        return;
+      }
+      // 連線完成後重新調用
+      sendUserMessageByFeedback(text, rating);
       return;
     }
 
@@ -437,8 +467,8 @@ class K19Controller extends GetxController {
     socketService.sessionId = null;
     print('🆕 強制使用新的session_id配合歷史topic_id: $topicId');
 
-    // 初始化 WebSocket 連線
-    ensureWebSocketConnected();
+    // 🔥 確保 WebSocket 連線並等待準備完成
+    _ensureWebSocketReadyForHistory();
 
     // 滾動到底部
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -446,6 +476,27 @@ class K19Controller extends GetxController {
     });
 
     // 🔥 注意：載入歷史對話不算真正互動，lastInteractionTime 將在用戶實際發送訊息時才更新
+  }
+
+  /// 🔥 確保 WebSocket 為歷史對話準備就緒
+  Future<void> _ensureWebSocketReadyForHistory() async {
+    print('🚀 開始準備 WebSocket 連線...');
+
+    // 1. 初始化 WebSocket 連線
+    ensureWebSocketConnected();
+
+    // 2. 等待 WebSocket 完全準備就緒
+    final success = await _waitForWebSocketReady(
+      waitForConnection: true,
+      maxAttempts: 40, // 最多等待 20 秒
+      context: '歷史對話載入',
+    );
+
+    if (success) {
+      print('✅ WebSocket 完全準備就緒，可以開始對話');
+    } else {
+      print('❌ WebSocket 準備超時，但歷史對話已載入');
+    }
   }
 
   /// 生成新的對話 ID
@@ -501,5 +552,78 @@ class K19Controller extends GetxController {
   void _updateInteractionTime() {
     lastInteractionTime = DateTime.now();
     print('🕐 互動時間已更新: ${lastInteractionTime!.toLocal()}');
+  }
+
+  /// 🔥 統一的 WebSocket 等待方法
+  ///
+  /// [waitForConnection] 是否等待連線完成（用於歷史對話載入）
+  /// [maxAttempts] 最大等待次數
+  /// [context] 等待上下文，用於日誌輸出
+  /// 返回是否成功準備就緒
+  Future<bool> _waitForWebSocketReady({
+    bool waitForConnection = false,
+    int maxAttempts = 60,
+    String context = '發送訊息',
+  }) async {
+    int attempts = 0;
+    final delayMs = 500;
+
+    print('🔍 [$context] 開始等待 WebSocket 準備...');
+    print(
+        '🔍 [$context] 當前狀態 - isConnected: ${socketService.isConnected}, sessionId: ${socketService.sessionId}');
+
+    // 如果需要等待連線，先等待連線完成
+    if (waitForConnection) {
+      while (!socketService.isConnected && attempts < maxAttempts) {
+        await Future.delayed(Duration(milliseconds: delayMs));
+        attempts++;
+        if (attempts % 10 == 0) {
+          print('⏳ [$context] 等待 WebSocket 連線中... (${attempts}/$maxAttempts)');
+        }
+      }
+
+      if (!socketService.isConnected) {
+        print('❌ [$context] WebSocket 連線超時');
+        return false;
+      }
+
+      print('✅ [$context] WebSocket 連線成功，等待 session 準備...');
+      attempts = 0; // 重置計數器，用於等待 session
+    }
+
+    // 等待 session 準備完成
+    while (!socketService.canSendMessage && attempts < maxAttempts) {
+      await Future.delayed(Duration(milliseconds: delayMs));
+      attempts++;
+
+      // 每 10 次檢查打印一次詳細狀態
+      if (attempts % 10 == 0) {
+        print('⏳ [$context] 等待 WebSocket 準備中... (${attempts}/$maxAttempts)');
+        print(
+            '🔍 [$context] 狀態檢查 - isConnected: ${socketService.isConnected}, sessionId: ${socketService.sessionId}');
+      }
+
+      // 🔥 如果 WebSocket 已連接但 sessionId 為空，嘗試重新請求
+      if (socketService.isConnected &&
+          (socketService.sessionId == null ||
+              socketService.sessionId!.isEmpty)) {
+        print('🔄 [$context] WebSocket 已連接但 sessionId 為空，嘗試重新請求...');
+        socketService.forceNewSession();
+      }
+    }
+
+    final success = socketService.canSendMessage;
+
+    if (!success) {
+      print('❌ [$context] WebSocket 準備超時');
+      print(
+          '🔍 [$context] 最終狀態 - isConnected: ${socketService.isConnected}, sessionId: ${socketService.sessionId}');
+    } else {
+      print('✅ [$context] WebSocket 已準備就緒，可以發送訊息');
+      print(
+          '🔍 [$context] 最終狀態 - isConnected: ${socketService.isConnected}, sessionId: ${socketService.sessionId}');
+    }
+
+    return success;
   }
 }

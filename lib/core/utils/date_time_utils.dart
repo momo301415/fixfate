@@ -144,7 +144,7 @@ class DateTimeUtils {
           .add(const Duration(days: 1))
           .subtract(const Duration(seconds: 1));
     } else if (index == 1) {
-      start = date.subtract(Duration(days: date.weekday - 1));
+      start = DateTime(date.year, date.month, date.day);
       end = start
           .add(const Duration(days: 7))
           .subtract(const Duration(seconds: 1));

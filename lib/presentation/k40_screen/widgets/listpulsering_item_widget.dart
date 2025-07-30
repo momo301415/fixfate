@@ -63,6 +63,7 @@ class ListpulseringItemWidget extends StatelessWidget {
               imagePath: listpulseringItemModelObj.pulsering1!.value,
               height: 38.h,
               width: 54.h,
+              fit: BoxFit.cover,
             ),
           )
         ],

@@ -71,14 +71,16 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
   }
 
   /// 輸入日期讀取數據
-  Future<void> loadDataByDate(DateTime date) async {
+  Future<void> loadDataByDate(DateTime date, {bool isLoading = true}) async {
     userId.value = gc.userId.value;
     final range = DateTimeUtils.getRangeByIndex(date, currentIndex.value);
     final start = range['start']!;
     final end = range['end']!;
 
     try {
-      LoadingHelper.show();
+      if (isLoading) {
+        LoadingHelper.show();
+      }
       final payload = {
         "startTime": start.format(pattern: 'yyyy-MM-dd'),
         "endTime": end.format(pattern: 'yyyy-MM-dd'),
@@ -87,7 +89,9 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
         "type": "step"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
-      LoadingHelper.hide();
+      if (isLoading) {
+        LoadingHelper.hide();
+      }
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
@@ -135,7 +139,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // Future<void> loadDataByDate(DateTime date) async {
+  // Future<void> loadDataByDate(DateTime date, {bool isLoading = true}) async {
   //   userId.value = gc.userId.value;
 
   //   List<StepDataData> res = [];
@@ -183,22 +187,21 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
   //   stepData.assignAll(res);
   // }
 
-  Future<void> updateDateRange(int index) async {
+  Future<void> updateDateRange(int index, {bool isLoading = true}) async {
     if (index == 0) {
       formattedRange.value =
           "${currentDate.value.format(pattern: 'M月d日, EEEE', locale: 'zh_CN')}";
-      loadDataByDate(currentDate.value);
+      loadDataByDate(currentDate.value, isLoading: isLoading);
     } else if (index == 1) {
-      final start = currentDate.value
-          .subtract(Duration(days: currentDate.value.weekday - 1));
+      final start = currentDate.value;
       final end = start.add(Duration(days: 6));
       formattedRange.value =
           '${start.format(pattern: 'M月d日')} ～ ${end.format(pattern: 'M月d日')}';
-      loadDataByDate(currentDate.value);
+      loadDataByDate(currentDate.value, isLoading: isLoading);
     } else {
       formattedRange.value =
           "${currentDate.value.year}年 ${currentDate.value.month}月";
-      loadDataByDate(currentDate.value);
+      loadDataByDate(currentDate.value, isLoading: isLoading);
     }
   }
 
@@ -434,7 +437,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
       lineBarsData: [
         LineChartBarData(
           spots: data,
-          isCurved: true,
+          isCurved: false,
           color: Colors.teal,
           barWidth: 2,
           dotData: FlDotData(show: false),
@@ -640,7 +643,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
   //     lineBarsData: [
   //       LineChartBarData(
   //         spots: data,
-  //         isCurved: true,
+  //         isCurved: false,
   //         color: Colors.teal,
   //         barWidth: 2,
   //         dotData: FlDotData(show: false),
@@ -674,7 +677,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
         onConfirm: (int year, int month, int day) {
           final selected = DateTime(year, month, day);
           currentDate.value = selected;
-          updateDateRange(0);
+          updateDateRange(0, isLoading: false);
         },
       ),
     );
@@ -689,7 +692,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
         onConfirm: (int year, int month, int day) {
           final selected = DateTime(year, month, day);
           currentDate.value = selected;
-          updateDateRange(1);
+          updateDateRange(1, isLoading: false);
         },
       ),
     );
@@ -706,7 +709,7 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
         onConfirm: (int year, int month) {
           final selected = DateTime(year, month, 1);
           currentDate.value = selected;
-          updateDateRange(2);
+          updateDateRange(2, isLoading: false);
         },
       ),
     );

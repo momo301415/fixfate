@@ -1,6 +1,6 @@
 class Api {
   ///-------- api
-  static const String baseUrl = "http://60.250.109.71:38080/";
+  static const String baseUrl = "http://api-admin.fixfate.net:38080/";
 
   static const String login = "login";
   static const String register = "register";
@@ -24,6 +24,7 @@ class Api {
   static const String notifyList = "notity/List";
   static const String notifyListSum = "notity/List/sum";
   static const String healthRecordList = "healthRecord/list";
+  static const String smsVerify = "forgetPassword/valiCode";
 
   ///-------- aws api
   static const String awsUrl =

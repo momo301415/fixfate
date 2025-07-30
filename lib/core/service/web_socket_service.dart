@@ -43,6 +43,7 @@ class WebSocketService {
   WebSocketService(this.url);
 
   Future<void> connect() async {
+    print("connect url : $url");
     // 🔥 確保舊連接完全清理
     if (_channel != null) {
       _channel!.sink.close();
@@ -61,7 +62,7 @@ class WebSocketService {
       // 準備 headers
       final headers = <String, String>{
         'X-API-Key': gc.chatApiKeyValue.value,
-        'user_id': gc.userId.value
+        'user_id': gc.apiId.value
       };
 
       print('🔑 使用 API Key: ${gc.chatApiKeyValue.value}');
@@ -295,10 +296,13 @@ class WebSocketService {
   }
 
   Uri safeParseUrl(String url) {
-    final cleaned = url.trim();
+    final uriParser = Uri.parse(url).toString();
+    print("uriParser : $uriParser");
+    final cleaned = uriParser.trim();
     if (!cleaned.startsWith("ws://") && !cleaned.startsWith("wss://")) {
       throw FormatException("❌ WebSocket URL 必須以 ws:// 或 wss:// 開頭: $cleaned");
     }
+    print("final websocket url : $cleaned");
     return Uri.parse(cleaned);
   }
 }

@@ -42,8 +42,7 @@ class SyncDataService {
     // ✅ 新增：計算壓力數據
     await gc.pressureCalculationService.calculatePressureData();
     await Future.delayed(Duration.zero);
-
-    final pRes = await PrefUtils().getIsSyncApi();
+    final pRes = await PrefUtils().getIsSyncAlertApi();
     if (pRes.isEmpty) {
       await syncAlertToApi();
       await PrefUtils().setIsSyncAlertApi("true");
@@ -436,26 +435,26 @@ class SyncDataService {
     if (stepAlert.isNotEmpty) {
       await updateAlert(
           codeType: "step",
-          maxVal: pressurAlert["maxVal"],
-          alert: pressurAlert["alert"]);
+          maxVal: stepAlert["maxVal"],
+          alert: stepAlert["alert"]);
     }
     if (sleepAlert.isNotEmpty) {
       await updateAlert(
           codeType: "sleep",
-          maxVal: pressurAlert["maxVal"],
-          alert: pressurAlert["alert"]);
+          maxVal: sleepAlert["maxVal"],
+          alert: sleepAlert["alert"]);
     }
     if (caloriesAlert.isNotEmpty) {
       await updateAlert(
           codeType: "calories",
-          maxVal: pressurAlert["maxVal"],
-          alert: pressurAlert["alert"]);
+          maxVal: caloriesAlert["maxVal"],
+          alert: caloriesAlert["alert"]);
     }
     if (distanceAlert.isNotEmpty) {
       await updateAlert(
           codeType: "distance",
-          maxVal: pressurAlert["maxVal"],
-          alert: pressurAlert["alert"]);
+          maxVal: distanceAlert["maxVal"],
+          alert: distanceAlert["alert"]);
     }
   }
 
@@ -493,10 +492,16 @@ class SyncDataService {
         PressureSettingStorage.saveUserProfile(gc.userId.value, profile);
         break;
       case "step":
+        await updateGoalProfile("step", maxVal, alert);
+        break;
       case "sleep":
+        await updateGoalProfile("sleep", maxVal, alert);
+        break;
       case "calories":
+        await updateGoalProfile("calories", maxVal, alert);
+        break;
       case "distance":
-        await updateGoalProfile(codeType!, maxVal, alert);
+        await updateGoalProfile("distance", maxVal, alert);
         break;
       default:
         break;

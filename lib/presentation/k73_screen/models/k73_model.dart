@@ -83,7 +83,7 @@ class CaloriesData {
   factory CaloriesData.fromJson(Map<String, dynamic> json) {
     return CaloriesData(
       startTimestamp: json['starttimestamp'],
-      calories: json['calories'],
+      calories: json['calories'] ?? '0',
     );
   }
 }
@@ -111,11 +111,11 @@ class SleepData {
     return SleepData(
       startTimestamp: json['starttimestamp'],
       endTimestamp: json['endtimestamp'],
-      sleep: json['sleep'],
-      light: json['light'],
-      rem: json['rem'],
-      deep: json['deep'],
-      awake: json['awake'],
+      sleep: json['sleep'] ?? '0',
+      light: json['light'] ?? '0',
+      rem: json['rem'] ?? '0',
+      deep: json['deep'] ?? '0',
+      awake: json['awake'] ?? '0',
     );
   }
 }
@@ -129,7 +129,7 @@ class StepData {
   factory StepData.fromJson(Map<String, dynamic> json) {
     return StepData(
       startTimestamp: json['starttimestamp'],
-      step: json['step'],
+      step: json['step'] ?? '0',
     );
   }
 }
@@ -148,8 +148,8 @@ class TemperatureData {
   factory TemperatureData.fromJson(Map<String, dynamic> json) {
     return TemperatureData(
       startTimestamp: json['starttimestamp'],
-      temperature: json['temperature'],
-      type: json['type'],
+      temperature: json['temperature'] ?? '0',
+      type: json['type'] ?? '0',
     );
   }
 }
@@ -168,8 +168,8 @@ class RateData {
   factory RateData.fromJson(Map<String, dynamic> json) {
     return RateData(
       startTimestamp: json['starttimestamp'],
-      heartrate: json['heartrate'],
-      type: json['type'],
+      heartrate: json['heartrate'] ?? '0',
+      type: json['type'] ?? '0',
     );
   }
 }
@@ -188,8 +188,8 @@ class OxygenData {
   factory OxygenData.fromJson(Map<String, dynamic> json) {
     return OxygenData(
       startTimestamp: json['starttimestamp'],
-      bloodoxygen: json['bloodoxygen'],
-      type: json['type'],
+      bloodoxygen: json['bloodoxygen'] ?? '0',
+      type: json['type'] ?? '0',
     );
   }
 }
@@ -203,7 +203,7 @@ class DistanceData {
   factory DistanceData.fromJson(Map<String, dynamic> json) {
     return DistanceData(
       startTimestamp: json['starttimestamp'],
-      distance: json['distance'],
+      distance: json['distance'] ?? '0',
     );
   }
 }

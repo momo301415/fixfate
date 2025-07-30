@@ -147,7 +147,8 @@ class One3Screen extends GetWidget<One3Controller> {
                     : null,
                 onPressed: () {
                   if (!isValid) return;
-                  controller.goTwo3Screen();
+                  controller.fetchSmsVerify(
+                      controller.phone, controller.otpController.value.text);
                 });
           }),
           GestureDetector(
