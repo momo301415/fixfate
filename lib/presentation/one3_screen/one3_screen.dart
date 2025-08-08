@@ -66,13 +66,13 @@ class One3Screen extends GetWidget<One3Controller> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  "lbl21".tr,
+                                  "lbl40".tr,
                                   style: CustomTextStyles.titleLarge20,
                                   textAlign: TextAlign.center,
                                 ),
                                 SizedBox(height: 8.h),
                                 Text(
-                                  "lbl22".tr,
+                                  "lbl41".tr,
                                   style: CustomTextStyles.bodySmallBluegray400,
                                   textAlign: TextAlign.center,
                                 ),

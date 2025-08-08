@@ -216,6 +216,12 @@ class K5Controller extends GetxController
   }
 
   void switchMode(int idx) {
+    if (isStart.value) {
+      if (tabviewController.index != tabIndex.value) {
+        tabviewController.animateTo(tabIndex.value);
+      }
+      return;
+    }
     tabIndex.value = idx;
     syncData();
   }

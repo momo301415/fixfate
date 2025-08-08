@@ -47,7 +47,7 @@ import UIKit
                 as? FlutterViewController
             {
                 let channel = FlutterMethodChannel(
-                    name: "com.pulesDevice/notifications",
+                    name: "firebase_notifications",
                     binaryMessenger: controller.binaryMessenger
                 )
                 DispatchQueue.main.async {
@@ -69,7 +69,7 @@ import UIKit
 
         if let controller = window?.rootViewController as? FlutterViewController {
             let channel = FlutterMethodChannel(
-                name: "test_channel",
+                name: "firebase_notifications",
                 binaryMessenger: controller.binaryMessenger
             )
 

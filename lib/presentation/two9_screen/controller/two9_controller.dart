@@ -5,6 +5,7 @@ import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/presentation/two9_screen/models/two9_model.dart';
 import '../../../core/app_export.dart';
 
@@ -61,6 +62,7 @@ class Two9Controller extends GetxController {
         payload,
       );
       Get.back();
+      SnackbarHelper.showBlueSnackbar(message: "設定成功".tr);
       if (res.isNotEmpty) {}
     } catch (e) {}
   }

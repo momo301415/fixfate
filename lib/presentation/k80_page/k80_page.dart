@@ -395,7 +395,7 @@ class K80Page extends GetWidget<K80Controller> {
                 children: [
                   Text(item.label?.value ?? '',
                       style: CustomTextStyles.bodyMediumBluegray900),
-                  Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
+                  Text('${item.value?.value ?? ''}',
                       style: CustomTextStyles.bodyMediumBluegray900),
                   Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
                 ],

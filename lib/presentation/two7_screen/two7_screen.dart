@@ -62,7 +62,9 @@ class Two7Screen extends GetWidget<Two7Controller> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CustomImageView(
-                  imagePath: controller.model.path?.value,
+                  imagePath: controller.model.path?.value == ""
+                      ? ImageConstant.imgEllipse8236x36
+                      : controller.model.path?.value,
                   height: 100.h,
                   width: 100.h,
                   fit: BoxFit.cover,

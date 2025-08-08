@@ -57,17 +57,21 @@ class SyncDataService {
   ///------ 同步資料到API -----
   Future<void> syncToApi() async {
     if (gc.userId.value.isEmpty) return;
+
     var isSyncValue = "N";
     final isSyncApi = await PrefUtils().getIsSyncApi();
     if (isSyncApi.isEmpty) {
       await PrefUtils().setIsSyncApi("Y");
       isSyncValue = "Y";
     }
+
+    // 獲取所有警報記錄
     final records = await AlertRecordListStorage.getRecords(gc.userId.value);
     List<AlertRecord> rateRecords = [];
     List<AlertRecord> bloodRecords = [];
     List<AlertRecord> tempRecords = [];
     List<AlertRecord> pressureRecords = [];
+
     for (var record in records) {
       if (record.type.contains("heart_rate") && record.synced == false) {
         rateRecords.add(record);
@@ -82,73 +86,210 @@ class SyncDataService {
       }
     }
 
-    // 步數資料
-    final unsyncedSteps =
-        await gc.stepDataService.getUnsyncedData(gc.userId.value);
-    if (unsyncedSteps.isNotEmpty) {
-      final success = await uploadSteps(unsyncedSteps, isSyncValue);
-      final success2 = await uploadCalories(unsyncedSteps, isSyncValue);
-      final success3 = await uploadDistance(unsyncedSteps, isSyncValue);
-      if (success && success2 && success3) {
-        await gc.stepDataService.markAsSynced(unsyncedSteps);
-      }
-    }
+    // 🔥 優化：並行獲取所有未同步資料
+    final futures = <Future<Map<String, dynamic>>>[];
 
-    /// 心跳資料
-    final unsyncedHeartRate =
-        await gc.heartRateDataService.getUnsyncedData(gc.userId.value);
-    if (unsyncedHeartRate.isNotEmpty) {
-      final success =
-          await uploadHeartRate(unsyncedHeartRate, isSyncValue, a: rateRecords);
-      if (success) {
-        await gc.heartRateDataService.markAsSynced(unsyncedHeartRate);
-      }
-    }
+    // 步數相關資料
+    futures.add(_getUnsyncedStepsData(isSyncValue));
+
+    // 心率資料
+    futures.add(_getUnsyncedHeartRateData(isSyncValue, rateRecords));
 
     // 睡眠資料
+    futures.add(_getUnsyncedSleepData(isSyncValue));
+
+    // 血氧和體溫資料
+    futures.add(
+        _getUnsyncedBloodOxygenData(isSyncValue, bloodRecords, tempRecords));
+
+    // 壓力資料
+    futures.add(_getUnsyncedPressureData(isSyncValue, pressureRecords));
+
+    // 並行獲取所有資料
+    final results = await Future.wait(futures);
+
+    // 🔥 優化：並行上傳所有資料
+    final uploadFutures = <Future<bool>>[];
+    final uploadData = <Map<String, dynamic>>[];
+
+    for (final result in results) {
+      if (result['hasData'] == true) {
+        uploadFutures.add(result['uploadFuture']);
+        uploadData.add(result['data']);
+      }
+    }
+
+    // 並行執行所有上傳
+    if (uploadFutures.isNotEmpty) {
+      final uploadResults = await Future.wait(uploadFutures);
+
+      // 根據上傳結果標記同步狀態
+      for (int i = 0; i < uploadResults.length; i++) {
+        if (uploadResults[i]) {
+          await _markDataAsSynced(uploadData[i]);
+        }
+      }
+    }
+
+    // 最後把records的isSync設為true
+    await AlertRecordListStorage.markAllRecordsAsSynced(gc.userId.value);
+  }
+
+  // 🔥 新增：獲取步數相關資料
+  Future<Map<String, dynamic>> _getUnsyncedStepsData(String isSyncValue) async {
+    final unsyncedSteps =
+        await gc.stepDataService.getUnsyncedData(gc.userId.value);
+    if (unsyncedSteps.isEmpty) {
+      return {'hasData': false};
+    }
+
+    return {
+      'hasData': true,
+      'data': {'steps': unsyncedSteps},
+      'uploadFuture': _uploadStepsData(unsyncedSteps, isSyncValue),
+    };
+  }
+
+  // 🔥 新增：獲取心率資料
+  Future<Map<String, dynamic>> _getUnsyncedHeartRateData(
+      String isSyncValue, List<AlertRecord> rateRecords) async {
+    final unsyncedHeartRate =
+        await gc.heartRateDataService.getUnsyncedData(gc.userId.value);
+    if (unsyncedHeartRate.isEmpty) {
+      return {'hasData': false};
+    }
+
+    return {
+      'hasData': true,
+      'data': {'heartRate': unsyncedHeartRate},
+      'uploadFuture':
+          uploadHeartRate(unsyncedHeartRate, isSyncValue, a: rateRecords),
+    };
+  }
+
+  // 🔥 新增：獲取睡眠資料
+  Future<Map<String, dynamic>> _getUnsyncedSleepData(String isSyncValue) async {
     final unsyncedSleep =
         await gc.sleepDataService.getUnsyncedData(gc.userId.value);
     final unsyncedSleepDetails =
         await gc.sleepDataService.getUnsyncedDetailsData(gc.userId.value);
-    if (unsyncedSleep.isNotEmpty) {
-      final success = await uploadSleep(
-        unsyncedSleep,
-        unsyncedSleepDetails,
-        isSyncValue,
-      );
-      if (success) {
-        await gc.sleepDataService.markAsSynced(unsyncedSleep);
-        await gc.sleepDataService.markDetailsAsSynced(unsyncedSleepDetails);
-      }
+    if (unsyncedSleep.isEmpty) {
+      return {'hasData': false};
     }
 
-    /// 血氧資料
+    return {
+      'hasData': true,
+      'data': {'sleep': unsyncedSleep, 'sleepDetails': unsyncedSleepDetails},
+      'uploadFuture':
+          uploadSleep(unsyncedSleep, unsyncedSleepDetails, isSyncValue),
+    };
+  }
+
+  // 🔥 新增：獲取血氧和體溫資料
+  Future<Map<String, dynamic>> _getUnsyncedBloodOxygenData(String isSyncValue,
+      List<AlertRecord> bloodRecords, List<AlertRecord> tempRecords) async {
     final unsyncedBloodOxygen =
         await gc.combinedDataService.getUnsyncedData(gc.userId.value);
-    if (unsyncedBloodOxygen.isNotEmpty) {
-      final success =
-          await uploadOxygen(unsyncedBloodOxygen, isSyncValue, a: bloodRecords);
-      final success2 = await uploadTemperature(unsyncedBloodOxygen, isSyncValue,
-          a: tempRecords);
-      if (success && success2) {
-        await gc.combinedDataService.markAsSynced(unsyncedBloodOxygen);
-        Future.delayed(const Duration(milliseconds: 500), () {
-          NotificationService().showDeviceSyncDataNotification();
-        });
-      }
-    }
-    // ✅ 新增：壓力數據上傳
-    final unsyncedPressure =
-        await gc.pressureDataService.getUnsyncedData(gc.userId.value);
-    if (unsyncedPressure.isNotEmpty) {
-      final success = await uploadPressure(unsyncedPressure, isSyncValue);
-      if (success) {
-        await gc.pressureDataService.markAsSynced(unsyncedPressure);
-      }
+    if (unsyncedBloodOxygen.isEmpty) {
+      return {'hasData': false};
     }
 
-    // 最後把recodes的isSync設為true
-    await AlertRecordListStorage.markAllRecordsAsSynced(gc.userId.value);
+    return {
+      'hasData': true,
+      'data': {'bloodOxygen': unsyncedBloodOxygen},
+      'uploadFuture': _uploadBloodOxygenData(
+          unsyncedBloodOxygen, isSyncValue, bloodRecords, tempRecords),
+    };
+  }
+
+  // 🔥 新增：獲取壓力資料
+  Future<Map<String, dynamic>> _getUnsyncedPressureData(
+      String isSyncValue, List<AlertRecord> pressureRecords) async {
+    final unsyncedPressure =
+        await gc.pressureDataService.getUnsyncedData(gc.userId.value);
+    if (unsyncedPressure.isEmpty) {
+      return {'hasData': false};
+    }
+
+    return {
+      'hasData': true,
+      'data': {'pressure': unsyncedPressure},
+      'uploadFuture':
+          uploadPressure(unsyncedPressure, isSyncValue, a: pressureRecords),
+    };
+  }
+
+  // 🔥 新增：並行上傳步數相關資料
+  Future<bool> _uploadStepsData(
+      List<StepDataData> unsyncedSteps, String isSyncValue) async {
+    try {
+      final futures = <Future<bool>>[];
+      futures.add(uploadSteps(unsyncedSteps, isSyncValue));
+      futures.add(uploadCalories(unsyncedSteps, isSyncValue));
+      futures.add(uploadDistance(unsyncedSteps, isSyncValue));
+
+      final results = await Future.wait(futures);
+      return results.every((success) => success);
+    } catch (e) {
+      print("❌ _uploadStepsData Error: $e");
+      return false;
+    }
+  }
+
+  // 🔥 新增：並行上傳血氧和體溫資料
+  Future<bool> _uploadBloodOxygenData(
+      List<CombinedDataData> unsyncedBloodOxygen,
+      String isSyncValue,
+      List<AlertRecord> bloodRecords,
+      List<AlertRecord> tempRecords) async {
+    try {
+      final futures = <Future<bool>>[];
+      futures
+          .add(uploadOxygen(unsyncedBloodOxygen, isSyncValue, a: bloodRecords));
+      futures.add(
+          uploadTemperature(unsyncedBloodOxygen, isSyncValue, a: tempRecords));
+
+      final results = await Future.wait(futures);
+      final success = results.every((success) => success);
+
+      // if (success) {
+      //   // 顯示同步成功通知
+      //   Future.delayed(const Duration(milliseconds: 500), () {
+      //     NotificationService().showDeviceSyncDataNotification();
+      //   });
+      // }
+
+      return success;
+    } catch (e) {
+      print("❌ _uploadBloodOxygenData Error: $e");
+      return false;
+    }
+  }
+
+  // 🔥 新增：標記資料為已同步
+  Future<void> _markDataAsSynced(Map<String, dynamic> data) async {
+    try {
+      if (data.containsKey('steps')) {
+        await gc.stepDataService.markAsSynced(data['steps']);
+      }
+      if (data.containsKey('heartRate')) {
+        await gc.heartRateDataService.markAsSynced(data['heartRate']);
+      }
+      if (data.containsKey('sleep')) {
+        await gc.sleepDataService.markAsSynced(data['sleep']);
+        if (data.containsKey('sleepDetails')) {
+          await gc.sleepDataService.markDetailsAsSynced(data['sleepDetails']);
+        }
+      }
+      if (data.containsKey('bloodOxygen')) {
+        await gc.combinedDataService.markAsSynced(data['bloodOxygen']);
+      }
+      if (data.containsKey('pressure')) {
+        await gc.pressureDataService.markAsSynced(data['pressure']);
+      }
+    } catch (e) {
+      print("❌ _markDataAsSynced Error: $e");
+    }
   }
 
   Future<bool> uploadSteps(List<StepDataData> datas, String isSyncApi) async {

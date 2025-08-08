@@ -66,24 +66,26 @@ class K72Screen extends GetWidget<K72Controller> {
                           )
                         : const SizedBox.shrink();
                   }),
-                  CustomElevatedButton(
-                    text: "lbl215".tr,
-                    margin: EdgeInsets.symmetric(horizontal: 16.h),
-                    leftIcon: Container(
-                        margin: EdgeInsets.only(right: 10.h),
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgFi,
-                          height: 24.h,
-                          width: 24.h,
-                          fit: BoxFit.contain,
-                        )),
-                    buttonStyle: CustomButtonStyles.fillGrayTL8,
-                    buttonTextStyle:
-                        CustomTextStyles.titleMediumPrimaryContainer16,
-                    onPressed: () {
-                      controller.pickImageAndScan();
-                    },
-                  ),
+
+                  /// 暫時註解選擇圖片功能
+                  // CustomElevatedButton(
+                  //   text: "lbl215".tr,
+                  //   margin: EdgeInsets.symmetric(horizontal: 16.h),
+                  //   leftIcon: Container(
+                  //       margin: EdgeInsets.only(right: 10.h),
+                  //       child: CustomImageView(
+                  //         imagePath: ImageConstant.imgFi,
+                  //         height: 24.h,
+                  //         width: 24.h,
+                  //         fit: BoxFit.contain,
+                  //       )),
+                  //   buttonStyle: CustomButtonStyles.fillGrayTL8,
+                  //   buttonTextStyle:
+                  //       CustomTextStyles.titleMediumPrimaryContainer16,
+                  //   onPressed: () {
+                  //     controller.pickImageAndScan();
+                  //   },
+                  // ),
                   SizedBox(height: 18.h),
                 ],
               ),

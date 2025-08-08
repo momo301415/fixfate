@@ -7,6 +7,7 @@ import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -393,6 +394,7 @@ class K30Controller extends GetxController {
       user.drugAllergies = drugAllergies.toList().cast<String>();
 
       await UserProfileStorage.saveUserProfile(gc.userId.value, user);
+      Config.userName = user.nickname ?? '';
 
       res = true;
     } catch (e) {
@@ -566,35 +568,38 @@ class K30Controller extends GetxController {
           user.weight = double.tryParse(resBody['bodyWeight'] ?? '0') ?? 0.0;
           user.waist = double.tryParse(resBody['waistline'] ?? '0') ?? 0.0;
           final otherData = resBody['otherData'];
-          final habits = otherData['habits'];
+          if (otherData != null && otherData.isNotEmpty) {
+            final habits = otherData['habits'];
 
-          user.drinking = habits['drinking'] ?? '';
-          user.smoking = habits['smoking'] ?? '';
-          user.sporting = habits['exercise'] ?? '';
-          user.sitting = habits['sitting'] ?? '';
-          user.standding = habits['standing'] ?? '';
-          user.lowHeadding = habits['lowHead'] ?? '';
-          user.waterIntake = habits['waterIntake'] ?? '';
-          user.noneSleep = habits['noneSleep'] ?? '';
-          user.foodHabits?.assignAll(List<String>.from(
-            otherData['foodPreferences']?["favoriteTypes"] ?? [],
-          ));
+            user.drinking = habits['drinking'] ?? '';
+            user.smoking = habits['smoking'] ?? '';
+            user.sporting = habits['exercise'] ?? '';
+            user.sitting = habits['sitting'] ?? '';
+            user.standding = habits['standing'] ?? '';
+            user.lowHeadding = habits['lowHead'] ?? '';
+            user.waterIntake = habits['waterIntake'] ?? '';
+            user.noneSleep = habits['noneSleep'] ?? '';
+            user.foodHabits?.assignAll(List<String>.from(
+              otherData['foodPreferences']?["favoriteTypes"] ?? [],
+            ));
 
-          user.cookHabits?.assignAll(List<String>.from(
-            otherData['cookingPreferences']?["favoriteTypes"] ?? [],
-          ));
+            user.cookHabits?.assignAll(List<String>.from(
+              otherData['cookingPreferences']?["favoriteTypes"] ?? [],
+            ));
 
-          user.pastDiseases?.assignAll(List<String>.from(
-            otherData['medicalHistory']?["pastDiseases"] ?? [],
-          ));
+            user.pastDiseases?.assignAll(List<String>.from(
+              otherData['medicalHistory']?["pastDiseases"] ?? [],
+            ));
 
-          user.familyDiseases?.assignAll(List<String>.from(
-            otherData['familyHistory']?["pastDiseases"] ?? [],
-          ));
+            user.familyDiseases?.assignAll(List<String>.from(
+              otherData['familyHistory']?["pastDiseases"] ?? [],
+            ));
 
-          user.drugAllergies?.assignAll(List<String>.from(
-            otherData['allergies']?["drug"] ?? [],
-          ));
+            user.drugAllergies?.assignAll(List<String>.from(
+              otherData['allergies']?["drug"] ?? [],
+            ));
+          }
+
           return user;
         } else {
           DialogHelper.showError("${res["message"]}");

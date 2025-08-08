@@ -131,7 +131,7 @@ class _K6PageState extends State<K6Page> with AutomaticKeepAliveClientMixin {
 
                   final listItemModel = ListOneItemModel(
                     one: imagePath, // 圖片使用 icon map
-                    two: 'lbl253'.tr,
+                    two: controller.tabIndex == 0 ? 'lbl253'.tr : 'lbl255'.tr,
                     time: record.time.format(pattern: 'HH:mm'),
                     m130kcaltwo: record.distance.toString(),
                     m130kcaltwo1: 'lbl193'.tr,

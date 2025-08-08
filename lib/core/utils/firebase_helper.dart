@@ -19,16 +19,27 @@ class FirebaseHelper {
   static Future<void> init() async {
     await getDeviceToken();
     await _requestPermission();
+
     // 🔴 關閉 App 點推播啟動
     final initMsg = await _messaging.getInitialMessage();
     if (initMsg != null && shouldShowDialog(initMsg)) {
+      print("🔴 App 從關閉狀態啟動，儲存推播訊息");
       _pendingDialogMessage = initMsg;
+      // 延遲處理，等待 App 完全載入
+      Future.delayed(Duration(seconds: 2), () {
+        _processPendingMessage();
+      });
     }
 
     // 🟠 App 背景 → 點推播 → 返回 App
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (shouldShowDialog(message)) {
+        print("🟠 App 從背景恢復，儲存推播訊息");
         _pendingDialogMessage = message;
+        // 延遲處理，等待 App 完全載入
+        Future.delayed(Duration(seconds: 1), () {
+          _processPendingMessage();
+        });
       }
     });
 
@@ -105,6 +116,25 @@ class FirebaseHelper {
     final flag = message.data['alertDialog']?.toString().toLowerCase();
     if (flag == null) return false;
     return true;
+  }
+
+  /// 處理待處理的推播訊息
+  static void _processPendingMessage() {
+    print("🔄 _processPendingMessage called");
+    final message = _pendingDialogMessage;
+    if (message != null) {
+      print("✅ 處理待處理的推播訊息: $message");
+      _pendingDialogMessage = null;
+      Future.delayed(Duration(milliseconds: 500), () async {
+        try {
+          await handleMessage(message);
+        } catch (e) {
+          print("❌ 處理待處理訊息時發生錯誤: $e");
+        }
+      });
+    } else {
+      print("ℹ️ 沒有待處理的推播訊息");
+    }
   }
 
   /// 提供給首頁呼叫，顯示 Dialog 用

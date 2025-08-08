@@ -17,16 +17,17 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    // 保留作為備用檢查，以防 FirebaseHelper 沒有處理
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(Duration(seconds: 3));
       try {
         final message = FirebaseHelper.consumePendingDialogMessage();
         if (message != null) {
-          print("🔑 Showing dialog from push message: $message");
-          await Future.delayed(Duration(milliseconds: 500));
+          print("🔑 HomeController: 備用檢查發現待處理推播訊息: $message");
           await FirebaseHelper.handleMessage(message);
         }
       } catch (e) {
-        print("❌ Error showing dialog from push message: $e");
+        print("❌ HomeController: 備用檢查錯誤: $e");
       }
     });
   }

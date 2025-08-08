@@ -17,7 +17,7 @@ class ListOne1ItemModel {
     this.id,
   }) {
     one = one ?? Rx(ImageConstant.imgFrame86911);
-    two = two ?? Rx("lbl253".tr);
+    two = two ?? Rx("lbl255".tr);
     time = time ?? Rx("lbl_16_30".tr);
     m130kcaltwo = m130kcaltwo ?? Rx("lbl_2_344".tr);
     m130kcaltwo1 = m130kcaltwo1 ?? Rx("lbl193".tr);

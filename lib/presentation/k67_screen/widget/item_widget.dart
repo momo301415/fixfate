@@ -29,7 +29,9 @@ class ItemWidget extends StatelessWidget {
       child: Row(
         children: [
           CustomImageView(
-            imagePath: itemModelObj.path?.value,
+            imagePath: itemModelObj.path?.value == ""
+                ? ImageConstant.imgEllipse82
+                : itemModelObj.path?.value,
             height: 48.h,
             width: 48.h,
             fit: BoxFit.cover,

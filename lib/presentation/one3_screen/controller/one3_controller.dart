@@ -113,7 +113,7 @@ class One3Controller extends GetxController with CodeAutoFill {
       LoadingHelper.hide();
       if (resData.isNotEmpty) {
         final resMsg = resData["message"];
-        if (resMsg.contains("成功")) {
+        if (resMsg.contains("成功") || resMsg.contains("正確")) {
           goTwo3Screen();
         } else {
           DialogHelper.showError("${resData["message"]}");

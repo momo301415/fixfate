@@ -7,7 +7,9 @@ import '../../widgets/app_bar/appbar_title_one.dart';
 import '../../widgets/app_bar/appbar_trailing_image.dart';
 import '../../widgets/app_bar/custom_app_bar.dart';
 import '../../widgets/custom_text_form_field.dart';
-import 'controller/k19_controller.dart'; // ignore_for_file: must_be_immutable
+import 'controller/k19_controller.dart';
+import 'widgets/connection_status_bar.dart'; // 新增狀態欄導入
+// ignore_for_file: must_be_immutable
 
 /// 諮詢頁面--預設首頁
 class K19Screen extends GetWidget<K19Controller> {
@@ -129,63 +131,77 @@ class K19Screen extends GetWidget<K19Controller> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Obx(() {
-                      final messages = controller.messages;
-                      final presetWidgets = [
-                        _buildRowmusicone(),
-                        SizedBox(height: 24.h),
-                        _buildRowfiwindOne(
-                          fiwindOne: ImageConstant.imgUChartLine,
-                          one: "lbl336".tr,
+                    child: Stack(
+                      children: [
+                        // 聊天內容
+                        Obx(() {
+                          final messages = controller.messages;
+                          final presetWidgets = [
+                            _buildRowmusicone(),
+                            SizedBox(height: 24.h),
+                            _buildRowfiwindOne(
+                              fiwindOne: ImageConstant.imgUChartLine,
+                              one: "lbl336".tr,
+                            ),
+                            SizedBox(height: 12.h),
+                            _buildBubble("msg21".tr),
+                            _buildBubble("msg22".tr),
+                            SizedBox(height: 24.h),
+                            _buildRowfiwindOne(
+                              fiwindOne: ImageConstant.imgFiWind,
+                              one: "lbl337".tr,
+                            ),
+                            SizedBox(height: 12.h),
+                            _buildBubble("msg23".tr),
+                            _buildBubble("msg24".tr),
+                            SizedBox(height: 24.h),
+                            _buildRowfiwindOne(
+                              fiwindOne: ImageConstant.imgFiBookOpen,
+                              one: "lbl338".tr,
+                            ),
+                            SizedBox(height: 12.h),
+                            _buildBubble("msg25".tr),
+                            _buildBubble("msg26".tr),
+                          ];
+
+                          // if (controller.isHistoryLoading.value) {
+                          //   return Center(child: CircularProgressIndicator());
+                          // }
+
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            controller.scrollToBottom();
+                          });
+
+                          return ListView.builder(
+                            controller: controller.scrollController,
+                            padding: EdgeInsets.all(16.h),
+                            itemCount: presetWidgets.length + messages.length,
+                            itemBuilder: (context, index) {
+                              if (index < presetWidgets.length) {
+                                return presetWidgets[index];
+                              }
+
+                              final msg =
+                                  messages[index - presetWidgets.length];
+                              return msg.isUser
+                                  ? Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _buildChatBubble(msg),
+                                    )
+                                  : _buildAiBubbleWithFeedback(msg);
+                            },
+                          );
+                        }),
+
+                        // 🔥 浮動狀態欄 - 放在聊天內容上方
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          right: 8,
+                          child: ConnectionStatusBar(controller: controller),
                         ),
-                        SizedBox(height: 12.h),
-                        _buildBubble("msg21".tr),
-                        _buildBubble("msg22".tr),
-                        SizedBox(height: 24.h),
-                        _buildRowfiwindOne(
-                          fiwindOne: ImageConstant.imgFiWind,
-                          one: "lbl337".tr,
-                        ),
-                        SizedBox(height: 12.h),
-                        _buildBubble("msg23".tr),
-                        _buildBubble("msg24".tr),
-                        SizedBox(height: 24.h),
-                        _buildRowfiwindOne(
-                          fiwindOne: ImageConstant.imgFiBookOpen,
-                          one: "lbl338".tr,
-                        ),
-                        SizedBox(height: 12.h),
-                        _buildBubble("msg25".tr),
-                        _buildBubble("msg26".tr),
-                      ];
-
-                      // if (controller.isHistoryLoading.value) {
-                      //   return Center(child: CircularProgressIndicator());
-                      // }
-
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        controller.scrollToBottom();
-                      });
-
-                      return ListView.builder(
-                        controller: controller.scrollController,
-                        padding: EdgeInsets.all(16.h),
-                        itemCount: presetWidgets.length + messages.length,
-                        itemBuilder: (context, index) {
-                          if (index < presetWidgets.length) {
-                            return presetWidgets[index];
-                          }
-
-                          final msg = messages[index - presetWidgets.length];
-                          return msg.isUser
-                              ? Align(
-                                  alignment: Alignment.centerRight,
-                                  child: _buildChatBubble(msg),
-                                )
-                              : _buildAiBubbleWithFeedback(msg);
-                        },
-                      );
-                    }),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -292,14 +308,27 @@ class K19Screen extends GetWidget<K19Controller> {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall,
                 ),
-                Text(
-                  "msg_app5".tr,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CustomTextStyles.pingFangTC1Bluegray400.copyWith(
-                    height: 1.40,
-                  ),
-                ),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "msg_app5".tr,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: CustomTextStyles.pingFangTC1Bluegray400.copyWith(
+                        height: 1.40,
+                      ),
+                    )),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "msg_app6".tr,
+                      maxLines: 3,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      style: CustomTextStyles.pingFangTC1Bluegray400.copyWith(
+                        height: 1.40,
+                      ),
+                    )),
               ],
             ),
           ),
@@ -514,14 +543,14 @@ class K19Screen extends GetWidget<K19Controller> {
                         _buildFeedbackButton(
                             label: "lbl334".tr,
                             imagePath: ImageConstant.imgFeedbackSoso,
-                            feedbackType: 2,
+                            feedbackType: 0,
                             message: message,
                             onFeedbackTap: _onFeedbackAndSendMessage),
                         SizedBox(width: 4.h),
                         _buildFeedbackButton(
                             label: "lbl335".tr,
                             imagePath: ImageConstant.imgFeedbackBad,
-                            feedbackType: 0,
+                            feedbackType: -1,
                             message: message,
                             onFeedbackTap: _onFeedbackAndSendMessage),
                       ],

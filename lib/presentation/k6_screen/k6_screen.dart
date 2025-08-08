@@ -73,11 +73,11 @@ class K6Screen extends GetWidget<K6Controller> {
               child: GestureDetector(
                 onTap: () async {
                   if (!isSelected) {
-                    LoadingHelper.show();
+                    // LoadingHelper.show();
                     Future.delayed(Duration(milliseconds: 150));
                     tabCtrl.animateTo(i);
                     selectedIndex.value = i;
-                    LoadingHelper.hide();
+                    // LoadingHelper.hide();
                   }
                 },
                 child: AnimatedContainer(

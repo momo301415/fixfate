@@ -67,13 +67,13 @@ class FourScreen extends GetWidget<FourController> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  "lbl40".tr,
+                                  "lbl21".tr,
                                   style: CustomTextStyles.titleLarge20,
                                   textAlign: TextAlign.center,
                                 ),
                                 SizedBox(height: 8.h),
                                 Text(
-                                  "lbl41".tr,
+                                  "lbl22".tr,
                                   style: CustomTextStyles.bodySmallBluegray400,
                                   textAlign: TextAlign.center,
                                 ),

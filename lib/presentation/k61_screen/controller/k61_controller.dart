@@ -5,6 +5,7 @@ import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 import '../../../core/app_export.dart';
 import '../models/k61_model.dart';
@@ -66,6 +67,7 @@ class K61Controller extends GetxController {
       );
 
       Get.back();
+      SnackbarHelper.showBlueSnackbar(message: "設定成功".tr);
       if (res.isNotEmpty) {}
     } catch (e) {
       DialogHelper.showError("服務錯誤，請稍後再試");

@@ -37,8 +37,9 @@ class FamilyItemWidget extends StatelessWidget {
               children: [
                 ClipOval(
                     child: CustomImageView(
-                  imagePath: itemModelObj.path?.value ??
-                      ImageConstant.imgEllipse8236x36,
+                  imagePath: itemModelObj.path?.value == ""
+                      ? ImageConstant.imgEllipse8236x36
+                      : itemModelObj.path?.value,
                   fit: BoxFit.cover,
                   height: 36.h,
                   width: 36.h,

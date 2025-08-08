@@ -79,14 +79,16 @@ class K67Screen extends GetWidget<K67Controller> {
               },
             ),
             SizedBox(height: 12.h),
-            CustomOutlinedButton(
-              text: "lbl203".tr,
-              buttonStyle: CustomButtonStyles.outlinePrimary,
-              buttonTextStyle: CustomTextStyles.titleMediumPrimary,
-              onPressed: () {
-                controller.gok71Screen();
-              },
-            ),
+
+            /// 暫時註解分享健康數據功能
+            // CustomOutlinedButton(
+            //   text: "lbl203".tr,
+            //   buttonStyle: CustomButtonStyles.outlinePrimary,
+            //   buttonTextStyle: CustomTextStyles.titleMediumPrimary,
+            //   onPressed: () {
+            //     controller.gok71Screen();
+            //   },
+            // ),
           ],
         ),
       ),

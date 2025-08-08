@@ -626,4 +626,33 @@ class K19Controller extends GetxController {
 
     return success;
   }
+
+  /// 🔥 新增：獲取連接狀態（供狀態欄使用）
+  bool get isWebSocketConnected => socketService.isConnected;
+
+  /// 🔥 新增：獲取是否可以發送訊息（供狀態欄使用）
+  bool get canSendMessage => socketService.canSendMessage;
+
+  /// 🔥 新增：手動重連方法（供狀態欄使用）
+  void retryConnection() {
+    print('🔄 手動重連...');
+    socketService.manualReconnect();
+  }
+
+  /// 🔥 新增：獲取連接狀態描述（供狀態欄使用）
+  String get connectionStatusDescription {
+    if (!socketService.isConnected) {
+      return '離線';
+    }
+
+    if (!socketService.canSendMessage) {
+      if (isAiReplying.value) {
+        return '連線不穩定';
+      } else {
+        return '正在連線';
+      }
+    }
+
+    return '已連線';
+  }
 }

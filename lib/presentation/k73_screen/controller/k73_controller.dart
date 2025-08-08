@@ -104,50 +104,81 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
 
   Future<void> getData(Map<String, dynamic> res) async {
     print("k73 controller getData");
-    // var res = await gc.healthDataSyncService.getAnalysisHealthData();
     if (res.isEmpty) return;
-    k73ModelObj.value.listviewItemList.value[0].loadTime?.value =
-        res["heartDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[0].value?.value =
-        res["heartRate"].toString();
-    k73ModelObj.value.listviewItemList.value[0].isAlert?.value =
-        res["heartAlert"];
-    k73ModelObj.value.listviewItemList.value[1].loadTime?.value =
-        res["combinedDuration"].toString();
-    // k73ModelObj.value.listviewItemList.value[1].value?.value =
-    //     res["bloodOxygen"].toString();
-    // k73ModelObj.value.listviewItemList.value[1].isAlert?.value =
-    //     res["bloodAlert"];
-    k73ModelObj.value.listviewItemList.value[1].loadTime?.value =
-        res["combinedDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[1].value?.value =
-        res["temperature"].toString();
-    k73ModelObj.value.listviewItemList.value[1].isAlert?.value =
-        res["tempAlert"];
-    k73ModelObj.value.listviewItemList.value[2].loadTime?.value =
-        res["pressureDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[2].value?.value =
-        res["pressure"].toString();
-    k73ModelObj.value.listviewItemList.value[2].isAlert?.value =
-        res["pressureAlert"];
-    k73ModelObj.value.listviewItemList.value[3].loadTime?.value =
-        res["stepDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[3].value?.value =
-        res["stepCount"].toString();
-    k73ModelObj.value.listviewItemList.value[4].loadTime?.value =
-        res["sleepDuration"]?.toString() ?? '';
-    k73ModelObj.value.listviewItemList.value[4].value?.value =
-        res["sleepTime"]?.toString() ?? '';
-    k73ModelObj.value.listviewItemList.value[5].loadTime?.value =
-        res["stepDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[5].value?.value =
-        res["calories"].toString();
-    k73ModelObj.value.listviewItemList.value[6].loadTime?.value =
-        res["stepDuration"].toString();
-    k73ModelObj.value.listviewItemList.value[6].value?.value =
-        res["stepDistance"].toString();
+
+    // 使用常量定義索引，避免魔術數字
+    const int HEART_INDEX = 0;
+    const int TEMP_INDEX = 1;
+    const int PRESSURE_INDEX = 2;
+    const int STEP_INDEX = 3;
+    const int SLEEP_INDEX = 4;
+    const int CALORIES_INDEX = 5;
+    const int DISTANCE_INDEX = 6;
+
+    // 安全更新心率數據
+    _updateHealthItem(HEART_INDEX, {
+      "loadTime": res["heartDuration"]?.toString() ?? "無數據",
+      "value": res["heartRate"]?.toString() ?? "0",
+      "isAlert": res["heartAlert"] ?? false,
+    });
+
+    // 安全更新體溫數據
+    _updateHealthItem(TEMP_INDEX, {
+      "loadTime": res["combinedDuration"]?.toString() ?? "無數據",
+      "value": res["temperature"]?.toString() ?? "0.0",
+      "isAlert": res["tempAlert"] ?? false,
+    });
+
+    // 安全更新壓力數據
+    _updateHealthItem(PRESSURE_INDEX, {
+      "loadTime": res["pressureDuration"]?.toString() ?? "無數據",
+      "value": res["pressure"]?.toString() ?? "0",
+      "isAlert": res["pressureAlert"] ?? false,
+    });
+
+    // 安全更新步數數據
+    _updateHealthItem(STEP_INDEX, {
+      "loadTime": res["stepDuration"]?.toString() ?? "無數據",
+      "value": res["stepCount"]?.toString() ?? "0",
+      "isAlert": false, // 步數通常沒有警報
+    });
+
+    // 安全更新睡眠數據
+    _updateHealthItem(SLEEP_INDEX, {
+      "loadTime": res["sleepDuration"]?.toString() ?? "無數據",
+      "value": res["sleepTime"]?.toString() ?? "0.0",
+      "isAlert": false, // 睡眠通常沒有警報
+    });
+
+    // 安全更新卡路里數據
+    _updateHealthItem(CALORIES_INDEX, {
+      "loadTime": res["stepDuration"]?.toString() ?? "無數據",
+      "value": res["calories"]?.toString() ?? "0",
+      "isAlert": false, // 卡路里通常沒有警報
+    });
+
+    // 安全更新距離數據
+    _updateHealthItem(DISTANCE_INDEX, {
+      "loadTime": res["stepDuration"]?.toString() ?? "無數據",
+      "value": res["stepDistance"]?.toString() ?? "0",
+      "isAlert": false, // 距離通常沒有警報
+    });
+
     k73ModelObj.value.listviewItemList.refresh();
-    loadDataTime.value = res["loadDataTime"].toString();
+    loadDataTime.value = res["loadDataTime"]?.toString() ?? "";
+  }
+
+  /// 安全更新健康項目數據
+  void _updateHealthItem(int index, Map<String, dynamic> data) {
+    if (index >= k73ModelObj.value.listviewItemList.value.length) {
+      print("警告: 索引 $index 超出範圍");
+      return;
+    }
+
+    final item = k73ModelObj.value.listviewItemList.value[index];
+    item.loadTime?.value = data["loadTime"] ?? "";
+    item.value?.value = data["value"] ?? "";
+    item.isAlert?.value = data["isAlert"] ?? false;
   }
 
   Future<Map<String, dynamic>> getAnalysisHealthDataFromApi(
@@ -161,71 +192,105 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     final distanceList = healthData.distanceData;
     final pressureList = healthData.pressureData;
 
-    // Sort
-    stepList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    heartList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    oxygenList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    tempList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    caloriesList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    distanceList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-    pressureList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    // Sort - 只在列表不為空時排序
+    if (stepList.isNotEmpty)
+      stepList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (heartList.isNotEmpty)
+      heartList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (oxygenList.isNotEmpty)
+      oxygenList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (tempList.isNotEmpty)
+      tempList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (caloriesList.isNotEmpty)
+      caloriesList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (distanceList.isNotEmpty)
+      distanceList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
+    if (pressureList.isNotEmpty)
+      pressureList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
 
-    // 最後一筆時間點
-    final stepLast = stepList.last;
-    final heartLast = heartList.last;
-    final oxygenLast = oxygenList.last;
-    final tempLast = tempList.last;
+    // 安全獲取最後一筆數據
+    final stepLast = stepList.isNotEmpty ? stepList.last : null;
+    final heartLast = heartList.isNotEmpty ? heartList.last : null;
+    final oxygenLast = oxygenList.isNotEmpty ? oxygenList.last : null;
+    final tempLast = tempList.isNotEmpty ? tempList.last : null;
+
+    // 處理壓力數據
     List<PressureData> presLast = [];
     if (pressureList.isEmpty) {
+      // 如果沒有壓力數據，使用心率數據的時間戳作為備用
+      final fallbackTimestamp = heartLast?.startTimestamp ??
+          DateTime.now().millisecondsSinceEpoch ~/ 1000;
       PressureData data = PressureData(
-          startTimestamp: heartLast.startTimestamp,
-          totalStressScore: 0,
-          type: "0");
-
+          startTimestamp: fallbackTimestamp, totalStressScore: 0, type: "0");
       presLast.add(data);
     } else {
       presLast = pressureList;
     }
 
-    // 統計
-    int stepCount = sumLastDayValues<StepData>(
-      list: stepList,
-      startTimeGetter: (e) => e.startTimestamp,
-      valueGetter: (e) => int.parse(e.step),
-    );
-    int stepDistance = sumLastDayValues<DistanceData>(
-      list: distanceList,
-      startTimeGetter: (e) => e.startTimestamp,
-      valueGetter: (e) => int.parse(e.distance),
-    );
-    int calories = sumLastDayValues<CaloriesData>(
-      list: caloriesList,
-      startTimeGetter: (e) => e.startTimestamp,
-      valueGetter: (e) => int.parse(e.calories),
-    );
+    // 統計 - 使用安全的方法
+    int stepCount = stepList.isNotEmpty
+        ? sumLastDayValues<StepData>(
+            list: stepList,
+            startTimeGetter: (e) => e.startTimestamp,
+            valueGetter: (e) => int.parse(e.step),
+          )
+        : 0;
 
-    // 顯示用文字
-    String stepDuration =
-        DateTimeUtils.getTimeDifferenceString(stepLast.startTimestamp);
-    int heartRate = int.parse(heartLast.heartrate);
-    String heartDuration =
-        DateTimeUtils.getTimeDifferenceString(heartLast.startTimestamp);
-    double temperature = double.parse(tempLast.temperature);
-    String combinedDuration =
-        DateTimeUtils.getTimeDifferenceString(tempLast.startTimestamp);
-    int bloodOxygen = int.parse(oxygenLast.bloodoxygen);
-    int pressure = presLast.last.totalStressScore.toInt();
+    int stepDistance = distanceList.isNotEmpty
+        ? sumLastDayValues<DistanceData>(
+            list: distanceList,
+            startTimeGetter: (e) => e.startTimestamp,
+            valueGetter: (e) => int.parse(e.distance),
+          )
+        : 0;
 
+    int calories = caloriesList.isNotEmpty
+        ? sumLastDayValues<CaloriesData>(
+            list: caloriesList,
+            startTimeGetter: (e) => e.startTimestamp,
+            valueGetter: (e) => int.parse(e.calories),
+          )
+        : 0;
+
+    // 顯示用文字 - 安全處理
+    String stepDuration = stepLast != null
+        ? DateTimeUtils.getTimeDifferenceString(stepLast.startTimestamp)
+        : "無數據";
+
+    int heartRate = heartLast != null ? int.parse(heartLast.heartrate) : 0;
+    String heartDuration = heartLast != null
+        ? DateTimeUtils.getTimeDifferenceString(heartLast.startTimestamp)
+        : "無數據";
+
+    double temperature =
+        tempLast != null ? double.parse(tempLast.temperature) : 0.0;
+    String combinedDuration = tempLast != null
+        ? DateTimeUtils.getTimeDifferenceString(tempLast.startTimestamp)
+        : "無數據";
+
+    int bloodOxygen =
+        oxygenLast != null ? int.parse(oxygenLast.bloodoxygen) : 0;
+    int pressure =
+        presLast.isNotEmpty ? presLast.last.totalStressScore.toInt() : 0;
+
+    // 安全處理時間戳
     final loadDataTime = DateTimeUtils.formatMaxTimestamp(
-      stepLast.startTimestamp,
-      heartLast.startTimestamp,
-      tempLast.startTimestamp,
+      stepLast?.startTimestamp ?? 0,
+      heartLast?.startTimestamp ?? 0,
+      tempLast?.startTimestamp ?? 0,
     );
 
-    var heartAlert = heartLast.type == "1" || heartLast.type == "2";
-    var bloodAlert = oxygenLast.type == "2";
-    var tempAlert = tempLast.type == "1" || tempLast.type == "2";
-    var presAlert = presLast.last.type == "1" || presLast.last.type == "2";
+    // 安全處理警報狀態
+    var heartAlert = heartLast != null
+        ? (heartLast.type == "1" || heartLast.type == "2")
+        : false;
+    var bloodAlert = oxygenLast != null ? oxygenLast.type == "2" : false;
+    var tempAlert = tempLast != null
+        ? (tempLast.type == "1" || tempLast.type == "2")
+        : false;
+    var presAlert = presLast.isNotEmpty
+        ? (presLast.last.type == "1" || presLast.last.type == "2")
+        : false;
 
     var analysis = {
       "stepCount": stepCount,
@@ -246,6 +311,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       "pressureAlert": presAlert,
     };
 
+    // 安全處理睡眠數據
     if (sleepList.isNotEmpty) {
       sleepList.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
       final sleepLast = sleepList.last;
@@ -261,6 +327,12 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       analysis.addAll({
         "sleepTime": sleepTime,
         "sleepDuration": sleepDuration,
+      });
+    } else {
+      // 如果沒有睡眠數據，提供預設值
+      analysis.addAll({
+        "sleepTime": "0.0",
+        "sleepDuration": "無數據",
       });
     }
 
@@ -339,7 +411,10 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       // LoadingHelper.hide();
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
-        if (data == null) return;
+        if (data == null || data.length == 0) {
+          print("家族數據為空");
+          return;
+        }
         if (data is List) {
           final modelList = data.map<FamilyItemModel>((e) {
             final map = e as Map<String, dynamic>; // 安全轉型
@@ -348,11 +423,14 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
               two: RxString(map["abbreviation"] ?? ''),
               tf: RxString("更新時間：${map["create_at"] ?? ''}"),
               path: RxString(map["family_avatar_url"] ?? ''),
-              isAlert: RxBool(map["notify"]),
+              isAlert: RxBool(map["notify"] ?? false),
               familyId: RxString(map["family_id"] ?? ''),
             );
           }).toList(); // <- 轉成 List<FamilyItemModel>
-          if (modelList.isEmpty) return;
+          if (modelList.isEmpty) {
+            print("家族模型列表為空");
+            return;
+          }
           final my = FamilyItemModel(
             two: RxString('我自己'),
             path: RxString(gc.avatarUrl.value),
@@ -360,7 +438,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
           modelList.insert(0, my);
           k73ModelObj.value.familyItemList.value = modelList;
           k73ModelObj.value.familyItemList.refresh();
+        } else {
+          print("家族數據格式錯誤，預期為 List 但收到 ${data.runtimeType}");
         }
+      } else {
+        print("家族 API 返回錯誤: ${res["message"] ?? "未知錯誤"}");
       }
     } catch (e) {
       print("getFamilyData Error: $e");
@@ -392,14 +474,19 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       // LoadingHelper.hide();
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
-        if (data == null) return;
+        if (data == null) {
+          print("健康數據為空");
+          return;
+        }
         final healthData = HealthDataSet.fromJson(data);
         final healthMap = await getAnalysisHealthDataFromApi(healthData);
-        getData(healthMap);
+        await getData(healthMap);
+      } else {
+        print("API 返回錯誤: ${res["message"] ?? "未知錯誤"}");
       }
     } catch (e) {
       LoadingHelper.hide();
-      print("getFamilyData Error: $e");
+      print("getHealthData Error: $e");
     }
   }
 }

@@ -44,13 +44,11 @@ import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
-import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
-import 'package:pulsedevice/presentation/k5_screen/controller/k5_controller.dart';
 import 'package:yc_product_plugin/yc_product_plugin.dart';
 
 class GlobalController extends GetxController {
-  static const platform = MethodChannel('test_channel');
+  static const platform = MethodChannel('firebase_notifications');
 
   ///--- life
   late AppLifecycleObserver lifecycleObserver;

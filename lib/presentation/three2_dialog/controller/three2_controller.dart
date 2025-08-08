@@ -5,6 +5,7 @@ import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
+import 'package:yc_product_plugin/yc_product_plugin.dart';
 import '../../../core/app_export.dart';
 import '../models/three2_model.dart';
 
@@ -23,6 +24,7 @@ class Three2Controller extends GetxController {
       await UserProfileStorage.deleteUserProfile(gc.userId.value);
       gc.userEmail.value = "";
       SnackbarHelper.showBlueSnackbar(message: "snackbar_account_delete".tr);
+      blueToolDisconnect();
       callApi().then((value) {
         goLogin();
       });
@@ -56,6 +58,11 @@ class Three2Controller extends GetxController {
   }
 
   void goLogin() {
-    Get.offNamed(AppRoutes.one2Screen);
+    Get.offNamed(AppRoutes.k2Screen);
+  }
+
+  /// 斷開藍牙
+  Future<void> blueToolDisconnect() async {
+    await YcProductPlugin().disconnectDevice();
   }
 }
