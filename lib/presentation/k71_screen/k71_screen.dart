@@ -85,22 +85,22 @@ class K71Screen extends GetWidget<K71Controller> {
             textAlign: TextAlign.center,
             style: CustomTextStyles.bodyMedium_1,
           ),
-          CustomOutlinedButton(
-            onPressed: () {
-              controller.copyQrcode();
-            },
-            text: "lbl214".tr,
-            leftIcon: Container(
-              margin: EdgeInsets.only(right: 4.h),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgArrowup,
-                height: 20.h,
-                width: 20.h,
-                fit: BoxFit.contain,
-              ),
-            ),
-            buttonTextStyle: CustomTextStyles.titleMediumPrimary,
-          )
+          // CustomOutlinedButton(
+          //   onPressed: () {
+          //     controller.copyQrcode();
+          //   },
+          //   text: "lbl214".tr,
+          //   leftIcon: Container(
+          //     margin: EdgeInsets.only(right: 4.h),
+          //     child: CustomImageView(
+          //       imagePath: ImageConstant.imgArrowup,
+          //       height: 20.h,
+          //       width: 20.h,
+          //       fit: BoxFit.contain,
+          //     ),
+          //   ),
+          //   buttonTextStyle: CustomTextStyles.titleMediumPrimary,
+          // )
         ],
       ),
     );

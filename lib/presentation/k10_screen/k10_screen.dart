@@ -136,7 +136,7 @@ class K10Screen extends GetWidget<K10Controller> {
               ),
               title: Text(device.name),
               subtitle: Text(device.macAddress),
-              trailing: Text('${device.rssiValue}'),
+              trailing: Text('${device.rssiValue}' + 'lbl264'.tr),
               onTap: () async {
                 print("");
                 // TODO: 點選裝置後的行為

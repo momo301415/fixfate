@@ -278,11 +278,7 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        final startOfWeek = DateTime(
-          currentDate.value.year,
-          currentDate.value.month,
-          currentDate.value.day,
-        ).subtract(Duration(days: currentDate.value.weekday - 1));
+        final startOfWeek = currentDate.value;
         final Map<int, List<int>> dayData = {};
 
         for (var e in stepApiData) {
@@ -299,15 +295,21 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
           return FlSpot(entry.key.toDouble(), avg);
         }).toList();
 
-        final weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        // 動態生成標籤，基於實際選擇的日期
+        final weekLabels = List.generate(7, (index) {
+          final date = startOfWeek.add(Duration(days: index));
+          return date.format(pattern: 'E', locale: 'en_US'); // Mon, Tue, Wed...
+        });
+
         titles = SideTitles(
           showTitles: true,
           interval: 1,
           getTitlesWidget: (value, meta) {
-            if (value.toInt() >= 0 && value.toInt() < weekLabels.length) {
+            final dayIndex = value.toInt();
+            if (dayIndex >= 0 && dayIndex < weekLabels.length) {
               return Transform.translate(
                   offset: Offset(0, 12.h),
-                  child: Text(weekLabels[value.toInt()],
+                  child: Text(weekLabels[dayIndex],
                       style: TextStyle(fontSize: 10)));
             }
             return Text('');

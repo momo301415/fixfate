@@ -42,6 +42,7 @@ import 'package:pulsedevice/core/sqliteDb/invasive_comprehensive_data_service.da
 import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/sleep_data_service.dart';
 import 'package:pulsedevice/core/sqliteDb/step_data_service.dart';
+import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/core/utils/permission_helper.dart';
 import 'package:pulsedevice/core/utils/sync_background_taskhandler.dart';
@@ -771,7 +772,7 @@ class GlobalController extends GetxController {
     }
   }
 
-  /// channel
+  /// for ios channel
   void setupIosMessageChannel() {
     platform.setMethodCallHandler((call) async {
       if (call.method == 'alertDialog') {
@@ -792,6 +793,14 @@ class GlobalController extends GetxController {
 
           final fakeMessage = RemoteMessage(data: payload);
           await FirebaseHelper.handleMessage(fakeMessage);
+        } else if (raw.contains('true')) {
+          /// confirm 的dialog
+          Future.delayed(Duration(seconds: 1), () async {
+            final comfirm = await DialogHelper.showFamilyConfirmDialog();
+            if (comfirm!) {
+              Get.back(result: true);
+            }
+          });
         }
       }
     });
