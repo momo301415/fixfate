@@ -9,6 +9,7 @@ enum ConnectionStatus {
   unstable, // ⚠️ 連線不穩定
   disconnected, // ❌ 離線
   reconnecting, // 🔄 重新連線中
+  rateLimited, // 🚫 已達使用上限
 }
 
 class ConnectionStatusBar extends StatefulWidget {
@@ -180,6 +181,12 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
   }
 
   ConnectionStatus _getConnectionStatus() {
+    // 🔥 優先檢查 429 錯誤狀態
+    if (widget.controller.socketService.isRateLimited) {
+      print('🔍 狀態欄檢測：已達使用上限');
+      return ConnectionStatus.rateLimited;
+    }
+
     // 直接從 WebSocket 服務獲取狀態
     final isConnected = widget.controller.socketService.isConnected;
     final canSend = widget.controller.socketService.canSendMessage;
@@ -234,6 +241,8 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return Icons.wifi_off;
       case ConnectionStatus.reconnecting:
         return Icons.refresh;
+      case ConnectionStatus.rateLimited:
+        return Icons.block;
     }
   }
 
@@ -249,6 +258,8 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return const Color(0xFFF44336); // 紅色
       case ConnectionStatus.reconnecting:
         return const Color(0xFF2196F3); // 藍色
+      case ConnectionStatus.rateLimited:
+        return const Color(0xFF9C27B0); // 紫色
     }
   }
 
@@ -264,6 +275,8 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return '連線中，訊息將在連線後發送';
       case ConnectionStatus.reconnecting:
         return '重新連線中...';
+      case ConnectionStatus.rateLimited:
+        return '已達使用上限';
     }
   }
 

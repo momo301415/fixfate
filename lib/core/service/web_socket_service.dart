@@ -13,6 +13,7 @@ typedef OnHistoryResultCallback = void Function(
     List<Map<String, dynamic>> history);
 typedef OnSessionIdCallback = void Function(String sessionId);
 typedef OnFeedbackResultCallback = void Function(bool success);
+typedef OnRateLimitCallback = void Function(String message);
 
 class WebSocketService {
   final String url;
@@ -22,6 +23,7 @@ class WebSocketService {
   bool _isConnecting = false;
   int _reconnectAttempts = 0;
   static const int _maxReconnectAttempts = 5;
+  bool _isRateLimited = false;
 
   OnChunkCallback? onChunk;
   OnMessageStartCallback? onStart;
@@ -30,6 +32,7 @@ class WebSocketService {
   OnHistoryResultCallback? onHistoryResult;
   OnSessionIdCallback? onSessionIdReceived;
   OnFeedbackResultCallback? onFeedbackResult;
+  OnRateLimitCallback? onRateLimit;
 
   bool get isConnected {
     return _channel != null &&
@@ -39,6 +42,8 @@ class WebSocketService {
 
   bool get canSendMessage =>
       isConnected && sessionId != null && sessionId!.isNotEmpty;
+
+  bool get isRateLimited => _isRateLimited;
 
   WebSocketService(this.url);
 
@@ -100,6 +105,14 @@ class WebSocketService {
       _requestSessionIfNeeded();
     } catch (e) {
       _isConnecting = false;
+
+      if (e.toString().contains('429')) {
+        _isRateLimited = true;
+        print('🚫 已達使用上限 (429)');
+        onRateLimit?.call('已達使用上限');
+        return; // 不觸發重連
+      }
+
       print('❌ WebSocket 連線失敗: $e');
       onError?.call(e);
       _handleConnectionLoss();
@@ -280,6 +293,12 @@ class WebSocketService {
       print('🔄 強制請求新 session...');
       _send({"type": "sendmessage", "action": "get_session_id"});
     }
+  }
+
+  /// 重置 429 錯誤狀態
+  void resetRateLimit() {
+    _isRateLimited = false;
+    print('✅ 已重置 429 錯誤狀態');
   }
 
   void disconnect() {

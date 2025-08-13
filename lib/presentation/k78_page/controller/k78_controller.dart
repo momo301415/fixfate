@@ -61,6 +61,14 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LoadingHelper.show();
+
+      // 修正：預設顯示當前日期所在週的週一
+      if (currentIndex.value == 1) {
+        final today = DateTime.now();
+        final weekStart = today.subtract(Duration(days: today.weekday - 1));
+        currentDate.value = weekStart;
+      }
+
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
     });
@@ -287,10 +295,12 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
           "${currentDate.value.format(pattern: 'M月d日, EEEE', locale: 'zh_CN')}";
       loadDataByDate(currentDate.value, isLoading: isLoading);
     } else if (index == 1) {
-      final start = currentDate.value;
-      final end = start.add(Duration(days: 6));
+      // 修正：計算週一到週日的範圍
+      final startOfWeek = currentDate.value
+          .subtract(Duration(days: currentDate.value.weekday - 1));
+      final endOfWeek = startOfWeek.add(Duration(days: 6));
       formattedRange.value =
-          '${start.format(pattern: 'M月d日')} ～ ${end.format(pattern: 'M月d日')}';
+          '${startOfWeek.format(pattern: 'M月d日')} ～ ${endOfWeek.format(pattern: 'M月d日')}';
       loadDataByDate(currentDate.value, isLoading: isLoading);
     } else {
       formattedRange.value =
@@ -303,7 +313,11 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
     if (index == 0) {
       currentDate.value = currentDate.value.subtract(const Duration(days: 1));
     } else if (index == 1) {
-      currentDate.value = currentDate.value.subtract(const Duration(days: 7));
+      // 修正：移動到上一週的週一
+      final currentWeekStart = currentDate.value
+          .subtract(Duration(days: currentDate.value.weekday - 1));
+      final prevWeekStart = currentWeekStart.subtract(Duration(days: 7));
+      currentDate.value = prevWeekStart;
     } else {
       currentDate.value = DateTime(
         currentDate.value.year,
@@ -318,7 +332,11 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
     if (index == 0) {
       currentDate.value = currentDate.value.add(const Duration(days: 1));
     } else if (index == 1) {
-      currentDate.value = currentDate.value.add(const Duration(days: 7));
+      // 修正：移動到下一週的週一
+      final currentWeekStart = currentDate.value
+          .subtract(Duration(days: currentDate.value.weekday - 1));
+      final nextWeekStart = currentWeekStart.add(Duration(days: 7));
+      currentDate.value = nextWeekStart;
     } else {
       currentDate.value = DateTime(
         currentDate.value.year,
@@ -374,12 +392,9 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        final startOfWeek = DateTime(
-          currentDate.value.year,
-          currentDate.value.month,
-          currentDate.value.day,
-        ).subtract(Duration(days: currentDate.value.weekday - 1));
-
+        // 修正：計算週一開始的日期
+        final startOfWeek = currentDate.value
+            .subtract(Duration(days: currentDate.value.weekday - 1));
         final Map<int, List<int>> dayData = {};
 
         for (var e in oxyApiData) {
@@ -398,7 +413,9 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
           return FlSpot(entry.key.toDouble(), avg);
         }).toList();
 
+        // 修正：生成標準的週標籤（週一到週日）
         final weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
         titles = SideTitles(
           showTitles: true,
           interval: 1,
@@ -786,13 +803,21 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
 
   Future<void> selectWeekDate() async {
     final controller = Get.put(K88Controller());
-    controller.setInitialDate(currentDate.value);
+
+    // 修正：設定初始日期為當前選擇週的週一
+    final currentWeekStart = currentDate.value
+        .subtract(Duration(days: currentDate.value.weekday - 1));
+    controller.setInitialDate(currentWeekStart);
+
     await showModalBottomSheet(
       context: Get.context!,
       builder: (_) => K88Bottomsheet(
         onConfirm: (int year, int month, int day) {
           final selected = DateTime(year, month, day);
-          currentDate.value = selected;
+          // 修正：自動調整到該日期所在週的週一
+          final weekStart =
+              selected.subtract(Duration(days: selected.weekday - 1));
+          currentDate.value = weekStart;
           updateDateRange(1, isLoading: false);
         },
       ),
