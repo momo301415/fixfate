@@ -73,13 +73,18 @@ class K88Bottomsheet extends StatelessWidget {
                                       .selectedDatesFromCalendar.value,
                                   onValueChanged: (dates) async {
                                     if (dates.isNotEmpty) {
-                                      final startDate = dates.first;
-                                      final endDate = startDate
+                                      final selectedDate = dates.first;
+                                      // 修正：計算該日期所在週的週一到週日
+                                      final weekStart = selectedDate.subtract(
+                                          Duration(
+                                              days: selectedDate.weekday - 1));
+                                      final weekEnd = weekStart
                                           .add(const Duration(days: 6));
+
                                       await Future.delayed(
                                           Duration(milliseconds: 10));
                                       controller.selectedDatesFromCalendar
-                                          .value = [startDate, endDate];
+                                          .value = [weekStart, weekEnd];
                                     }
                                   },
                                 )),
@@ -102,10 +107,13 @@ class K88Bottomsheet extends StatelessWidget {
                             Expanded(
                               child: CustomElevatedButton(
                                 onPressed: () {
-                                  final date = controller
-                                      .selectedDatesFromCalendar.first;
-                                  if (date != null) {
-                                    onConfirm(date.year, date.month, date.day);
+                                  final dates = controller
+                                      .selectedDatesFromCalendar.value;
+                                  if (dates.isNotEmpty && dates.first != null) {
+                                    // 修正：傳遞週的開始日期（週一）
+                                    final weekStart = dates.first!;
+                                    onConfirm(weekStart.year, weekStart.month,
+                                        weekStart.day);
                                   }
 
                                   Get.back();

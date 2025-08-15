@@ -155,6 +155,36 @@ class K19Controller extends GetxController {
         isHistoryLoading.value = false;
       };
 
+      socketService.onFeedbackResult = (success) {
+        print('✅ 回饋結果: $success');
+      };
+
+      // 🔥 新增：429 錯誤處理
+      socketService.onRateLimit = (message) {
+        print('🚫 K19 收到 429 錯誤：$message');
+
+        // 清除 loading 狀態
+        if (_loadingMessageId != null) {
+          messages.removeWhere((msg) => msg.id == _loadingMessageId);
+          _loadingMessageId = null;
+        }
+
+        // 恢復發送功能
+        isAiReplying.value = false;
+
+        // 添加系統提示訊息
+        messages.add(ChatMessageModel(
+          text: "🚫 $message\n\n請稍後再試或聯繫客服。",
+          isUser: false,
+          id: "rate_limit_${DateTime.now().millisecondsSinceEpoch}",
+        ));
+
+        // 滾動到底部
+        scrollToBottom();
+
+        print('🚫 已顯示 429 錯誤提示，用戶無法發送新訊息');
+      };
+
       socketService.onError = (err) {
         print("❌ WebSocket 錯誤: $err");
         _isSocketInitialized = false; // 發生錯誤時退回，允許重連
@@ -195,6 +225,12 @@ class K19Controller extends GetxController {
     // 🔥 防呆：如果AI正在回覆，不允許發送新訊息
     if (isAiReplying.value) {
       print('⚠️ AI正在回覆中，請稍後再發送');
+      return;
+    }
+
+    // 🔥 防呆：如果已達到使用上限，不允許發送新訊息
+    if (socketService.isRateLimited) {
+      print('🚫 已達到使用上限，無法發送新訊息');
       return;
     }
 
@@ -263,6 +299,12 @@ class K19Controller extends GetxController {
     // 🔥 防呆：如果AI正在回覆，不允許發送新訊息
     if (isAiReplying.value) {
       print('⚠️ AI正在回覆中，請稍後再發送');
+      return;
+    }
+
+    // 🔥 防呆：如果已達到使用上限，不允許發送新訊息
+    if (socketService.isRateLimited) {
+      print('🚫 已達到使用上限，無法發送新訊息');
       return;
     }
 
@@ -636,11 +678,20 @@ class K19Controller extends GetxController {
   /// 🔥 新增：手動重連方法（供狀態欄使用）
   void retryConnection() {
     print('🔄 手動重連...');
+
+    // 🔥 重置 429 錯誤狀態，允許重新嘗試
+    socketService.resetRateLimit();
+
     socketService.manualReconnect();
   }
 
   /// 🔥 新增：獲取連接狀態描述（供狀態欄使用）
   String get connectionStatusDescription {
+    // 🔥 優先檢查 429 錯誤狀態
+    if (socketService.isRateLimited) {
+      return '已達使用上限';
+    }
+
     if (!socketService.isConnected) {
       return '離線';
     }
