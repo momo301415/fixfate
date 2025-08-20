@@ -147,13 +147,10 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
 
         if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
-
-          highCount.value = parsed.where((e) => e.type == "1").length;
-          lowCount.value = parsed.where((e) => e.type == "2").length;
-          normalCount.value = parsed.length - highCount.value - lowCount.value;
-        } else {
-          normalCount.value = parsed.length;
         }
+        highCount.value = parsed.where((e) => e.type == "1").length;
+        lowCount.value = parsed.where((e) => e.type == "2").length;
+        normalCount.value = parsed.length - highCount.value - lowCount.value;
 
         /// 圖表
         tempratureApiData.assignAll(parsed);
@@ -420,9 +417,16 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
         final Map<int, List<double>> dayData = {};
 
         for (var e in tempratureApiData) {
-          final date =
+          final fullTime =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
-          final diffDays = date.difference(startOfWeek).inDays;
+
+          // 修正：使用日期比較，避免時分秒造成的計算錯誤
+          final dataDate =
+              DateTime(fullTime.year, fullTime.month, fullTime.day);
+          final weekStart =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          final diffDays = dataDate.difference(weekStart).inDays;
+
           if (diffDays >= 0 && diffDays < 7) {
             dayData
                 .putIfAbsent(diffDays, () => [])

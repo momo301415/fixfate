@@ -4,6 +4,10 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:pulsedevice/core/app_export.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -18,6 +22,9 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   FlutterLocalNotificationsPlugin get flutterLocalNotificationsPlugin =>
       _flutterLocalNotificationsPlugin;
+
+  ApiService service = ApiService();
+  final gc = Get.find<GlobalController>();
 
   Future<void> initialize() async {
     // 初始化時區
@@ -81,101 +88,61 @@ class NotificationService {
   }
 
   /// 🔄 重新設計的主排程方法
-  Future<void> scheduleReminder(String frequency) async {
+  Future<void> scheduleReminder(String frequency, String eatTime) async {
     try {
-      // 1. 先清除所有用藥提醒
-      await _cancelAllMedicationReminders();
-
-      print('🔔 開始設定用藥提醒: $frequency');
+      var eatT = "";
+      print('🔔 開始設定用藥提醒frequency: $frequency');
+      print('🔔 開始設定用藥提醒eatTime: $eatTime');
+      switch (eatTime) {
+        case '飯前':
+          eatT = "MF";
+          break;
+        case '飯中':
+          eatT = "MM";
+          break;
+        case '飯後':
+          eatT = "MB";
+          break;
+        default:
+          eatT = "MB";
+          break;
+      }
 
       switch (frequency) {
         case '每天一次':
-          await _scheduleRepeatingNotification(
-            id: 1001,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '每天服藥提醒',
-          );
+          await setReminderInfo("D1", eatT);
+
           break;
 
         case '一天兩次':
-          await _scheduleRepeatingNotification(
-            id: 1002,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1003,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
+          await setReminderInfo("D2", eatT);
+
           break;
 
         case '一天三次':
-          await _scheduleRepeatingNotification(
-            id: 1004,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1005,
-            time: const TimeOfDay(hour: 13, minute: 0),
-            title: '中午服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1006,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
+          await setReminderInfo("D3", eatT);
+
           break;
 
         case '一天四次':
-          await _scheduleRepeatingNotification(
-            id: 1007,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1008,
-            time: const TimeOfDay(hour: 13, minute: 0),
-            title: '中午服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1009,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '傍晚服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1010,
-            time: const TimeOfDay(hour: 22, minute: 0),
-            title: '晚上服藥提醒',
-          );
+          await setReminderInfo("D4", eatT);
+
           break;
 
         case '每晚一次':
-          await _scheduleRepeatingNotification(
-            id: 1011,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
+          await setReminderInfo("S1", eatT);
+
           break;
 
         // 🔥 特殊處理：間隔天數提醒
         case '兩天一次':
-          await _scheduleIntervalReminder(
-            frequency: frequency,
-            intervalDays: 2,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '兩天一次服藥提醒',
-          );
+          await setReminderInfo("2D1", eatT);
+
           break;
 
         case '三天一次':
-          await _scheduleIntervalReminder(
-            frequency: frequency,
-            intervalDays: 3,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '三天一次服藥提醒',
-          );
+          await setReminderInfo("3D1", eatT);
+
           break;
 
         default:
@@ -517,5 +484,23 @@ class NotificationService {
     );
 
     print('alarm schedule result: $success');
+  }
+
+  /// 三天一次:3D1,兩天一次:2D1,每天一次:D1,一天兩次:D2,一天三次:D3,一天四次:D4,每晚一次:S1
+  /// 飯前:MF,飯後:MB,飯中:MM
+  Future<void> setReminderInfo(String type, String status) async {
+    try {
+      final payload = {
+        "userID": gc.apiId.value,
+        "type": type,
+        "status": status,
+      };
+      var res = await service.postJson(
+        Api.reminderInfo,
+        payload,
+      );
+
+      if (res.isNotEmpty) {}
+    } catch (e) {}
   }
 }

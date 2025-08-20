@@ -99,7 +99,8 @@ class K48Controller extends GetxController {
     try {
       if (alertTime.value.isNotEmpty) {
         print('🔔 啟用用藥提醒: ${alertTime.value}');
-        await notificationService.scheduleReminder(alertTime.value);
+        await notificationService.scheduleReminder(
+            alertTime.value, eatTime.value);
         SnackbarHelper.showBlueSnackbar(
           message: '已成功設定 ${alertTime.value} 的用藥提醒',
         );
@@ -191,13 +192,6 @@ class K48Controller extends GetxController {
       await _enableMedicationReminder();
     } else {
       await _disableMedicationReminder();
-    }
-  }
-
-  /// 🔄 保留原有方法（向後相容）
-  Future<void> scheduleReminderFromUserChoice(String frequency) async {
-    if (isSelectedSwitch.value) {
-      await notificationService.scheduleReminder(frequency);
     }
   }
 

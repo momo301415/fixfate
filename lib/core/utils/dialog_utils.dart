@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/utils/dialog_result.dart';
 import 'package:pulsedevice/presentation/five_dialog/controller/five_controller.dart';
 import 'package:pulsedevice/presentation/five_dialog/five_dialog.dart';
 import 'package:pulsedevice/presentation/three_dialog/controller/three_controller.dart';
@@ -80,6 +81,49 @@ class DialogHelper {
         insetPadding: EdgeInsets.zero,
       ),
     );
+  }
+
+  /// ✅ 新增支援 DialogResult 的 dialog 方法
+  static Future<DialogResult<T>> showCustomDialogWithResult<T>(
+    BuildContext context,
+    Widget className,
+  ) async {
+    final result = await showDialog<T>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: className,
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+      ),
+    );
+
+    // 根據回傳值判斷操作類型
+    if (result == null) {
+      // null 可能是取消或關閉，這裡統一視為取消
+      return DialogResult<T>.cancelled();
+    } else {
+      return DialogResult<T>.confirmed(result);
+    }
+  }
+
+  /// ✅ 新增支援 DialogResult 的 bottomsheet 方法
+  static Future<DialogResult<T>> showCustomBottomSheetWithResult<T>(
+    BuildContext context,
+    Widget className,
+  ) async {
+    final result = await showModalBottomSheet<T>(
+      context: context,
+      builder: (context) => className,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+
+    // 根據回傳值判斷操作類型
+    if (result == null) {
+      return DialogResult<T>.cancelled();
+    } else {
+      return DialogResult<T>.confirmed(result);
+    }
   }
 
   static Future<Map<String, dynamic>?> showFamilyNickNameDialog() {

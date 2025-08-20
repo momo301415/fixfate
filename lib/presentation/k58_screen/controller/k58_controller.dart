@@ -42,16 +42,9 @@ class K58Controller extends GetxController {
   }
 
   void getData() async {
-    var data = await HeartRateSettingStorage.getUserProfile(gc.userId.value);
-
-    ///如果db有資料
-    if (data != null) {
-      highThreshold.value = data.highThreshold.toDouble();
-      lowThreshold.value = data.lowThreshold.toDouble();
-      isSelectedSwitch.value = data.alertEnabled;
-    } else {
-      await gettingApi();
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      gettingApi();
+    });
   }
 
   Future<void> settingApi() async {

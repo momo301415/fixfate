@@ -95,7 +95,9 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
     final range = DateTimeUtils.getRangeByIndex(date, currentIndex.value);
     final start = range['start']!;
     final end = range['end']!;
-
+    print('date: $range');
+    print('start: $start');
+    print('end: $end');
     try {
       if (isLoading) {
         LoadingHelper.show();
@@ -417,7 +419,13 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
         for (var e in heartRateApiData) {
           final fullTime =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
-          final diffDays = fullTime.difference(startOfWeek).inDays;
+
+          // 修正：使用日期比較，避免時分秒造成的計算錯誤
+          final dataDate =
+              DateTime(fullTime.year, fullTime.month, fullTime.day);
+          final weekStart =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          final diffDays = dataDate.difference(weekStart).inDays;
 
           if (diffDays >= 0 && diffDays < 7) {
             dayData.putIfAbsent(diffDays, () => []).add(int.parse(e.heartrate));

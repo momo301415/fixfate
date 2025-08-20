@@ -41,15 +41,9 @@ class K61Controller extends GetxController {
   }
 
   void getData() async {
-    var data =
-        await BodyTemperatureSettingStorage.getUserProfile(gc.userId.value);
-    if (data != null) {
-      highThreshold.value = double.parse(data.highThreshold);
-      lowThreshold.value = double.parse(data.lowThreshold);
-      isSelectedSwitch.value = data.alertEnabled;
-    } else {
-      await gettingApi();
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      gettingApi();
+    });
   }
 
   Future<void> settingApi() async {

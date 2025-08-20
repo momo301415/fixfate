@@ -144,10 +144,10 @@ class DateTimeUtils {
           .add(const Duration(days: 1))
           .subtract(const Duration(seconds: 1));
     } else if (index == 1) {
-      start = DateTime(date.year, date.month, date.day);
-      end = start
-          .add(const Duration(days: 7))
-          .subtract(const Duration(seconds: 1));
+      // 修正：週模式自動調整到週一到週日
+      start = date.subtract(Duration(days: date.weekday - 1)); // 調整到週一
+      end = start.add(const Duration(days: 6)) // 週一 + 6天 = 週日
+          ; // 週日 23:59:59
     } else {
       start = DateTime(date.year, date.month, 1);
       end = DateTime(date.year, date.month + 1, 1)

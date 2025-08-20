@@ -38,15 +38,9 @@ class Two9Controller extends GetxController {
   }
 
   void getData() async {
-    var data = await PressureSettingStorage.getUserProfile(gc.userId.value);
-
-    isSelectedSwitch.value = data?.alertEnabled ?? false;
-    if (data != null) {
-      highThreshold.value = data.highThreshold.toDouble();
-      isSelectedSwitch.value = data.alertEnabled;
-    } else {
-      await gettingApi();
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      gettingApi();
+    });
   }
 
   Future<void> settingApi() async {
