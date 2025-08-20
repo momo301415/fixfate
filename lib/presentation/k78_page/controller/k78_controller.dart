@@ -128,12 +128,9 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
 
         if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
-
-          lowCount.value = parsed.where((e) => e.type == "2").length;
-          normalCount.value = parsed.length - lowCount.value;
-        } else {
-          normalCount.value = parsed.length;
         }
+        lowCount.value = parsed.where((e) => e.type == "2").length;
+        normalCount.value = parsed.length - lowCount.value;
 
         /// 圖表
         oxyApiData.assignAll(parsed);

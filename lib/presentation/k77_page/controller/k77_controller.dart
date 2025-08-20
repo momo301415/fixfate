@@ -146,13 +146,10 @@ class K77Controller extends GetxController with WidgetsBindingObserver {
 
         if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
-
-          highCount.value = parsed.where((e) => e.type == "1").length;
-          lowCount.value = parsed.where((e) => e.type == "2").length;
-          normalCount.value = parsed.length - highCount.value - lowCount.value;
-        } else {
-          normalCount.value = parsed.length;
         }
+        highCount.value = parsed.where((e) => e.type == "1").length;
+        lowCount.value = parsed.where((e) => e.type == "2").length;
+        normalCount.value = parsed.length - highCount.value - lowCount.value;
 
         /// 圖表
         heartRateApiData.assignAll(parsed);
