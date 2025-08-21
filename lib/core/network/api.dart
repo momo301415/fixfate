@@ -26,7 +26,8 @@ class Api {
   static const String healthRecordList = "healthRecord/list";
   static const String smsVerify = "forgetPassword/valiCode";
   static const String forgetPasswordSet = "forgetPassword/set";
-  static const String reminderInfo = "reminderInfo/set";
+  static const String reminderInfoSet = "reminderInfo/set";
+  static const String reminderInfoGet = "reminderInfo/get";
 
   ///-------- aws api
   static const String awsUrl =

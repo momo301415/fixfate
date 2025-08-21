@@ -69,7 +69,7 @@ class K61Controller extends GetxController {
   }
 
   Future<void> gettingApi() async {
-    LoadingHelper.show();
+    // LoadingHelper.show();
     try {
       final payload = {
         "codeType": "temperature",
@@ -79,7 +79,7 @@ class K61Controller extends GetxController {
         Api.measurementGet,
         payload,
       );
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty) {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {
