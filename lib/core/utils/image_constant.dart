@@ -44,7 +44,7 @@ class ImageConstant {
       '$imagePath/img_union_white_a700_157x180.svg';
 
   static String imgArrowDown = '$imagePath/img_arrow_down.svg';
-
+  static String img11611 = '$imagePath/img_116_1_1.png';
   static String imgUnionWhiteA700506x374 =
       '$imagePath/img_union_white_a700_506x374.png';
 
@@ -289,4 +289,5 @@ class ImageConstant {
   static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
 
   static String imgChat = '$imagePath/chat.png';
+  static String imgImage764 = '$imagePath/img_image_764.png';
 }

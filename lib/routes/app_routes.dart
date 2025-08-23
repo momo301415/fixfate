@@ -20,6 +20,8 @@ import 'package:pulsedevice/presentation/k7_scrren/binding/k7_binding.dart';
 import 'package:pulsedevice/presentation/k7_scrren/k7_screen.dart';
 import 'package:pulsedevice/presentation/log_screen/binding/log_binding.dart';
 import 'package:pulsedevice/presentation/log_screen/log_screen.dart';
+import 'package:pulsedevice/presentation/one3_find_device_screen/binding/one3_binding.dart';
+import 'package:pulsedevice/presentation/one3_find_device_screen/one3_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
@@ -131,7 +133,7 @@ class AppRoutes {
   static const String k29Page = '/k29_page';
 
   static const String k30Screen = '/k30_screen';
-  
+
   static const String k30SelectDeviceScreen = '/k30_select_device_screen';
 
 
@@ -226,6 +228,10 @@ class AppRoutes {
   static const String k19Screen = '/k19_screen';
 
   static const String k20Screen = '/k20_screen';
+  
+  static const String one3FindDeviceScreen = '/one3_find_device_screen';
+
+
 
   static List<GetPage> pages = [
     /// 隱私權頁
@@ -276,6 +282,13 @@ class AppRoutes {
       page: () => One3Screen(),
       bindings: [One3Binding()],
     ),
+    /// 尋找設備頁
+    GetPage(
+      name: one3FindDeviceScreen,
+      page: () => One3FindDeviceScreen(),
+      bindings: [One3FindDeviceBinding()],
+    ),
+
 
     /// 重設密碼頁
     GetPage(

@@ -8,4 +8,8 @@ import '../models/k30_model.dart';
 /// current k30ModelObj
 class K30SelectDeviceController extends GetxController {
   Rx<K30Model> k30ModelObj = K30Model().obs;
+
+  void goOne3FindDeviceScreen() {
+    Get.toNamed(AppRoutes.one3FindDeviceScreen);
+  }
 }

@@ -284,6 +284,8 @@ class CustomTextStyles {
   // Headline text style
   static TextStyle get headlineSmallPrimary => theme.textTheme.headlineSmall!
       .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.85));
+  static TextStyle get labelLargePrimary_1 => theme.textTheme.labelLarge!
+      .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.8));
   static TextStyle get headlineLargePrimaryContainer =>
       theme.textTheme.headlineLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,

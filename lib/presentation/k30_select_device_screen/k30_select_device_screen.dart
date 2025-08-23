@@ -54,7 +54,12 @@ class K30SelectDeviceScreen extends GetWidget<K30SelectDeviceController> {
             (index) {
               DeviceselectiongridItemModel model = controller
                   .k30ModelObj.value.deviceselectiongridItemList.value[index];
-              return DeviceselectiongridItemWidget(model);
+              return GestureDetector(
+                onTap: () {
+                  controller.goOne3FindDeviceScreen();
+                },
+                child: DeviceselectiongridItemWidget(model),
+              );
             },
           ),
         ),
