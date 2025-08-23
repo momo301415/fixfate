@@ -45,7 +45,7 @@ class K40Screen extends GetWidget<K40Controller> {
               ),
               SizedBox(height: mediaHeight * 0.5),
             ] else ...[
-              SizedBox(height: 24.h),
+              
               ListView.separated(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -57,7 +57,9 @@ class K40Screen extends GetWidget<K40Controller> {
                       .k40ModelObj.value.listpulseringItemList.value[index];
                   return GestureDetector(
                       onTap: () {
-                        controller.goK45Screen(controller.selectDevice[index]);
+                        // controller.goK45Screen(controller.selectDevice[index]);
+                        controller.goDeviceDetailPage(item);
+
                       },
                       child: ListpulseringItemWidget(item));
                 },

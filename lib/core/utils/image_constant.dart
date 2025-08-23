@@ -34,6 +34,7 @@ class ImageConstant {
   static String imgFrame86618 = '$imagePath/img_frame_86618.png';
   static String imgFrame866181 = '$imagePath/img_frame_86618_1.png';
   static String imgIosMatch = '$imagePath/ios_match.png';
+
   static String imgFrame8661854x54 = '$imagePath/img_frame_86618_54x54.png';
   static String imgClosePrimarycontainer1 =
       '$imagePath/img_close_primarycontainer_1.svg';
@@ -294,6 +295,11 @@ class ImageConstant {
   static String imgImage764 = '$imagePath/img_image_764.png';
   static String imgUCheckCirclePrimary2 =
       '$imagePath/img_u_check_circle_primary_2.svg';
-      static String imgFrameErrorcontainer1 =
+  static String imgFrameErrorcontainer1 =
       '$imagePath/img_frame_errorcontainer_1.svg';
+
+  static String imgUtachometerfastalt = '$imagePath/img_utachometerfastalt.svg';
+  static String imgSwitch = '$imagePath/img_switch.svg';
+  static String imgSwitchPrimary = '$imagePath/img_switch_primary.svg';
+  static String imgIconPrimary = '$imagePath/img_icon_primary.svg';
 }

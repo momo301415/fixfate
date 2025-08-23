@@ -108,6 +108,7 @@ class K40Controller extends GetxController {
       } else {
         // goK10Screen();
         gotoK30SelectDeviceScreen();
+
       }
     } catch (e) {
       rethrow;
@@ -129,8 +130,12 @@ class K40Controller extends GetxController {
       power.value = "";
     }
   }
-
+  
   void gotoK30SelectDeviceScreen() {
     Get.toNamed(AppRoutes.k30SelectDeviceScreen);
+  }
+
+  void goDeviceDetailPage(ListpulseringItemModel item) {
+    Get.toNamed(AppRoutes.k36DeviceDetailesScreen, arguments: item);
   }
 }

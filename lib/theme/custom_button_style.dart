@@ -203,4 +203,21 @@ class CustomButtonStyles {
       side: WidgetStateProperty.all<BorderSide>(
         BorderSide(color: Colors.transparent),
       ));
+  static BoxDecoration get gradientCyanToPrimaryTL24Decoration => BoxDecoration(
+        borderRadius: BorderRadius.circular(24.h),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.secondaryContainer,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(0, 4),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: Alignment(0.15, 0),
+          end: Alignment(0.75, 0),
+          colors: [appTheme.cyan300, theme.colorScheme.primary],
+        ),
+      );
+  
 }
