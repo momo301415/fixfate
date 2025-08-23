@@ -796,4 +796,5 @@ final Map<String, String> en = {
   "lbl_scanfit2": "ScanFit\n智能體脂秤",
   "lbl429": "請選擇要綁定的裝置",
   "lbl428": "裝置選擇",
+  "msg_scanfit2": "確定要和 ScanFit 智能體脂秤 配對嗎？",
 };

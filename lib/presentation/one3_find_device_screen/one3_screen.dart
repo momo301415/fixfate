@@ -144,7 +144,12 @@ class One3FindDeviceScreen extends GetWidget<One3FindDeviceController> {
         itemBuilder: (context, index) {
           DevicelistsectionItemModel model = controller
               .devicelistsectionItemList[index];
-          return DevicelistsectionItemWidget(model);
+          return GestureDetector(
+            onTap: () {
+              controller.showMatchDeviceDialog();
+            },
+            child: DevicelistsectionItemWidget(model),
+          );
         },
       ),
     );
