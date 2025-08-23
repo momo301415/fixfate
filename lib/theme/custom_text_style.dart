@@ -473,4 +473,14 @@ class CustomTextStyles {
         color: appTheme.whiteA700.withValues(alpha: 0.45),
         fontSize: 16.fSize,
       );
+
+  static TextStyle get bodySmall11 =>
+      theme.textTheme.bodySmall!.copyWith(fontSize: 11.fSize);
+
+      static TextStyle get labelMediumPrimarySemiBold =>
+      theme.textTheme.labelMedium!.copyWith(
+        color: theme.colorScheme.primary,
+        fontSize: 11.fSize,
+        fontWeight: FontWeight.w600,
+      );
 }

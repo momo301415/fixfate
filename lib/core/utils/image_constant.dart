@@ -35,7 +35,6 @@ class ImageConstant {
   static String imgFrame866181 = '$imagePath/img_frame_86618_1.png';
   static String imgFrame8661854x54 = '$imagePath/img_frame_86618_54x54.png';
 
-
   static String img01 = '$imagePath/img_01.svg';
 
   static String img = '$imagePath/img_.svg';
@@ -290,4 +289,8 @@ class ImageConstant {
 
   static String imgChat = '$imagePath/chat.png';
   static String imgImage764 = '$imagePath/img_image_764.png';
+  static String imgUCheckCirclePrimary2 =
+      '$imagePath/img_u_check_circle_primary_2.svg';
+      static String imgFrameErrorcontainer1 =
+      '$imagePath/img_frame_errorcontainer_1.svg';
 }
