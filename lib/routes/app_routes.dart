@@ -8,6 +8,8 @@ import 'package:pulsedevice/presentation/k20_screen/binding/k20_binding.dart';
 import 'package:pulsedevice/presentation/k20_screen/k20_screen.dart';
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+import 'package:pulsedevice/presentation/k30_select_device_screen/binding/k30_select_device_binding.dart';
+import 'package:pulsedevice/presentation/k30_select_device_screen/k30_select_device_screen.dart';
 import 'package:pulsedevice/presentation/k5_screen/binding/k5_binding.dart';
 import 'package:pulsedevice/presentation/k5_screen/k5_screen.dart';
 import 'package:pulsedevice/presentation/k6_screen/binding/k6_binding.dart';
@@ -129,6 +131,9 @@ class AppRoutes {
   static const String k29Page = '/k29_page';
 
   static const String k30Screen = '/k30_screen';
+  
+  static const String k30SelectDeviceScreen = '/k30_select_device_screen';
+
 
   static const String k39Screen = '/k39_screen';
 
@@ -287,6 +292,12 @@ class AppRoutes {
       name: k30Screen,
       page: () => K30Screen(),
       bindings: [K30Binding()],
+    ),
+    /// 選擇設備頁面
+    GetPage(
+      name: k30SelectDeviceScreen,
+      page: () => K30SelectDeviceScreen(),
+      bindings: [K30SelectDeviceBinding()],
     ),
 
     /// 我的設備頁面

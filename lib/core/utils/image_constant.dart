@@ -32,6 +32,9 @@ class ImageConstant {
       '$imagePath/img_close_primarycontainer.svg';
 
   static String imgFrame86618 = '$imagePath/img_frame_86618.png';
+  static String imgFrame866181 = '$imagePath/img_frame_86618_1.png';
+  static String imgFrame8661854x54 = '$imagePath/img_frame_86618_54x54.png';
+
 
   static String img01 = '$imagePath/img_01.svg';
 
