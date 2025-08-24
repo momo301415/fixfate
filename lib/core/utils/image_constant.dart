@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 class ImageConstant {
+  static String imgFiSrHourglass = '$imagePath/img_fi_sr_hourglass.svg';
   // Image folder path
   static String imagePath = 'assets/images';
 

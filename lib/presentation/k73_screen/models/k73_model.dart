@@ -69,6 +69,13 @@ class K73Model {
         label: "lbl221".tr.obs,
         value: "".obs,
         unit: "lbl193".tr.obs),
+    ListViewItemModel(
+        isAlert: false.obs,
+        loadTime: "lbl_1".tr.obs,
+        icon: ImageConstant.imgIcon40x40.obs,
+        label: "lbl79".tr.obs,
+        value: "".obs,
+        unit: "lbl193".tr.obs),
   ]);
 
   Rx<List<FamilyItemModel>> familyItemList = Rx([]);

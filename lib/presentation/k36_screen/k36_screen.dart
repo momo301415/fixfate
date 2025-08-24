@@ -39,6 +39,10 @@ class K36DeviceDetailesScreen extends GetWidget<K36Controller> {
                   buttonStyle: CustomButtonStyles.none,
                   decoration:
                       CustomButtonStyles.gradientCyanToPrimaryTL24Decoration,
+                  onPressed: () async {
+                    final res =
+                        await Get.toNamed(AppRoutes.k76Screen, arguments: 7);
+                  },
                 ),
                 _buildAutoClaimSettingsSection(),
                 _buildDataClaimSection(),
@@ -133,43 +137,55 @@ class K36DeviceDetailesScreen extends GetWidget<K36Controller> {
         spacing: 26,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: EdgeInsets.fromLTRB(24.h, 26.h, 24.h, 24.h),
-            decoration: AppDecoration.outlineGray200,
-            width: double.maxFinite,
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildClaimNotificationSection(
-                    one: "lbl441".tr,
-                    notificationMessage: "msg43".tr,
+          GestureDetector(
+            onTap: () => controller.isAutoComfirn.value =
+                !controller.isAutoComfirn.value,
+            child: Container(
+              padding: EdgeInsets.fromLTRB(24.h, 26.h, 24.h, 24.h),
+              decoration: AppDecoration.outlineGray200,
+              width: double.maxFinite,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildClaimNotificationSection(
+                      one: "lbl441".tr,
+                      notificationMessage: "msg43".tr,
+                    ),
                   ),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgSwitch,
-                  height: 30.h,
-                  width: 50.h,
-                ),
-              ],
+                  Obx(() => CustomImageView(
+                        imagePath: controller.isAutoComfirn.value
+                            ? ImageConstant.imgSwitchPrimary
+                            : ImageConstant.imgSwitch,
+                        height: 30.h,
+                        width: 50.h,
+                      )),
+                ],
+              ),
             ),
           ),
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.symmetric(horizontal: 24.h),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildClaimNotificationSection(
-                    one: "lbl442".tr,
-                    notificationMessage: "msg_52".tr,
+          GestureDetector(
+            onTap: () =>
+                controller.isComfirnNot.value = !controller.isComfirnNot.value,
+            child: Container(
+              width: double.maxFinite,
+              margin: EdgeInsets.symmetric(horizontal: 24.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildClaimNotificationSection(
+                      one: "lbl442".tr,
+                      notificationMessage: "msg_52".tr,
+                    ),
                   ),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgSwitchPrimary,
-                  height: 30.h,
-                  width: 50.h,
-                ),
-              ],
+                  Obx(() => CustomImageView(
+                        imagePath: controller.isComfirnNot.value
+                            ? ImageConstant.imgSwitchPrimary
+                            : ImageConstant.imgSwitch,
+                        height: 30.h,
+                        width: 50.h,
+                      )),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 28.h),
@@ -210,7 +226,10 @@ class K36DeviceDetailesScreen extends GetWidget<K36Controller> {
                     ],
                   ),
                 ),
-                Text("lbl443".tr, style: CustomTextStyles.bodySmallPrimary10_1),
+                GestureDetector(
+                  onTap: () => controller.showDeteleialog(),
+                  child: Text("lbl443".tr, style: CustomTextStyles.bodySmallPrimary10_1),
+                ),
               ],
             ),
           ),
