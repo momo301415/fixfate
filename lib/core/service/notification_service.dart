@@ -4,6 +4,9 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:pulsedevice/core/app_export.dart';
+import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -18,6 +21,9 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   FlutterLocalNotificationsPlugin get flutterLocalNotificationsPlugin =>
       _flutterLocalNotificationsPlugin;
+
+  ApiService service = ApiService();
+  final gc = Get.find<GlobalController>();
 
   Future<void> initialize() async {
     // 初始化時區
@@ -41,208 +47,6 @@ class NotificationService {
     );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  // 🔄 修改後的單一通知排程方法
-  Future<void> _scheduleNotification({
-    required int id,
-    required tz.TZDateTime dateTime,
-    required String title,
-    bool isRepeating = false,
-  }) async {
-    print(
-        '⏰ 排程通知: id=$id time=$dateTime title=$title isRepeating=$isRepeating');
-
-    await _flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      '用藥提醒',
-      title,
-      dateTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'medication_channel',
-          '用藥提醒',
-          channelDescription: '用藥提醒通知',
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      // 🔥 關鍵修改：根據是否重複來決定匹配模式
-      matchDateTimeComponents: isRepeating
-          ? DateTimeComponents.time // 每天重複
-          : DateTimeComponents.dateAndTime, // 只觸發一次
-    );
-  }
-
-  /// 🔄 重新設計的主排程方法
-  Future<void> scheduleReminder(String frequency) async {
-    try {
-      // 1. 先清除所有用藥提醒
-      await _cancelAllMedicationReminders();
-
-      print('🔔 開始設定用藥提醒: $frequency');
-
-      switch (frequency) {
-        case '每天一次':
-          await _scheduleRepeatingNotification(
-            id: 1001,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '每天服藥提醒',
-          );
-          break;
-
-        case '一天兩次':
-          await _scheduleRepeatingNotification(
-            id: 1002,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1003,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
-          break;
-
-        case '一天三次':
-          await _scheduleRepeatingNotification(
-            id: 1004,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1005,
-            time: const TimeOfDay(hour: 13, minute: 0),
-            title: '中午服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1006,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
-          break;
-
-        case '一天四次':
-          await _scheduleRepeatingNotification(
-            id: 1007,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '早上服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1008,
-            time: const TimeOfDay(hour: 13, minute: 0),
-            title: '中午服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1009,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '傍晚服藥提醒',
-          );
-          await _scheduleRepeatingNotification(
-            id: 1010,
-            time: const TimeOfDay(hour: 22, minute: 0),
-            title: '晚上服藥提醒',
-          );
-          break;
-
-        case '每晚一次':
-          await _scheduleRepeatingNotification(
-            id: 1011,
-            time: const TimeOfDay(hour: 18, minute: 0),
-            title: '晚上服藥提醒',
-          );
-          break;
-
-        // 🔥 特殊處理：間隔天數提醒
-        case '兩天一次':
-          await _scheduleIntervalReminder(
-            frequency: frequency,
-            intervalDays: 2,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '兩天一次服藥提醒',
-          );
-          break;
-
-        case '三天一次':
-          await _scheduleIntervalReminder(
-            frequency: frequency,
-            intervalDays: 3,
-            time: const TimeOfDay(hour: 8, minute: 0),
-            title: '三天一次服藥提醒',
-          );
-          break;
-
-        default:
-          print('⚠️ 不支援的用藥頻率: $frequency');
-          return;
-      }
-
-      print('✅ 用藥提醒設定完成: $frequency');
-    } catch (e) {
-      print('❌ 設定用藥提醒失敗: $e');
-      rethrow;
-    }
-  }
-
-  /// 🔄 新增：設定重複通知的輔助方法
-  Future<void> _scheduleRepeatingNotification({
-    required int id,
-    required TimeOfDay time,
-    required String title,
-  }) async {
-    final now = tz.TZDateTime.now(tz.local);
-    final scheduledDate = _nextTimeOfDay(now, time);
-
-    await _scheduleNotification(
-      id: id,
-      dateTime: scheduledDate,
-      title: title,
-      isRepeating: true, // 🔥 關鍵：標記為重複通知
-    );
-
-    print(
-        '✅ 已設定重複通知: $title 於 ${time.hour}:${time.minute.toString().padLeft(2, '0')}');
-  }
-
-  /// 🔄 新增：處理間隔天數的提醒
-  Future<void> _scheduleIntervalReminder({
-    required String frequency,
-    required int intervalDays,
-    required TimeOfDay time,
-    required String title,
-  }) async {
-    final now = tz.TZDateTime.now(tz.local);
-    final schedules = <tz.TZDateTime>[];
-
-    // 找到下一個提醒時間
-    var nextTime = _nextTimeOfDay(now, time);
-
-    // 設定未來90天內的間隔提醒（足夠長的時間）
-    for (int i = 0; i < 90; i += intervalDays) {
-      final scheduleTime = nextTime.add(Duration(days: i));
-      schedules.add(scheduleTime);
-    }
-
-    // 為每個時間點設定獨立通知
-    int baseId = frequency == '兩天一次' ? 2000 : 3000;
-    for (int i = 0; i < schedules.length && i < 30; i++) {
-      // 限制最多30個通知
-      await _scheduleNotification(
-        id: baseId + i,
-        dateTime: schedules[i],
-        title: title,
-        isRepeating: false, // 單次觸發
-      );
-    }
-
-    print(
-        '✅ 已設定間隔提醒: $title，間隔 $intervalDays 天，共 ${schedules.length.clamp(0, 30)} 個通知');
   }
 
   /// 🔄 新增：計算指定時間的下一次觸發

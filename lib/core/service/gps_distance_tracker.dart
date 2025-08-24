@@ -57,6 +57,8 @@ class GpsDistanceTracker {
   /// 位置更新回調
   void _onLocationUpdate(Position newPosition) {
     if (_lastPosition != null) {
+      print(
+          '🗺️ [$_tag] 位置更新: ${newPosition.latitude}, ${newPosition.longitude}');
       // 🧮 計算距離
       double distance = Geolocator.distanceBetween(
         _lastPosition!.latitude,

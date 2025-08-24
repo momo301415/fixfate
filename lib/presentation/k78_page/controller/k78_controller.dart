@@ -61,14 +61,6 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LoadingHelper.show();
-
-      // 修正：預設顯示當前日期所在週的週一
-      if (currentIndex.value == 1) {
-        final today = DateTime.now();
-        final weekStart = today.subtract(Duration(days: today.weekday - 1));
-        currentDate.value = weekStart;
-      }
-
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
     });
@@ -136,12 +128,9 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
 
         if (lastData.type == "1" || lastData.type == "2") {
           isAlert.value = true;
-
-          lowCount.value = parsed.where((e) => e.type == "2").length;
-          normalCount.value = parsed.length - lowCount.value;
-        } else {
-          normalCount.value = parsed.length;
         }
+        lowCount.value = parsed.where((e) => e.type == "2").length;
+        normalCount.value = parsed.length - lowCount.value;
 
         /// 圖表
         oxyApiData.assignAll(parsed);
@@ -392,15 +381,25 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        // 修正：計算週一開始的日期
-        final startOfWeek = currentDate.value
-            .subtract(Duration(days: currentDate.value.weekday - 1));
+        final startOfWeek = DateTime(
+          currentDate.value.year,
+          currentDate.value.month,
+          currentDate.value.day,
+        ).subtract(Duration(days: currentDate.value.weekday - 1));
+
         final Map<int, List<int>> dayData = {};
 
         for (var e in oxyApiData) {
-          final date =
+          final fullTime =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
-          final diffDays = date.difference(startOfWeek).inDays;
+
+          // 修正：使用日期比較，避免時分秒造成的計算錯誤
+          final dataDate =
+              DateTime(fullTime.year, fullTime.month, fullTime.day);
+          final weekStart =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          final diffDays = dataDate.difference(weekStart).inDays;
+
           if (diffDays >= 0 && diffDays < 7) {
             dayData
                 .putIfAbsent(diffDays, () => [])
@@ -413,9 +412,7 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
           return FlSpot(entry.key.toDouble(), avg);
         }).toList();
 
-        // 修正：生成標準的週標籤（週一到週日）
         final weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
         titles = SideTitles(
           showTitles: true,
           interval: 1,

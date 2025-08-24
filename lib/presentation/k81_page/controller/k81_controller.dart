@@ -304,9 +304,16 @@ class K81Controller extends GetxController with WidgetsBindingObserver {
         final Map<int, List<int>> dayData = {};
 
         for (var e in stepApiData) {
-          final date =
+          final fullTime =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
-          final diffDays = date.difference(startOfWeek).inDays;
+
+          // 修正：使用日期比較，避免時分秒造成的計算錯誤
+          final dataDate =
+              DateTime(fullTime.year, fullTime.month, fullTime.day);
+          final weekStart =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          final diffDays = dataDate.difference(weekStart).inDays;
+
           if (diffDays >= 0 && diffDays < 7) {
             dayData.putIfAbsent(diffDays, () => []).add(int.parse(e.step));
           }

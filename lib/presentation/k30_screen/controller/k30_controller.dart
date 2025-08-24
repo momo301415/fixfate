@@ -109,76 +109,99 @@ class K30Controller extends GetxController {
     }
   }
 
+  /// ✅ 優化版本：解決取消按鈕覆蓋問題
   Future<void> showInputNickName() async {
-    final result = await DialogHelper.showCustomDialog(
+    final result = await DialogHelper.showCustomDialogWithResult<String>(
         Get.context!, K32Dialog(Get.put(K32Controller())));
-    if (result != null && result.isNotEmpty) {
-      nickName.value = result;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      nickName.value = result.value!;
     }
+    // 取消時不做任何動作，保持原值
   }
 
+  /// ✅ 優化版本：解決取消按鈕覆蓋問題
   Future<void> showInputEmail() async {
-    final result = await DialogHelper.showCustomDialog<String>(
+    final result = await DialogHelper.showCustomDialogWithResult<String>(
         Get.context!, K34Dialog(Get.put(K34Controller())));
-    if (result != null && result.isNotEmpty) {
-      email.value = result;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      email.value = result.value!;
     }
+    // 取消時不做任何動作，保持原值
   }
 
+  /// ✅ 優化版本：解決取消按鈕覆蓋問題，但保留預設值邏輯
   Future<void> selectGender() async {
-    final result = await DialogHelper.showCustomBottomSheet(
+    final result = await DialogHelper.showCustomBottomSheetWithResult<String>(
         Get.context!, K35Bottomsheet(Get.put(K35Controller())));
-    if (result != null && result.isNotEmpty) {
-      gender.value = result;
-    } else {
-      // 預設
-      gender.value = "男";
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      gender.value = result.value!;
+    } else if (gender.value.isEmpty) {
+      // 只有在欄位為空且首次設定時才給預設值
+      gender.value = '男';
     }
+    // 取消時且已有值，不做任何動作
   }
 
   Future<void> selectBirth() async {
     final result = await showModalBottomSheet(
         context: Get.context!,
         builder: (_) => K22Bottomsheet(Get.put(K22Controller())));
-    if (result != null && result.isNotEmpty) {
-      birth.value = result;
-    } else {
-      // 預設
-      birth.value = "1985.03.14";
-    }
+    birth.value = result;
   }
 
+  /// ✅ 優化版本：解決取消按鈕會覆蓋已有值的問題
   Future<void> showInputHeight() async {
-    final result = await DialogHelper.showCustomDialog(
+    final result = await DialogHelper.showCustomDialogWithResult<String>(
         Get.context!, K23Dialog(Get.put(K23Controller())));
-    if (result != null && result.isNotEmpty) {
-      height.value = double.parse(result);
-    } else {
-      // 預設
-      height.value = 175;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      height.value = double.tryParse(result.value!) ?? height.value;
+    } else if (height.value <= 0) {
+      // 只有在欄位為空(0)時才設定預設值
+      height.value = 175.0;
     }
+    // 取消時且已有值，不做任何動作
   }
 
+  /// ✅ 優化版本：解決取消按鈕會覆蓋已有值的問題
   Future<void> showInputWeight() async {
-    final result = await DialogHelper.showCustomDialog(
+    final result = await DialogHelper.showCustomDialogWithResult<String>(
         Get.context!, K25Dialog(Get.put(K25Controller())));
-    if (result != null && result.isNotEmpty) {
-      weight.value = double.parse(result);
-    } else {
-      // 預設
-      weight.value = 65;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      weight.value = double.tryParse(result.value!) ?? weight.value;
+    } else if (weight.value <= 0) {
+      weight.value = 65.0;
     }
+    // 取消時且已有值，不做任何動作
   }
 
+  /// ✅ 優化版本：解決取消按鈕會覆蓋已有值的問題
   Future<void> showInputWaistline() async {
-    final result = await DialogHelper.showCustomDialog(
+    final result = await DialogHelper.showCustomDialogWithResult<String>(
         Get.context!, K28Dialog(Get.put(K28Controller())));
-    if (result != null && result.isNotEmpty) {
-      waistline.value = double.parse(result);
-    } else {
-      // 預設
-      waistline.value = 100;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      waistline.value = double.tryParse(result.value!) ?? waistline.value;
+    } else if (waistline.value <= 0) {
+      waistline.value = 100.0;
     }
+    // 取消時且已有值，不做任何動作
   }
 
   Future<void> showInputTexted() async {
@@ -189,12 +212,19 @@ class K30Controller extends GetxController {
     }
   }
 
+  /// ✅ 優化版本：解決取消按鈕覆蓋問題，但保留預設值邏輯
   Future<void> selectDrink() async {
-    final result = await DialogHelper.showCustomBottomSheet(
+    final result = await DialogHelper.showCustomBottomSheetWithResult<String>(
         Get.context!, K90Bottomsheet(Get.put(K90Controller())));
-    if (result != null && result.isNotEmpty) {
-      drikValue.value = result;
+
+    if (result.isConfirmed &&
+        result.value != null &&
+        result.value!.isNotEmpty) {
+      drikValue.value = result.value!;
+    } else if (drikValue.value.isEmpty) {
+      drikValue.value = 'lbl300_1'.tr;
     }
+    // 取消時且已有值，不做任何動作
   }
 
   Future<void> selectSmoke() async {
@@ -424,9 +454,9 @@ class K30Controller extends GetxController {
       birth.value = user.birthDate ?? '';
       list[3].tf1?.value = user.birthDate ?? '';
       height.value = user.height ?? 175;
-      list[4].tf1?.value = user.height.toString();
+      list[5].tf1?.value = user.height.toString() + " cm";
       weight.value = user.weight ?? 65;
-      list[5].tf1?.value = user.weight.toString();
+      list[4].tf1?.value = user.weight.toString() + " kg";
       waistline.value = user.waist ?? 100;
 
       list2[0].tf1?.value = user.drinking ?? 'lbl300_1'.tr;
