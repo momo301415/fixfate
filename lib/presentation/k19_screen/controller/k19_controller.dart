@@ -185,6 +185,87 @@ class K19Controller extends GetxController {
         print('🚫 已顯示 429 錯誤提示，用戶無法發送新訊息');
       };
 
+      // 🔥 新增：HTTP 4xx 客戶端錯誤處理
+      socketService.onHttpClientError = (message, statusCode) {
+        print('🚫 K19 收到 HTTP 客戶端錯誤 ($statusCode): $message');
+
+        // 清除 loading 狀態
+        if (_loadingMessageId != null) {
+          messages.removeWhere((msg) => msg.id == _loadingMessageId);
+          _loadingMessageId = null;
+        }
+
+        // 恢復發送功能
+        isAiReplying.value = false;
+
+        // 添加用戶友好的錯誤訊息
+        final errorMessage = _formatClientErrorMessage(message, statusCode);
+        messages.add(ChatMessageModel(
+          text: errorMessage,
+          isUser: false,
+          id: "client_error_${DateTime.now().millisecondsSinceEpoch}",
+        ));
+
+        // 滾動到底部
+        scrollToBottom();
+
+        print('🚫 已顯示客戶端錯誤提示 ($statusCode)');
+      };
+
+      // 🔥 新增：HTTP 5xx 服務器錯誤處理
+      socketService.onHttpServerError = (message, statusCode) {
+        print('🚫 K19 收到 HTTP 服務器錯誤 ($statusCode): $message');
+
+        // 清除 loading 狀態
+        if (_loadingMessageId != null) {
+          messages.removeWhere((msg) => msg.id == _loadingMessageId);
+          _loadingMessageId = null;
+        }
+
+        // 恢復發送功能
+        isAiReplying.value = false;
+
+        // 添加用戶友好的錯誤訊息
+        final errorMessage = _formatServerErrorMessage(message, statusCode);
+        messages.add(ChatMessageModel(
+          text: errorMessage,
+          isUser: false,
+          id: "server_error_${DateTime.now().millisecondsSinceEpoch}",
+        ));
+
+        // 滾動到底部
+        scrollToBottom();
+
+        print('🚫 已顯示服務器錯誤提示 ($statusCode)');
+      };
+
+      // 🔥 新增：網路連線錯誤處理
+      socketService.onNetworkError = (message) {
+        print('🌐 K19 收到網路連線錯誤: $message');
+
+        // 清除 loading 狀態
+        if (_loadingMessageId != null) {
+          messages.removeWhere((msg) => msg.id == _loadingMessageId);
+          _loadingMessageId = null;
+        }
+
+        // 恢復發送功能
+        isAiReplying.value = false;
+
+        // 添加用戶友好的錯誤訊息
+        final errorMessage = _formatNetworkErrorMessage(message);
+        messages.add(ChatMessageModel(
+          text: errorMessage,
+          isUser: false,
+          id: "network_error_${DateTime.now().millisecondsSinceEpoch}",
+        ));
+
+        // 滾動到底部
+        scrollToBottom();
+
+        print('🌐 已顯示網路錯誤提示');
+      };
+
       socketService.onError = (err) {
         print("❌ WebSocket 錯誤: $err");
         _isSocketInitialized = false; // 發生錯誤時退回，允許重連
@@ -230,7 +311,13 @@ class K19Controller extends GetxController {
 
     // 🔥 防呆：如果已達到使用上限，不允許發送新訊息
     if (socketService.isRateLimited) {
-      print('🚫 已達到使用上限，無法發送新訊息');
+      print('🚫 已達到使用上限，無法發送訊息');
+      return;
+    }
+
+    // 🔥 新增：檢查是否有HTTP錯誤狀態，不允許發送訊息
+    if (_hasHttpError()) {
+      print('🚫 檢測到HTTP錯誤，無法發送訊息');
       return;
     }
 
@@ -304,7 +391,13 @@ class K19Controller extends GetxController {
 
     // 🔥 防呆：如果已達到使用上限，不允許發送新訊息
     if (socketService.isRateLimited) {
-      print('🚫 已達到使用上限，無法發送新訊息');
+      print('🚫 已達到使用上限，無法發送訊息');
+      return;
+    }
+
+    // 🔥 新增：檢查是否有HTTP錯誤狀態，不允許發送訊息
+    if (_hasHttpError()) {
+      print('🚫 檢測到HTTP錯誤，無法發送訊息');
       return;
     }
 
@@ -414,15 +507,15 @@ class K19Controller extends GetxController {
   }
 
   void handleIncomingChatFromK73(String text) {
-    if (!_isSocketInitialized || !socketService.isConnected) {
-      // 還沒連線，先暫存
+    // 🔥 簡化：不再檢查WebSocket狀態，只處理內容
+    // WebSocket連線會在K19Screen顯示後自動處理
+
+    if (text.isNotEmpty) {
       gc.chatInput.value = text;
-      chatScreenController.showK19();
-    } else {
-      // 已連線，直接送出
-      chatScreenController.showK19();
-      _ifChatInputIsNotEmpty();
     }
+
+    // 確保K19顯示（雙重保證）
+    chatScreenController.showK19();
   }
 
   /// 🔥 Chunk 超時保護機制
@@ -705,5 +798,91 @@ class K19Controller extends GetxController {
     }
 
     return '已連線';
+  }
+
+  /// 🔥 新增：格式化客戶端錯誤訊息
+  String _formatClientErrorMessage(String message, int statusCode) {
+    String icon = "⚠️";
+    String suggestion = "";
+
+    switch (statusCode) {
+      case 400:
+        icon = "📝";
+        suggestion = "\n\n💡 建議：檢查輸入內容是否正確";
+        break;
+      case 401:
+        icon = "🔐";
+        suggestion = "\n\n💡 建議：請重新登入或檢查認證資訊";
+        break;
+      case 403:
+        icon = "🚫";
+        suggestion = "\n\n💡 建議：檢查帳號權限或聯繫客服";
+        break;
+      case 404:
+        icon = "🔍";
+        suggestion = "\n\n💡 建議：檢查請求的資源是否存在";
+        break;
+      default:
+        icon = "⚠️";
+        suggestion = "\n\n💡 建議：請稍後再試或聯繫客服";
+    }
+
+    return "$icon **$message**\n\n📊 錯誤代碼：$statusCode$suggestion";
+  }
+
+  /// 🔥 新增：格式化服務器錯誤訊息
+  String _formatServerErrorMessage(String message, int statusCode) {
+    String icon = "🖥️";
+    String suggestion = "";
+
+    switch (statusCode) {
+      case 500:
+        icon = "💥";
+        suggestion = "\n\n💡 建議：請稍後再試，這是服務器內部問題";
+        break;
+      case 502:
+        icon = "🌐";
+        suggestion = "\n\n💡 建議：服務暫時不可用，請稍後再試";
+        break;
+      case 503:
+        icon = "🔧";
+        suggestion = "\n\n💡 建議：服務正在維護中，請稍後再試";
+        break;
+      case 504:
+        icon = "⏰";
+        suggestion = "\n\n💡 建議：服務回應超時，請稍後再試";
+        break;
+      default:
+        icon = "🖥️";
+        suggestion = "\n\n💡 建議：請稍後再試或聯繫客服";
+    }
+
+    return "$icon **$message**\n\n📊 錯誤代碼：$statusCode$suggestion";
+  }
+
+  /// 🔥 新增：格式化網路連線錯誤訊息
+  String _formatNetworkErrorMessage(String message) {
+    return "🌐 **$message**\n\n💡 建議：\n"
+        "• 檢查網路連線是否正常\n"
+        "• 檢查防火牆設定\n"
+        "• 稍後再試或聯繫網路管理員";
+  }
+
+  /// 🔥 新增：檢查是否有HTTP錯誤狀態
+  bool _hasHttpError() {
+    // 檢查最近的訊息中是否有錯誤訊息
+    if (messages.isNotEmpty) {
+      final lastMessage = messages.last;
+      final messageId = lastMessage.id;
+
+      // 檢查是否是錯誤訊息ID
+      if (messageId.contains('client_error') ||
+          messageId.contains('server_error') ||
+          messageId.contains('network_error') ||
+          messageId.contains('rate_limit')) {
+        return true;
+      }
+    }
+    return false;
   }
 }

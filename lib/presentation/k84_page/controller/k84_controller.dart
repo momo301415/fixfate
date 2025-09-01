@@ -296,13 +296,22 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
         data = [];
         titles = SideTitles(showTitles: false);
       } else {
-        final startOfWeek = currentDate.value;
+        // 修正：計算週一開始的日期
+        final startOfWeek = currentDate.value
+            .subtract(Duration(days: currentDate.value.weekday - 1));
         final Map<int, List<int>> dayData = {};
 
         for (var e in stepApiData) {
-          final date =
+          final fullTime =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
-          final diffDays = date.difference(startOfWeek).inDays;
+
+          // 修正：使用日期比較，避免時分秒造成的計算錯誤
+          final dataDate =
+              DateTime(fullTime.year, fullTime.month, fullTime.day);
+          final weekStart =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          final diffDays = dataDate.difference(weekStart).inDays;
+
           if (diffDays >= 0 && diffDays < 7) {
             dayData.putIfAbsent(diffDays, () => []).add(int.parse(e.distance));
           }
@@ -313,11 +322,8 @@ class K84Controller extends GetxController with WidgetsBindingObserver {
           return FlSpot(entry.key.toDouble(), avg);
         }).toList();
 
-        // 動態生成標籤，基於實際選擇的日期
-        final weekLabels = List.generate(7, (index) {
-          final date = startOfWeek.add(Duration(days: index));
-          return date.format(pattern: 'E', locale: 'en_US'); // Mon, Tue, Wed...
-        });
+        // 修正：生成標準的週標籤（週一到週日）
+        final weekLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
         titles = SideTitles(
           showTitles: true,

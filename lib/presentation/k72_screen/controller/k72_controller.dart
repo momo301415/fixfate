@@ -9,9 +9,7 @@ import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
-import 'package:zxing2/qrcode.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
-
 import '../../../core/app_export.dart';
 import '../models/k72_model.dart';
 import 'package:image/image.dart' as img;

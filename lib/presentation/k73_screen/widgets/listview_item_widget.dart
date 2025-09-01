@@ -33,7 +33,7 @@ class ListviewItemWidget extends StatelessWidget {
       iconHeight = 35.h;
       iconLeftPosition = 15.h;
       iconTopPosition = -10.v;
-      isLastItme = true;
+      // isLastItme = true;
     }
 
     return Stack(

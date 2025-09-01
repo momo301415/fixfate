@@ -524,7 +524,7 @@ class K19Screen extends GetWidget<K19Controller> {
                         styleSheet: _buildAiMessageMarkdownStyle(),
                       ),
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 8.h),
 
               // 🔥 只有非loading狀態且AI沒有在回覆時才顯示互動按鈕
               if (!message.isLoading)
@@ -558,7 +558,8 @@ class K19Screen extends GetWidget<K19Controller> {
                   } else {
                     return SizedBox.shrink(); // AI回覆中時隱藏
                   }
-                })
+                }),
+              SizedBox(height: 8.h),
             ],
           ),
         )
@@ -569,7 +570,7 @@ class K19Screen extends GetWidget<K19Controller> {
   Widget _buildFeedbackButton({
     required String label,
     required String imagePath,
-    required int feedbackType, // 0: 差, 1: 好, 2: 還好
+    required int feedbackType, // 0: 不太懂, 1: 理解, -1: 跟想像中不一樣
     required ChatMessageModel message,
     required void Function(String text, int rating)? onFeedbackTap,
   }) {
@@ -581,17 +582,17 @@ class K19Screen extends GetWidget<K19Controller> {
     late Color? iconColor;
 
     switch (feedbackType) {
-      case 0: // 不好
+      case -1: // 跟想像中不一樣
         borderColor = isSelected ? Colors.red : appTheme.gray300;
         textColor = isSelected ? Colors.red : appTheme.gray600;
         iconColor = isSelected ? Colors.red : null;
         break;
-      case 1: // 好
+      case 1: // 理解
         borderColor = isSelected ? Colors.green : appTheme.gray300;
         textColor = isSelected ? Colors.green : appTheme.gray600;
         iconColor = isSelected ? Colors.green : null;
         break;
-      case 2: // 還好
+      case 0: // 不太懂
         borderColor = isSelected ? Colors.orange : appTheme.gray300;
         textColor = isSelected ? Colors.orange : appTheme.gray600;
         iconColor = isSelected ? Colors.orange : null;

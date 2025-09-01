@@ -65,9 +65,11 @@ class K76Screen extends GetView<K76Controller> {
                     // }
                     else if (item.label!.value == "體表溫度") {
                       return K79Page();
-                    } else if (item.label?.value == "壓力") {
-                      return K80Page();
-                    } else if (item.label?.value == "步數") {
+                    }
+                    // else if (item.label?.value == "壓力") {
+                    //   return K80Page();
+                    // }
+                    else if (item.label?.value == "步數") {
                       return K81Page();
                     } else if (item.label?.value == "睡眠") {
                       return K82Page();

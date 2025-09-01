@@ -97,8 +97,16 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   /// 展開諮詢頁面
   void onSendPressed() {
     final str = searchController.value.text.trim();
+    if (str.isEmpty) return;
+
+    // 🔥 直接保證：立即設置K19顯示狀態
+    chatScreenController.isK19Visible.value = true;
+
+    // 設置預設內容
     gc.chatInput.value = str;
     searchController.clear();
+
+    // 調用現有邏輯（保持不變）
     k19Controller.handleIncomingChatFromK73(gc.chatInput.value);
   }
 
@@ -107,13 +115,19 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     if (res.isEmpty) return;
 
     // 使用常量定義索引，避免魔術數字
+    // const int HEART_INDEX = 0;
+    // const int TEMP_INDEX = 1;
+    // const int PRESSURE_INDEX = 2;
+    // const int STEP_INDEX = 3;
+    // const int SLEEP_INDEX = 4;
+    // const int CALORIES_INDEX = 5;
+    // const int DISTANCE_INDEX = 6;
     const int HEART_INDEX = 0;
     const int TEMP_INDEX = 1;
-    const int PRESSURE_INDEX = 2;
-    const int STEP_INDEX = 3;
-    const int SLEEP_INDEX = 4;
-    const int CALORIES_INDEX = 5;
-    const int DISTANCE_INDEX = 6;
+    const int STEP_INDEX = 2;
+    const int SLEEP_INDEX = 3;
+    const int CALORIES_INDEX = 4;
+    const int DISTANCE_INDEX = 5;
 
     // 安全更新心率數據
     _updateHealthItem(HEART_INDEX, {
@@ -130,11 +144,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     });
 
     // 安全更新壓力數據
-    _updateHealthItem(PRESSURE_INDEX, {
-      "loadTime": res["pressureDuration"]?.toString() ?? "無數據",
-      "value": res["pressure"]?.toString() ?? "0",
-      "isAlert": res["pressureAlert"] ?? false,
-    });
+    // _updateHealthItem(PRESSURE_INDEX, {
+    //   "loadTime": res["pressureDuration"]?.toString() ?? "無數據",
+    //   "value": res["pressure"]?.toString() ?? "0",
+    //   "isAlert": res["pressureAlert"] ?? false,
+    // });
 
     // 安全更新步數數據
     _updateHealthItem(STEP_INDEX, {

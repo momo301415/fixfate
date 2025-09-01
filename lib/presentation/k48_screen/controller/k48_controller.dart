@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting_storage.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import '../../../core/app_export.dart';
@@ -27,6 +30,7 @@ class K48Controller extends GetxController {
   Timer? _autoSaveTimer;
   late RemiderSetting profile;
   final notificationService = NotificationService();
+  ApiService service = ApiService();
 
   @override
   void onInit() async {
@@ -38,9 +42,6 @@ class K48Controller extends GetxController {
     Future.delayed(Duration.zero, () async {
       await loadReminderSettings();
       _startAutoSaveTimer();
-
-      // 🔄 新增：監聽 Switch 狀態變化
-      _listenToSwitchChanges();
     });
   }
 
@@ -52,22 +53,12 @@ class K48Controller extends GetxController {
   }
 
   /// 🔄 新增：監聽 Switch 狀態變化
-  void _listenToSwitchChanges() {
-    ever(isSelectedSwitch, (bool isEnabled) async {
-      if (isEnabled) {
-        // Switch 開啟：如果有設定頻率，則啟動通知
-        if (alertTime.value.isNotEmpty) {
-          await _enableMedicationReminder();
-        }
-      } else {
-        // Switch 關閉：停用所有通知
-        await _disableMedicationReminder();
-      }
-
-      // 自動儲存設定
-      await saveReminderSettings();
-    });
-  }
+  // void _listenToSwitchChanges() {
+  //   ever(isSelectedSwitch, (bool isEnabled) async {
+  //     // 自動儲存設定
+  //     await saveReminderSettings();
+  //   });
+  // }
 
   Future<void> selectAlertTime() async {
     final result = await DialogHelper.showCustomBottomSheet(
@@ -76,11 +67,6 @@ class K48Controller extends GetxController {
     );
     if (result != null && result.isNotEmpty) {
       alertTime.value = result;
-
-      // 🔄 修改：只有在 Switch 開啟時才設定通知
-      if (isSelectedSwitch.value) {
-        await _enableMedicationReminder();
-      }
     }
   }
 
@@ -91,48 +77,7 @@ class K48Controller extends GetxController {
     );
     if (result != null && result.isNotEmpty) {
       eatTime.value = result;
-    }
-  }
-
-  /// 🔄 新增：啟用用藥提醒
-  Future<void> _enableMedicationReminder() async {
-    try {
-      if (alertTime.value.isNotEmpty) {
-        print('🔔 啟用用藥提醒: ${alertTime.value}');
-        await notificationService.scheduleReminder(alertTime.value);
-        SnackbarHelper.showBlueSnackbar(
-          message: '已成功設定 ${alertTime.value} 的用藥提醒',
-        );
-      }
-    } catch (e) {
-      print('❌ 啟用用藥提醒失敗: $e');
-      Get.snackbar(
-        '錯誤',
-        '設定用藥提醒失敗，請重試',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
-    }
-  }
-
-  /// 🔄 新增：停用用藥提醒
-  Future<void> _disableMedicationReminder() async {
-    try {
-      print('🔕 停用用藥提醒');
-      await notificationService.stopAllMedicationReminders();
-
-      // 顯示停用訊息
-      Get.snackbar(
-        '用藥提醒',
-        '已停用所有用藥提醒',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.orange.withOpacity(0.8),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
-    } catch (e) {
-      print('❌ 停用用藥提醒失敗: $e');
+      await saveReminderSettings();
     }
   }
 
@@ -153,6 +98,8 @@ class K48Controller extends GetxController {
         lastUpdated: DateTime.now(), // 🔄 新增：記錄更新時間
       );
       await RemiderSettingStorage.saveUserProfile(gc.userId.value, profile);
+      await scheduleReminder(alertTime.value, eatTime.value,
+          isAlert: isSelectedSwitch.value);
       print('✅ 用藥設定已儲存');
     } catch (e) {
       print('❌ 儲存用藥設定失敗: $e');
@@ -171,33 +118,11 @@ class K48Controller extends GetxController {
 
         print(
             '✅ 已載入用藥設定: 開關=${savedProfile.alertEnabled}, 頻率=${savedProfile.frequency}');
-
-        // 🔄 新增：如果開關是開啟且有設定頻率，自動啟用提醒
-        if (savedProfile.alertEnabled && savedProfile.frequency.isNotEmpty) {
-          // 延遲一點時間，確保 UI 已經更新
-          Future.delayed(const Duration(milliseconds: 500), () async {
-            await _enableMedicationReminder();
-          });
-        }
+      } else {
+        await getReminderInfo();
       }
     } catch (e) {
       print('❌ 載入用藥設定失敗: $e');
-    }
-  }
-
-  /// 🔄 新增：手動同步通知狀態（如果需要的話）
-  Future<void> syncNotificationState() async {
-    if (isSelectedSwitch.value && alertTime.value.isNotEmpty) {
-      await _enableMedicationReminder();
-    } else {
-      await _disableMedicationReminder();
-    }
-  }
-
-  /// 🔄 保留原有方法（向後相容）
-  Future<void> scheduleReminderFromUserChoice(String frequency) async {
-    if (isSelectedSwitch.value) {
-      await notificationService.scheduleReminder(frequency);
     }
   }
 
@@ -205,6 +130,116 @@ class K48Controller extends GetxController {
     if (Platform.isAndroid) {
       await notificationService.requestExactAlarmPermission();
     }
+  }
+
+  Future<void> scheduleReminder(String frequency, String eatTime,
+      {bool? isAlert}) async {
+    try {
+      var eatT = "";
+      var freqT = "";
+      print('🔔 開始設定用藥提醒frequency: $frequency');
+      print('🔔 開始設定用藥提醒eatTime: $eatTime');
+      switch (eatTime) {
+        case '飯前':
+          eatT = "MF";
+          break;
+        case '飯中':
+          eatT = "MM";
+          break;
+        case '飯後':
+          eatT = "MB";
+          break;
+        default:
+          eatT = "MB";
+          break;
+      }
+
+      switch (frequency) {
+        case '每天一次':
+          freqT = "D1";
+          break;
+        case '一天兩次':
+          freqT = "D2";
+          break;
+        case '一天三次':
+          freqT = "D3";
+          break;
+        case '一天四次':
+          freqT = "D4";
+          break;
+        case '每晚一次':
+          freqT = "S1";
+          break;
+        case '兩天一次':
+          freqT = "2D1";
+          break;
+        case '三天一次':
+          freqT = "3D1";
+          break;
+        default:
+          freqT = "D1";
+          eatT = "MB";
+          return;
+      }
+      await setReminderInfo(freqT, eatT, isAlert: isAlert);
+
+      print('✅ 用藥提醒設定完成: $frequency');
+    } catch (e) {
+      print('❌ 設定用藥提醒失敗: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> getReminderInfo() async {
+    try {
+      final payload = {
+        "userID": gc.apiId.value,
+      };
+      var res = await service.postJson(
+        Api.reminderInfoGet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          final data = res["data"];
+          if (data != null && data.length > 0) {
+            isSelectedSwitch.value = data["alert"];
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  /// 三天一次:3D1,兩天一次:2D1,每天一次:D1,一天兩次:D2,一天三次:D3,一天四次:D4,每晚一次:S1
+  /// 飯前:MF,飯後:MB,飯中:MM
+  Future<void> setReminderInfo(String type, String status,
+      {bool? isAlert}) async {
+    try {
+      final payload = {
+        "userID": gc.apiId.value,
+        "type": type,
+        "status": status,
+        "alert": isAlert ?? false
+      };
+      var res = await service.postJson(
+        Api.reminderInfoSet,
+        payload,
+      );
+
+      if (res.isNotEmpty) {
+        if (isSelectedSwitch.value) {
+          SnackbarHelper.showBlueSnackbar(
+            message: '已成功設定 ${alertTime.value} 的用藥提醒',
+          );
+        } else {
+          SnackbarHelper.showBlueSnackbar(
+            message: '已關閉用藥提醒',
+          );
+        }
+      }
+    } catch (e) {}
   }
 
   /// 🔄 新增：獲取當前用藥提醒狀態

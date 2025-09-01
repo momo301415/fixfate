@@ -38,15 +38,9 @@ class Two5Controller extends GetxController {
   }
 
   void getData() async {
-    var data = await BloodOxygenSettingStorage.getUserProfile(gc.userId.value);
-
-    isSelectedSwitch.value = data?.alertEnabled ?? false;
-    if (data != null) {
-      lowThreshold.value = data.lowThreshold.toDouble();
-      isSelectedSwitch.value = data.alertEnabled;
-    } else {
-      await gettingApi();
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      gettingApi();
+    });
   }
 
   Future<void> settingApi() async {
