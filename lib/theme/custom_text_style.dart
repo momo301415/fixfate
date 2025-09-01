@@ -19,6 +19,25 @@ extension on TextStyle {
 /// categorized by different font families and weights.
 /// Additionally, this class includes extensions on [TextStyle] to easily apply specific font families to text.
 class CustomTextStyles {
+  static TextStyle get titleSmallPrimarySemiBold =>
+      theme.textTheme.titleSmall!.copyWith(
+        color: theme.colorScheme.primary,
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w600,
+      );
+  static TextStyle get titleSmallErrorContainerSemiBold =>
+      theme.textTheme.titleSmall!.copyWith(
+        color: theme.colorScheme.errorContainer,
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w600,
+      );
+  static TextStyle get labelLargeSemiBold =>
+      theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w600);
+  static TextStyle get titleMediumErrorContainer16 => theme
+      .textTheme.titleMedium!
+      .copyWith(color: theme.colorScheme.errorContainer, fontSize: 16.fSize);
+  static TextStyle get bodySmallPrimary10_1 => theme.textTheme.bodySmall!
+      .copyWith(color: theme.colorScheme.primary, fontSize: 10.fSize);
   static TextStyle get bodyLargePrimaryContainer16_1 =>
       theme.textTheme.bodyLarge!.copyWith(
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.45),
@@ -284,6 +303,8 @@ class CustomTextStyles {
   // Headline text style
   static TextStyle get headlineSmallPrimary => theme.textTheme.headlineSmall!
       .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.85));
+  static TextStyle get labelLargePrimary_1 => theme.textTheme.labelLarge!
+      .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.8));
   static TextStyle get headlineLargePrimaryContainer =>
       theme.textTheme.headlineLarge!.copyWith(
         color: theme.colorScheme.primaryContainer,
@@ -470,5 +491,15 @@ class CustomTextStyles {
       theme.textTheme.bodyLarge!.copyWith(
         color: appTheme.whiteA700.withValues(alpha: 0.45),
         fontSize: 16.fSize,
+      );
+
+  static TextStyle get bodySmall11 =>
+      theme.textTheme.bodySmall!.copyWith(fontSize: 11.fSize);
+
+  static TextStyle get labelMediumPrimarySemiBold =>
+      theme.textTheme.labelMedium!.copyWith(
+        color: theme.colorScheme.primary,
+        fontSize: 11.fSize,
+        fontWeight: FontWeight.w600,
       );
 }

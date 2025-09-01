@@ -8,6 +8,10 @@ import 'package:pulsedevice/presentation/k20_screen/binding/k20_binding.dart';
 import 'package:pulsedevice/presentation/k20_screen/k20_screen.dart';
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
+import 'package:pulsedevice/presentation/k30_select_device_screen/binding/k30_select_device_binding.dart';
+import 'package:pulsedevice/presentation/k30_select_device_screen/k30_select_device_screen.dart';
+import 'package:pulsedevice/presentation/k36_screen/binding/k36_binding.dart';
+import 'package:pulsedevice/presentation/k36_screen/k36_screen.dart';
 import 'package:pulsedevice/presentation/k5_screen/binding/k5_binding.dart';
 import 'package:pulsedevice/presentation/k5_screen/k5_screen.dart';
 import 'package:pulsedevice/presentation/k6_screen/binding/k6_binding.dart';
@@ -18,6 +22,8 @@ import 'package:pulsedevice/presentation/k7_scrren/binding/k7_binding.dart';
 import 'package:pulsedevice/presentation/k7_scrren/k7_screen.dart';
 import 'package:pulsedevice/presentation/log_screen/binding/log_binding.dart';
 import 'package:pulsedevice/presentation/log_screen/log_screen.dart';
+import 'package:pulsedevice/presentation/one3_find_device_screen/binding/one3_binding.dart';
+import 'package:pulsedevice/presentation/one3_find_device_screen/one3_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
@@ -130,6 +136,11 @@ class AppRoutes {
 
   static const String k30Screen = '/k30_screen';
 
+  static const String k30SelectDeviceScreen = '/k30_select_device_screen';
+  static const String k36DeviceDetailesScreen = '/k36_device_detailes_screen1';
+
+
+
   static const String k39Screen = '/k39_screen';
 
   static const String k40Screen = '/k40_screen';
@@ -222,6 +233,10 @@ class AppRoutes {
 
   static const String k20Screen = '/k20_screen';
 
+  static const String one3FindDeviceScreen = '/one3_find_device_screen';
+
+
+
   static List<GetPage> pages = [
     /// 隱私權頁
     GetPage(
@@ -271,6 +286,13 @@ class AppRoutes {
       page: () => One3Screen(),
       bindings: [One3Binding()],
     ),
+    /// 尋找設備頁
+    GetPage(
+      name: one3FindDeviceScreen,
+      page: () => One3FindDeviceScreen(),
+      bindings: [One3FindDeviceBinding()],
+    ),
+
 
     /// 重設密碼頁
     GetPage(
@@ -287,6 +309,12 @@ class AppRoutes {
       name: k30Screen,
       page: () => K30Screen(),
       bindings: [K30Binding()],
+    ),
+    /// 選擇設備頁面
+    GetPage(
+      name: k30SelectDeviceScreen,
+      page: () => K30SelectDeviceScreen(),
+      bindings: [K30SelectDeviceBinding()],
     ),
 
     /// 我的設備頁面
@@ -492,5 +520,13 @@ class AppRoutes {
       page: () => RulerPickerTestScreen(),
       bindings: [RulerPikerTestBinding()],
     ),
+    GetPage(
+      name: k36DeviceDetailesScreen,
+      page: () => K36DeviceDetailesScreen(),
+
+      bindings: [K36DeviceDetailesBinding()],
+
+    ),
+
   ];
 }

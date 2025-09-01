@@ -104,38 +104,38 @@ class K57Screen extends GetWidget<K57Controller> {
           //         ],
           //       ),
           //     )),
-          GestureDetector(
-              onTap: () {
-                controller.goK61Screen();
-              },
-              child: Container(
-                padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
-                decoration: AppDecoration.outlineGray,
-                width: double.maxFinite,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgFrameErrorcontainer,
-                      height: 20.h,
-                      width: 22.h,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.h),
-                      child: Text(
-                        "lbl173_1".tr,
-                        style: CustomTextStyles.bodyMedium15,
-                      ),
-                    ),
-                    Spacer(),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowRight,
-                      height: 16.h,
-                      width: 18.h,
-                    )
-                  ],
-                ),
-              )),
+          // GestureDetector(
+          //     onTap: () {
+          //       controller.goK61Screen();
+          //     },
+          //     child: Container(
+          //       padding: EdgeInsets.fromLTRB(24.h, 24.h, 24.h, 22.h),
+          //       decoration: AppDecoration.outlineGray,
+          //       width: double.maxFinite,
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           CustomImageView(
+          //             imagePath: ImageConstant.imgFrameErrorcontainer,
+          //             height: 20.h,
+          //             width: 22.h,
+          //           ),
+          //           Padding(
+          //             padding: EdgeInsets.only(left: 8.h),
+          //             child: Text(
+          //               "lbl173_1".tr,
+          //               style: CustomTextStyles.bodyMedium15,
+          //             ),
+          //           ),
+          //           Spacer(),
+          //           CustomImageView(
+          //             imagePath: ImageConstant.imgArrowRight,
+          //             height: 16.h,
+          //             width: 18.h,
+          //           )
+          //         ],
+          //       ),
+          //     )),
           // GestureDetector(
           //     onTap: () {
           //       controller.goTwo9Screen();
@@ -171,7 +171,7 @@ class K57Screen extends GetWidget<K57Controller> {
           SizedBox(height: 24.h),
           GestureDetector(
               onTap: () {
-                controller.goTwo9Screen();
+                controller.goK61Screen();
               },
               child: Container(
                 width: double.maxFinite,
@@ -187,7 +187,7 @@ class K57Screen extends GetWidget<K57Controller> {
                     Padding(
                       padding: EdgeInsets.only(left: 8.h),
                       child: Text(
-                        "lbl217".tr,
+                        "lbl173_1".tr,
                         style: CustomTextStyles.bodyMedium15,
                       ),
                     ),

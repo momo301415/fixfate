@@ -3,6 +3,11 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import '../core/app_export.dart';
 
 class AppDecoration {
+
+  static BoxDecoration get outlinePrimary => BoxDecoration(
+    color: appTheme.cyan50,
+    border: Border.all(color: theme.colorScheme.primary, width: 1.h),
+  );
   // F decorations
   static BoxDecoration get ff => BoxDecoration(
         color: theme.colorScheme.primary,

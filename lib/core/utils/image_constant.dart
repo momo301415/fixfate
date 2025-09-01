@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 class ImageConstant {
+  static String imgFiSrHourglass = '$imagePath/img_fi_sr_hourglass.svg';
   // Image folder path
   static String imagePath = 'assets/images';
 
@@ -32,6 +33,12 @@ class ImageConstant {
       '$imagePath/img_close_primarycontainer.svg';
 
   static String imgFrame86618 = '$imagePath/img_frame_86618.png';
+  static String imgFrame866181 = '$imagePath/img_frame_86618_1.png';
+  static String imgIosMatch = '$imagePath/ios_match.png';
+
+  static String imgFrame8661854x54 = '$imagePath/img_frame_86618_54x54.png';
+  static String imgClosePrimarycontainer1 =
+      '$imagePath/img_close_primarycontainer_1.svg';
 
   static String img01 = '$imagePath/img_01.svg';
 
@@ -41,7 +48,7 @@ class ImageConstant {
       '$imagePath/img_union_white_a700_157x180.svg';
 
   static String imgArrowDown = '$imagePath/img_arrow_down.svg';
-
+  static String img11611 = '$imagePath/img_116_1_1.png';
   static String imgUnionWhiteA700506x374 =
       '$imagePath/img_union_white_a700_506x374.png';
 
@@ -286,4 +293,14 @@ class ImageConstant {
   static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
 
   static String imgChat = '$imagePath/chat.png';
+  static String imgImage764 = '$imagePath/img_image_764.png';
+  static String imgUCheckCirclePrimary2 =
+      '$imagePath/img_u_check_circle_primary_2.svg';
+  static String imgFrameErrorcontainer1 =
+      '$imagePath/img_frame_errorcontainer_1.svg';
+
+  static String imgUtachometerfastalt = '$imagePath/img_utachometerfastalt.svg';
+  static String imgSwitch = '$imagePath/img_switch.svg';
+  static String imgSwitchPrimary = '$imagePath/img_switch_primary.svg';
+  static String imgIconPrimary = '$imagePath/img_icon_primary.svg';
 }

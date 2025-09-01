@@ -604,11 +604,11 @@ class K30Controller extends GetxController {
             user.drinking = habits['drinking'] ?? '';
             user.smoking = habits['smoking'] ?? '';
             user.sporting = habits['exercise'] ?? '';
-            user.sitting = habits['sitting'] ?? '';
-            user.standding = habits['standing'] ?? '';
-            user.lowHeadding = habits['lowHead'] ?? '';
+            user.sitting = habits['sedentaryTime'] ?? '';
+            user.standding = habits['standingTime'] ?? '';
+            user.lowHeadding = habits['lowActivityTime'] ?? '';
             user.waterIntake = habits['waterIntake'] ?? '';
-            user.noneSleep = habits['noneSleep'] ?? '';
+            user.noneSleep = habits['stayUpLateFrequency'] ?? '';
             user.foodHabits?.assignAll(List<String>.from(
               otherData['foodPreferences']?["favoriteTypes"] ?? [],
             ));

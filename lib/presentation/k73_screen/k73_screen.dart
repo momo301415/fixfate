@@ -46,7 +46,7 @@ class K73Screen extends GetWidget<K73Controller> {
               )),
           SizedBox(height: 12.h),
           _buildListview(),
-          // _buildRowviewtwo() // 註解掉，功能已整合到Grid中
+          _buildRowviewtwo() // 註解掉，功能已整合到Grid中
         ],
       ),
     );
@@ -79,10 +79,11 @@ class K73Screen extends GetWidget<K73Controller> {
               },
               child: ListviewItemWidget(model: item),
             );
-          } else {
-            // 最後一個位置顯示垂直功能按鈕組
-            return _buildVerticalFunctionButtons();
           }
+          // else {
+          //   // 最後一個位置顯示垂直功能按鈕組
+          //   return _buildVerticalFunctionButtons();
+          // }
         },
       );
     });
@@ -205,117 +206,117 @@ class K73Screen extends GetWidget<K73Controller> {
 
   // 已註解：原本的水平排列功能按鈕，現已整合到Grid中作為垂直排列
   // /// Section Widget
-  // Widget _buildRowviewtwo() {
-  //   return Container(
-  //     width: double.maxFinite,
-  //     child: Row(
-  //       children: [
-  //         Expanded(
-  //           child: GestureDetector(
-  //               onTap: () {
-  //                 controller.goK40Screen();
-  //               },
-  //               child: Container(
-  //                 padding: EdgeInsets.symmetric(horizontal: 8.h),
-  //                 height: 50.h,
-  //                 child: Stack(
-  //                   alignment: Alignment.bottomCenter,
-  //                   children: [
-  //                     Container(
-  //                       height: 40.h,
-  //                       width: 162.h,
-  //                       decoration: BoxDecoration(
-  //                         color: appTheme.whiteA700,
-  //                         borderRadius: BorderRadius.circular(
-  //                           8.h,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     Align(
-  //                       alignment: Alignment.topCenter,
-  //                       child: SizedBox(
-  //                         width: double.maxFinite,
-  //                         child: Column(
-  //                           mainAxisSize: MainAxisSize.min,
-  //                           children: [
-  //                             SizedBox(
-  //                               width: double.maxFinite,
-  //                               child: Align(
-  //                                 alignment: Alignment.topCenter,
-  //                                 child: Padding(
-  //                                   padding:
-  //                                       EdgeInsets.symmetric(horizontal: 8.h),
-  //                                   child: _buildRowiconsportrun(
-  //                                     iconsportrun: ImageConstant.img2411,
-  //                                     one: "lbl222".tr,
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             )
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     )
-  //                   ],
-  //                 ),
-  //               )),
-  //         ),
-  //         SizedBox(width: 0.h),
-  //         Expanded(
-  //           child: GestureDetector(
-  //               onTap: () {
-  //                 controller.gok5Screen();
-  //               },
-  //               child: Container(
-  //                 padding: EdgeInsets.symmetric(horizontal: 8.h),
-  //                 height: 50.h,
-  //                 child: Stack(
-  //                   alignment: Alignment.bottomCenter,
-  //                   children: [
-  //                     Container(
-  //                       height: 40.h,
-  //                       width: 162.h,
-  //                       decoration: BoxDecoration(
-  //                         color: appTheme.whiteA700,
-  //                         borderRadius: BorderRadius.circular(
-  //                           8.h,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     Align(
-  //                       alignment: Alignment.topCenter,
-  //                       child: SizedBox(
-  //                         width: double.maxFinite,
-  //                         child: Column(
-  //                           mainAxisSize: MainAxisSize.min,
-  //                           children: [
-  //                             SizedBox(
-  //                               width: double.maxFinite,
-  //                               child: Align(
-  //                                 alignment: Alignment.topCenter,
-  //                                 child: Padding(
-  //                                   padding:
-  //                                       EdgeInsets.symmetric(horizontal: 8.h),
-  //                                   child: _buildRowiconsportrun(
-  //                                     iconsportrun:
-  //                                         ImageConstant.imgIconSportRun,
-  //                                     one: "lbl223".tr,
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                             )
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     )
-  //                   ],
-  //                 ),
-  //               )),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildRowviewtwo() {
+    return Container(
+      width: double.maxFinite,
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+                onTap: () {
+                  controller.goK40Screen();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.h),
+                  height: 50.h,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 162.h,
+                        decoration: BoxDecoration(
+                          color: appTheme.whiteA700,
+                          borderRadius: BorderRadius.circular(
+                            8.h,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.maxFinite,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.h),
+                                    child: _buildRowiconsportrun(
+                                      iconsportrun: ImageConstant.img2411,
+                                      one: "lbl222".tr,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+          SizedBox(width: 0.h),
+          Expanded(
+            child: GestureDetector(
+                onTap: () {
+                  controller.gok5Screen();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.h),
+                  height: 50.h,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 162.h,
+                        decoration: BoxDecoration(
+                          color: appTheme.whiteA700,
+                          borderRadius: BorderRadius.circular(
+                            8.h,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.maxFinite,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.h),
+                                    child: _buildRowiconsportrun(
+                                      iconsportrun:
+                                          ImageConstant.imgIconSportRun,
+                                      one: "lbl223".tr,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+          )
+        ],
+      ),
+    );
+  }
 
   /// Common widget
   Widget _buildRowiconsportrun({

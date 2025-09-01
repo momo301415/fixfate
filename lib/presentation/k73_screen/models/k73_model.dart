@@ -32,13 +32,13 @@ class K73Model {
       value: "".obs,
       unit: "lbl_c".tr.obs,
     ),
-    ListViewItemModel(
-        icon: ImageConstant.imgIcon1.obs,
-        isAlert: false.obs,
-        label: "lbl217".tr.obs,
-        loadTime: "lbl_1".tr.obs,
-        value: "".obs,
-        unit: "".obs),
+    // ListViewItemModel(
+    //     icon: ImageConstant.imgIcon1.obs,
+    //     isAlert: false.obs,
+    //     label: "lbl217".tr.obs,
+    //     loadTime: "lbl_1".tr.obs,
+    //     value: "".obs,
+    //     unit: "".obs),
     ListViewItemModel(
       icon: ImageConstant.imgIconWhiteA70040x40.obs,
       isAlert: false.obs,
@@ -67,6 +67,13 @@ class K73Model {
         loadTime: "lbl_1".tr.obs,
         icon: ImageConstant.imgIcon40x40.obs,
         label: "lbl221".tr.obs,
+        value: "".obs,
+        unit: "lbl193".tr.obs),
+    ListViewItemModel(
+        isAlert: false.obs,
+        loadTime: "lbl_1".tr.obs,
+        icon: ImageConstant.imgIcon40x40.obs,
+        label: "lbl79".tr.obs,
         value: "".obs,
         unit: "lbl193".tr.obs),
   ]);

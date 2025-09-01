@@ -14,6 +14,12 @@ typedef OnHistoryResultCallback = void Function(
 typedef OnSessionIdCallback = void Function(String sessionId);
 typedef OnFeedbackResultCallback = void Function(bool success);
 typedef OnRateLimitCallback = void Function(String message);
+// 🔥 新增：HTTP錯誤分類回調
+typedef OnHttpClientErrorCallback = void Function(
+    String message, int statusCode);
+typedef OnHttpServerErrorCallback = void Function(
+    String message, int statusCode);
+typedef OnNetworkErrorCallback = void Function(String message);
 
 class WebSocketService {
   final String url;
@@ -33,6 +39,10 @@ class WebSocketService {
   OnSessionIdCallback? onSessionIdReceived;
   OnFeedbackResultCallback? onFeedbackResult;
   OnRateLimitCallback? onRateLimit;
+  // 🔥 新增：HTTP錯誤分類回調
+  OnHttpClientErrorCallback? onHttpClientError;
+  OnHttpServerErrorCallback? onHttpServerError;
+  OnNetworkErrorCallback? onNetworkError;
 
   bool get isConnected {
     return _channel != null &&
@@ -89,7 +99,10 @@ class WebSocketService {
         onError: (error) {
           print('❌ WebSocket 錯誤: $error');
           _isConnecting = false;
-          onError?.call(error);
+
+          // 🔥 新增：HTTP錯誤分類處理
+          _handleWebSocketError(error);
+
           _handleConnectionLoss();
         },
         onDone: () {
@@ -106,16 +119,133 @@ class WebSocketService {
     } catch (e) {
       _isConnecting = false;
 
-      if (e.toString().contains('429')) {
-        _isRateLimited = true;
-        print('🚫 已達使用上限 (429)');
-        onRateLimit?.call('已達使用上限');
-        return; // 不觸發重連
-      }
+      // 🔥 修改：擴展HTTP錯誤分類處理
+      _handleConnectionError(e);
+    }
+  }
 
-      print('❌ WebSocket 連線失敗: $e');
-      onError?.call(e);
-      _handleConnectionLoss();
+  /// 🔥 新增：處理連線階段的錯誤
+  void _handleConnectionError(dynamic error) {
+    final errorString = error.toString();
+
+    // 檢查429錯誤
+    if (errorString.contains('429')) {
+      _isRateLimited = true;
+      print('🚫 已達使用上限 (429)');
+      onRateLimit?.call('已達使用上限');
+      return; // 不觸發重連
+    }
+
+    // 🔥 新增：檢查HTTP 4xx 客戶端錯誤
+    if (errorString.contains('400') ||
+        errorString.contains('401') ||
+        errorString.contains('403') ||
+        errorString.contains('404')) {
+      final statusCode = _extractHttpStatusCode(errorString);
+      final message = _getClientErrorMessage(statusCode);
+      print('🚫 HTTP 客戶端錯誤 ($statusCode): $message');
+      onHttpClientError?.call(message, statusCode);
+      return; // 不觸發重連
+    }
+
+    // 🔥 新增：檢查HTTP 5xx 服務器錯誤
+    if (errorString.contains('500') ||
+        errorString.contains('502') ||
+        errorString.contains('503') ||
+        errorString.contains('504')) {
+      final statusCode = _extractHttpStatusCode(errorString);
+      final message = _getServerErrorMessage(statusCode);
+      print('🚫 HTTP 服務器錯誤 ($statusCode): $message');
+      onHttpServerError?.call(message, statusCode);
+      return; // 不觸發重連
+    }
+
+    // 🔥 新增：網路連線錯誤
+    if (errorString.contains('Connection refused') ||
+        errorString.contains('Network is unreachable') ||
+        errorString.contains('No route to host')) {
+      final message = '網路連線失敗，請檢查網路設定';
+      print('🌐 網路連線錯誤: $message');
+      onNetworkError?.call(message);
+    }
+
+    // 其他錯誤使用原有的onError回調
+    print('❌ WebSocket 連線失敗: $error');
+    onError?.call(error);
+    _handleConnectionLoss();
+  }
+
+  /// 🔥 新增：處理WebSocket運行時的錯誤
+  void _handleWebSocketError(dynamic error) {
+    final errorString = error.toString();
+
+    // 檢查HTTP錯誤狀態碼
+    if (errorString.contains('400') ||
+        errorString.contains('401') ||
+        errorString.contains('403') ||
+        errorString.contains('404')) {
+      final statusCode = _extractHttpStatusCode(errorString);
+      final message = _getClientErrorMessage(statusCode);
+      print('🚫 WebSocket HTTP 客戶端錯誤 ($statusCode): $message');
+      onHttpClientError?.call(message, statusCode);
+      return;
+    }
+
+    if (errorString.contains('500') ||
+        errorString.contains('502') ||
+        errorString.contains('503') ||
+        errorString.contains('504')) {
+      final statusCode = _extractHttpStatusCode(errorString);
+      final message = _getServerErrorMessage(statusCode);
+      print('🚫 WebSocket HTTP 服務器錯誤 ($statusCode): $message');
+      onHttpServerError?.call(message, statusCode);
+      return;
+    }
+
+    // 其他錯誤使用原有的onError回調
+    onError?.call(error);
+  }
+
+  /// 🔥 新增：從錯誤訊息中提取HTTP狀態碼
+  int _extractHttpStatusCode(String errorString) {
+    // 嘗試提取HTTP狀態碼
+    final regex = RegExp(r'(\d{3})');
+    final match = regex.firstMatch(errorString);
+    if (match != null) {
+      return int.tryParse(match.group(1) ?? '500') ?? 500;
+    }
+    return 500; // 預設值
+  }
+
+  /// 🔥 新增：獲取客戶端錯誤訊息
+  String _getClientErrorMessage(int statusCode) {
+    switch (statusCode) {
+      case 400:
+        return '請求格式錯誤，請檢查輸入內容';
+      case 401:
+        return '認證失敗，請重新登入';
+      case 403:
+        return '權限不足，無法執行此操作';
+      case 404:
+        return '請求的資源不存在';
+      default:
+        return '客戶端錯誤 ($statusCode)';
+    }
+  }
+
+  /// 🔥 新增：獲取服務器錯誤訊息
+  String _getServerErrorMessage(int statusCode) {
+    switch (statusCode) {
+      case 500:
+        return '服務器內部錯誤，請稍後再試';
+      case 502:
+        return '網關錯誤，服務暫時不可用';
+      case 503:
+        return '服務暫時不可用，請稍後再試';
+      case 504:
+        return '網關超時，請稍後再試';
+      default:
+        return '服務器錯誤 ($statusCode)';
     }
   }
 
