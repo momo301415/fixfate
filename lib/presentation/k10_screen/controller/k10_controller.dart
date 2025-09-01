@@ -43,9 +43,9 @@ class K10Controller extends GetxController {
           Get.snackbar('權限錯誤', '請開啟藍牙相關權限');
         }
       } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final state = YcProductPlugin().getBluetoothState();
-          if (state != BluetoothState.off) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          final state = await YcProductPlugin().getBluetoothState();
+          if (state == BluetoothState.off) {
             showBlueTooth();
           } else {
             scanDevices();

@@ -248,6 +248,7 @@ class SyncDataService {
           .add(uploadOxygen(unsyncedBloodOxygen, isSyncValue, a: bloodRecords));
       futures.add(
           uploadTemperature(unsyncedBloodOxygen, isSyncValue, a: tempRecords));
+      futures.add(uploadHrv(unsyncedBloodOxygen, isSyncValue));
 
       final results = await Future.wait(futures);
       final success = results.every((success) => success);
@@ -434,6 +435,25 @@ class SyncDataService {
 
     final payload = {"init": isSyncApi, "datas": dataList};
 
+    try {
+      await service.postJsonList(Api.sethealthRecord, jsonEncode(payload));
+      return true;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
+  Future<bool> uploadHrv(List<CombinedDataData> datas, String isSyncApi,
+      {List<AlertRecord>? a}) async {
+    final data = convertToPayload<CombinedDataData>(
+      datas,
+      "hrv",
+      (data) => gc.apiId.value,
+      (data) => data.hrv.toString(),
+      (data) => data.startTimeStamp,
+    );
+    final payload = {"init": isSyncApi, "datas": data};
     try {
       await service.postJsonList(Api.sethealthRecord, jsonEncode(payload));
       return true;

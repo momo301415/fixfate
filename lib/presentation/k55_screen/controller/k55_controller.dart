@@ -30,7 +30,7 @@ class K55Controller extends GetxController {
 
   //INFO:通知消息, WARN 警報紀錄
   Future<void> getNotifyList() async {
-    LoadingHelper.show();
+    // LoadingHelper.show();
     final mm = DateTime.now().month;
     final yy = DateTime.now().year;
     var month = mm.toString().padLeft(2, '0');
@@ -44,7 +44,7 @@ class K55Controller extends GetxController {
         Api.notifyList,
         payload,
       );
-      LoadingHelper.hide();
+      // LoadingHelper.hide();
       if (res.isNotEmpty) {
         if (res["message"] == "SUCCESS") {
           final data = res["data"];

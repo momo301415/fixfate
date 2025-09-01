@@ -6,10 +6,8 @@ import '../controller/k19_controller.dart';
 enum ConnectionStatus {
   connected, // 🟢 已連線
   connecting, // 🔄 正在連線
-  unstable, // ⚠️ 連線不穩定
   disconnected, // ❌ 離線
   reconnecting, // 🔄 重新連線中
-  rateLimited, // 🚫 已達使用上限
 }
 
 class ConnectionStatusBar extends StatefulWidget {
@@ -154,26 +152,26 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
                 ),
               ),
             ),
-            if (_currentStatus == ConnectionStatus.disconnected)
-              GestureDetector(
-                onTap: () => _retryConnection(),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    '重連',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
+            // if (_currentStatus == ConnectionStatus.disconnected)
+            //   GestureDetector(
+            //     onTap: () => _retryConnection(),
+            //     child: Container(
+            //       padding:
+            //           const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            //       decoration: BoxDecoration(
+            //         color: Colors.white.withOpacity(0.2),
+            //         borderRadius: BorderRadius.circular(10),
+            //       ),
+            //       child: const Text(
+            //         '重連',
+            //         style: TextStyle(
+            //           color: Colors.white,
+            //           fontSize: 11,
+            //           fontWeight: FontWeight.w500,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
           ],
         ),
       ),
@@ -181,13 +179,7 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
   }
 
   ConnectionStatus _getConnectionStatus() {
-    // 🔥 優先檢查 429 錯誤狀態
-    if (widget.controller.socketService.isRateLimited) {
-      print('🔍 狀態欄檢測：已達使用上限');
-      return ConnectionStatus.rateLimited;
-    }
-
-    // 直接從 WebSocket 服務獲取狀態
+    // 🔥 簡化：只檢查基本的連線狀態，不處理複雜的HTTP錯誤
     final isConnected = widget.controller.socketService.isConnected;
     final canSend = widget.controller.socketService.canSendMessage;
     final isReplying = widget.controller.isAiReplying.value;
@@ -196,7 +188,6 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
     print('  - isConnected: $isConnected');
     print('  - canSend: $canSend');
     print('  - isReplying: $isReplying');
-    print('  - sessionId: ${widget.controller.socketService.sessionId}');
 
     // 使用傳入的參數來檢查狀態
     if (!isConnected) {
@@ -206,23 +197,9 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
 
     // 檢查是否可以發送訊息
     if (!canSend) {
-      // 如果已連接但無法發送，可能是正在初始化或連線不穩定
-      if (isReplying) {
-        print('🔍 狀態欄檢測：連線不穩定');
-        return ConnectionStatus.unstable;
-      } else {
-        print('🔍 狀態欄檢測：正在連線');
-        return ConnectionStatus.connecting;
-      }
-    }
-
-    // 檢查是否正在回覆但連線不穩定
-    if (isReplying) {
-      // 如果正在回覆但沒有有效的 session，可能是連線不穩定
-      if (!canSend) {
-        print('🔍 狀態欄檢測：回覆中但連線不穩定');
-        return ConnectionStatus.unstable;
-      }
+      // 如果已連接但無法發送，可能是正在初始化
+      print('🔍 狀態欄檢測：正在連線');
+      return ConnectionStatus.connecting;
     }
 
     print('🔍 狀態欄檢測：已連線');
@@ -235,14 +212,10 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return Icons.wifi;
       case ConnectionStatus.connecting:
         return Icons.wifi_find;
-      case ConnectionStatus.unstable:
-        return Icons.wifi_off;
       case ConnectionStatus.disconnected:
         return Icons.wifi_off;
       case ConnectionStatus.reconnecting:
         return Icons.refresh;
-      case ConnectionStatus.rateLimited:
-        return Icons.block;
     }
   }
 
@@ -252,14 +225,10 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return const Color(0xFF4CAF50); // 綠色
       case ConnectionStatus.connecting:
         return const Color(0xFFFF9800); // 橙色
-      case ConnectionStatus.unstable:
-        return const Color(0xFFFFC107); // 黃色
       case ConnectionStatus.disconnected:
         return const Color(0xFFF44336); // 紅色
       case ConnectionStatus.reconnecting:
         return const Color(0xFF2196F3); // 藍色
-      case ConnectionStatus.rateLimited:
-        return const Color(0xFF9C27B0); // 紫色
     }
   }
 
@@ -269,14 +238,10 @@ class _ConnectionStatusBarState extends State<ConnectionStatusBar>
         return '已連線';
       case ConnectionStatus.connecting:
         return '正在連線...';
-      case ConnectionStatus.unstable:
-        return '連線不穩定，訊息可能延遲';
       case ConnectionStatus.disconnected:
         return '連線中，訊息將在連線後發送';
       case ConnectionStatus.reconnecting:
         return '重新連線中...';
-      case ConnectionStatus.rateLimited:
-        return '已達使用上限';
     }
   }
 

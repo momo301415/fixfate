@@ -524,7 +524,7 @@ class K19Screen extends GetWidget<K19Controller> {
                         styleSheet: _buildAiMessageMarkdownStyle(),
                       ),
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 8.h),
 
               // 🔥 只有非loading狀態且AI沒有在回覆時才顯示互動按鈕
               if (!message.isLoading)
@@ -558,7 +558,8 @@ class K19Screen extends GetWidget<K19Controller> {
                   } else {
                     return SizedBox.shrink(); // AI回覆中時隱藏
                   }
-                })
+                }),
+              SizedBox(height: 8.h),
             ],
           ),
         )
