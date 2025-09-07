@@ -6,7 +6,7 @@ import '../../core/app_export.dart';
 import '../../widgets/custom_bottom_bar.dart';
 import 'controller/k73_controller.dart';
 import 'widgets/listview_item_widget.dart'; // ignore_for_file: must_be_immutable
-
+// 首頁
 /// 健康資料主頁面
 class K73Screen extends GetWidget<K73Controller> {
   const K73Screen({Key? key})
@@ -51,7 +51,7 @@ class K73Screen extends GetWidget<K73Controller> {
       ),
     );
   }
-
+  // 首頁gridView
   /// Section Widget
   Widget _buildListview() {
     return Obx(() {

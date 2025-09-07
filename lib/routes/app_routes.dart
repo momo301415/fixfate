@@ -6,6 +6,8 @@ import 'package:pulsedevice/presentation/k19_screen/binding/k19_binding.dart';
 import 'package:pulsedevice/presentation/k19_screen/k19_screen.dart';
 import 'package:pulsedevice/presentation/k20_screen/binding/k20_binding.dart';
 import 'package:pulsedevice/presentation/k20_screen/k20_screen.dart';
+import 'package:pulsedevice/presentation/k27_screen/binding/k27_binding.dart';
+import 'package:pulsedevice/presentation/k27_screen/k27_screen.dart';
 import 'package:pulsedevice/presentation/k29_page/binding/k29_binding.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
 import 'package:pulsedevice/presentation/k30_select_device_screen/binding/k30_select_device_binding.dart';
@@ -234,6 +236,7 @@ class AppRoutes {
   static const String k20Screen = '/k20_screen';
 
   static const String one3FindDeviceScreen = '/one3_find_device_screen';
+  static const String k27Screen = '/k27_screen';
 
 
 
@@ -455,6 +458,12 @@ class AppRoutes {
       name: initialRoute,
       page: () => K1Screen(),
       bindings: [K1Binding()],
+    ),
+    /// 填寫身體資料
+    GetPage(
+      name: k27Screen,
+      page: () => K27Screen(),
+      bindings: [K27Binding()],
     ),
 
     /// 健康-主要控制頁面

@@ -8,6 +8,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:  # Flutter官方多語系支援
     sdk: flutter
+  logger: ^2.6.1
   cached_network_image: ^3.4.1  # 圖片快取與異步加載
   flutter_svg: ^2.0.16  # 載入 SVG 向量圖片
   get: ^4.6.6  # GetX 狀態管理 / 路由跳轉 / DI

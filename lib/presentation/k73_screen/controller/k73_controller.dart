@@ -70,6 +70,15 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
 
   /// 路由到健康-控制主頁面
   void gok76Screen(int index) async {
+    if (k73ModelObj.value.listviewItemList.value[index].label?.value ==
+            "lbl79".tr ||
+        k73ModelObj.value.listviewItemList.value[index].label?.value ==
+            "lbl780".tr) {
+              // 判斷是否填寫過性別生日身高等
+              Get.toNamed(AppRoutes.k27Screen);
+              return;
+            }
+
     final res = await Get.toNamed(AppRoutes.k76Screen, arguments: index);
     if (res != null) {
       // getData();
