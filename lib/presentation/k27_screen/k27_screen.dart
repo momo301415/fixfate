@@ -35,6 +35,7 @@ class K27Screen extends GetWidget<K27Controller> {
               _buildBodyInfoSection(),
               SizedBox(height: 20.h),
               CustomElevatedButton(
+                onPressed: () => controller.submitBodyInfo(),
                 text: "lbl424".tr,
                 margin: EdgeInsets.symmetric(horizontal: 16.h),
                 buttonStyle: CustomButtonStyles.none,
@@ -99,21 +100,7 @@ class K27Screen extends GetWidget<K27Controller> {
           SizedBox(height: 24.h),
           Text("lbl80".tr, style: CustomTextStyles.bodySmallBluegray900),
           SizedBox(height: 8.h),
-          // CustomTextFormField(
-          //   readOnly: true,
-          //   controller: controller.inputlighttwoController,
-          //   hintText: "",
-          //   hintStyle: CustomTextStyles.bodyMediumPrimaryContainer_3,
-          //   textInputAction: TextInputAction.done,
-          //   contentPadding: EdgeInsets.symmetric(
-          //     horizontal: 14.h,
-          //     vertical: 10.h,
-          //   ),
-          //   onTap: () {
-          //     // onTapInputlighttwo();
-          //     controller.showWeightInputDialog();
-          //   },
-          // ),
+   
           InkWell(
             onTap: () => controller.showHeightInputDialog(),
             child: Container(
@@ -141,22 +128,6 @@ class K27Screen extends GetWidget<K27Controller> {
           SizedBox(height: 24.h),
           Text("lbl79".tr, style: CustomTextStyles.bodySmallBluegray900),
           SizedBox(height: 8.h),
-
-          // CustomTextFormField(
-          //   readOnly: true,
-          //   controller: controller.inputlighttwoController,
-          //   hintText: "",
-          //   hintStyle: CustomTextStyles.bodyMediumPrimaryContainer_3,
-          //   textInputAction: TextInputAction.done,
-          //   contentPadding: EdgeInsets.symmetric(
-          //     horizontal: 14.h,
-          //     vertical: 10.h,
-          //   ),
-          //   onTap: () {
-          //     // onTapInputlighttwo();
-          //     controller.showWeightInputDialog();
-          //   },
-          // ),
           InkWell(
             onTap: () => controller.showWeightInputDialog(),
             child: Container(
@@ -184,30 +155,5 @@ class K27Screen extends GetWidget<K27Controller> {
     );
   }
 
-  /// Navigates to the previous screen.
-  onTapImgArrowleftone() {
-    Get.back();
-  }
 
-  /// Displays a date picker dialog and updates the selected date in the
-  /// [k27ModelObj] object of the current [inputlighttwoController] if the user
-  /// selects a valid date.
-  ///
-  /// This function returns a `Future` that completes with `void`.
-  Future<void> onTapInputlighttwo() async {
-    DateTime? dateTime = await showDatePicker(
-      context: Get.context!,
-      initialDate: controller.k27ModelObj.value.selectedInputlightTwo!.value,
-      firstDate: DateTime(1970),
-      lastDate: DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ),
-    );
-    if (dateTime != null) {
-      controller.k27ModelObj.value.selectedInputlightTwo!.value = dateTime;
-      controller.inputlighttwoController.text = dateTime.format(pattern: Y_M_D);
-    }
-  }
 }

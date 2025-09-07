@@ -206,11 +206,12 @@ class LightCodeColors {
   Color get cyan90001 => Color(0XFF236874);
   Color get cyan90002 => Color(0XFF135D6A);
   Color get cyanA100 => Color(0XFF91EFFF);
+  Color get cyan70001 => Color(0XFF1693A9);
 // DeepOrange
   Color get deepOrangeA200 => Color(0XFFEA6939);
 // Gray
   Color get gray200 => Color(0XFFF0F0F0);
-
+  Color get teal5001 => Color(0XFFD2EAEE);
   Color get gray20001 => Color(0XFFEEEEEE);
   Color get gray300 => Color(0XFFE5E5E5);
   Color get gray30001 => Color(0XFFE3E4E8);
@@ -230,6 +231,7 @@ class LightCodeColors {
   Color get indigoA200 => Color(0XFF5277F7);
 // LightBlue
   Color get lightBlue50 => Color(0XFFEAFBFF);
+  Color get blue50 => Color(0XFFEAF5FB);
 // Red
   Color get redA200 => Color(0XFFFF5757);
 // Teal
@@ -241,6 +243,7 @@ class LightCodeColors {
   Color get teal400 => Color(0XFF11AF9C);
   Color get teal4007e => Color(0X7E208698);
   Color get teal50 => Color(0XFFD2EAED);
+   Color get teal5003 => Color(0XFFD2EDF1);
 // White
   Color get whiteA700 => Color(0XFFFFFFFF);
 // Yellow

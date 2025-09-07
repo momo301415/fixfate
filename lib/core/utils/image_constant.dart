@@ -1,5 +1,10 @@
 // ignore_for_file: must_be_immutable
 class ImageConstant {
+  static String imgNotification = '$imagePath/img_notification.svg';
+
+  static String imgFiRrUtensils = '$imagePath/img_fi_rr_utensils.svg';
+  static String imgArrowdownPrimarycontainer =
+      '$imagePath/img_arrowdown_primarycontainer.svg';
   static String imgFiSrHourglass = '$imagePath/img_fi_sr_hourglass.svg';
   // Image folder path
   static String imagePath = 'assets/images';
@@ -210,11 +215,17 @@ class ImageConstant {
   static String imgFrame86884 = '$imagePath/img_frame_86884.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
-
+  static String imgArrowLeftWhiteA70024x24 =
+      '$imagePath/img_arrow_left_white_a700_24x24.svg';
+  static String imgArrowLeftWhiteA700 =
+      '$imagePath/img_arrow_left_white_a700.svg';
   static String imgUnionFullBg = '$imagePath/img_union_full.png';
   static String imgUnionBg2 = '$imagePath/img_union_2.png';
   static String imgQrBg = '$imagePath/img_qr_bg.png';
-
+  static String imgArrowDownPrimarycontainer1 =
+      '$imagePath/img_arrow_down_primarycontainer_1.svg';
+  static String imgArrowRightPrimarycontainer1 =
+      '$imagePath/img_arrow_right_primarycontainer_1.svg';
   static String solidDistance = '$imagePath/solid-icon-distance.svg';
   static String solidHeartbeat = '$imagePath/solid-icon-heartbeat.svg';
   static String solidBlood = '$imagePath/solid-icon-blood.svg';
@@ -223,9 +234,11 @@ class ImageConstant {
   static String solidStep = '$imagePath/solid-icon-step.svg';
   static String solidSleep = '$imagePath/solid-icon-sleep.svg';
   static String solidFire = '$imagePath/solid-icon-fire.svg';
-
+  static String imgFiedit2 = '$imagePath/img_fiedit2.svg';
+  static String imgUplusPrimary = '$imagePath/img_uplus_primary.svg';
   static String imgFrame86912 = '$imagePath/img_frame_86912.svg';
-
+static String imgVector308 = '$imagePath/img_vector_308.svg';
+ static String imgIconUWaterGlass = '$imagePath/img_icon_u_water_glass.svg';
   static String imgFrame86911 = '$imagePath/img_frame_86911.svg';
 
   static String imgIcon11 = '$imagePath/img_icon_1_1.png';

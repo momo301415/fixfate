@@ -26,6 +26,14 @@ extension IconButtonStyleHelper on CustomIconButton {
           ),
         ],
       );
+  static BoxDecoration get fillPrimaryTL20 => BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(20.h),
+      );
+  static BoxDecoration get fillPrimary => BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20.h),
+      );
   static BoxDecoration get none => BoxDecoration();
 }
 

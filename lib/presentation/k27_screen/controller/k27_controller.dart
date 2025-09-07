@@ -60,4 +60,8 @@ class K27Controller extends GetxController {
       onConfirmed: (p0) => weightValueObx.value = p0,
     );
   }
+
+  Future<void> submitBodyInfo() async {
+    final res = await Get.toNamed(AppRoutes.k76Screen, arguments: 6);
+  }
 }

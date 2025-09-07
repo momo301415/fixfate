@@ -13,19 +13,65 @@ extension on TextStyle {
       fontFamily: 'PingFang TC',
     );
   }
+
+    TextStyle get pingFangTC4 {
+    return copyWith(fontFamily: 'PingFang TC');
+  }
 }
 
 /// A collection of pre-defined text styles for customizing text appearance,
 /// categorized by different font families and weights.
 /// Additionally, this class includes extensions on [TextStyle] to easily apply specific font families to text.
 class CustomTextStyles {
+    static TextStyle get pingFangTC4ErrorContainer =>
+      TextStyle(
+        color: theme.colorScheme.errorContainer,
+        fontSize: 7.fSize,
+        fontWeight: FontWeight.w500,
+      ).pingFangTC4;
+       static TextStyle get pingFangTC4ErrorContainerRegular6 =>
+      TextStyle(
+        color: theme.colorScheme.errorContainer,
+        fontSize: 6.fSize,
+        fontWeight: FontWeight.w400,
+      ).pingFangTC4;
+  static TextStyle get labelLargePrimary =>
+      theme.textTheme.labelLarge!.copyWith(color: theme.colorScheme.primary);
+  static TextStyle get titleSmallErrorContainer14_1 => theme
+      .textTheme
+      .titleSmall!
+      .copyWith(color: theme.colorScheme.errorContainer, fontSize: 14.fSize);
+  static TextStyle get bodySmall8 =>
+      theme.textTheme.bodySmall!.copyWith(fontSize: 8.fSize);
+   static TextStyle get headlineSmallErrorContainer => theme
+      .textTheme
+      .headlineSmall!
+      .copyWith(color: theme.colorScheme.errorContainer);
+  static TextStyle get labelSmallBluegray400 => theme.textTheme.labelSmall!
+      .copyWith(color: appTheme.blueGray400, fontSize: 8.fSize);
+   static TextStyle get titleSmallPrimary => theme.textTheme.titleSmall!
+      .copyWith(color: theme.colorScheme.primary, fontSize: 14.fSize);
+    static TextStyle get titleSmallBluegray40014 => theme.textTheme.titleSmall!
+      .copyWith(color: appTheme.blueGray400, fontSize: 14.fSize);
+   static TextStyle get labelSmallPrimary =>
+      theme.textTheme.labelSmall!.copyWith(
+        color: theme.colorScheme.primary,
+        fontSize: 8.fSize,
+        fontWeight: FontWeight.w600,
+      );
+  static TextStyle get bodySmallBluegray4008 => theme.textTheme.bodySmall!
+      .copyWith(color: appTheme.blueGray400, fontSize: 8.fSize);
+  static TextStyle get bodySmallBluegray400_1 =>
+      theme.textTheme.bodySmall!.copyWith(color: appTheme.blueGray400);
+  static TextStyle get bodyMediumPrimaryContainer_1 =>
+      theme.textTheme.bodyMedium!
+          .copyWith(color: theme.colorScheme.primaryContainer);
   static TextStyle get bodyMediumGray500_1 =>
       theme.textTheme.bodyMedium!.copyWith(color: appTheme.gray500);
-  static TextStyle get bodyMediumPrimaryContainer_3 => theme
-      .textTheme
-      .bodyMedium!
-      .copyWith(color: theme.colorScheme.primaryContainer);
-   static TextStyle get bodySmallBluegray900 =>
+  static TextStyle get bodyMediumPrimaryContainer_3 =>
+      theme.textTheme.bodyMedium!
+          .copyWith(color: theme.colorScheme.primaryContainer);
+  static TextStyle get bodySmallBluegray900 =>
       theme.textTheme.bodySmall!.copyWith(color: appTheme.blueGray900);
   static TextStyle get bodySmall11_1 =>
       theme.textTheme.bodySmall!.copyWith(fontSize: 11.fSize);
@@ -198,10 +244,7 @@ class CustomTextStyles {
         color: theme.colorScheme.primaryContainer,
         fontSize: 15.fSize,
       );
-  static TextStyle get bodyMediumPrimaryContainer_1 =>
-      theme.textTheme.bodyMedium!.copyWith(
-        color: theme.colorScheme.primaryContainer,
-      );
+
   static TextStyle get bodyMediumPrimaryContainer_2 =>
       theme.textTheme.bodyMedium!.copyWith(
         color: theme.colorScheme.primaryContainer.withValues(

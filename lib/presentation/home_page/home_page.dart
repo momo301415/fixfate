@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/presentation/home_page/controller/home_controller.dart';
+import 'package:pulsedevice/presentation/k13_screen/k13_screen.dart';
 import 'package:pulsedevice/presentation/k29_page/k29_page.dart';
 import 'package:pulsedevice/presentation/k73_screen/k73_screen.dart';
 import 'package:pulsedevice/presentation/k19_screen/k19_screen.dart';
@@ -27,6 +28,17 @@ class HomePage extends GetView<HomeController> {
             ),
 
             // 頂層：全局諮詢覆蓋
+            // Obx(() => IgnorePointer(
+            //       ignoring: !controller.cc.isK19Visible.value,
+            //       child: AnimatedSlide(
+            //         duration: const Duration(milliseconds: 500),
+            //         curve: Curves.easeInOut,
+            //         offset: controller.cc.isK19Visible.value
+            //             ? Offset.zero
+            //             : const Offset(0, -1),
+            //         child: const K19Screen(),
+            //       ),
+            //     )),
             Obx(() => IgnorePointer(
                   ignoring: !controller.cc.isK19Visible.value,
                   child: AnimatedSlide(
@@ -35,7 +47,7 @@ class HomePage extends GetView<HomeController> {
                     offset: controller.cc.isK19Visible.value
                         ? Offset.zero
                         : const Offset(0, -1),
-                    child: const K19Screen(),
+                    child: const K13Screen(),
                   ),
                 )),
 

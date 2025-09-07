@@ -34,9 +34,9 @@ class MyApp extends StatelessWidget {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
+        locale: const Locale('en', 'US'),
+        fallbackLocale: const Locale('en', 'US'),
         translations: AppLocalization(),
-        locale: Locale('en', ''),
-        fallbackLocale: Locale('zh', 'TW'),
         supportedLocales: const [
           Locale("en", ""),
           Locale("zh", "TW"),
