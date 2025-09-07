@@ -15,6 +15,7 @@ void main() async {
       .then((value) async {
     LoggerH.init(kReleaseMode ? LogMode.live : LogMode.debug);
     await Firebase.initializeApp();
+    PrefUtils().init();
     Get.put(GlobalController()); // 註冊為全域單例
     // 將運動controller放在這裡，全 app 可用
     Get.put(K5Controller(), permanent: true);
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         theme: theme,
         translations: AppLocalization(),
         locale: Locale('en', ''),
-        fallbackLocale: Locale('en', ''),
+        fallbackLocale: Locale('zh', 'TW'),
         supportedLocales: const [
           Locale("en", ""),
           Locale("zh", "TW"),

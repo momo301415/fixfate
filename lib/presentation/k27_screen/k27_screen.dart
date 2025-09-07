@@ -6,13 +6,17 @@ import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
 import '../../widgets/custom_text_form_field.dart';
 import 'controller/k27_controller.dart'; // ignore_for_file: must_be_immutable
+import 'custom_selection_dialog.dart';
+
 // 填寫身體資料
 class K27Screen extends GetWidget<K27Controller> {
   const K27Screen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffoldImageHeader(title:  "lbl422".tr, child: SizedBox(
+    return BaseScaffoldImageHeader(
+        title: "lbl422".tr,
+        child: SizedBox(
           width: double.maxFinite,
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -42,10 +46,8 @@ class K27Screen extends GetWidget<K27Controller> {
             ],
           ),
         ));
-    
   }
 
- 
   /// Section Widget
   Widget _buildBodyInfoSection() {
     return Container(
@@ -61,16 +63,20 @@ class K27Screen extends GetWidget<K27Controller> {
         children: [
           Text("lbl423".tr, style: CustomTextStyles.bodySmallBluegray900),
           SizedBox(height: 8.h),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
-            decoration: AppDecoration.gray100.copyWith(
-              borderRadius: BorderRadiusStyle.circleBorder2,
+          CustomTextFormField(
+            readOnly: true,
+            controller: controller.genderController,
+            hintText: "lbl77".tr,
+            hintStyle: CustomTextStyles.bodyMediumPrimaryContainer_3,
+            textInputAction: TextInputAction.done,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 14.h,
+              vertical: 10.h,
             ),
-            child: Text(
-              "lbl130".tr,
-              textAlign: TextAlign.left,
-              style: CustomTextStyles.bodyMediumPrimaryContainer_3,
-            ),
+            onTap: () {
+              // onTapInputlighttwo();
+              controller.selectGenderDialog();
+            },
           ),
           SizedBox(height: 24.h),
           Text("lbl78".tr, style: CustomTextStyles.bodySmallBluegray900),
@@ -86,46 +92,93 @@ class K27Screen extends GetWidget<K27Controller> {
               vertical: 10.h,
             ),
             onTap: () {
-              onTapInputlighttwo();
+              // onTapInputlighttwo();
+              controller.showTimeDialog();
             },
           ),
           SizedBox(height: 24.h),
           Text("lbl80".tr, style: CustomTextStyles.bodySmallBluegray900),
           SizedBox(height: 8.h),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
-            decoration: AppDecoration.gray100.copyWith(
-              borderRadius: BorderRadiusStyle.circleBorder2,
-            ),
-            width: double.maxFinite,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "lbl_165".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer_3,
-                ),
-                Text("lbl_cm".tr, style: theme.textTheme.bodySmall),
-              ],
+          // CustomTextFormField(
+          //   readOnly: true,
+          //   controller: controller.inputlighttwoController,
+          //   hintText: "",
+          //   hintStyle: CustomTextStyles.bodyMediumPrimaryContainer_3,
+          //   textInputAction: TextInputAction.done,
+          //   contentPadding: EdgeInsets.symmetric(
+          //     horizontal: 14.h,
+          //     vertical: 10.h,
+          //   ),
+          //   onTap: () {
+          //     // onTapInputlighttwo();
+          //     controller.showWeightInputDialog();
+          //   },
+          // ),
+          InkWell(
+            onTap: () => controller.showHeightInputDialog(),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
+              decoration: AppDecoration.gray100.copyWith(
+                borderRadius: BorderRadiusStyle.circleBorder2,
+              ),
+              width: double.maxFinite,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() => Text(
+                        controller.heightValueObx.value.isEmpty
+                            ? 'lbl54'.tr
+                            : controller.heightValueObx.value,
+                        style:! controller.heightValueObx.value.isEmpty
+                            ? CustomTextStyles.bodyMediumPrimaryContainer_3
+                            : CustomTextStyles.bodyMediumGray500_1,
+                      )),
+                  Text("lbl_cm".tr, style: theme.textTheme.bodySmall),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 24.h),
           Text("lbl79".tr, style: CustomTextStyles.bodySmallBluegray900),
           SizedBox(height: 8.h),
-          // Container(
-          //   padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
-          //   decoration: AppDecoration.gray100.copyWith(
-          //     borderRadius: BorderRadiusStyle.circleBorder2,
+
+          // CustomTextFormField(
+          //   readOnly: true,
+          //   controller: controller.inputlighttwoController,
+          //   hintText: "",
+          //   hintStyle: CustomTextStyles.bodyMediumPrimaryContainer_3,
+          //   textInputAction: TextInputAction.done,
+          //   contentPadding: EdgeInsets.symmetric(
+          //     horizontal: 14.h,
+          //     vertical: 10.h,
           //   ),
-          //   width: double.maxFinite,
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Text("lbl427".tr, style: CustomTextStyles.bodyMediumGray500_1),
-          //       Text("lbl_kg".tr, style: theme.textTheme.bodySmall),
-          //     ],
-          //   ),
+          //   onTap: () {
+          //     // onTapInputlighttwo();
+          //     controller.showWeightInputDialog();
+          //   },
           // ),
+          InkWell(
+            onTap: () => controller.showWeightInputDialog(),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 8.h),
+              decoration: AppDecoration.gray100.copyWith(
+                borderRadius: BorderRadiusStyle.circleBorder2,
+              ),
+              width: double.maxFinite,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() => Text(controller.weightValueObx.value.isEmpty
+                      ? 'lbl54'.tr
+                      : controller.weightValueObx.value,
+                      style: !controller.weightValueObx.value.isEmpty
+                          ? CustomTextStyles.bodyMediumPrimaryContainer_3
+                          : CustomTextStyles.bodyMediumGray500_1)),
+                  Text("lbl_kg".tr, style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
