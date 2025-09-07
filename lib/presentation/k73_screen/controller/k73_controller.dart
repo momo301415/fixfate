@@ -123,11 +123,10 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     // const int CALORIES_INDEX = 5;
     // const int DISTANCE_INDEX = 6;
     const int HEART_INDEX = 0;
-    const int TEMP_INDEX = 1;
-    const int STEP_INDEX = 2;
-    const int SLEEP_INDEX = 3;
-    const int CALORIES_INDEX = 4;
-    const int DISTANCE_INDEX = 5;
+    const int STEP_INDEX = 1;
+    const int SLEEP_INDEX = 2;
+    const int CALORIES_INDEX = 3;
+    const int DISTANCE_INDEX = 4;
 
     // 安全更新心率數據
     _updateHealthItem(HEART_INDEX, {
@@ -136,12 +135,12 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       "isAlert": res["heartAlert"] ?? false,
     });
 
-    // 安全更新體溫數據
-    _updateHealthItem(TEMP_INDEX, {
-      "loadTime": res["combinedDuration"]?.toString() ?? "無數據",
-      "value": res["temperature"]?.toString() ?? "0.0",
-      "isAlert": res["tempAlert"] ?? false,
-    });
+    // // 安全更新體溫數據
+    // _updateHealthItem(TEMP_INDEX, {
+    //   "loadTime": res["combinedDuration"]?.toString() ?? "無數據",
+    //   "value": res["temperature"]?.toString() ?? "0.0",
+    //   "isAlert": res["tempAlert"] ?? false,
+    // });
 
     // 安全更新壓力數據
     // _updateHealthItem(PRESSURE_INDEX, {

@@ -176,6 +176,7 @@ class GlobalController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    YcProductPlugin().cancelListening();
 
     WidgetsBinding.instance.removeObserver(lifecycleObserver);
     db.close();

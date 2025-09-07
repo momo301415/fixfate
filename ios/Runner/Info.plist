@@ -37,9 +37,9 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>需要存取您的音樂資料以支援裝置同步功能</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>本 App 透過藍牙與智慧戒指等穿戴裝置配對，以同步使用者的心率、體溫、睡眠等生理數據，供健康趨勢參考與個人化提醒使用。</string>
+	<string>本 App 透過藍牙與智慧戒指等穿戴裝置配對，以同步使用者的心率、睡眠等生理數據，供健康趨勢參考與個人化提醒使用。</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>本 App 透過藍牙與智慧戒指等穿戴裝置配對，以同步使用者的心率、體溫、睡眠等生理數據，供健康趨勢參考與個人化提醒使用。</string>
+	<string>本 App 透過藍牙與智慧戒指等穿戴裝置配對，以同步使用者的心率、睡眠等生理數據，供健康趨勢參考與個人化提醒使用。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>此 App 使用相機功能，讓使用者可拍攝頭像作為個人資料顯示，並用於掃描 QR Code 快速分享健康資料給家庭成員。</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

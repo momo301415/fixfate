@@ -46,7 +46,7 @@ class K73Screen extends GetWidget<K73Controller> {
               )),
           SizedBox(height: 12.h),
           _buildListview(),
-          _buildRowviewtwo() // 註解掉，功能已整合到Grid中
+          // _buildRowviewtwo() // 註解掉，功能已整合到Grid中
         ],
       ),
     );
@@ -79,11 +79,10 @@ class K73Screen extends GetWidget<K73Controller> {
               },
               child: ListviewItemWidget(model: item),
             );
+          } else {
+            // 最後一個位置顯示垂直功能按鈕組
+            return _buildVerticalFunctionButtons();
           }
-          // else {
-          //   // 最後一個位置顯示垂直功能按鈕組
-          //   return _buildVerticalFunctionButtons();
-          // }
         },
       );
     });

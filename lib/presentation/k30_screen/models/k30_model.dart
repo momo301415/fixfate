@@ -26,7 +26,7 @@ class K30Model {
     ListItemModel(tf: "lbl302".tr.obs, tf1: "lbl299".tr.obs),
     ListItemModel(tf: "lbl303".tr.obs, tf1: "lbl303_1".tr.obs),
     ListItemModel(tf: "lbl304".tr.obs, tf1: "lbl303_1".tr.obs),
-    ListItemModel(tf: "lbl305".tr.obs, tf1: "lbl303_2".tr.obs),
+    ListItemModel(tf: "lbl305".tr.obs, tf1: "lbl303_1".tr.obs),
     ListItemModel(tf: "lbl306".tr.obs, tf1: "lbl306_3".tr.obs),
     ListItemModel(tf: "lbl307".tr.obs, tf1: "lbl307_1".tr.obs),
   ]);

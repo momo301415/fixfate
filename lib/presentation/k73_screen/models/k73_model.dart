@@ -24,14 +24,14 @@ class K73Model {
     //     label: "lbl172_1".tr.obs,
     //     value: "".obs,
     //     unit: "".obs),
-    ListViewItemModel(
-      icon: ImageConstant.imgIconWhiteA700.obs,
-      isAlert: false.obs,
-      loadTime: "lbl_1".tr.obs,
-      label: "lbl173_1".tr.obs,
-      value: "".obs,
-      unit: "lbl_c".tr.obs,
-    ),
+    // ListViewItemModel(
+    //   icon: ImageConstant.imgIconWhiteA700.obs,
+    //   isAlert: false.obs,
+    //   loadTime: "lbl_1".tr.obs,
+    //   label: "lbl173_1".tr.obs,
+    //   value: "".obs,
+    //   unit: "lbl_c".tr.obs,
+    // ),
     // ListViewItemModel(
     //     icon: ImageConstant.imgIcon1.obs,
     //     isAlert: false.obs,
