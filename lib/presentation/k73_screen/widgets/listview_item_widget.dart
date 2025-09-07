@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/presentation/k73_screen/models/listview_item_model.dart';
-import 'package:pulsedevice/widgets/custom_image_view.dart';
-import 'package:pulsedevice/core/utils/size_utils.dart';
 
 class ListviewItemWidget extends StatelessWidget {
   final ListViewItemModel model;

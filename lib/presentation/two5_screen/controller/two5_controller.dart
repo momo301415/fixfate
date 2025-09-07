@@ -65,7 +65,6 @@ class Two5Controller extends GetxController {
   }
 
   Future<void> gettingApi() async {
-    LoadingHelper.show();
     try {
       final payload = {
         "codeType": "oxygen",
@@ -75,7 +74,6 @@ class Two5Controller extends GetxController {
         Api.measurementGet,
         payload,
       );
-      LoadingHelper.hide();
       if (res.isNotEmpty) {
         final resMsg = res["message"];
         if (resMsg == "SUCCESS") {

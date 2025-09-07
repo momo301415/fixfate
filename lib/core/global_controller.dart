@@ -100,8 +100,6 @@ class GlobalController extends GetxController {
 
   DateTime? _lastSyncTime;
 
-  // late GoalNotificationService goalNotificationService;
-
   ///--- 定位增強服務
   late LocationEnhancementService locationEnhancementService;
 
@@ -560,12 +558,6 @@ class GlobalController extends GetxController {
     }
   }
 
-  // initGoal() async {
-  //   goalNotificationService = await GoalNotificationService(
-  //     userId: userId.value,
-  //   );
-  // }
-
   initFunc() async {
     if (_isInitFuncRunning) return;
 
@@ -600,7 +592,6 @@ class GlobalController extends GetxController {
     if (map['trigger'] == true) {
       // 由 Task 驅動的同步邏輯
       await safeRunSync();
-      // getGoalTargetData(goalNotificationService);
     }
   }
 
@@ -692,10 +683,6 @@ class GlobalController extends GetxController {
       },
     );
   }
-
-  // Future<void> getGoalTargetData(GoalNotificationService service) async {
-  //   service.checkTodayGoalsAndNotify();
-  // }
 
   Future<void> safeRunSync() async {
     final now = DateTime.now();
