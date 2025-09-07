@@ -23,6 +23,18 @@ extension on TextStyle {
 /// categorized by different font families and weights.
 /// Additionally, this class includes extensions on [TextStyle] to easily apply specific font families to text.
 class CustomTextStyles {
+  static TextStyle get labelLargeBluegray400 =>
+      theme.textTheme.labelLarge!.copyWith(color: appTheme.blueGray400);
+   static TextStyle get bodySmallPrimaryContainer11_1 => theme
+      .textTheme
+      .bodySmall!
+      .copyWith(color: theme.colorScheme.primaryContainer, fontSize: 11.fSize);
+  static TextStyle get bodySmallPrimaryContainer11 => theme.textTheme.bodySmall!
+      .copyWith(color: theme.colorScheme.primaryContainer, fontSize: 11.fSize);
+    static TextStyle get bodySmallPrimaryContainer_6 => theme.textTheme.bodySmall!
+      .copyWith(color: theme.colorScheme.primaryContainer);
+  static TextStyle get titleMediumBluegray400 => theme.textTheme.titleMedium!
+      .copyWith(color: appTheme.blueGray400, fontSize: 16.fSize);
     static TextStyle get pingFangTC4ErrorContainer =>
       TextStyle(
         color: theme.colorScheme.errorContainer,

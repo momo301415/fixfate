@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/presentation/home_page/controller/home_controller.dart';
 import 'package:pulsedevice/presentation/k13_screen/widgets/nutrition_card_widget.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
@@ -17,171 +18,178 @@ class K13Screen extends GetWidget<K13Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffoldImageHeader(
-        title: "lbl383".tr,
-        child: Container(
-          child: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Container(
-                width: double.maxFinite,
-                child: Column(
-                  spacing: 8,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildIntakeGoalSection(),
-                    Container(
-                      width: double.maxFinite,
-                      padding: EdgeInsets.all(16.h),
-                      decoration: AppDecoration.fillWhiteA.copyWith(
-                        borderRadius: BorderRadiusStyle.roundedBorder8,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              await controller.showSelectAllFood();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: appTheme.gray30066,
-                                borderRadius: BorderRadius.circular(8.0), // 圆角
+    return Container(
+      margin: EdgeInsets.only(bottom: 120.h),
+      child: BaseScaffoldImageHeader(
+          onBack: () => Get.find<HomeController>().cc.isK19Visible.value = false,
+          title: "lbl383".tr,
+          child: Container(
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  width: double.maxFinite,
+                  child: Column(
+                    spacing: 8,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildIntakeGoalSection(),
+                      Container(
+                        width: double.maxFinite,
+                        padding: EdgeInsets.all(16.h),
+                        decoration: AppDecoration.fillWhiteA.copyWith(
+                          borderRadius: BorderRadiusStyle.roundedBorder8,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                await controller.showSelectAllFood();
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: appTheme.gray30066,
+                                  borderRadius:
+                                      BorderRadius.circular(8.0), // 圆角
+                                ),
+                                padding: const EdgeInsets.all(12.0), // 内边距
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "lbl348".tr,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(),
+                                    CustomImageView(
+                                      imagePath: ImageConstant
+                                          .imgArrowdownPrimarycontainer,
+                                      height: 16.h,
+                                      width: 16.h,
+                                      fit: BoxFit.contain,
+                                    )
+                                  ],
+                                ),
                               ),
-                              padding: const EdgeInsets.all(12.0), // 内边距
+                            ),
+                            SizedBox(height: 8.h),
+                            _buildCalorieIntakeRow(),
+                            // 营养卡片列表
+                            Column(
+                              children: controller.nutritionCards
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                final index = entry.key;
+                                final data = entry.value;
+                                return InkWell(
+                                  onTap: () async {
+                                    // 等待K2Screen返回编辑后的数据
+                                    final editedData = await Get.toNamed(
+                                        AppRoutes.editYsScreen,
+                                        arguments: data.copyWith());
+                                    if (editedData != null &&
+                                        editedData is NutritionCardData) {
+                                      print(" editedData   ${editedData} ");
+                                      // 更新对应位置的数据
+                                      controller.updateNutritionCard(
+                                          index, editedData);
+                                    }
+                                  },
+                                  child: NutritionCard(data: data),
+                                );
+                              }).toList(),
+                            ),
+                            SizedBox(height: 10.h),
+                            Container(
+                              width: double.maxFinite,
+                              margin: EdgeInsets.symmetric(horizontal: 8.h),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "lbl348".tr,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                                  Column(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomIconButton(
+                                        height: 40.h,
+                                        width: 40.h,
+                                        padding: EdgeInsets.all(10.h),
+                                        decoration:
+                                            IconButtonStyleHelper.fillPrimary,
+                                        child: CustomImageView(
+                                          imagePath:
+                                              ImageConstant.imgFiRrUtensils,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 8.h),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 4.h,
+                                        ),
+                                        decoration:
+                                            AppDecoration.gray100.copyWith(
+                                          borderRadius:
+                                              BorderRadiusStyle.circleBorder2,
+                                        ),
+                                        child: Text(
+                                          "lbl358".tr,
+                                          textAlign: TextAlign.center,
+                                          style: CustomTextStyles
+                                              .bodySmallBluegray4008,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(),
-                                  CustomImageView(
-                                    imagePath: ImageConstant
-                                        .imgArrowdownPrimarycontainer,
-                                    height: 16.h,
-                                    width: 16.h,
-                                    fit: BoxFit.contain,
-                                  )
+                                  // Expanded(
+                                  //   child: Align(
+                                  //     alignment: Alignment.bottomCenter,
+                                  //     child: Padding(
+                                  //       padding: EdgeInsets.only(top: 6.h),
+                                  //       child: _buildSupperRow(
+                                  //         time: "lbl_09_30_pm".tr,
+                                  //         prop: "lbl395".tr,
+                                  //         one: "lbl_13".tr,
+                                  //         prop1: "lbl338".tr,
+                                  //         calorieValue: "lbl_1500".tr,
+                                  //         kcal: "lbl_kcal".tr,
+                                  //         prop2: "lbl339".tr,
+                                  //         carbohydrateValue: "lbl_8_32".tr,
+                                  //         gTwenty: "lbl_g".tr,
+                                  //         five: "lbl340".tr,
+                                  //         p83Twentyone: "lbl_31_02".tr,
+                                  //         gTwentyone: "lbl_g".tr,
+                                  //         prop3: "lbl341".tr,
+                                  //         fatValue: "lbl_3_62".tr,
+                                  //         gTwentytwo: "lbl_g".tr,
+                                  //         one1: "lbl342".tr,
+                                  //         fiberValue: "lbl_0_0".tr,
+                                  //         gTwentythree: "lbl_g".tr,
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
-                          ),
-                          SizedBox(height: 8.h),
-                          _buildCalorieIntakeRow(),
-                          // 营养卡片列表
-                          Column(
-                            children: controller.nutritionCards
-                                .asMap()
-                                .entries
-                                .map((entry) {
-                              final index = entry.key;
-                              final data = entry.value;
-                              return InkWell(
-                                onTap: () async {
-                                  // 等待K2Screen返回编辑后的数据
-                                  final editedData = await Get.toNamed(
-                                      AppRoutes.k2Screen,
-                                      arguments: data.copyWith());
-                                  if (editedData != null &&
-                                      editedData is NutritionCardData) {
-                                    print(" editedData   ${editedData} ");
-                                    // 更新对应位置的数据
-                                    controller.updateNutritionCard(
-                                        index, editedData);
-                                  }
-                                },
-                                child: NutritionCard(data: data),
-                              );
-                            }).toList(),
-                          ),
-                          SizedBox(height: 10.h),
-                          Container(
-                            width: double.maxFinite,
-                            margin: EdgeInsets.symmetric(horizontal: 8.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  spacing: 10,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomIconButton(
-                                      height: 40.h,
-                                      width: 40.h,
-                                      padding: EdgeInsets.all(10.h),
-                                      decoration:
-                                          IconButtonStyleHelper.fillPrimary,
-                                      child: CustomImageView(
-                                        imagePath:
-                                            ImageConstant.imgFiRrUtensils,
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 8.h),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 4.h,
-                                      ),
-                                      decoration:
-                                          AppDecoration.gray100.copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.circleBorder2,
-                                      ),
-                                      child: Text(
-                                        "lbl358".tr,
-                                        textAlign: TextAlign.center,
-                                        style: CustomTextStyles
-                                            .bodySmallBluegray4008,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // Expanded(
-                                //   child: Align(
-                                //     alignment: Alignment.bottomCenter,
-                                //     child: Padding(
-                                //       padding: EdgeInsets.only(top: 6.h),
-                                //       child: _buildSupperRow(
-                                //         time: "lbl_09_30_pm".tr,
-                                //         prop: "lbl395".tr,
-                                //         one: "lbl_13".tr,
-                                //         prop1: "lbl338".tr,
-                                //         calorieValue: "lbl_1500".tr,
-                                //         kcal: "lbl_kcal".tr,
-                                //         prop2: "lbl339".tr,
-                                //         carbohydrateValue: "lbl_8_32".tr,
-                                //         gTwenty: "lbl_g".tr,
-                                //         five: "lbl340".tr,
-                                //         p83Twentyone: "lbl_31_02".tr,
-                                //         gTwentyone: "lbl_g".tr,
-                                //         prop3: "lbl341".tr,
-                                //         fatValue: "lbl_3_62".tr,
-                                //         gTwentytwo: "lbl_g".tr,
-                                //         one1: "lbl342".tr,
-                                //         fiberValue: "lbl_0_0".tr,
-                                //         gTwentythree: "lbl_g".tr,
-                                //       ),
-                                //     ),
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                        ],
+                            SizedBox(height: 10.h),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ));
+              ],
+            ),
+          )),
+    );
   }
 
   /// Section Widget

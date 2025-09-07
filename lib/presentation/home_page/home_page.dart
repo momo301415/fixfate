@@ -56,13 +56,14 @@ class HomePage extends GetView<HomeController> {
               left: 0,
               right: 0,
               bottom: 0,
-              child: controller.cc.isK19Visible.value
-                  ? Container()
-                  : CustomBottomBar(
-                      onChanged: (index) {
-                        controller.onTabChanged(index);
-                      },
-                    ),
+              child: CustomBottomBar(
+                onChanged: (index) {
+                  if (controller.cc.isK19Visible.value) {
+                    return;
+                  }
+                  controller.onTabChanged(index);
+                },
+              ),
             ),
           ],
         ));

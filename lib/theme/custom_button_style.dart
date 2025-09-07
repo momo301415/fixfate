@@ -18,18 +18,24 @@ class CustomButtonStyles {
         elevation: 0,
         padding: EdgeInsets.zero,
       );
+  static ButtonStyle get fillGrayTL41 => ElevatedButton.styleFrom(
+        backgroundColor: appTheme.gray200,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
+        elevation: 0,
+        padding: EdgeInsets.zero,
+      );
   static ButtonStyle get outlineGrayTL4 => OutlinedButton.styleFrom(
         backgroundColor: appTheme.whiteA700,
         side: BorderSide(color: appTheme.gray20001, width: 1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
         padding: EdgeInsets.zero,
       );
-      static ButtonStyle get outlinePrimaryTL4 => OutlinedButton.styleFrom(
-    backgroundColor: theme.colorScheme.primary,
-    side: BorderSide(color: theme.colorScheme.primary, width: 1),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
-    padding: EdgeInsets.zero,
-  );
+  static ButtonStyle get outlinePrimaryTL4 => OutlinedButton.styleFrom(
+        backgroundColor: theme.colorScheme.primary,
+        side: BorderSide(color: theme.colorScheme.primary, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
+        padding: EdgeInsets.zero,
+      );
   static ButtonStyle get fillGrayLR4 => ElevatedButton.styleFrom(
         backgroundColor: appTheme.gray200,
         shape: RoundedRectangleBorder(

@@ -1,5 +1,7 @@
 import 'package:pulsedevice/presentation/bg_log_page/bg_log_page.dart';
 import 'package:pulsedevice/presentation/bg_log_page/binding/bg_log_biding.dart';
+import 'package:pulsedevice/presentation/edit_ys_screen/binding/k2_binding.dart';
+import 'package:pulsedevice/presentation/edit_ys_screen/k2_screen.dart';
 import 'package:pulsedevice/presentation/home_page/binding/home_binding.dart';
 import 'package:pulsedevice/presentation/home_page/home_page.dart';
 import 'package:pulsedevice/presentation/k19_screen/binding/k19_binding.dart';
@@ -237,7 +239,7 @@ class AppRoutes {
 
   static const String one3FindDeviceScreen = '/one3_find_device_screen';
   static const String k27Screen = '/k27_screen';
-
+  static const String editYsScreen = '/edit_ys_screen';
 
 
   static List<GetPage> pages = [
@@ -536,6 +538,10 @@ class AppRoutes {
       bindings: [K36DeviceDetailesBinding()],
 
     ),
-
+    GetPage(
+      name: editYsScreen,
+      page: () => EditYsScreen(),
+      bindings: [EditYsBinding()],
+    ),
   ];
 }

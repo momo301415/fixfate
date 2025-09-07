@@ -45,6 +45,7 @@ class CustomTextFormField extends StatelessWidget {
       this.suffixConstraints,
       this.contentPadding,
       this.borderDecoration,
+      this.textAlign, // 添加这一行
       this.fillColor,
       this.filled = true,
       this.validator})
@@ -53,7 +54,7 @@ class CustomTextFormField extends StatelessWidget {
         );
 
   final Alignment? alignment;
-
+final  textAlign;
   final double? width;
 
   final BoxDecoration? boxDecoration;
@@ -122,6 +123,7 @@ class CustomTextFormField extends StatelessWidget {
           controller: controller,
           onChanged: onChanged,
           focusNode: focusNode,
+          textAlign:textAlign ?? TextAlign.start,
           onTapOutside: (event) {
             if (focusNode != null) {
               focusNode?.unfocus();

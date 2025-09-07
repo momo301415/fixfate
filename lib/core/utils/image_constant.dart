@@ -8,7 +8,7 @@ class ImageConstant {
   static String imgFiSrHourglass = '$imagePath/img_fi_sr_hourglass.svg';
   // Image folder path
   static String imagePath = 'assets/images';
-
+static String imgUplusBlueGray400 = '$imagePath/img_uplus_blue_gray_400.svg';
 // Common images
   static String imgClose = '$imagePath/img_close.svg';
 
@@ -204,7 +204,7 @@ class ImageConstant {
 
   static String imgArrowDownPrimarycontainer =
       '$imagePath/img_arrow_down_primarycontainer.svg';
-
+static String imgFiTrash2 = '$imagePath/img_fi_trash_2.svg';
   static String imgForward = '$imagePath/img_forward.svg';
 
   static String imgArrowRightPrimarycontainer =
