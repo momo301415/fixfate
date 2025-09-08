@@ -35,7 +35,7 @@ class SixDialog extends StatelessWidget {
                 onChanged: (value) {
                   controller.inputedText.value = value;
                 },
-                hintText: "lbl_1500".tr,
+                hintText: "lbl54".tr,
                 hintStyle: CustomTextStyles.bodyLargeGray50016_1,
                 textInputAction: TextInputAction.done,
                 textInputType: TextInputType.number,
