@@ -30,6 +30,8 @@ import 'package:pulsedevice/presentation/one3_find_device_screen/binding/one3_bi
 import 'package:pulsedevice/presentation/one3_find_device_screen/one3_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
+import 'package:pulsedevice/presentation/take_phone_screen/binding/k10_binding.dart';
+import 'package:pulsedevice/presentation/take_phone_screen/k10_screen.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
 import 'package:pulsedevice/presentation/two10_screen/two10_screen.dart';
 import 'package:pulsedevice/presentation/two9_screen/binding/two9_binding.dart';
@@ -240,7 +242,7 @@ class AppRoutes {
   static const String one3FindDeviceScreen = '/one3_find_device_screen';
   static const String k27Screen = '/k27_screen';
   static const String editYsScreen = '/edit_ys_screen';
-
+  static const String scanFoodScreen = '/scan_food_screen';
 
   static List<GetPage> pages = [
     /// 隱私權頁
@@ -542,6 +544,11 @@ class AppRoutes {
       name: editYsScreen,
       page: () => EditYsScreen(),
       bindings: [EditYsBinding()],
+    ),
+    GetPage(
+      name: scanFoodScreen,
+      page: () => ScanFoodScreen(),
+      bindings: [ScanFoodBinding()],
     ),
   ];
 }

@@ -583,7 +583,7 @@ class K13Screen extends GetWidget<K13Controller> {
                 borderRadius: BorderRadiusStyle.circleBorder2,
               ),
               child: InkWell(
-                onTap: () => Get.toNamed(AppRoutes.k10Screen),
+                onTap: () => Get.toNamed(AppRoutes.scanFoodScreen),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
