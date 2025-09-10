@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 class ImageConstant {
+  static String imgClosePrimary = '$imagePath/img_close_primary.svg';
   static String imgFrame86948WhiteA700 =
       '$imagePath/img_frame_86948_white_a700.svg';
   static String imgNotification = '$imagePath/img_notification.svg';

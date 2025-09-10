@@ -113,10 +113,15 @@ class ScanFoodScreen extends GetWidget<ScanFoodController> {
   Widget _buildBottomControls() {
     return Column(
       children: [
-        CustomImageView(
-          imagePath: ImageConstant.imgContrast,
-          height: 48,
-          width: 48,
+        InkWell(
+          onTap: () {
+            Get.toNamed(AppRoutes.k15Screen);
+          },
+          child: CustomImageView(
+            imagePath: ImageConstant.imgContrast,
+            height: 48,
+            width: 48,
+          ),
         ),
         SizedBox(height: 16.h),
         _buildPhotoOptionsRow(),

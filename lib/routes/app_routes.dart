@@ -4,6 +4,8 @@ import 'package:pulsedevice/presentation/edit_ys_screen/binding/k2_binding.dart'
 import 'package:pulsedevice/presentation/edit_ys_screen/k2_screen.dart';
 import 'package:pulsedevice/presentation/home_page/binding/home_binding.dart';
 import 'package:pulsedevice/presentation/home_page/home_page.dart';
+import 'package:pulsedevice/presentation/k15_screen/binding/k15_binding.dart';
+import 'package:pulsedevice/presentation/k15_screen/k15_screen.dart';
 import 'package:pulsedevice/presentation/k19_screen/binding/k19_binding.dart';
 import 'package:pulsedevice/presentation/k19_screen/k19_screen.dart';
 import 'package:pulsedevice/presentation/k20_screen/binding/k20_binding.dart';
@@ -243,7 +245,7 @@ class AppRoutes {
   static const String k27Screen = '/k27_screen';
   static const String editYsScreen = '/edit_ys_screen';
   static const String scanFoodScreen = '/scan_food_screen';
-
+  static const String k15Screen = '/k15_screen';
   static List<GetPage> pages = [
     /// 隱私權頁
     GetPage(
@@ -549,6 +551,11 @@ class AppRoutes {
       name: scanFoodScreen,
       page: () => ScanFoodScreen(),
       bindings: [ScanFoodBinding()],
+    ),
+    GetPage(
+      name: k15Screen,
+      page: () => K15Screen(),
+      bindings: [K15Binding()],
     ),
   ];
 }
