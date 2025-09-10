@@ -44,7 +44,7 @@ class K73Screen extends GetWidget<K73Controller> {
                 style: CustomTextStyles.bodySmall10,
                 textAlign: TextAlign.center,
               )),
-          SizedBox(height: 12.h),
+          SizedBox(height: 24.h),
           _buildListview(),
           _buildRowviewtwo() // 註解掉，功能已整合到Grid中
         ],
@@ -66,7 +66,7 @@ class K73Screen extends GetWidget<K73Controller> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 3.h,
-          mainAxisSpacing: 6.h,
+          mainAxisSpacing: 16.h,
           childAspectRatio: 1.6,
         ),
         itemBuilder: (context, index) {

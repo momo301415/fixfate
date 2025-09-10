@@ -70,7 +70,9 @@ class K80Page extends GetWidget<K80Controller> {
                                   borderRadius: BorderRadius.circular(12.h),
                                 ),
                                 child: Text('lbl216'.tr,
-                                    style: TextStyle(color: Colors.white)),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.fSize)),
                               )
                             : Container(
                                 padding: EdgeInsets.symmetric(

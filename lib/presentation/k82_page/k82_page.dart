@@ -68,7 +68,9 @@ class K82Page extends GetWidget<K82Controller> {
                                   borderRadius: BorderRadius.circular(12.h),
                                 ),
                                 child: Text('lbl216'.tr,
-                                    style: TextStyle(color: Colors.white)),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.fSize)),
                               )
                             : Container(
                                 padding: EdgeInsets.symmetric(

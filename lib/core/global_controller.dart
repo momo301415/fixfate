@@ -702,8 +702,8 @@ class GlobalController extends GetxController {
 
   void _handleBluetoothStateChange(int newStatus) async {
     print("_handleBluetoothStateChange : $newStatus");
-    if (newStatus == _previousBluetoothStatus) return;
-    _previousBluetoothStatus = newStatus;
+    // if (newStatus == _previousBluetoothStatus) return;
+    // _previousBluetoothStatus = newStatus;
 
     blueToolStatus.value = newStatus;
     print('🔄 藍牙狀態改變：$newStatus');

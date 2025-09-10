@@ -58,7 +58,6 @@ class K53Controller extends GetxController
 
   Future<void> getRecords() async {
     try {
-      LoadingHelper.show();
       final records = await AlertRecordListStorage.getRecords(gc.userId.value);
       alertRecords.assignAll(records);
       _filterRecords();
@@ -66,9 +65,7 @@ class K53Controller extends GetxController
       hasLoaded.value = true;
     } catch (e) {
       print("❌ 讀取警報紀錄失敗：$e");
-    } finally {
-      LoadingHelper.hide();
-    }
+    } finally {}
   }
 
   void setSelectedDate(int year, int month) async {

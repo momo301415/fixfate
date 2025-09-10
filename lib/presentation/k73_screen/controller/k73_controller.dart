@@ -33,7 +33,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     /// 測試用帳號，有要測試數據就打開
-    //   gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';
+    // gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';
   }
 
   @override
