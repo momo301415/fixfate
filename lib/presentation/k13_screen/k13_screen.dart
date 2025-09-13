@@ -53,43 +53,12 @@ class K13Screen extends GetWidget<K13Controller> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              InkWell(
-                                onTap: () async {
-                                  await controller.showSelectAllFood();
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: appTheme.gray30066,
-                                    borderRadius:
-                                        BorderRadius.circular(8.0), // 圆角
-                                  ),
-                                  padding: const EdgeInsets.all(12.0), // 内边距
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "lbl348".tr,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(),
-                                      CustomImageView(
-                                        imagePath: ImageConstant
-                                            .imgArrowdownPrimarycontainer,
-                                        height: 16.h,
-                                        width: 16.h,
-                                        fit: BoxFit.contain,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              SelectAllFoodWidget(controller: controller),
                               SizedBox(height: 8.h),
+                              // 卡路里摄入量
                               _buildCalorieIntakeRow(),
                               // 营养卡片列表
-                              Column(
+                              Column( 
                                 children: controller.nutritionCards
                                     .asMap()
                                     .entries
@@ -1726,5 +1695,51 @@ class K13Screen extends GetWidget<K13Controller> {
   /// Navigates to the previous screen.
   onTapImgArrowleftone() {
     Get.back();
+  }
+}
+// 所有飲食選擇
+class SelectAllFoodWidget extends StatelessWidget {
+  const SelectAllFoodWidget({
+    super.key,
+    required this.controller,
+  });
+
+  final K13Controller controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        await controller.showSelectAllFood();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: appTheme.gray30066,
+          borderRadius:
+              BorderRadius.circular(8.0), // 圆角
+        ),
+        padding: const EdgeInsets.all(12.0), // 内边距
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "lbl348".tr,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(),
+            CustomImageView(
+              imagePath: ImageConstant
+                  .imgArrowdownPrimarycontainer,
+              height: 16.h,
+              width: 16.h,
+              fit: BoxFit.contain,
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
