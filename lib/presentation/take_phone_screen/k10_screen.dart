@@ -1,167 +1,391 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
+import 'package:camera/camera.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_leading_image.dart';
 import 'package:pulsedevice/widgets/app_bar/appbar_subtitle.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
-import 'controller/k10_controller.dart';
+import 'controller/camera_controller.dart';
+import 'dart:typed_data';
 
-class ScanFoodScreen extends GetWidget<ScanFoodController> {
+class ScanFoodScreen extends GetWidget<CameraScreenController> {
   const ScanFoodScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appTheme.teal50,
-      body: SafeArea(
-        top: false,
-        child: Obx(() => _buildBody()),
+      body: Column(
+        children: [
+          _buildHeaderStack(),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return _buildLoadingView();
+              }
+              
+              if (controller.errorMessage.value.isNotEmpty) {
+                return _buildErrorView();
+              }
+              
+              return _buildBody();
+            }),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBody() {
-    if (controller.isLoading.value) {
-      return _buildLoadingView();
-    }
-
-    if (controller.errorMessage.isNotEmpty) {
-      return _buildErrorView();
-    }
-
-    if (!controller.hasCameraPermission) {
-      return _buildPermissionDeniedView();
-    }
-
-    return _buildScannerView();
-  }
-
-  Widget _buildScannerView() {
-    // BaseScaffoldImageHeader()
-    if (controller.controller == null) {
-      return _buildScannerLoadingView();
-    }
-
-    return SafeArea(
-      top: false,
-      child: SizedBox(
-        width: double.maxFinite,
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            _buildScannerBackground(),
-            _buildHeaderStack(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScannerBackground() {
     return Container(
-      height: double.maxFinite,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          MobileScanner(
-            controller: controller.controller!,
-            onDetect: controller.onCodeDetect,
-            errorBuilder: (context, error) {
-              return _buildScannerErrorView(error);
-            },
-          ),
-          _buildOverlayContent(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOverlayContent() {
-    return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.h,
-        vertical: 40.h,
-      ),
-      // decoration: AppDecoration.column9,
+      width: double.infinity,
       child: Column(
-        mainAxisSize: MainAxisSize.max,
         children: [
-          SizedBox(height: 40.h),
-          Text(
-            "lbl377".tr,
-            style: CustomTextStyles.bodySmallWhiteA70011,
+          _buildTabBar(),
+          Expanded(
+            child: Obx(() {
+              switch (controller.currentTabIndex.value) {
+                case 0:
+                  return _buildCameraView();
+                case 1:
+                  return _buildAlbumView();
+                case 2:
+                  return controller.buildTextSelectionView();
+                default:
+                  return _buildCameraView();
+              }
+            }),
           ),
-          SizedBox(height: 198.h),
-          _buildScannerFrame(),
-          Spacer(),
-          _buildBottomControls(),
         ],
       ),
     );
   }
 
-  Widget _buildScannerFrame() {
-    return CustomImageView(
-      imagePath: ImageConstant.imgFrame86948WhiteA700,
-      height: 240.h,
-      width: 240.h,
-    );
-  }
-
-  Widget _buildBottomControls() {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () {
-            Get.toNamed(AppRoutes.k15Screen);
-          },
-          child: CustomImageView(
-            imagePath: ImageConstant.imgContrast,
-            height: 48,
-            width: 48,
-          ),
-        ),
-        SizedBox(height: 16.h),
-        _buildPhotoOptionsRow(),
-      ],
-    );
-  }
-
-  Widget _buildPhotoOptionsRow() {
+  // Tab栏
+  Widget _buildTabBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 56.h, vertical: 4.h),
+      margin: EdgeInsets.symmetric(horizontal: 24.h, vertical: 16.h),
       decoration: AppDecoration.fillWhiteA.copyWith(
         borderRadius: BorderRadiusStyle.roundedBorder8,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildOptionText("lbl364".tr),
-          _buildScanButton(),
-          _buildOptionText("lbl365".tr),
+          Expanded(
+            child: Obx(() => GestureDetector(
+              onTap: () => controller.switchTab(0),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: controller.currentTabIndex.value == 0
+                    ? AppDecoration.outlinePrimary.copyWith(
+                        borderRadius: BorderRadiusStyle.roundedBorder8,
+                      )
+                    : null,
+                child: Text(
+                  "拍照",
+                  textAlign: TextAlign.center,
+                  style: controller.currentTabIndex.value == 0
+                      ? CustomTextStyles.bodySmallPrimary10_1
+                      : CustomTextStyles.bodySmall10,
+                ),
+              ),
+            )),
+          ),
+          Expanded(
+            child: Obx(() => GestureDetector(
+              onTap: () => controller.switchTab(1),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: controller.currentTabIndex.value == 1
+                    ? AppDecoration.outlinePrimary.copyWith(
+                        borderRadius: BorderRadiusStyle.roundedBorder8,
+                      )
+                    : null,
+                child: Text(
+                  "相册",
+                  textAlign: TextAlign.center,
+                  style: controller.currentTabIndex.value == 1
+                      ? CustomTextStyles.bodySmallPrimary10_1
+                      : CustomTextStyles.bodySmall10,
+                ),
+              ),
+            )),
+          ),
+          Expanded(
+            child: Obx(() => GestureDetector(
+              onTap: () => controller.switchTab(2),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+                decoration: controller.currentTabIndex.value == 2
+                    ? AppDecoration.outlinePrimary.copyWith(
+                        borderRadius: BorderRadiusStyle.roundedBorder8,
+                      )
+                    : null,
+                child: Text(
+                  "文字",
+                  textAlign: TextAlign.center,
+                  style: controller.currentTabIndex.value == 2
+                      ? CustomTextStyles.bodySmallPrimary10_1
+                      : CustomTextStyles.bodySmall10,
+                ),
+              ),
+            )),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildOptionText(String text) {
-    return Padding(
-      padding: EdgeInsets.only(top: 8.h),
-      child: Text(text, style: CustomTextStyles.bodySmall10),
+  // 相机视图
+  Widget _buildCameraView() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 24.h),
+      child: Column(
+        children: [
+          Expanded(
+            child: Obx(() {
+              if (!controller.isCameraInitialized.value) {
+                return Container(
+                  decoration: AppDecoration.fillGray.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder16,
+                  ),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              
+              return Container(
+                decoration: AppDecoration.fillGray.copyWith(
+                  borderRadius: BorderRadiusStyle.roundedBorder16,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.h),
+                  child: CameraPreview(controller.cameraController!),
+                ),
+              );
+            }),
+          ),
+          SizedBox(height: 32.h),
+          _buildCameraControls(),
+        ],
+      ),
     );
   }
 
-  Widget _buildScanButton() {
+  // 相册视图
+  Widget _buildAlbumView() {
     return Container(
-      margin: EdgeInsets.only(bottom: 4.h),
-      padding: EdgeInsets.fromLTRB(40.h, 8.h, 40.h, 6.h),
-      decoration: AppDecoration.outlinePrimary,
-      child: Text(
-        "lbl125".tr,
-        style: CustomTextStyles.bodySmallPrimary10_1,
+      margin: EdgeInsets.symmetric(horizontal: 24.h),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(16.h),
+            decoration: AppDecoration.fillWhiteA.copyWith(
+              borderRadius: BorderRadiusStyle.roundedBorder16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.photo_library, size: 20),
+                    SizedBox(width: 8.h),
+                    Text("所有照片", style: theme.textTheme.titleSmall),
+                    Spacer(),
+                    Obx(() => Text(
+                      "已选择 ${controller.selectedAssets.length} 张",
+                      style: CustomTextStyles.bodySmall10,
+                    )),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                Obx(() {
+                  if (controller.isLoadingAlbum.value) {
+                    return Container(
+                      height: 300.h,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  
+                  if (controller.albumAssets.isEmpty) {
+                    return Container(
+                      height: 300.h,
+                      child: Center(
+                        child: Text("暂无照片", style: CustomTextStyles.bodySmall10),
+                      ),
+                    );
+                  }
+                  
+                  return Container(
+                    height: 300.h,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 8.h,
+                        mainAxisSpacing: 8.h,
+                      ),
+                      itemCount: controller.albumAssets.length,
+                      itemBuilder: (context, index) {
+                        final asset = controller.albumAssets[index];
+                        return _buildAlbumItem(asset);
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          SizedBox(height: 16.h),
+          _buildAlbumControls(),
+        ],
+      ),
+    );
+  }
+
+
+
+  // 相册项目
+  Widget _buildAlbumItem(AssetEntity asset) {
+    return GestureDetector(
+      onTap: () => controller.toggleAssetSelection(asset),
+      child: Obx(() {
+        final isSelected = controller.isAssetSelected(asset);
+        final selectedIndex = isSelected ? controller.getSelectedIndex(asset) : 0;
+        
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.h),
+            border: isSelected 
+                ? Border.all(color: theme.primaryColor, width: 2)
+                : null,
+          ),
+          child: Stack(
+            children: [
+              ClipRRect(
+                 borderRadius: BorderRadius.circular(8.h),
+                 child: FutureBuilder<Uint8List?>(
+                   future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+                   builder: (context, snapshot) {
+                     if (snapshot.hasData && snapshot.data != null) {
+                       return Image.memory(
+                         snapshot.data!,
+                         width: double.infinity,
+                         height: double.infinity,
+                         fit: BoxFit.cover,
+                       );
+                     }
+                     return Container(
+                       color: Colors.grey[300],
+                       child: Icon(Icons.image, color: Colors.grey),
+                     );
+                   },
+                 ),
+               ),
+              if (isSelected)
+                Positioned(
+                  top: 4.h,
+                  right: 4.h,
+                  child: Container(
+                    width: 20.h,
+                    height: 20.h,
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$selectedIndex',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  // 相机控制
+  Widget _buildCameraControls() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24.h, vertical: 16.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(width: 48.h), // 占位
+          GestureDetector(
+            onTap: controller.takePicture,
+            child: Container(
+              width: 64.h,
+              height: 64.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.primaryColor, width: 4),
+              ),
+              child: Center(
+                child: Container(
+                  width: 48.h,
+                  height: 48.h,
+                  decoration: BoxDecoration(
+                    color: theme.primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => Get.toNamed(AppRoutes.k15Screen),
+            child: Container(
+              width: 48.h,
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.photo_library,
+                color: theme.primaryColor,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 相册控制
+  Widget _buildAlbumControls() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 24.h, vertical: 16.h),
+      child: ElevatedButton(
+        onPressed: controller.confirmSelection,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: theme.primaryColor,
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.h),
+          ),
+        ),
+        child: Obx(() => Text(
+          controller.selectedAssets.isEmpty 
+              ? "请选择照片" 
+              : "确认选择 (${controller.selectedAssets.length}/3)",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        )),
       ),
     );
   }
@@ -214,52 +438,8 @@ class ScanFoodScreen extends GetWidget<ScanFoodController> {
         children: [
           CircularProgressIndicator(),
           SizedBox(height: 16.h),
-          Text('Requesting camera permission...'.tr),
+          Text('正在初始化相机...'),
         ],
-      ),
-    );
-  }
-
-  Widget _buildScannerLoadingView() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16.h),
-          Text('Initializing scanner...'.tr),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPermissionDeniedView() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.h),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.camera_alt, size: 64, color: Colors.grey),
-            SizedBox(height: 24.h),
-            Text(
-              'Camera Access Required'.tr,
-              style: theme.textTheme.titleLarge,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'This app needs camera access to scan QR codes'.tr,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium,
-            ),
-            SizedBox(height: 32.h),
-            ElevatedButton(
-              onPressed: controller.requestCameraPermission,
-              child: Text('Grant Permission'.tr),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -274,7 +454,7 @@ class ScanFoodScreen extends GetWidget<ScanFoodController> {
             Icon(Icons.error, size: 64, color: Colors.red),
             SizedBox(height: 24.h),
             Text(
-              'Error'.tr,
+              '错误',
               style: theme.textTheme.titleLarge,
             ),
             SizedBox(height: 16.h),
@@ -285,40 +465,12 @@ class ScanFoodScreen extends GetWidget<ScanFoodController> {
             ),
             SizedBox(height: 32.h),
             ElevatedButton(
-              onPressed: () async {
-                await controller.requestCameraPermission;
-              },
-              child: Text('Retry'.tr),
+              onPressed: controller.initializeCamera,
+              child: Text('重试'),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildScannerErrorView(Object error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.close, size: 64, color: Colors.red),
-          SizedBox(height: 16.h),
-          Text('Camera Error'.tr),
-          SizedBox(height: 8.h),
-          Text('$error', textAlign: TextAlign.center),
-          SizedBox(height: 24.h),
-          ElevatedButton(
-            onPressed: () async {
-              await controller.requestCameraPermission;
-            },
-            child: Text('Retry'.tr),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void onTapImgArrowleftone() {
-    Get.back();
   }
 }

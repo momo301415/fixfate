@@ -32,6 +32,7 @@ import 'package:pulsedevice/presentation/one3_find_device_screen/binding/one3_bi
 import 'package:pulsedevice/presentation/one3_find_device_screen/one3_screen.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/binding/ruler_piker_test_binding.dart';
 import 'package:pulsedevice/presentation/ruler_piker_test/ruler_piker_test.dart';
+import 'package:pulsedevice/presentation/take_phone_screen/binding/camera_binding.dart';
 import 'package:pulsedevice/presentation/take_phone_screen/binding/k10_binding.dart';
 import 'package:pulsedevice/presentation/take_phone_screen/k10_screen.dart';
 import 'package:pulsedevice/presentation/two10_screen/binding/two10_binding.dart';
@@ -550,7 +551,7 @@ class AppRoutes {
     GetPage(
       name: scanFoodScreen,
       page: () => ScanFoodScreen(),
-      bindings: [ScanFoodBinding()],
+      bindings: [CameraBinding()],
     ),
     GetPage(
       name: k15Screen,
