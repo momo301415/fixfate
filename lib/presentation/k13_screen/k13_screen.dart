@@ -1,6 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/presentation/home_page/controller/home_controller.dart';
 import 'package:pulsedevice/presentation/k13_screen/widgets/nutrition_card_widget.dart';
+import 'package:pulsedevice/presentation/k13_screen/widgets/custom_circular_progress.dart';
+import 'package:pulsedevice/presentation/k13_screen/widgets/custom_horizontal_progress.dart';
+import 'package:pulsedevice/presentation/k13_screen/widgets/custom_date_selector.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 
@@ -18,177 +23,183 @@ class K13Screen extends GetWidget<K13Controller> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 120.h),
-      child: BaseScaffoldImageHeader(
-          onBack: () => Get.find<HomeController>().cc.isK19Visible.value = false,
-          title: "lbl383".tr,
-          child: Container(
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  width: double.maxFinite,
-                  child: Column(
-                    spacing: 8,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildIntakeGoalSection(),
-                      Container(
-                        width: double.maxFinite,
-                        padding: EdgeInsets.all(16.h),
-                        decoration: AppDecoration.fillWhiteA.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder8,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            InkWell(
-                              onTap: () async {
-                                await controller.showSelectAllFood();
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: appTheme.gray30066,
-                                  borderRadius:
-                                      BorderRadius.circular(8.0), // 圆角
+    HomeController homeController = Get.find();
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      enabled: homeController.cc.isK19Visible.value,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 120.h),
+        child: BaseScaffoldImageHeader(
+            onBack: () =>
+                Get.find<HomeController>().cc.isK19Visible.value = false,
+            title: "lbl383".tr,
+            child: Container(
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    width: double.maxFinite,
+                    child: Column(
+                      spacing: 8,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildIntakeGoalSection(),
+                        Container(
+                          width: double.maxFinite,
+                          padding: EdgeInsets.all(16.h),
+                          decoration: AppDecoration.fillWhiteA.copyWith(
+                            borderRadius: BorderRadiusStyle.roundedBorder8,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  await controller.showSelectAllFood();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: appTheme.gray30066,
+                                    borderRadius:
+                                        BorderRadius.circular(8.0), // 圆角
+                                  ),
+                                  padding: const EdgeInsets.all(12.0), // 内边距
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "lbl348".tr,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(),
+                                      CustomImageView(
+                                        imagePath: ImageConstant
+                                            .imgArrowdownPrimarycontainer,
+                                        height: 16.h,
+                                        width: 16.h,
+                                        fit: BoxFit.contain,
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                padding: const EdgeInsets.all(12.0), // 内边距
+                              ),
+                              SizedBox(height: 8.h),
+                              _buildCalorieIntakeRow(),
+                              // 营养卡片列表
+                              Column(
+                                children: controller.nutritionCards
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  final index = entry.key;
+                                  final data = entry.value;
+                                  return InkWell(
+                                    onTap: () async {
+                                      // 等待K2Screen返回编辑后的数据
+                                      final editedData = await Get.toNamed(
+                                          AppRoutes.editYsScreen,
+                                          arguments: data.copyWith());
+                                      if (editedData != null &&
+                                          editedData is NutritionCardData) {
+                                        print(" editedData   ${editedData} ");
+                                        // 更新对应位置的数据
+                                        controller.updateNutritionCard(
+                                            index, editedData);
+                                      }
+                                    },
+                                    child: NutritionCard(data: data),
+                                  );
+                                }).toList(),
+                              ),
+                              SizedBox(height: 10.h),
+                              Container(
+                                width: double.maxFinite,
+                                margin: EdgeInsets.symmetric(horizontal: 8.h),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "lbl348".tr,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                    Column(
+                                      spacing: 10,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomIconButton(
+                                          height: 40.h,
+                                          width: 40.h,
+                                          padding: EdgeInsets.all(10.h),
+                                          decoration:
+                                              IconButtonStyleHelper.fillPrimary,
+                                          child: CustomImageView(
+                                            imagePath:
+                                                ImageConstant.imgFiRrUtensils,
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(left: 8.h),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 4.h,
+                                          ),
+                                          decoration:
+                                              AppDecoration.gray100.copyWith(
+                                            borderRadius:
+                                                BorderRadiusStyle.circleBorder2,
+                                          ),
+                                          child: Text(
+                                            "lbl358".tr,
+                                            textAlign: TextAlign.center,
+                                            style: CustomTextStyles
+                                                .bodySmallBluegray4008,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(),
-                                    CustomImageView(
-                                      imagePath: ImageConstant
-                                          .imgArrowdownPrimarycontainer,
-                                      height: 16.h,
-                                      width: 16.h,
-                                      fit: BoxFit.contain,
-                                    )
+                                    // Expanded(
+                                    //   child: Align(
+                                    //     alignment: Alignment.bottomCenter,
+                                    //     child: Padding(
+                                    //       padding: EdgeInsets.only(top: 6.h),
+                                    //       child: _buildSupperRow(
+                                    //         time: "lbl_09_30_pm".tr,
+                                    //         prop: "lbl395".tr,
+                                    //         one: "lbl_13".tr,
+                                    //         prop1: "lbl338".tr,
+                                    //         calorieValue: "lbl_1500".tr,
+                                    //         kcal: "lbl_kcal".tr,
+                                    //         prop2: "lbl339".tr,
+                                    //         carbohydrateValue: "lbl_8_32".tr,
+                                    //         gTwenty: "lbl_g".tr,
+                                    //         five: "lbl340".tr,
+                                    //         p83Twentyone: "lbl_31_02".tr,
+                                    //         gTwentyone: "lbl_g".tr,
+                                    //         prop3: "lbl341".tr,
+                                    //         fatValue: "lbl_3_62".tr,
+                                    //         gTwentytwo: "lbl_g".tr,
+                                    //         one1: "lbl342".tr,
+                                    //         fiberValue: "lbl_0_0".tr,
+                                    //         gTwentythree: "lbl_g".tr,
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 8.h),
-                            _buildCalorieIntakeRow(),
-                            // 营养卡片列表
-                            Column(
-                              children: controller.nutritionCards
-                                  .asMap()
-                                  .entries
-                                  .map((entry) {
-                                final index = entry.key;
-                                final data = entry.value;
-                                return InkWell(
-                                  onTap: () async {
-                                    // 等待K2Screen返回编辑后的数据
-                                    final editedData = await Get.toNamed(
-                                        AppRoutes.editYsScreen,
-                                        arguments: data.copyWith());
-                                    if (editedData != null &&
-                                        editedData is NutritionCardData) {
-                                      print(" editedData   ${editedData} ");
-                                      // 更新对应位置的数据
-                                      controller.updateNutritionCard(
-                                          index, editedData);
-                                    }
-                                  },
-                                  child: NutritionCard(data: data),
-                                );
-                              }).toList(),
-                            ),
-                            SizedBox(height: 10.h),
-                            Container(
-                              width: double.maxFinite,
-                              margin: EdgeInsets.symmetric(horizontal: 8.h),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    spacing: 10,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      CustomIconButton(
-                                        height: 40.h,
-                                        width: 40.h,
-                                        padding: EdgeInsets.all(10.h),
-                                        decoration:
-                                            IconButtonStyleHelper.fillPrimary,
-                                        child: CustomImageView(
-                                          imagePath:
-                                              ImageConstant.imgFiRrUtensils,
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(left: 8.h),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 4.h,
-                                        ),
-                                        decoration:
-                                            AppDecoration.gray100.copyWith(
-                                          borderRadius:
-                                              BorderRadiusStyle.circleBorder2,
-                                        ),
-                                        child: Text(
-                                          "lbl358".tr,
-                                          textAlign: TextAlign.center,
-                                          style: CustomTextStyles
-                                              .bodySmallBluegray4008,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  // Expanded(
-                                  //   child: Align(
-                                  //     alignment: Alignment.bottomCenter,
-                                  //     child: Padding(
-                                  //       padding: EdgeInsets.only(top: 6.h),
-                                  //       child: _buildSupperRow(
-                                  //         time: "lbl_09_30_pm".tr,
-                                  //         prop: "lbl395".tr,
-                                  //         one: "lbl_13".tr,
-                                  //         prop1: "lbl338".tr,
-                                  //         calorieValue: "lbl_1500".tr,
-                                  //         kcal: "lbl_kcal".tr,
-                                  //         prop2: "lbl339".tr,
-                                  //         carbohydrateValue: "lbl_8_32".tr,
-                                  //         gTwenty: "lbl_g".tr,
-                                  //         five: "lbl340".tr,
-                                  //         p83Twentyone: "lbl_31_02".tr,
-                                  //         gTwentyone: "lbl_g".tr,
-                                  //         prop3: "lbl341".tr,
-                                  //         fatValue: "lbl_3_62".tr,
-                                  //         gTwentytwo: "lbl_g".tr,
-                                  //         one1: "lbl342".tr,
-                                  //         fiberValue: "lbl_0_0".tr,
-                                  //         gTwentythree: "lbl_g".tr,
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                          ],
+                              SizedBox(height: 10.h),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          )),
+                ],
+              ),
+            )),
+      ),
     );
   }
 
@@ -271,236 +282,103 @@ class K13Screen extends GetWidget<K13Controller> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 4.h),
-          Container(
-            width: double.maxFinite,
-            margin: EdgeInsets.symmetric(horizontal: 6.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowDownPrimarycontainer1,
-                  height: 18.h,
-                  width: 18.h,
-                ),
-                Spacer(flex: 46),
-                Text(
-                  "lbl_8_222".tr,
-                  style: CustomTextStyles.bodyMediumPrimaryContainer15_1,
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgForward,
-                  height: 6.h,
-                  width: 12.h,
-                  radius: BorderRadius.circular(1.h),
-                  margin: EdgeInsets.only(left: 10.h),
-                ),
-                Spacer(flex: 53),
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowRightPrimarycontainer1,
-                  height: 18.h,
-                  width: 18.h,
-                ),
-              ],
-            ),
-          ),
+          // 日期選擇組件
+          Obx(() => CustomDateSelector(
+            selectedDate: controller.selectedDate.value,
+            onDateChanged: controller.updateSelectedDate,
+          )),
+          // 圓環和營養進度條
           Container(
             width: double.maxFinite,
             margin: EdgeInsets.only(left: 16.h, right: 10.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  height: 120.h,
-                  width: 122.h,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        height: 120.h,
-                        width: 120.h,
-                        child: CircularProgressIndicator(
-                          value: 0.51,
-                          backgroundColor: appTheme.teal5001,
-                          strokeWidth: 12.h,
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 14.h),
-                              child: Text(
-                                "lbl415".tr,
-                                style: CustomTextStyles.bodySmall10,
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "lbl_3462".tr,
-                                  style: CustomTextStyles
-                                      .headlineSmallErrorContainer,
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(bottom: 4.h),
-                                    child: Text(
-                                      "lbl_kcal".tr,
-                                      style: CustomTextStyles.bodySmall8,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // 自定義圓環進度組件
+                Obx(() => CustomCircularProgress(
+                  size: 122.h,
+                  outerRadius: 60.h,
+                  innerRadius: 48.h,
+                  currentValue: controller.currentKcal.value.toDouble(),
+                  totalValue: controller.kcalNumber.value.toDouble(),
+                  centerLabel: "lbl415".tr, // "已攝取"
+                  centerValue: controller.currentKcal.value.toString(),
+                  centerUnit: "lbl_kcal".tr,
+                  progressColor: appTheme.cyan70001,
+                  backgroundColor: appTheme.teal5001,
+                )),
+                // 營養素水平進度條
                 SizedBox(
                   width: 122.h,
                   child: Column(
                     children: [
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: _buildRow(
-                          six: "lbl339".tr,
-                          currentAndGoalValue: "lbl_189_370".tr,
-                          one: "lbl392".tr,
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        decoration: AppDecoration.fillTeal5003.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder2,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 8.h,
-                              width: 48.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.cyan70001,
-                                borderRadius: BorderRadius.circular(4.h),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 碳水化合物
+                      Obx(() => CustomHorizontalProgress(
+                        label: "lbl339".tr, // "碳水化合物"
+                        currentValue: controller.carbohydrates.value.current,
+                        targetValue: controller.carbohydrates.value.target,
+                        unit: controller.carbohydrates.value.unit,
+                        progressColor: appTheme.cyan70001,
+                        backgroundColor: appTheme.teal5003,
+                        height: 8.h,
+                        width: 122.h,
+                      )),
                       SizedBox(height: 10.h),
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: _buildRow(
-                          six: "lbl340".tr,
-                          currentAndGoalValue: "lbl_64_75".tr,
-                          one: "lbl392".tr,
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        decoration: AppDecoration.fillTeal5003.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder2,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 8.h,
-                              width: 86.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.cyan70001,
-                                borderRadius: BorderRadius.circular(4.h),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 蛋白質
+                      Obx(() => CustomHorizontalProgress(
+                        label: "lbl340".tr, // "蛋白質"
+                        currentValue: controller.protein.value.current,
+                        targetValue: controller.protein.value.target,
+                        unit: controller.protein.value.unit,
+                        progressColor: appTheme.cyan70001,
+                        backgroundColor: appTheme.teal5003,
+                        height: 8.h,
+                        width: 122.h,
+                      )),
                       SizedBox(height: 10.h),
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: _buildRow(
-                          six: "lbl341".tr,
-                          currentAndGoalValue: "lbl_19_50".tr,
-                          one: "lbl392".tr,
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        decoration: AppDecoration.fillTeal5003.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder2,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 8.h,
-                              width: 40.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.cyan70001,
-                                borderRadius: BorderRadius.circular(4.h),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 脂肪
+                      Obx(() => CustomHorizontalProgress(
+                        label: "lbl341".tr, // "脂肪"
+                        currentValue: controller.fat.value.current,
+                        targetValue: controller.fat.value.target,
+                        unit: controller.fat.value.unit,
+                        progressColor: appTheme.cyan70001,
+                        backgroundColor: appTheme.teal5003,
+                        height: 8.h,
+                        width: 122.h,
+                      )),
                       SizedBox(height: 10.h),
-                      SizedBox(
-                        width: double.maxFinite,
-                        child: _buildRow(
-                          six: "lbl416".tr,
-                          currentAndGoalValue: "lbl_10_35".tr,
-                          one: "lbl392".tr,
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        decoration: AppDecoration.fillTeal5003.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder2,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 8.h,
-                              width: 68.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.cyan70001,
-                                borderRadius: BorderRadius.circular(4.h),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // 膳食纖維
+                      Obx(() => CustomHorizontalProgress(
+                        label: "lbl416".tr, // "膳食纖維"
+                        currentValue: controller.fiber.value.current,
+                        targetValue: controller.fiber.value.target,
+                        unit: controller.fiber.value.unit,
+                        progressColor: appTheme.cyan70001,
+                        backgroundColor: appTheme.teal5003,
+                        height: 8.h,
+                        width: 122.h,
+                      )),
                     ],
                   ),
                 ),
               ],
             ),
           ),
+          // 目標攝取量和修改按鈕
           SizedBox(
             width: double.maxFinite,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Spacer(),
-                Text("lbl384".tr, style: theme.textTheme.bodySmall),
+                Text("lbl384".tr, style: theme.textTheme.bodySmall), // "目標攝取量"
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                       padding: EdgeInsets.only(left: 26.h, bottom: 4.h),
                       child: Obx(() => Text(
-                            "${controller.kcalNumber.value ?? "lbl_1_381".tr}",
+                            "${controller.kcalNumber.value}",
                             style: CustomTextStyles.titleMediumPrimary,
                           ))),
                 ),
@@ -517,7 +395,7 @@ class K13Screen extends GetWidget<K13Controller> {
                 CustomElevatedButton(
                   height: 38.h,
                   width: 84.h,
-                  text: "lbl282".tr,
+                  text: "lbl282".tr, // "修改"
                   margin: EdgeInsets.only(left: 26.h),
                   leftIcon: Container(
                     margin: EdgeInsets.only(right: 4.h),

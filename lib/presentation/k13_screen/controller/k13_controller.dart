@@ -10,11 +10,19 @@ import '../../k3_bottomsheet/k3_bottomsheet.dart';
 import '../../six_dialog/controller/six_controller.dart';
 import '../../six_dialog/six_dialog.dart';
 import '../models/k13_model.dart';
+import '../models/nutrition_data.dart';
 
 class K13Controller extends GetxController {
   Rx<K13Model> k13ModelObj = K13Model().obs;
-  var kcalNumber = 0.obs;
-
+  var kcalNumber = 1381.obs; // 目標攝取量
+  var currentKcal = 346.obs; // 已攝取量
+  var selectedDate = DateTime.now().obs; // 選中的日期
+  
+  // 營養素數據
+  var carbohydrates = NutritionData(current: 189, target: 370, unit: 'g').obs;
+  var protein = NutritionData(current: 64, target: 75, unit: 'g').obs;
+  var fat = NutritionData(current: 19, target: 50, unit: 'g').obs;
+  var fiber = NutritionData(current: 10, target: 35, unit: 'g').obs;
 
   SelectionPopupModel? selectedDropDownValue;
 
@@ -132,6 +140,24 @@ class K13Controller extends GetxController {
       // 根据当前操作更新对应的数据
       updateNutritionData(kcalNumber.value);
     }
+  }
+  
+  // 更新選中日期
+  void updateSelectedDate(DateTime date) {
+    selectedDate.value = date;
+    // 這裡可以根據日期加載對應的營養數據
+    loadNutritionDataForDate(date);
+  }
+  
+  // 根據日期加載營養數據
+  void loadNutritionDataForDate(DateTime date) {
+    // 這裡應該從數據庫或API加載對應日期的數據
+    // 暫時使用模擬數據
+  }
+  
+  // 獲取圓環進度
+  double get circularProgress {
+    return kcalNumber.value > 0 ? (currentKcal.value / kcalNumber.value).clamp(0.0, 1.0) : 0.0;
   }
 
   Future<void> showSelectAllFood() async {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -37,8 +38,14 @@ class One2Controller extends GetxController {
   }
 
   void initData() async {
+   
+
     oneController.text = await PrefUtils().getUserId();
     tfController.text = await PrefUtils().getPassword();
+    if (kDebugMode) {
+      oneController.text = '0978126530';
+      tfController.text = "Passw0rd";
+    }
     if (oneController.text.isNotEmpty) {
       isValid.value = true;
     }
