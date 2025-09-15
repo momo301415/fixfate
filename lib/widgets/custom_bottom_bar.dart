@@ -24,9 +24,9 @@ class CustomBottomBar extends StatelessWidget {
       type: BottomBarEnum.tf,
     ),
     BottomMenuModel(
-      icon: ImageConstant.imgChat,
-      activeIcon: ImageConstant.imgChat,
-      title: "諮詢".tr,
+      icon: ImageConstant.record,
+      activeIcon: ImageConstant.record,
+      title: "记录".tr,
       type: BottomBarEnum.tf,
     ),
     BottomMenuModel(
@@ -183,7 +183,7 @@ class CustomBottomBar extends StatelessWidget {
         child: GestureDetector(
           onTap: () => _onButtonTap(1),
           child: CustomImageView(
-            imagePath: ImageConstant.imgChat,
+            imagePath: ImageConstant.record,
             height: 80.h,
             width: 80.h,
             fit: BoxFit.fill,

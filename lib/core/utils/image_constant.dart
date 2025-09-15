@@ -310,6 +310,7 @@ static String imgVector308 = '$imagePath/img_vector_308.svg';
   static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
 
   static String imgChat = '$imagePath/chat.png';
+  static String record = '$imagePath/record_86501.png';
   static String imgImage764 = '$imagePath/img_image_764.png';
   static String imgUCheckCirclePrimary2 =
       '$imagePath/img_u_check_circle_primary_2.svg';

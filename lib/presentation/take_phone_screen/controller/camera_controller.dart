@@ -93,7 +93,7 @@ class CameraScreenController extends GetxController {
       
       // 请求相册权限
       final PermissionState permission = await PhotoManager.requestPermissionExtend();
-      if (!permission.isAuth) {
+      if (!permission.hasAccess) {
         Get.snackbar('错误', '需要相册访问权限');
         return;
       }

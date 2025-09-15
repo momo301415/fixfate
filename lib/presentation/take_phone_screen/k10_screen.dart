@@ -252,6 +252,7 @@ class ScanFoodScreen extends GetWidget<CameraScreenController> {
   Widget _buildAlbumView() {
     return Container(
       width: double.infinity,
+      color: appTheme.teal50,
       child: Column(
         children: [
           // 相册头部信息
@@ -322,6 +323,7 @@ class ScanFoodScreen extends GetWidget<CameraScreenController> {
                     mainAxisSpacing: 8.h,
                   ),
                   itemCount: controller.albumAssets.length,
+                  shrinkWrap: true,
                   itemBuilder: (context, index) {
                     final asset = controller.albumAssets[index];
                     return _buildAlbumItem(asset);
@@ -335,6 +337,7 @@ class ScanFoodScreen extends GetWidget<CameraScreenController> {
             padding: EdgeInsets.all(16.h),
             child: _buildAlbumControls(),
           ),
+          SizedBox(height: 140.h),
         ],
       ),
     );
@@ -463,7 +466,9 @@ class ScanFoodScreen extends GetWidget<CameraScreenController> {
   Widget _buildAlbumControls() {
     return Container(
       width: double.infinity,
+      height: 48.h,
       child: Obx(() => ElevatedButton(
+
             onPressed: controller.selectedAssets.isEmpty
                 ? null
                 : controller.confirmSelection,
