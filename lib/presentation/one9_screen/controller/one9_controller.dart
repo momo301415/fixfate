@@ -55,6 +55,7 @@ class One9Controller extends GetxController {
       if (resData.isNotEmpty) {
         final success = resData["success"];
         if (success == true) {
+          await PrefUtils().setPassword(tf2Controller.value.text);
           DialogHelper.showError("${resData["message"]}", onOk: () {
             goLogin();
           });
@@ -69,6 +70,6 @@ class One9Controller extends GetxController {
   }
 
   void goLogin() {
-    Get.offNamed(AppRoutes.one2Screen);
+    Get.offAllNamed(AppRoutes.one2Screen);
   }
 }

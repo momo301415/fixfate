@@ -282,12 +282,8 @@ class K80Page extends GetWidget<K80Controller> {
               Row(
                 children: [
                   Expanded(
-                      child: buildStat('${controller.lowCount.value}',
-                          'lbl161'.tr, 'lbl232'.tr)),
-                  verticalDivider(),
-                  Expanded(
                       child: buildStat('${controller.normalCount.value}',
-                          'lbl161'.tr, 'lbl244'.tr)),
+                          'lbl161'.tr, 'lbl232'.tr)),
                   verticalDivider(),
                   Expanded(
                       child: buildStat('${controller.highCount.value}',

@@ -7,7 +7,7 @@ import '../../widgets/custom_text_form_field.dart';
 import 'controller/two3_controller.dart';
 
 // ignore_for_file: must_be_immutable
-/// 重設密碼頁面
+/// 重設密碼頁面，登入頁面->忘記密碼->輸入簡訊->重設密碼
 class Two3Screen extends GetWidget<Two3Controller> {
   Two3Screen({Key? key})
       : super(

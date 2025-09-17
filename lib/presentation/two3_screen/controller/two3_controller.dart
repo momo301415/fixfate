@@ -45,19 +45,13 @@ class Two3Controller extends GetxController {
   }
 
   Future<void> callApi() async {
-    final apiId = await PrefUtils().getApiUserId();
-    final userId = await PrefUtils().getUserId();
     final args = await Get.arguments as Map<String, dynamic>;
     phone = args['phone'];
     LoadingHelper.show();
     try {
       var resData = await service.postJson(
         Api.forgetPasswordSet,
-        {
-          'userId': apiId,
-          "phone": userId,
-          "newPWD": passwordoneController.value.text
-        },
+        {"phone": phone, "newPWD": passwordoneController.value.text},
       );
       LoadingHelper.hide();
       if (resData.isNotEmpty) {
@@ -74,6 +68,7 @@ class Two3Controller extends GetxController {
             if (resBody2 != null) {
               await PrefUtils().setPassword(passwordoneController.value.text);
               await PrefUtils().setApiUserId(resBody2['id'].toString());
+              await PrefUtils().setUserId(phone);
 
               gc.userId.value = phone;
               gc.apiToken.value = resBody2['token'].toString();

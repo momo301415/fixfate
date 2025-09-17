@@ -36,7 +36,6 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
   final isAlert = false.obs;
   final normalCount = 0.obs;
   final highCount = 0.obs;
-  final lowCount = 0.obs;
   final normalMinCount = 0.obs;
   final hightMinCount = 0.obs;
   final lowMinCount = 0.obs;
@@ -45,6 +44,7 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
   final alertRecords = <AlertRecord>[].obs;
   final pressureDataList = <PressureDataData>[].obs;
   final pressureApiDataList = <PressureData>[].obs;
+  final alertRecordApiData = <PressureData>[].obs;
 
   // 模擬資料
   final List<FlSpot> weeklyData = [
@@ -141,11 +141,7 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
           isAlert.value = true;
         }
         highCount.value = parsed.where((e) => e.totalStressScore >= 71).length;
-        final lowC = parsed.where((e) => e.totalStressScore >= 31).length;
-
-        ///lowCount.value用來顯示普通count
-        lowCount.value = parsed.length - highCount.value;
-        normalCount.value = parsed.length - highCount.value - lowC;
+        normalCount.value = parsed.length - highCount.value;
 
         final rawMax = pressureList.isEmpty
             ? 0
@@ -169,6 +165,36 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
           );
         }).toList();
         k80ModelObj.value.listItemList2.value = list;
+
+        final history = parsed.map((m) {
+          final dt =
+              DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
+          return ListHistoryItemModel(
+            unit: Rx(''),
+            value: Rx(m.totalStressScore.toString()),
+            time: Rx(date),
+          );
+        }).toList();
+        k80ModelObj.value.listItemList2.value = history;
+
+        // 改寫報警紀錄來源：從 API 回傳的 RateData 中篩選 type == 1 or 2
+        final alertData = parsed.where((e) => e.type == "1").toList();
+        alertRecordApiData.assignAll(alertData);
+
+        // 建立對應的 ListRecordItemModel
+        final alertList = alertData.map((m) {
+          final date =
+              DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
+          final label = "lbl217_1".tr; // 高
+          return ListRecordItemModel(
+            label: Rx(label),
+            value: Rx(m.totalStressScore.toString()),
+            time: Rx(date),
+            unit: Rx("".tr),
+          );
+        }).toList();
+
+        k80ModelObj.value.listItemList.value = alertList;
       }
     } catch (e) {
       print("getFamilyData Error: $e");
@@ -234,51 +260,51 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
     // pressureData.assignAll(res);
 
     // 警報紀錄（根據模式切換）
-    final records = await AlertRecordListStorage.getRecords(userId.value);
+    // final records = await AlertRecordListStorage.getRecords(userId.value);
 
-    // 根據 currentIndex 判斷範圍
-    DateTime startRange;
-    DateTime endRange;
+    // // 根據 currentIndex 判斷範圍
+    // DateTime startRange;
+    // DateTime endRange;
 
-    if (currentIndex.value == 0) {
-      // 日
-      startRange = DateTime(date.year, date.month, date.day);
-      endRange = startRange
-          .add(const Duration(days: 1))
-          .subtract(const Duration(milliseconds: 1));
-    } else if (currentIndex.value == 1) {
-      // 週
-      startRange = date.subtract(Duration(days: date.weekday - 1));
-      endRange = startRange
-          .add(const Duration(days: 7))
-          .subtract(const Duration(milliseconds: 1));
-    } else {
-      // 月
-      startRange = DateTime(date.year, date.month, 1);
-      endRange = DateTime(date.year, date.month + 1, 1)
-          .subtract(const Duration(milliseconds: 1));
-    }
+    // if (currentIndex.value == 0) {
+    //   // 日
+    //   startRange = DateTime(date.year, date.month, date.day);
+    //   endRange = startRange
+    //       .add(const Duration(days: 1))
+    //       .subtract(const Duration(milliseconds: 1));
+    // } else if (currentIndex.value == 1) {
+    //   // 週
+    //   startRange = date.subtract(Duration(days: date.weekday - 1));
+    //   endRange = startRange
+    //       .add(const Duration(days: 7))
+    //       .subtract(const Duration(milliseconds: 1));
+    // } else {
+    //   // 月
+    //   startRange = DateTime(date.year, date.month, 1);
+    //   endRange = DateTime(date.year, date.month + 1, 1)
+    //       .subtract(const Duration(milliseconds: 1));
+    // }
 
-    final selectRecords = records
-        .where((r) =>
-            r.type.contains('pressure') &&
-            r.time.isAfter(
-                startRange.subtract(const Duration(milliseconds: 1))) &&
-            r.time.isBefore(endRange.add(const Duration(milliseconds: 1))))
-        .toList();
+    // final selectRecords = records
+    //     .where((r) =>
+    //         r.type.contains('pressure') &&
+    //         r.time.isAfter(
+    //             startRange.subtract(const Duration(milliseconds: 1))) &&
+    //         r.time.isBefore(endRange.add(const Duration(milliseconds: 1))))
+    //     .toList();
 
-    alertRecords.assignAll(selectRecords);
+    // alertRecords.assignAll(selectRecords);
 
-    final alertList = selectRecords.map((m) {
-      return ListRecordItemModel(
-        label: Rx(m.label),
-        value: Rx(m.value ?? ''),
-        time: Rx(m.time),
-        unit: Rx('lbl180'.tr),
-      );
-    }).toList();
+    // final alertList = selectRecords.map((m) {
+    //   return ListRecordItemModel(
+    //     label: Rx(m.label),
+    //     value: Rx(m.value ?? ''),
+    //     time: Rx(m.time),
+    //     unit: Rx('lbl180'.tr),
+    //   );
+    // }).toList();
 
-    k80ModelObj.value.listItemList.value = alertList;
+    // k80ModelObj.value.listItemList.value = alertList;
   }
 
   Future<void> updateDateRange(int index, {bool isLoading = true}) async {
@@ -847,10 +873,9 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
     pressureVal.value = '';
     loadDataTime.value = '';
     isAlert.value = false;
-
+    alertRecordApiData.clear();
     normalCount.value = 0;
     highCount.value = 0;
-    lowCount.value = 0;
     normalMinCount.value = 0;
     hightMinCount.value = 0;
     lowMinCount.value = 0;
