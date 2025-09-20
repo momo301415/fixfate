@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/custom_elevated_button.dart';
+import '../../widgets/date_switch_widget.dart';
 import 'controller/k8_controller.dart';
 import 'models/listviewsection_item_model.dart';
 import 'models/listweightvalue_item_model.dart';
@@ -63,43 +64,14 @@ class K8Screen extends GetWidget<K8Controller> {
                             SizedBox(height: 30.h),
                             _buildTabViewSection(),
                             SizedBox(height: 12.h),
-                            Container(
-                              width: double.maxFinite,
-                              margin: EdgeInsets.symmetric(horizontal: 8.h),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomImageView(
-                                    imagePath:
-                                        ImageConstant
-                                            .imgArrowDownPrimarycontainer1,
-                                    height: 18.h,
-                                    width: 18.h,
-                                  ),
-                                  Spacer(flex: 50),
-                                  Text(
-                                    "lbl_8_222".tr,
-                                    style:
-                                        CustomTextStyles
-                                            .bodyMediumPrimaryContainer15_1,
-                                  ),
-                                  CustomImageView(
-                                    imagePath: ImageConstant.imgForward,
-                                    height: 6.h,
-                                    width: 12.h,
-                                    radius: BorderRadius.circular(1.h),
-                                    margin: EdgeInsets.only(left: 10.h),
-                                  ),
-                                  Spacer(flex: 50),
-                                  CustomImageView(
-                                    imagePath:
-                                        ImageConstant
-                                            .imgArrowRightPrimarycontainer1,
-                                    height: 18.h,
-                                    width: 18.h,
-                                  ),
-                                ],
-                              ),
+                            DateSwitchWidget(
+                              timeTabs: controller.timeTabs,
+                              currentIndex: controller.currentIndex,
+                              formattedRange: controller.formattedRange,
+                              onTabChanged: (index) => controller.updateDateRange(index),
+                              onPrevDate: () => controller.prevDateRange(),
+                              onNextDate: () => controller.nextDateRange(),
+                              onDatePicker: () => controller.datePicker(),
                             ),
                             SizedBox(height: 16.h),
                             _buildWeightRowSection(),
