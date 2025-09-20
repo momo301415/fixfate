@@ -13,7 +13,9 @@ extension on TextStyle {
       fontFamily: 'PingFang TC',
     );
   }
-
+ TextStyle get pingFangTC3 {
+    return copyWith(fontFamily: 'PingFang TC');
+  }
     TextStyle get pingFangTC4 {
     return copyWith(fontFamily: 'PingFang TC');
   }
@@ -23,6 +25,43 @@ extension on TextStyle {
 /// categorized by different font families and weights.
 /// Additionally, this class includes extensions on [TextStyle] to easily apply specific font families to text.
 class CustomTextStyles {
+  static TextStyle get titleMediumPrimary_2 =>
+      theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.primary);
+  static TextStyle get labelSmallErrorContainer => theme.textTheme.labelSmall!
+      .copyWith(color: theme.colorScheme.errorContainer);
+   static TextStyle get bodySmallGray50010_1 =>
+      theme.textTheme.bodySmall!.copyWith(
+        color: appTheme.gray500.withValues(alpha: 0.8),
+        fontSize: 10.fSize,
+      );
+  static TextStyle get bodySmallPrimary10 =>
+      theme.textTheme.bodySmall!.copyWith(
+        color: theme.colorScheme.primary.withValues(alpha: 0.8),
+        fontSize: 10.fSize,
+      );
+  static TextStyle get pingFangTC3Primary =>
+      TextStyle(
+        color: theme.colorScheme.primary.withValues(alpha: 0.8),
+        fontSize: 6.fSize,
+        fontWeight: FontWeight.w400,
+      ).pingFangTC3;
+       static TextStyle get bodySmallErrorContainer10_1 =>
+      theme.textTheme.bodySmall!.copyWith(
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.8),
+        fontSize: 10.fSize,
+      );
+  static TextStyle get labelMediumPrimary_1 => theme.textTheme.labelMedium!
+      .copyWith(color: theme.colorScheme.primary.withValues(alpha: 0.8));
+  static TextStyle get pingFangTC4ErrorContainerRegular =>
+      TextStyle(
+        color: theme.colorScheme.errorContainer,
+        fontSize: 6.fSize,
+        fontWeight: FontWeight.w400,
+      ).pingFangTC4;
+  static TextStyle get labelMediumErrorContainer => theme.textTheme.labelMedium!
+      .copyWith(color: theme.colorScheme.errorContainer, fontSize: 11.fSize);
+  static TextStyle get labelLargePrimary_2 =>
+      theme.textTheme.labelLarge!.copyWith(color: theme.colorScheme.primary);
    static TextStyle get bodySmallWhiteA70011 => theme.textTheme.bodySmall!
       .copyWith(color: appTheme.whiteA700, fontSize: 11.fSize);
   static TextStyle get labelLargeBluegray400 =>

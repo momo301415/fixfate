@@ -248,4 +248,14 @@ class LightCodeColors {
   Color get whiteA700 => Color(0XFFFFFFFF);
 // Yellow
   Color get yellow700 => Color(0XFFF2C939);
+  // Amber
+  Color get amber3007f => Color(0X7FFFD166);
+  // TealA
+  Color get tealA7007f => Color(0X7F06D6A0);
+  // Pink
+  Color get pink3007f => Color(0X7FF76688);
+  // RedA
+  Color get redA4007f => Color(0X7FFF003C);
+  Color get orange1007f => Color(0X7FF8E5BA);
+  Color get orange10033 => Color(0X33F7E5B9);
 }

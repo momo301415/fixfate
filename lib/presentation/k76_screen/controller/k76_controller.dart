@@ -12,6 +12,7 @@ import 'package:pulsedevice/presentation/k80_page/controller/k80_controller.dart
 import 'package:pulsedevice/presentation/k81_page/controller/k81_controller.dart';
 import 'package:pulsedevice/presentation/k83_page/controller/k83_controller.dart';
 import 'package:pulsedevice/presentation/k84_page/controller/k84_controller.dart';
+import 'package:pulsedevice/presentation/k8_screen/controller/k8_controller.dart';
 
 import '../../k82_page/controller/k82_controller.dart';
 
@@ -64,6 +65,7 @@ class K76Controller extends GetxController
     Get.put(K82Controller());
     Get.put(K83Controller());
     Get.put(K84Controller());
+    Get.put(K8Controller());
   }
 
   void onIconTap(int index) {

@@ -3,6 +3,10 @@ import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import '../core/app_export.dart';
 
 class AppDecoration {
+  static BoxDecoration get fillTealAF =>
+      BoxDecoration(color: appTheme.tealA7007f.withValues(alpha: 0.2));
+  static BoxDecoration get fillPrimary =>
+      BoxDecoration(color: theme.colorScheme.primary);
   static BoxDecoration get fillPrimary1 =>
       BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.1));
   static BoxDecoration get fillBlue => BoxDecoration(color: appTheme.blue50);
@@ -316,6 +320,10 @@ class AppDecoration {
 }
 
 class BorderRadiusStyle {
+  static BorderRadius get customBorderLR4 =>
+      BorderRadius.horizontal(right: Radius.circular(4.h));
+  static BorderRadius get customBorderTL4 =>
+      BorderRadius.horizontal(left: Radius.circular(4.h));
   // Circle borders
   static BorderRadius get circleBorder12 => BorderRadius.circular(
         12.h,
