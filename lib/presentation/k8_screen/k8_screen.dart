@@ -5,8 +5,10 @@ import '../../widgets/custom_elevated_button.dart';
 import 'controller/k8_controller.dart';
 import 'models/listviewsection_item_model.dart';
 import 'models/listweightvalue_item_model.dart';
+import 'models/weight_analysis_model.dart';
 import 'widgets/listviewsection_item_widget.dart';
-import 'widgets/listweightvalue_item_widget.dart'; // ignore_for_file: must_be_immutable
+import 'widgets/listweightvalue_item_widget.dart';
+import 'widgets/weight_analysis_widget.dart'; // ignore_for_file: must_be_immutable
 
 class K8Screen extends GetWidget<K8Controller> {
   const K8Screen({Key? key}) : super(key: key);
@@ -44,146 +46,19 @@ class K8Screen extends GetWidget<K8Controller> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(height: 20.h),
-                            Container(
-                              width: double.maxFinite,
-                              margin: EdgeInsets.only(
-                                left: 22.h,
-                                right: 16.h,
+                            SizedBox(height: 10.h),
+                            WeightAnalysisWidget(
+                              data: WeightAnalysisModel(
+                                weight: 77.2,
+                                bmi: 24.3,
+                                bodyFat: 17.9,
+                                bodyWater: 43.4,
+                                protein: 11.7,
+                                mineral: 4.2,
+                                updateTime: "8:30更新",
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    height: 120.h,
-                                    width: 122.h,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SizedBox(
-                                          height: 120.h,
-                                          width: 120.h,
-                                          child: CircularProgressIndicator(
-                                            value: 0.13,
-                                            backgroundColor:
-                                                appTheme.teal5001,
-                                            strokeWidth: 12.h,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: double.maxFinite,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "lbl79".tr,
-                                                style:
-                                                    CustomTextStyles
-                                                        .bodySmall10,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                mainAxisSize:
-                                                    MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    "lbl_77_2".tr,
-                                                    style:
-                                                        CustomTextStyles
-                                                            .headlineSmallErrorContainer,
-                                                  ),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment
-                                                            .bottomCenter,
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.only(
-                                                            bottom: 4.h,
-                                                          ),
-                                                      child: Text(
-                                                        "lbl376".tr,
-                                                        style:
-                                                            CustomTextStyles
-                                                                .bodySmall8,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 124.h,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            "lbl_8_30".tr,
-                                            style:
-                                                CustomTextStyles.bodySmall10,
-                                          ),
-                                        ),
-                                        SizedBox(height: 12.h),
-                                        SizedBox(
-                                          width: double.maxFinite,
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                "lbl_bmi2".tr,
-                                                style:
-                                                    CustomTextStyles
-                                                        .labelLargePrimary_2,
-                                              ),
-                                              Spacer(),
-                                              Text(
-                                                "lbl_24_32".tr,
-                                                style:
-                                                    CustomTextStyles
-                                                        .labelMediumErrorContainer,
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: "lbl_kg_m".tr,
-                                                        style:
-                                                            CustomTextStyles
-                                                                .pingFangTC4ErrorContainerRegular,
-                                                      ),
-                                                      TextSpan(
-                                                        text: "lbl_22".tr,
-                                                        style:
-                                                            CustomTextStyles
-                                                                .pingFangTC4ErrorContainerRegular,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        _buildListViewSection(),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              outerRadius: 70.0,
+                              strokeWidth: 15.0,
                             ),
                             SizedBox(height: 30.h),
                             _buildTabViewSection(),
@@ -596,33 +471,7 @@ class K8Screen extends GetWidget<K8Controller> {
   //   );
   // }
 
-  /// Section Widget
-  Widget _buildListViewSection() {
-    return Padding(
-      padding: EdgeInsets.only(right: 10.h),
-      child: Obx(
-        () => ListView.separated(
-          padding: EdgeInsets.zero,
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (context, index) {
-            return SizedBox(height: 4.h);
-          },
-          itemCount:
-              controller.k8ModelObj.value.listviewsectionItemList.value.length,
-          itemBuilder: (context, index) {
-            ListviewsectionItemModel model =
-                controller
-                    .k8ModelObj
-                    .value
-                    .listviewsectionItemList
-                    .value[index];
-            return ListviewsectionItemWidget(model);
-          },
-        ),
-      ),
-    );
-  }
+
 
   /// Section Widget
   Widget _buildTabViewSection() {

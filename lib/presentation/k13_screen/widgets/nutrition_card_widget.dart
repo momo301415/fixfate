@@ -1,6 +1,4 @@
 // 新建文件：widgets/nutrition_card_widget.dart
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/widgets/custom_icon_button.dart';
