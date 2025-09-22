@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
@@ -26,6 +27,10 @@ class K40Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄我的設備頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewMyDevices();
+
     loadDevices();
     Future.delayed(const Duration(microseconds: 500), () {
       getBlueToothDeviceInfo();

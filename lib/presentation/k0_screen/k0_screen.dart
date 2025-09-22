@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import '../../core/app_export.dart';
 import '../../theme/custom_button_style.dart';
 import '../../widgets/app_bar/appbar_leading_image.dart';
@@ -516,7 +517,11 @@ class K0Screen extends GetWidget<K0Controller> {
                     ? CustomButtonStyles.gradientCyanToPrimaryDecoration
                     : null,
                 onPressed: controller.isBottomReached.value
-                    ? () => Get.back(result: true)
+                    ? () {
+                        // 📊 記錄接受條款按鈕點擊事件
+                        FirebaseAnalyticsService.instance.logClickAcceptTerms();
+                        Get.back(result: true);
+                      }
                     : null,
               ))
         ],

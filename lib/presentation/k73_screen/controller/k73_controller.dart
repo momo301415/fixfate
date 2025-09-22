@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -31,6 +32,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+
+    // 📊 記錄健康數據頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewHealthHeartrateDataPage(
+      dataType: 'health_overview',
+    );
 
     /// 測試用帳號，有要測試數據就打開
     // gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';

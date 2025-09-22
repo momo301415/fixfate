@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -36,6 +37,10 @@ class K62Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄目標設定頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewGoalPage();
+
     initData();
   }
 
@@ -82,6 +87,12 @@ class K62Controller extends GetxController {
   }
 
   Future<void> saveGoalProfile() async {
+    // 📊 記錄設定目標按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickSetGoal(
+      goalType: 'multiple',
+      goalValue: steps.value.toInt(),
+    );
+
     final box = await Hive.openBox<GoalProfile>('goal_profile');
     final user = box.get(gc.userId.value) ?? GoalProfile();
     var a = k62ModelObj.value.listItemList.value[0];

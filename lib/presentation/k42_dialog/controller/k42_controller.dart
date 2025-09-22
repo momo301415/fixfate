@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
@@ -23,10 +24,21 @@ class K42Controller extends GetxController {
   final apiService = ApiService();
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
+      // 📊 記錄開始配對按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickStartPairing(
+        deviceName: device.name,
+      );
+
       LoadingHelper.show();
       final result = await YcProductPlugin().connectDevice(device);
 
       if (result == true) {
+        // 📊 記錄裝置配對成功事件
+        FirebaseAnalyticsService.instance.logDevicePairingSuccess(
+          deviceName: device.name,
+          deviceType: 'bluetooth',
+        );
+
         SnackbarHelper.showBlueSnackbar(
             title: '連線成功', message: '已連線到 ${device.name}');
         UserProfileStorage.saveDeviceForCurrentUser(gc.userId.value, device);

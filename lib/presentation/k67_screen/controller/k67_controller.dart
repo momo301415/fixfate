@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -18,6 +19,10 @@ class K67Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄家人管理頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewFamilyMembers();
+
     initData();
   }
 

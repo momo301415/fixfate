@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' as mobile_scanner;
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/config.dart';
@@ -26,14 +27,29 @@ class K72Controller extends GetxController {
       mobile_scanner.MobileScannerController();
   ApiService apiService = ApiService();
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    // 📊 記錄家人綁定頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewFamilyBindingPage();
+  }
+
   void onDetect(mobile_scanner.BarcodeCapture capture) async {
     final barcode = capture.barcodes.first.rawValue;
     if (barcode != null && barcode.isNotEmpty) {
+      // 📊 記錄掃描QR Code按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickScanQrcode(
+        qrType: 'family_binding',
+      );
+
       final json = jsonDecode(barcode);
       scanResult.value = json["NotityToken"];
       scannerController.stop(); // 停止掃描
       final dialog = await DialogHelper.showFamilyNickNameDialog();
       if (dialog != null && dialog["confirm"] == true) {
+        // 📊 記錄綁定家人按鈕點擊事件
+        FirebaseAnalyticsService.instance.logClickBindFamily();
         sendFirebase(scanResult.value, dialog["nickname"] ?? "");
       }
       // 延遲顯示 snackbar，等 Dialog 關閉完整

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list_storage.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -54,6 +55,12 @@ class K6Controller extends GetxController
         tabIndex.value = tabviewController.index;
       }
     });
+
+    // 📊 記錄運動數據頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewWorkoutDataPage(
+      workoutType: argIndex == 0 ? 'aerobic' : 'weight_training',
+    );
+
     Future.delayed(Duration.zero, () => getRecords());
   }
 

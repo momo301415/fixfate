@@ -1,4 +1,5 @@
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -19,6 +20,10 @@ class K55Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄通知消息頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewNotificationPage();
+
     initData();
   }
 

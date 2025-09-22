@@ -172,7 +172,7 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
           return ListHistoryItemModel(
             unit: Rx(''),
             value: Rx(m.totalStressScore.toString()),
-            time: Rx(date),
+            time: Rx(dt),
           );
         }).toList();
         k80ModelObj.value.listItemList2.value = history;

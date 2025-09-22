@@ -35,7 +35,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        versionCode = 70
+        versionCode = 71
         versionName = "1.0.7"
         // multiDexEnabled true
     }

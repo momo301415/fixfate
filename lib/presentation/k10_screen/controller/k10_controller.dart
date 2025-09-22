@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
@@ -18,6 +19,10 @@ class K10Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄裝置綁定頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewDevicePairingPage();
+
     checkBluetoothPermission();
   }
 
@@ -59,6 +64,11 @@ class K10Controller extends GetxController {
 
   Future<void> scanDevices() async {
     try {
+      // 📊 記錄搜尋裝置按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickSearchDevice(
+        deviceType: 'bluetooth',
+      );
+
       LoadingHelper.show();
       final state = await YcProductPlugin().getBluetoothState();
       if (state != BluetoothState.disconnected) {
@@ -108,6 +118,12 @@ class K10Controller extends GetxController {
 
   /// 連接裝置dialog
   Future<void> showConnectDevice(BluetoothDevice device) async {
+    // 📊 記錄選擇裝置按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickSelectDevice(
+      deviceName: device.name,
+      deviceType: 'bluetooth',
+    );
+
     final result = await DialogHelper.showCustomDialog(
         Get.context!,
         K42Dialog(
