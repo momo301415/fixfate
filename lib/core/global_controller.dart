@@ -10,6 +10,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
@@ -245,6 +246,13 @@ class GlobalController extends GetxController {
       print("❌ 事件分發失敗: $e");
       print("❌ Stack trace: $stackTrace");
     }
+  }
+
+  void lefuInit() async {
+    final path = 'assets/config/lefu.config';
+    String content = await rootBundle.loadString(path);
+    PPBluetoothKitManager.initSDK('lefub60060202a15ac8a',
+        'UCzWzna/eazehXaz8kKAC6WVfcL25nIPYlV9fXYzqDM=', content);
   }
 
   /// 內部藍牙事件處理
