@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/presentation/k73_screen/models/listview_item_model.dart';
-import 'package:pulsedevice/widgets/custom_image_view.dart';
-import 'package:pulsedevice/core/utils/size_utils.dart';
 
 class ListviewItemWidget extends StatelessWidget {
   final ListViewItemModel model;
@@ -97,7 +94,7 @@ class ListviewItemWidget extends StatelessWidget {
         // 右上紅色警示 Badge
         if (isAlert)
           Positioned(
-            top: 0,
+            top: -20.v,
             right: 12.v,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 2.v),
@@ -107,7 +104,7 @@ class ListviewItemWidget extends StatelessWidget {
               ),
               child: Text(
                 "lbl216".tr,
-                style: TextStyle(color: Colors.white, fontSize: 12.fSize),
+                style: TextStyle(color: Colors.white, fontSize: 10.fSize),
               ),
             ),
           ),

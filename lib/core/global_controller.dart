@@ -100,8 +100,6 @@ class GlobalController extends GetxController {
 
   DateTime? _lastSyncTime;
 
-  // late GoalNotificationService goalNotificationService;
-
   ///--- 定位增強服務
   late LocationEnhancementService locationEnhancementService;
 
@@ -176,6 +174,7 @@ class GlobalController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    YcProductPlugin().cancelListening();
 
     WidgetsBinding.instance.removeObserver(lifecycleObserver);
     db.close();
@@ -188,10 +187,9 @@ class GlobalController extends GetxController {
     hiveInit();
     sqfliteInit();
     YcProductPluginInit();
-    initNotification();
 
-    /// 初始化定位增強服務 (只請求權限，不啟動GPS)
-    await initLocationEnhancementService(autoStart: false);
+    /// 🎯 順序權限請求：先通知權限，再位置權限
+    await initNotificationWithLocationPermission();
 
     initBackgroundFetch();
     if (Platform.isIOS) {
@@ -321,7 +319,42 @@ class GlobalController extends GetxController {
     await Hive.openBox<FamilyMember>('family_member');
   }
 
-  /// 初始化通知
+  /// 🎯 順序權限請求：先通知權限，再位置權限
+  Future<void> initNotificationWithLocationPermission() async {
+    // 1. 初始化通知服務
+    final service = NotificationService();
+    await service.initialize();
+
+    // 2. 請求通知權限
+    print('🔔 [GlobalController] 開始請求通知權限...');
+    final notificationGranted =
+        await PermissionHelper.checkNotificationPermission();
+    print('🔔 [GlobalController] 通知權限結果: $notificationGranted');
+
+    // 3. 通知權限完成後，請求位置權限
+    if (notificationGranted) {
+      print('✅ [GlobalController] 通知權限已授予，開始請求位置權限...');
+      // 延遲一點時間，讓用戶看到通知權限結果
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // 初始化定位增強服務 (只請求權限，不啟動GPS)
+      await initLocationEnhancementService(autoStart: false);
+    } else {
+      print('⚠️ [GlobalController] 通知權限被拒絕，仍會請求位置權限...');
+      // 即使通知權限被拒絕，仍請求位置權限
+      await Future.delayed(const Duration(milliseconds: 500));
+      await initLocationEnhancementService(autoStart: false);
+    }
+
+    // 4. 初始化其他通知相關服務
+    FlutterForegroundTask.initCommunicationPort();
+    FlutterForegroundTask.addTaskDataCallback(_onReceiveTaskData);
+    if (Platform.isAndroid) {
+      await AndroidAlarmManager.initialize();
+    }
+  }
+
+  /// 初始化通知（保留原方法，供其他地方使用）
   void initNotification() async {
     final service = NotificationService();
     await service.initialize();
@@ -559,12 +592,6 @@ class GlobalController extends GetxController {
     }
   }
 
-  // initGoal() async {
-  //   goalNotificationService = await GoalNotificationService(
-  //     userId: userId.value,
-  //   );
-  // }
-
   initFunc() async {
     if (_isInitFuncRunning) return;
 
@@ -599,7 +626,6 @@ class GlobalController extends GetxController {
     if (map['trigger'] == true) {
       // 由 Task 驅動的同步邏輯
       await safeRunSync();
-      // getGoalTargetData(goalNotificationService);
     }
   }
 
@@ -692,10 +718,6 @@ class GlobalController extends GetxController {
     );
   }
 
-  // Future<void> getGoalTargetData(GoalNotificationService service) async {
-  //   service.checkTodayGoalsAndNotify();
-  // }
-
   Future<void> safeRunSync() async {
     final now = DateTime.now();
     final time = now.toIso8601String();
@@ -714,8 +736,8 @@ class GlobalController extends GetxController {
 
   void _handleBluetoothStateChange(int newStatus) async {
     print("_handleBluetoothStateChange : $newStatus");
-    if (newStatus == _previousBluetoothStatus) return;
-    _previousBluetoothStatus = newStatus;
+    // if (newStatus == _previousBluetoothStatus) return;
+    // _previousBluetoothStatus = newStatus;
 
     blueToolStatus.value = newStatus;
     print('🔄 藍牙狀態改變：$newStatus');

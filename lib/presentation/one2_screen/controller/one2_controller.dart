@@ -37,6 +37,7 @@ class One2Controller extends GetxController {
   }
 
   void initData() async {
+    print("login page init ~~~~~~");
     oneController.text = await PrefUtils().getUserId();
     tfController.text = await PrefUtils().getPassword();
     if (oneController.text.isNotEmpty) {

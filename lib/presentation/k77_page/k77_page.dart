@@ -69,7 +69,9 @@ class K77Page extends GetWidget<K77Controller> {
                                   borderRadius: BorderRadius.circular(12.h),
                                 ),
                                 child: Text('lbl216'.tr,
-                                    style: TextStyle(color: Colors.white)),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.fSize)),
                               )
                             : Container(
                                 padding: EdgeInsets.symmetric(
@@ -363,7 +365,7 @@ class K77Page extends GetWidget<K77Controller> {
                   Text(item.label?.value ?? '',
                       style: CustomTextStyles.bodyMediumBluegray900),
                   Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
-                      style: CustomTextStyles.bodyMediumBluegray900),
+                      style: CustomTextStyles.bodySmallBluegray900),
                   Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
                 ],
               ),

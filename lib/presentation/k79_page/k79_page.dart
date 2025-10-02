@@ -71,7 +71,9 @@ class K79Page extends GetWidget<K79Controller> {
                                   borderRadius: BorderRadius.circular(12.h),
                                 ),
                                 child: Text('lbl216'.tr,
-                                    style: TextStyle(color: Colors.white)),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10.fSize)),
                               )
                             : Container(
                                 padding: EdgeInsets.symmetric(
@@ -254,7 +256,7 @@ class K79Page extends GetWidget<K79Controller> {
                   verticalDivider(),
                   Expanded(
                       child: buildStat('${controller.highCount.value}',
-                          'lbl161'.tr, 'lbl242'.tr)),
+                          'lbl161'.tr, 'lbl233'.tr)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -361,7 +363,7 @@ class K79Page extends GetWidget<K79Controller> {
                   Text(item.label?.value ?? '',
                       style: CustomTextStyles.bodyMediumBluegray900),
                   Text('${item.value?.value ?? ''}${item.unit?.value ?? ''}',
-                      style: CustomTextStyles.bodyMediumBluegray900),
+                      style: CustomTextStyles.bodySmallBluegray900),
                   Text(itemTime, style: CustomTextStyles.bodyMediumBluegray900),
                 ],
               ),

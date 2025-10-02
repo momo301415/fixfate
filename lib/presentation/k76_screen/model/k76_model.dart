@@ -7,12 +7,12 @@ class K76Model {
   Rx<List<ListIconBarModel>> listIconBarModelObj = Rx([
     ListIconBarModel(
         icon: ImageConstant.solidHeartbeat.obs, label: "lbl171".tr.obs),
-    // ListIconBarModel(
-    //     icon: ImageConstant.solidBlood.obs, label: "lbl172_1".tr.obs),
+    ListIconBarModel(
+        icon: ImageConstant.solidBlood.obs, label: "lbl172_1".tr.obs),
     ListIconBarModel(
         icon: ImageConstant.solidTemp.obs, label: "lbl173_1".tr.obs),
-    // ListIconBarModel(
-    //     icon: ImageConstant.solidPressure.obs, label: "lbl217".tr.obs),
+    ListIconBarModel(
+        icon: ImageConstant.solidPressure.obs, label: "lbl217".tr.obs),
     ListIconBarModel(icon: ImageConstant.solidStep.obs, label: "lbl218".tr.obs),
     ListIconBarModel(
         icon: ImageConstant.solidSleep.obs, label: "lbl219".tr.obs),

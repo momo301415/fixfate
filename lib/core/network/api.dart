@@ -31,12 +31,12 @@ class Api {
 
   ///-------- aws api
   static const String awsUrl =
-      "https://q9xezrperc.execute-api.us-east-1.amazonaws.com/prod/";
+      "https://62z1tlzs81.execute-api.us-east-1.amazonaws.com/prod/";
   static const String awsUrl2 =
-      "https://ugjonlvwsl.execute-api.us-east-1.amazonaws.com/prod/";
+      "https://mraofolcb5.execute-api.us-east-1.amazonaws.com/prod/";
 
   static const String socketUrl =
-      "wss://pletmsw3sc.execute-api.us-east-1.amazonaws.com/prod";
+      "wss://6ucd184jne.execute-api.us-east-1.amazonaws.com/prod";
   static const String chatHistory = "chat-history";
   static const String getPressure = "stress/analyze";
 }

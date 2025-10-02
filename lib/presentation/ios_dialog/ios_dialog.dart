@@ -181,7 +181,7 @@ class IosDialog extends StatelessWidget {
               ),
               SizedBox(height: 26.h),
               Text(
-                "lbl_pulsering2".tr,
+                "lbl_openbluetoolth".tr,
                 style:
                     CustomTextStyles.titleMediumManropePrimaryContainerSemiBold,
               ),

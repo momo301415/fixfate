@@ -139,7 +139,7 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
           final dt =
               DateTime.fromMillisecondsSinceEpoch(e.startTimestamp * 1000);
           return ListHistoryItemModel(
-            unit: Rx("%"),
+            unit: Rx(""),
             value: Rx(e.bloodoxygen),
             time: Rx(dt),
           );
@@ -155,12 +155,13 @@ class K78Controller extends GetxController with WidgetsBindingObserver {
         final alertList = alertData.map((m) {
           final date =
               DateTime.fromMillisecondsSinceEpoch(m.startTimestamp * 1000);
-          final label = m.type == "1" ? "lbl156".tr : "lbl156_1".tr; // 高或低的標籤
+          final label = "lbl156".tr; // 氧氣過低
+
           return ListRecordItemModel(
             label: Rx(label),
             value: Rx(m.bloodoxygen),
             time: Rx(date),
-            unit: Rx("%".tr),
+            unit: Rx("".tr),
           );
         }).toList();
 

@@ -3,11 +3,9 @@ import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
-import 'package:pulsedevice/core/sqliteDb/health_data_sync_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
 import 'package:pulsedevice/presentation/k19_screen/controller/k19_controller.dart';
-import 'package:pulsedevice/presentation/k67_screen/models/k67_model.dart';
 import 'package:pulsedevice/presentation/k73_screen/models/family_item_model.dart';
 import '../../../core/app_export.dart';
 import '../models/k73_model.dart';
@@ -33,6 +31,9 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+
+    /// 測試用帳號，有要測試數據就打開
+    // gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';
   }
 
   @override
@@ -115,25 +116,27 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     if (res.isEmpty) return;
 
     // 使用常量定義索引，避免魔術數字
-    // const int HEART_INDEX = 0;
-    // const int TEMP_INDEX = 1;
-    // const int PRESSURE_INDEX = 2;
-    // const int STEP_INDEX = 3;
-    // const int SLEEP_INDEX = 4;
-    // const int CALORIES_INDEX = 5;
-    // const int DISTANCE_INDEX = 6;
     const int HEART_INDEX = 0;
-    const int TEMP_INDEX = 1;
-    const int STEP_INDEX = 2;
-    const int SLEEP_INDEX = 3;
-    const int CALORIES_INDEX = 4;
-    const int DISTANCE_INDEX = 5;
+    const int OXYGEN_INDEX = 1;
+    const int TEMP_INDEX = 2;
+    const int PRESSURE_INDEX = 3;
+    const int STEP_INDEX = 4;
+    const int SLEEP_INDEX = 5;
+    const int CALORIES_INDEX = 6;
+    const int DISTANCE_INDEX = 7;
 
     // 安全更新心率數據
     _updateHealthItem(HEART_INDEX, {
       "loadTime": res["heartDuration"]?.toString() ?? "無數據",
       "value": res["heartRate"]?.toString() ?? "0",
       "isAlert": res["heartAlert"] ?? false,
+    });
+
+    // 安全更新血氧數據
+    _updateHealthItem(OXYGEN_INDEX, {
+      "loadTime": res["heartDuration"]?.toString() ?? "無數據",
+      "value": res["bloodOxygen"]?.toString() ?? "0",
+      "isAlert": res["bloodAlert"] ?? false,
     });
 
     // 安全更新體溫數據
@@ -144,11 +147,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     });
 
     // 安全更新壓力數據
-    // _updateHealthItem(PRESSURE_INDEX, {
-    //   "loadTime": res["pressureDuration"]?.toString() ?? "無數據",
-    //   "value": res["pressure"]?.toString() ?? "0",
-    //   "isAlert": res["pressureAlert"] ?? false,
-    // });
+    _updateHealthItem(PRESSURE_INDEX, {
+      "loadTime": res["pressureDuration"]?.toString() ?? "無數據",
+      "value": res["pressure"]?.toString() ?? "0",
+      "isAlert": res["pressureAlert"] ?? false,
+    });
 
     // 安全更新步數數據
     _updateHealthItem(STEP_INDEX, {

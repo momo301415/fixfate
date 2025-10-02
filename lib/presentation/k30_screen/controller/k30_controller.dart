@@ -470,7 +470,7 @@ class K30Controller extends GetxController {
       list2[4].tf1?.value = user.standding ?? 'lbl303_1'.tr;
       longStandValue.value = user.standding ?? 'lbl303_1'.tr;
       list2[5].tf1?.value = user.lowHeadding ?? 'lbl303_1'.tr;
-      lowHeadValue.value = user.lowHeadding ?? 'lbl303_1  ';
+      lowHeadValue.value = user.lowHeadding ?? 'lbl303_1'.tr;
       list2[6].tf1?.value = user.waterIntake ?? 'lbl306_3'.tr;
       waterValue.value = user.waterIntake ?? 'lbl306_3'.tr;
       list2[7].tf1?.value = user.noneSleep ?? 'lbl307_1'.tr;
