@@ -6,6 +6,7 @@ import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/hiveDb/body_temperature_setting_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -74,6 +75,9 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
 
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
+
+      // 📊 GA4 事件已由 K76Controller 統一管理，此處不再自動記錄
+      // _logPageViewEvent();
     });
   }
 
@@ -887,5 +891,19 @@ class K79Controller extends GetxController with WidgetsBindingObserver {
     k79ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
     k79ModelObj.value.listItemList2.refresh();
     k79ModelObj.value.listItemList.refresh();
+  }
+
+  /// 記錄頁面訪問事件
+  void _logPageViewEvent() {
+    FirebaseAnalyticsService.instance.logViewTemperaturePage(
+      temperatureValue:
+          tempratureVal.value.isNotEmpty ? tempratureVal.value : null,
+      hasAlert: isAlert.value,
+      parameters: {
+        'load_time': loadDataTime.value,
+        'time_range_index': currentIndex.value,
+        'record_mode_index': recordIndex.value,
+      },
+    );
   }
 }

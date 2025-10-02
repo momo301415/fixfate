@@ -6,7 +6,7 @@ import 'package:pulsedevice/core/utils/firebase_helper.dart';
 import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
 
 class HomeController extends GetxController {
-  final bottomBarIndex = 1.obs; // 改為 1，對應 K29Page
+  final bottomBarIndex = 0.obs; // 改為 1，對應 K29Page
   final cc = Get.find<ChatScreenController>();
   @override
   void onInit() {

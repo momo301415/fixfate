@@ -1,6 +1,6 @@
 name: pulsedevice
 description: A new Flutter project.
-version: 1.0.9+1
+version: 1.0.10+1
 environment: 
   sdk: ^3.6.0
 dependencies: 
@@ -61,10 +61,10 @@ dependencies:
       path: code/
       ref: 89962c165497ec484f1788b0d2546e1cc6a2f402
 
-  pp_bluetooth_kit_flutter: # 體脂機sdk
-    git:
-      url: https://github.com/LefuHengqi/pp_bluetooth_kit_flutter.git
-      ref: 0.0.34
+  # pp_bluetooth_kit_flutter: # 體脂機sdk
+  #   git:
+  #     url: https://github.com/LefuHengqi/pp_bluetooth_kit_flutter.git
+  #     ref: 0.0.34
       
 dev_dependencies: 
   flutter_test:  # Flutter內建單元測試

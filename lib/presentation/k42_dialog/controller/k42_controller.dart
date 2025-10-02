@@ -39,6 +39,9 @@ class K42Controller extends GetxController {
           deviceType: 'bluetooth',
         );
 
+        ///綁定先清除資料
+        await clearBluetoothData();
+
         SnackbarHelper.showBlueSnackbar(
             title: '連線成功', message: '已連線到 ${device.name}');
         UserProfileStorage.saveDeviceForCurrentUser(gc.userId.value, device);
@@ -91,5 +94,19 @@ class K42Controller extends GetxController {
       LoadingHelper.hide();
     }
     return false;
+  }
+
+  ///清除裝置健康數據
+  Future<void> clearBluetoothData() async {
+    ///先清除裝置排程
+    await YcProductPlugin().clearQueue();
+
+    ///再清除健康數據
+    await YcProductPlugin().deleteDeviceHealthData(HealthDataType.step);
+    await YcProductPlugin().deleteDeviceHealthData(HealthDataType.sleep);
+    await YcProductPlugin().deleteDeviceHealthData(HealthDataType.heartRate);
+    await YcProductPlugin()
+        .deleteDeviceHealthData(HealthDataType.bloodPressure);
+    await YcProductPlugin().deleteDeviceHealthData(HealthDataType.combinedData);
   }
 }

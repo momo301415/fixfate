@@ -397,6 +397,102 @@ class FirebaseAnalyticsService {
   Future<void> logViewDevicePairingPage({Map<String, Object>? parameters}) =>
       logPageView('device_pairing_page', parameters: parameters);
 
+  /// K77 心率頁面瀏覽
+  Future<void> logViewHeartRatePage({
+    String? heartRateValue,
+    bool? hasAlert,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('heart_rate_page', parameters: {
+        'data_type': 'heart_rate',
+        if (heartRateValue != null) 'current_value': heartRateValue,
+        // if (hasAlert != null) 'has_alert': hasAlert,
+        ...?parameters,
+      });
+
+  /// K78 血氧頁面瀏覽
+  Future<void> logViewBloodOxygenPage({
+    String? oxygenValue,
+    bool? hasAlert,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('blood_oxygen_page', parameters: {
+        'data_type': 'blood_oxygen',
+        if (oxygenValue != null) 'current_value': oxygenValue,
+        // if (hasAlert != null) 'has_alert': hasAlert,
+        ...?parameters,
+      });
+
+  /// K79 體溫頁面瀏覽
+  Future<void> logViewTemperaturePage({
+    String? temperatureValue,
+    bool? hasAlert,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('temperature_page', parameters: {
+        'data_type': 'temperature',
+        if (temperatureValue != null) 'current_value': temperatureValue,
+        // if (hasAlert != null) 'has_alert': hasAlert,
+        ...?parameters,
+      });
+
+  /// K80 壓力頁面瀏覽
+  Future<void> logViewStressPage({
+    String? stressValue,
+    bool? hasAlert,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('pressure_page', parameters: {
+        'data_type': 'pressure',
+        if (stressValue != null) 'current_value': stressValue,
+        // if (hasAlert != null) 'has_alert': hasAlert,
+        ...?parameters,
+      });
+
+  /// K81 步數頁面瀏覽
+  Future<void> logViewStepsPage({
+    String? stepsValue,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('steps_page', parameters: {
+        'data_type': 'steps',
+        if (stepsValue != null) 'current_value': stepsValue,
+        ...?parameters,
+      });
+
+  /// K82 睡眠頁面瀏覽
+  Future<void> logViewSleepPage({
+    String? sleepValue,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('sleep_page', parameters: {
+        'data_type': 'sleep',
+        if (sleepValue != null) 'current_value': sleepValue,
+        ...?parameters,
+      });
+
+  /// K83 卡路里頁面瀏覽
+  Future<void> logViewCaloriesPage({
+    String? caloriesValue,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('calories_page', parameters: {
+        'data_type': 'calories',
+        if (caloriesValue != null) 'current_value': caloriesValue,
+        ...?parameters,
+      });
+
+  /// K84 移動距離頁面瀏覽
+  Future<void> logViewDistancePage({
+    String? distanceValue,
+    Map<String, Object>? parameters,
+  }) =>
+      logPageView('distance_page', parameters: {
+        'data_type': 'distance',
+        if (distanceValue != null) 'current_value': distanceValue,
+        ...?parameters,
+      });
+
   // -------------------- 按鈕點擊語義方法 --------------------
 
   /// 登入按鈕點擊
