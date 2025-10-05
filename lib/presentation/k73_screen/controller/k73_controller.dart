@@ -19,7 +19,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   TextEditingController searchController = TextEditingController();
   final gc = Get.find<GlobalController>();
   final chatScreenController = Get.find<ChatScreenController>();
-  final k19Controller = Get.find<K19Controller>();
+  K19Controller get k19Controller => Get.find<K19Controller>();
   ApiService apiService = ApiService();
 
   Rx<K73Model> k73ModelObj = K73Model().obs;
@@ -46,6 +46,8 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   void onReady() {
     super.onReady();
     print("k73 controller onInit");
+    getFamilyData();
+    getHealthData();
   }
 
   @override
