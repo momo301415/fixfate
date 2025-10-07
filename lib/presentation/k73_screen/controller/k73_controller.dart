@@ -427,6 +427,18 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     return sameDayList.fold<int>(0, (sum, item) => sum + valueGetter(item));
   }
 
+  ///刷新按鈕事件
+  Future<void> onRefresh() async {
+    LoadingHelper.show();
+    await gc.syncDataService.runBackgroundSync();
+    await gc.getBlueToothDeviceInfo();
+    await getHealthData(
+        familyId: gc.familyId.value, familyName: gc.familyName.value);
+    await getFamilyData();
+    LoadingHelper.hide();
+    LoadingHelper.hide();
+  }
+
   /// 取得家族清單-api
   Future<void> getFamilyData() async {
     try {

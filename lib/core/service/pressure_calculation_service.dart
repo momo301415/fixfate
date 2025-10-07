@@ -7,7 +7,6 @@ import 'package:pulsedevice/core/sqliteDb/pressure_data_service.dart';
 import 'package:drift/drift.dart';
 
 class PressureCalculationService {
-  final AppDatabase _db;
   final GlobalController _gc;
   final CombinedDataService _combinedDataService;
   final HeartRateDataService _heartRateDataService;
@@ -17,8 +16,7 @@ class PressureCalculationService {
   PressureCalculationService({
     required AppDatabase db,
     required GlobalController gc,
-  })  : _db = db,
-        _gc = gc,
+  })  : _gc = gc,
         _combinedDataService = CombinedDataService(db),
         _heartRateDataService = HeartRateDataService(db),
         _pressureDataService = PressureDataService(db),
@@ -49,93 +47,97 @@ class PressureCalculationService {
         return;
       }
 
-      if (unsyncedHeartRate.length != unsyncedCombined.length) {
-        print(
-            '⚠️ 心率和血氧數據筆數不一致 (心率: ${unsyncedHeartRate.length}, 血氧: ${unsyncedCombined.length})');
-        print('⚠️ 將處理較少的數據筆數');
+      // 3. 收集有效數據到陣列
+      final batchData =
+          _collectValidBatchData(unsyncedHeartRate, unsyncedCombined);
+
+      if (batchData.isEmpty) {
+        print('✅ 沒有有效的數據進行壓力計算');
+        return;
       }
 
-      // 3. 使用索引配對處理數據
-      final minLength = unsyncedHeartRate.length < unsyncedCombined.length
-          ? unsyncedHeartRate.length
-          : unsyncedCombined.length;
+      print('📊 準備批量處理 ${batchData.length} 筆數據');
 
-      int successCount = 0;
-      int failureCount = 0;
+      // 4. 一次性批量調用 API
+      final apiResponse =
+          await _syncDataService.getPressureAnalysBatch(batchData);
 
-      for (int i = 0; i < minLength; i++) {
-        final heartData = unsyncedHeartRate[i];
-        final oxygenData = unsyncedCombined[i];
+      // 5. 批量處理結果並寫入 SQLite
+      await _processBatchResults(apiResponse, batchData);
 
-        if (_isValidForPressureCalculation(
-            heartData.heartRate, oxygenData.bloodOxygen)) {
-          final success = await _calculateSinglePressure(heartData, oxygenData);
-          if (success) {
-            successCount++;
-          } else {
-            failureCount++;
-          }
-        } else {
-          print(
-              '⚠️ 數據無效，跳過: 心率=${heartData.heartRate}, 血氧=${oxygenData.bloodOxygen}');
-        }
-      }
-
-      print('✅ 壓力計算完成: 成功 $successCount 筆, 失敗 $failureCount 筆');
+      print('✅ 壓力計算完成');
     } catch (e, stackTrace) {
       print('❌ 壓力計算過程中發生錯誤: $e');
       print('Stack trace: $stackTrace');
     }
   }
 
-  /// 計算單筆壓力數據
-  Future<bool> _calculateSinglePressure(
-      HeartRateDataData heartData, CombinedDataData oxygenData) async {
-    try {
-      print(
-          '🔄 計算壓力: 心率=${heartData.heartRate}, 血氧=${oxygenData.bloodOxygen}, 心率時間=${heartData.startTimeStamp}, 血氧時間=${oxygenData.startTimeStamp}');
+  /// 收集有效數據到陣列
+  List<Map<String, dynamic>> _collectValidBatchData(
+      List<HeartRateDataData> heartRateData,
+      List<CombinedDataData> combinedData) {
+    final batchData = <Map<String, dynamic>>[];
+    final minLength = heartRateData.length < combinedData.length
+        ? heartRateData.length
+        : combinedData.length;
 
-      // 調用壓力計算 API，傳遞心率和血氧參數
-      final apiResult = await _syncDataService.getPressureAnalys(
-        rateVal: heartData.heartRate,
-        oxyVal: oxygenData.bloodOxygen,
-      );
+    for (int i = 0; i < minLength; i++) {
+      final heartData = heartRateData[i];
+      final oxygenData = combinedData[i];
 
-      if (apiResult.isEmpty) {
-        print('❌ API 返回空結果');
-        return false;
+      if (_isValidForPressureCalculation(
+          heartData.heartRate, oxygenData.bloodOxygen)) {
+        batchData.add({
+          "heart_rate": heartData.heartRate,
+          "blood_oxygen": oxygenData.bloodOxygen,
+          "id": heartData.startTimeStamp,
+        });
+      } else {
+        print(
+            '⚠️ 數據無效，跳過: 心率=${heartData.heartRate}, 血氧=${oxygenData.bloodOxygen}');
       }
+    }
 
-      print('📄 API 回傳結果: $apiResult');
+    return batchData;
+  }
 
-      // 檢查 API 回傳的必要欄位
-      if (!apiResult.containsKey('total_stress_score') &&
-          !apiResult.containsKey('maxVal')) {
-        print('❌ API 回傳數據格式不正確: $apiResult');
-        return false;
+  /// 批量處理結果並寫入 SQLite
+  Future<void> _processBatchResults(Map<String, dynamic> apiResponse,
+      List<Map<String, dynamic>> batchData) async {
+    // 建立 ID 到原始數據的映射
+    final idToOriginalData = <int, Map<String, dynamic>>{};
+    for (final data in batchData) {
+      idToOriginalData[data['id']] = data;
+    }
+
+    // 準備批量插入的數據
+    final pressureDataList = <PressureDataCompanion>[];
+
+    // 處理 API 結果
+    final results = apiResponse['results'] as List? ?? [];
+    for (final result in results) {
+      if (result['success'] == true) {
+        final id = result['id'];
+        final data = result['data'];
+        final originalData = idToOriginalData[id];
+
+        if (originalData != null) {
+          pressureDataList.add(PressureDataCompanion(
+            userId: Value(_gc.userId.value),
+            startTimeStamp: Value(id),
+            totalStressScore:
+                Value((data['total_stress_score'] ?? 0).toDouble()),
+            stressLevel: Value((data['stress_level'] ?? 'unknown').toString()),
+            isSynced: Value(false),
+          ));
+        }
       }
+    }
 
-      // 用當前時間存儲壓力數據
-      await _pressureDataService.insert(PressureDataCompanion(
-        userId: Value(heartData.userId),
-        startTimeStamp: Value(heartData.startTimeStamp),
-        totalStressScore: Value((apiResult['total_stress_score'] ??
-                apiResult['total_stress_score'] ??
-                0)
-            .toDouble()),
-        stressLevel: Value(
-            (apiResult['stress_level'] ?? apiResult['stress_level'])
-                    ?.toString() ??
-                'unknown'),
-        isSynced: Value(false), // 預設未同步
-      ));
-
-      print('✅ 壓力數據存儲成功');
-      return true;
-    } catch (e, stackTrace) {
-      print('❌ 計算單筆壓力失敗: $e');
-      print('Stack trace: $stackTrace');
-      return false;
+    // 批量插入到 SQLite
+    if (pressureDataList.isNotEmpty) {
+      await _pressureDataService.insertBatch(pressureDataList);
+      print('✅ 批量寫入 ${pressureDataList.length} 筆壓力數據到 SQLite');
     }
   }
 
