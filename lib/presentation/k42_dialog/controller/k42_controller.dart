@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
@@ -23,14 +24,29 @@ class K42Controller extends GetxController {
   final apiService = ApiService();
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
+      // 📊 記錄開始配對按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickStartPairing(
+        deviceName: device.name,
+      );
+
       LoadingHelper.show();
       final result = await YcProductPlugin().connectDevice(device);
 
       if (result == true) {
+        // 📊 記錄裝置配對成功事件
+        FirebaseAnalyticsService.instance.logDevicePairingSuccess(
+          deviceName: device.name,
+          deviceType: 'bluetooth',
+        );
+
+        ///綁定先清除資料，用非同步執行，不然會卡住
+        clearBluetoothData();
+
         SnackbarHelper.showBlueSnackbar(
             title: '連線成功', message: '已連線到 ${device.name}');
         UserProfileStorage.saveDeviceForCurrentUser(gc.userId.value, device);
         await callApiBindDevice(device);
+
         Future.delayed(const Duration(milliseconds: 500), () {
           goHomePage();
         });
@@ -46,6 +62,25 @@ class K42Controller extends GetxController {
   }
 
   void goHomePage() {
+    // 檢查當前路由
+    if (Get.currentRoute == AppRoutes.homePage) {
+      print('✅ 已在 HomePage，直接返回');
+      Get.back();
+      return;
+    }
+
+    // 嘗試返回到已有的 HomePage
+    try {
+      print('🔄 嘗試返回到現有 HomePage');
+      Get.until((route) => route.settings.name == AppRoutes.homePage);
+      print('✅ 成功返回');
+      return;
+    } catch (e) {
+      print('⚠️ 無法返回，將創建新 HomePage: $e');
+    }
+
+    // 首次進入才執行
+    print('🆕 創建新 HomePage');
     Get.offNamedUntil(
         AppRoutes.homePage, ModalRoute.withName(AppRoutes.one2Screen));
   }
@@ -79,5 +114,18 @@ class K42Controller extends GetxController {
       LoadingHelper.hide();
     }
     return false;
+  }
+
+  ///清除裝置健康數據
+  Future<void> clearBluetoothData() async {
+    ///先清除裝置排程
+    YcProductPlugin().clearQueue();
+
+    ///再清除健康數據
+    YcProductPlugin().deleteDeviceHealthData(HealthDataType.step);
+    YcProductPlugin().deleteDeviceHealthData(HealthDataType.sleep);
+    YcProductPlugin().deleteDeviceHealthData(HealthDataType.heartRate);
+    YcProductPlugin().deleteDeviceHealthData(HealthDataType.bloodPressure);
+    YcProductPlugin().deleteDeviceHealthData(HealthDataType.combinedData);
   }
 }

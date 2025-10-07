@@ -832,30 +832,17 @@ class SyncDataService {
     }
   }
 
-  ///------ call api 取得壓力計算
-  Future<Map<String, dynamic>> getPressureAnalys(
-      {int? rateVal, int? oxyVal}) async {
+  ///------ call api 取得壓力計算 (批量)
+  Future<Map<String, dynamic>> getPressureAnalysBatch(
+      List<Map<String, dynamic>> batchData) async {
     try {
-      Map<String, dynamic> payload = {
-        "heart_rate": rateVal,
-        "blood_oxygen": oxyVal,
-      };
-      if (gc.userGender.value.length > 0) {
-        payload["gender"] = gc.userGender.value == "男" ? "male" : "female";
-      }
-      var res = await awsService.postJson(
+      var res = await awsService.postJsonList(
         Api.getPressure,
-        payload,
+        batchData,
       );
 
       if (res.isNotEmpty) {
-        // 檢查新格式：直接包含 total_stress_score 和 stress_level
-        if (res.containsKey("total_stress_score") &&
-            res.containsKey("stress_level")) {
-          return res; // 直接返回完整的回應數據
-        }
-
-        // 檢查舊格式：包含 message 和 data 包裝
+        return res;
       }
       return {};
     } catch (e) {

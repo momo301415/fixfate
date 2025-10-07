@@ -10,6 +10,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
@@ -18,6 +19,7 @@ import 'package:pulsedevice/core/hiveDb/body_temperature_setting.dart';
 import 'package:pulsedevice/core/hiveDb/device_profile.dart';
 import 'package:pulsedevice/core/hiveDb/family_member.dart';
 import 'package:pulsedevice/core/hiveDb/goal_profile.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/heart_rate_setting.dart';
 import 'package:pulsedevice/core/hiveDb/listen_setting.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
@@ -187,6 +189,10 @@ class GlobalController extends GetxController {
     hiveInit();
     sqfliteInit();
     YcProductPluginInit();
+    lefuInit();
+
+    /// 初始化 Firebase Analytics
+    await FirebaseAnalyticsService.instance.initialize();
 
     /// 🎯 順序權限請求：先通知權限，再位置權限
     await initNotificationWithLocationPermission();
@@ -241,6 +247,13 @@ class GlobalController extends GetxController {
       print("❌ 事件分發失敗: $e");
       print("❌ Stack trace: $stackTrace");
     }
+  }
+
+  void lefuInit() async {
+    final path = 'assets/config/lefu.config';
+    String content = await rootBundle.loadString(path);
+    PPBluetoothKitManager.initSDK('lefub60060202a15ac8a',
+        'UCzWzna/eazehXaz8kKAC6WVfcL25nIPYlV9fXYzqDM=', content);
   }
 
   /// 內部藍牙事件處理

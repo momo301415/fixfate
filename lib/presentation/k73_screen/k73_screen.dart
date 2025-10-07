@@ -26,11 +26,7 @@ class K73Screen extends GetWidget<K73Controller> {
       onEvent: () {
         print("k73 screen onEvent");
         Future.delayed(const Duration(milliseconds: 500), () {
-          controller.getFamilyData();
-          controller.getHealthData(
-              familyId: controller.gc.familyId.value,
-              familyName: controller.gc.familyName.value);
-          ;
+          controller.onRefresh();
         });
       },
       child: ListView(

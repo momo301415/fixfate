@@ -84,10 +84,16 @@ class LocationEnhancementService extends GetxService {
         return;
       }
 
-      // 請求定位權限
+      // 直接請求定位權限（使用系統原生 dialog）
       LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
+      print('📱 [$_tag] 當前權限狀態: $permission');
+
+      // 如果權限被拒絕或未確定，都嘗試請求權限
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.unableToDetermine) {
+        print('🔄 [$_tag] 權限被拒絕或未確定，嘗試請求權限...');
         permission = await Geolocator.requestPermission();
+        print('📱 [$_tag] 請求後權限狀態: $permission');
       }
 
       // 根據權限結果決定是否啟用增強模式
@@ -118,9 +124,16 @@ class LocationEnhancementService extends GetxService {
         return;
       }
 
+      // 直接請求定位權限（使用系統原生 dialog）
       LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
+      print('📱 [$_tag] 當前權限狀態: $permission');
+
+      // 如果權限被拒絕或未確定，都嘗試請求權限
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.unableToDetermine) {
+        print('🔄 [$_tag] 權限被拒絕或未確定，嘗試請求權限...');
         permission = await Geolocator.requestPermission();
+        print('📱 [$_tag] 請求後權限狀態: $permission');
       }
 
       if (permission == LocationPermission.always ||

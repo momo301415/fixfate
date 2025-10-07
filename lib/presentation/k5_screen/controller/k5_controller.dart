@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list_storage.dart';
 import 'package:pulsedevice/core/utils/snackbar_helper.dart';
@@ -74,6 +75,9 @@ class K5Controller extends GetxController
     tabviewController = TabController(vsync: this, length: 2);
     print("初始化監聽藍牙狀態：${gc.blueToolStatus.value}");
 
+    // 📊 記錄運動監測頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewWorkoutPage();
+
     // ✅ 初始化運動事件處理器
     _sportEventHandler = _handleSportEvent;
 
@@ -86,6 +90,14 @@ class K5Controller extends GetxController
 
   // 🎯 提供給UI的Rx變量（用於Obx監聽）
   RxBool get isUsingGpsModeRx => _isUsingGpsMode;
+
+  /// 獲取總運動時長（秒）
+  int _getTotalSeconds() {
+    if (_isUsingGpsMode.value && _gpsStartTime != null) {
+      return DateTime.now().difference(_gpsStartTime!).inSeconds;
+    }
+    return lastHours.value * 3600 + lastMinutes.value * 60 + lastSeconds.value;
+  }
 
   @override
   void onClose() {
@@ -484,6 +496,11 @@ class K5Controller extends GetxController
   Future<void> startSport() async {
     if (isStart.value) return;
 
+    // 📊 記錄開始運動按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickStartWorkout(
+      workoutType: 'exercise',
+    );
+
     // 🔍 檢查藍牙狀態決定使用哪種模式
     _isUsingGpsMode.value = (gc.blueToolStatus.value != 2);
 
@@ -520,6 +537,12 @@ class K5Controller extends GetxController
   Future<void> stopSport() async {
     try {
       if (!isStart.value) return;
+
+      // 📊 記錄結束運動按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickEndWorkout(
+        workoutType: 'exercise',
+        duration: _getTotalSeconds(),
+      );
 
       isStart.value = false;
 

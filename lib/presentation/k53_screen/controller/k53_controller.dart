@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -40,6 +41,9 @@ class K53Controller extends GetxController
         selectedIndex.value = tabviewController.index;
       }
     });
+
+    // 📊 記錄警報紀錄頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewAlertHistory();
 
     Future.delayed(Duration.zero, () async {
       final nList = await getNotifyList();

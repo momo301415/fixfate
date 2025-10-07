@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
@@ -43,6 +44,9 @@ class One2Controller extends GetxController {
     if (oneController.text.isNotEmpty) {
       isValid.value = true;
     }
+
+    // 📊 記錄登入頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewLoginPage();
   }
 
   /// 路由到忘記密碼頁
@@ -62,6 +66,11 @@ class One2Controller extends GetxController {
 
   Future<bool> pressFetchLogin() async {
     try {
+      // 📊 記錄登入按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickLoginButton(
+        loginMethod: 'phone',
+      );
+
       LoadingHelper.show();
       final notityToken = await FirebaseHelper.getDeviceToken();
       var resData = await service.postJson(
@@ -96,6 +105,12 @@ class One2Controller extends GetxController {
             gc.firebaseToken.value = ftoken;
             Config.notifyToken = ftoken;
           }
+
+          // 📊 記錄登入成功事件
+          FirebaseAnalyticsService.instance.logLoginSuccess(
+            loginMethod: 'phone',
+          );
+
           return true;
         } else {
           DialogHelper.showError("${resData["message"]}");

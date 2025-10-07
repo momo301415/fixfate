@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
 import 'package:pulsedevice/core/utils/loading_helper.dart';
@@ -63,6 +64,12 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       LoadingHelper.show();
 
+      /// 修正：預設顯示昨日
+      if (currentIndex.value == 0) {
+        final today = DateTime.now();
+        final yestoday = today.subtract(Duration(days: -1));
+        currentDate.value = yestoday;
+      }
       // 修正：預設顯示當前日期所在週的週一
       if (currentIndex.value == 1) {
         final today = DateTime.now();
@@ -72,6 +79,9 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
 
       updateDateRange(currentIndex.value);
       LoadingHelper.hide();
+
+      // 📊 GA4 事件已由 K76Controller 統一管理，此處不再自動記錄
+      // _logPageViewEvent();
     });
   }
 
@@ -588,5 +598,20 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
     }
 
     return segments;
+  }
+
+  /// 記錄頁面訪問事件
+  void _logPageViewEvent() {
+    FirebaseAnalyticsService.instance.logViewSleepPage(
+      sleepValue: sleepVal.value.isNotEmpty ? sleepVal.value : null,
+      parameters: {
+        'load_time': loadDataTime.value,
+        'time_range_index': currentIndex.value,
+        'deep_sleep': deep.value,
+        'light_sleep': light.value,
+        'rem_sleep': rem.value,
+        'awake_time': awake.value,
+      },
+    );
   }
 }

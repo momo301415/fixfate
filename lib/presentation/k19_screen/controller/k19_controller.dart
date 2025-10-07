@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/service/web_socket_service.dart';
 import 'package:pulsedevice/presentation/k19_screen/models/chat_message_model.dart';
@@ -39,6 +40,10 @@ class K19Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄Chatbot頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewChatbotPage();
+
     _generateNewTopicId();
   }
 
@@ -338,6 +343,11 @@ class K19Controller extends GetxController {
 
     // 🔥 用戶發送訊息時更新互動時間
     _updateInteractionTime();
+
+    // 📊 記錄開始Chatbot會話事件
+    FirebaseAnalyticsService.instance.logStartChatbotSession(
+      sessionType: 'user_message',
+    );
 
     // 1. 立即設置AI回覆狀態，阻擋連續發送
     isAiReplying.value = true;

@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 import 'package:pulsedevice/core/sqliteDb/base_db_service.dart';
-import 'package:pulsedevice/core/sqliteDb/tables.dart';
 
 /// 壓力數據服務，使用主鍵為 (userId, startTimeStamp)
 class PressureDataService extends BaseDbService {
@@ -9,11 +8,13 @@ class PressureDataService extends BaseDbService {
 
   PressureDataService(this.db) : super(db);
 
-  /// 插入壓力資料
-  Future<int> insert(PressureDataCompanion data) {
-    return db
-        .into(db.pressureData)
-        .insert(data, mode: InsertMode.insertOrIgnore);
+  /// 批量插入壓力資料
+  Future<void> insertBatch(List<PressureDataCompanion> dataList) async {
+    await db.batch((batch) {
+      for (final data in dataList) {
+        batch.insert(db.pressureData, data, mode: InsertMode.insertOrIgnore);
+      }
+    });
   }
 
   /// 根據 userId 查詢全部資料

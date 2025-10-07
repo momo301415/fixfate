@@ -103,7 +103,7 @@ class K45Screen extends GetWidget<K45Controller> {
                     Obx(() {
                       return ListTile(
                         leading: Text(
-                          'msg_update_time'.tr,
+                          'msg_bind_time'.tr,
                           style: CustomTextStyles.bodyMedium13,
                         ),
                         trailing: Text(

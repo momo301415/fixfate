@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -18,7 +19,7 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   TextEditingController searchController = TextEditingController();
   final gc = Get.find<GlobalController>();
   final chatScreenController = Get.find<ChatScreenController>();
-  final k19Controller = Get.find<K19Controller>();
+  K19Controller get k19Controller => Get.find<K19Controller>();
   ApiService apiService = ApiService();
 
   Rx<K73Model> k73ModelObj = K73Model().obs;
@@ -32,6 +33,11 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
 
+    // 📊 記錄健康數據頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewHealthHeartrateDataPage(
+      dataType: 'health_overview',
+    );
+
     /// 測試用帳號，有要測試數據就打開
     // gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';
   }
@@ -40,6 +46,8 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
   void onReady() {
     super.onReady();
     print("k73 controller onInit");
+    getFamilyData();
+    getHealthData();
   }
 
   @override
@@ -417,6 +425,18 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
 
     // 4. 加總該欄位
     return sameDayList.fold<int>(0, (sum, item) => sum + valueGetter(item));
+  }
+
+  ///刷新按鈕事件
+  Future<void> onRefresh() async {
+    LoadingHelper.show();
+    await gc.syncDataService.runBackgroundSync();
+    await gc.getBlueToothDeviceInfo();
+    await getHealthData(
+        familyId: gc.familyId.value, familyName: gc.familyName.value);
+    await getFamilyData();
+    LoadingHelper.hide();
+    LoadingHelper.hide();
   }
 
   /// 取得家族清單-api

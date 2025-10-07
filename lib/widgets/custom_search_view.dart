@@ -144,8 +144,8 @@ class CustomSearchView extends StatelessWidget {
                   child: Center(
                     child: CustomImageView(
                       imagePath: ImageConstant.imgSend,
-                      height: 17.h,
-                      width: 17.h,
+                      height: 22.h,
+                      width: 22.h,
                     ),
                   ),
                 )),

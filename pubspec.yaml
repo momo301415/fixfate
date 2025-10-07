@@ -1,6 +1,6 @@
 name: pulsedevice
 description: A new Flutter project.
-version: 1.0.9+1
+version: 1.0.10+1
 environment: 
   sdk: ^3.6.0
 dependencies: 
@@ -53,13 +53,18 @@ dependencies:
   flutter_markdown: ^0.7.7+1 # Markdown解析
   geolocator: ^14.0.2 # 取得位置資訊
   pedometer: ^4.1.1 # 取得步數資訊
-  # gtm: ^1.0.2 # Google Tag Manager #ga4
+  # firebase_analytics: ^11.6.0 # Google Tag Manager #ga4
   
-  yc_product_plugin:  # 藍牙設備連線操作 (第三方SDK，從Git拉取)
+  yc_product_plugin:  # 戒指sdk
     git:
       url: https://gitee.com/yucheng_3/yc_product_plugin.git
       path: code/
       ref: 89962c165497ec484f1788b0d2546e1cc6a2f402
+
+  pp_bluetooth_kit_flutter: # 體脂機sdk
+    git:
+      url: https://github.com/LefuHengqi/pp_bluetooth_kit_flutter.git
+      ref: 0.0.34
       
 dev_dependencies: 
   flutter_test:  # Flutter內建單元測試
@@ -80,6 +85,7 @@ flutter:
   assets: 
     - assets/
     - assets/images/
+    - assets/config/lefu.config
   fonts: 
     - family: Manrope
       fonts: 

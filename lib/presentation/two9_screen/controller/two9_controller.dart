@@ -1,4 +1,5 @@
 import 'package:pulsedevice/core/global_controller.dart' show GlobalController;
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -29,6 +30,11 @@ class Two9Controller extends GetxController {
   }
 
   void saveData() async {
+    // 📊 記錄儲存測量設定按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickSaveMeasurement(
+      measurementType: 'pressure',
+    );
+
     profile = PressureSetting(
       highThreshold: highThreshold.value.toInt(),
       alertEnabled: isSelectedSwitch.value,

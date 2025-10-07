@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/utils/config.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
@@ -49,6 +50,9 @@ class FourController extends GetxController with CodeAutoFill {
     phone = args['phone'];
     password = args['password'];
 
+    // 📊 記錄OTP驗證頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewOtpPage();
+
     ///確保不卡UI
     Future.delayed(const Duration(milliseconds: 500), () {
       fetchSms(phone);
@@ -73,6 +77,9 @@ class FourController extends GetxController with CodeAutoFill {
   }
 
   Future<void> fetchSms(String phone) async {
+    // 📊 記錄重新發送OTP按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickResendOtp();
+
     LoadingHelper.show();
     try {
       var resData = await service.postJson(
@@ -101,6 +108,9 @@ class FourController extends GetxController with CodeAutoFill {
   }
 
   void pressFetchRegist() async {
+    // 📊 記錄完成註冊按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickCompleteRegistration();
+
     LoadingHelper.show();
     try {
       var resData = await service.postJson(
@@ -119,6 +129,11 @@ class FourController extends GetxController with CodeAutoFill {
             goOne2Screen();
           });
         } else if (resMsg.contains("成功")) {
+          // 📊 記錄註冊成功事件
+          FirebaseAnalyticsService.instance.logSignUpSuccess(
+            signUpMethod: 'phone',
+          );
+
           pressFetchLogin().then((val) {
             gok10Screen();
           });

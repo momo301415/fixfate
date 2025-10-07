@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -95,6 +96,10 @@ class K30Controller extends GetxController {
   /// It loads the user profile from the local storage.
   void onInit() {
     super.onInit();
+
+    // 📊 記錄個人資料頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewProfilePage();
+
     loadUserProfile();
   }
 
@@ -706,6 +711,9 @@ class K30Controller extends GetxController {
   }
 
   Future<bool> prossesSaveProfile() async {
+    // 📊 記錄更新個人資料按鈕點擊事件
+    FirebaseAnalyticsService.instance.logClickUpdateProfile();
+
     var res = await saveUserProfile();
     if (res) {
       if (avatarPath.value.isNotEmpty) {

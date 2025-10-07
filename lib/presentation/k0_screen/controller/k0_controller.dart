@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import '../../../core/app_export.dart';
 import '../models/k0_model.dart';
 
@@ -14,6 +15,10 @@ class K0Controller extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // 📊 記錄使用者條款頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewAcceptTermsPage();
+
     scrollController.addListener(() {
       if (scrollController.offset >=
           scrollController.position.maxScrollExtent) {

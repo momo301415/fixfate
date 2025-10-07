@@ -1,3 +1,4 @@
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import '../../../core/app_export.dart';
 import '../models/k57_model.dart';
 
@@ -7,6 +8,14 @@ import '../models/k57_model.dart';
 /// current k57ModelObj
 class K57Controller extends GetxController {
   Rx<K57Model> k57ModelObj = K57Model().obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    // 📊 記錄測量設定頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewMeasurementPage();
+  }
 
   /// 路由到心率測量設定
   void goK58Screen() {

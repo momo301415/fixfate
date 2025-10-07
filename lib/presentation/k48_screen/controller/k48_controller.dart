@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/remider_setting_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
@@ -35,6 +36,10 @@ class K48Controller extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+
+    // 📊 記錄用藥提醒設定頁面瀏覽事件
+    FirebaseAnalyticsService.instance.logViewMedicationPage();
+
     await notificationService.initialize();
     await checkPermission();
 
@@ -230,6 +235,9 @@ class K48Controller extends GetxController {
 
       if (res.isNotEmpty) {
         if (isSelectedSwitch.value) {
+          // 📊 記錄設定用藥提醒成功事件
+          FirebaseAnalyticsService.instance.logSetMedicationReminderSuccess();
+
           SnackbarHelper.showBlueSnackbar(
             message: '已成功設定 ${alertTime.value} 的用藥提醒',
           );
