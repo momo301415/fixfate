@@ -125,6 +125,10 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
         if (pressureData is List) {
           parsed = pressureData.map((e) => PressureData.fromJson(e)).toList();
         }
+        if (parsed.isEmpty) {
+          clearData();
+          return;
+        }
 
         parsed.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
         final lastData = parsed.last;
@@ -886,6 +890,8 @@ class K80Controller extends GetxController with WidgetsBindingObserver {
 
     k80ModelObj.value.listItemList.value.clear(); // 報警紀錄
     k80ModelObj.value.listItemList2.value.clear(); // 歷史紀錄
+    k80ModelObj.value.listItemList2.refresh();
+    k80ModelObj.value.listItemList.refresh();
   }
 
   /// 記錄頁面訪問事件
