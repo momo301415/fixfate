@@ -28,15 +28,28 @@ class Api {
   static const String forgetPasswordSet = "forgetPassword/set";
   static const String reminderInfoSet = "reminderInfo/set";
   static const String reminderInfoGet = "reminderInfo/get";
+  static const String sleepSet = "userSleep/set";
+  static const String seleepGet = "userSleep/get";
+  static const String gpsSet = "gpslog/set";
 
-  ///-------- aws api
+  ///-------- aws api 正式機
+//   static const String awsUrl =
+//       "https://4dyojbdrcb.execute-api.us-east-1.amazonaws.com/prod/";
+//   static const String awsUrl2 =
+//       "https://mraofolcb5.execute-api.us-east-1.amazonaws.com/prod/";
+
+//   static const String socketUrl =
+//       "wss://ssubii43ya.execute-api.us-east-1.amazonaws.com/prod";
+
+  ///-------- aws api 測試機
   static const String awsUrl =
-      "https://62z1tlzs81.execute-api.us-east-1.amazonaws.com/prod/";
+      "https://ti9u7loe46.execute-api.us-east-1.amazonaws.com/dev/";
   static const String awsUrl2 =
       "https://mraofolcb5.execute-api.us-east-1.amazonaws.com/prod/";
 
   static const String socketUrl =
-      "wss://6ucd184jne.execute-api.us-east-1.amazonaws.com/prod";
+      "wss://t0m6tkob0i.execute-api.us-east-1.amazonaws.com/dev";
+
   static const String chatHistory = "chat-history";
   static const String getPressure = "stress/analyze";
 }

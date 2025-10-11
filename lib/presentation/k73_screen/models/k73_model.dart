@@ -120,6 +120,32 @@ class SleepData {
   }
 }
 
+class SleepDetailData {
+  final String userID;
+  final int startTimestamp;
+  final int duration;
+  final int sleepType;
+  final String typeName;
+
+  SleepDetailData({
+    required this.userID,
+    required this.startTimestamp,
+    required this.duration,
+    required this.sleepType,
+    required this.typeName,
+  });
+
+  factory SleepDetailData.fromJson(Map<String, dynamic> json) {
+    return SleepDetailData(
+      userID: json['userID'],
+      startTimestamp: json['starttimestamp'],
+      duration: json['duration'],
+      sleepType: json['sleepType'],
+      typeName: json['typeName'],
+    );
+  }
+}
+
 class StepData {
   final int startTimestamp;
   final String step;

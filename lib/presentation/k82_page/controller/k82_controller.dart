@@ -44,9 +44,9 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
   final segmentStartText = ''.obs;
   final segmentEndText = ''.obs;
   final sleepSegments = <SleepSegment>[].obs;
-
   final sleepData = <SleepDataData>[].obs;
   final sleepApiData = <SleepData>[].obs;
+  final sleepApiDetailData = <SleepDetailData>[].obs;
 
   // 模擬資料
   final List<FlSpot> weeklyData = [
@@ -67,7 +67,7 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
       /// 修正：預設顯示昨日
       if (currentIndex.value == 0) {
         final today = DateTime.now();
-        final yestoday = today.subtract(Duration(days: -1));
+        final yestoday = today.subtract(Duration(days: 1));
         currentDate.value = yestoday;
       }
       // 修正：預設顯示當前日期所在週的週一
@@ -118,9 +118,12 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
         "type": "sleep"
       };
       final res = await apiService.postJson(Api.healthRecordList, payload);
+      final details = await apiService.postJson(Api.seleepGet, payload);
       if (isLoading) {
         LoadingHelper.hide();
       }
+
+      ///如果detail response為空,則用原本的api數據
       if (res.isNotEmpty && res["message"] == "SUCCESS") {
         final data = res["data"];
         if (data == null || data["rateData"] is! List) {
@@ -177,23 +180,65 @@ class K82Controller extends GetxController with WidgetsBindingObserver {
         /// 排除awake為0的資料，因為戒指不一定會有給資料
         awakeCount.value =
             parsed.where((e) => e.awake.isNotEmpty && e.awake != '0').length;
-        for (var data in parsed) {
-          final stageDurations = {
-            SleepStage.deep: int.tryParse(data.deep) ?? 0,
-            SleepStage.light: int.tryParse(data.light) ?? 0,
-            SleepStage.rem: int.tryParse(data.rem) ?? 0,
-            SleepStage.awake: int.tryParse(data.awake) ?? 0,
-          };
 
-          stageDurations.forEach((stage, seconds) {
-            if (seconds > 0) {
-              final minutes = (seconds / 60).ceil(); // 四捨五入成分鐘
-              sleepSegments.add(SleepSegment(
-                stage: stage,
-                duration: Duration(minutes: minutes),
-              ));
+        /// 如果detail response有資料，則用detail api數據畫圖
+        if (details.isNotEmpty &&
+            details["message"] == "SUCCESS" &&
+            details["data"].length > 0) {
+          final data = details["data"];
+          List<SleepDetailData> parsedDetail = [];
+          if (data is List) {
+            parsedDetail =
+                data.map((e) => SleepDetailData.fromJson(e)).toList();
+          }
+          //   /// 直接將detail數據轉為橫條圖
+          for (var dic in parsedDetail) {
+            switch (dic.sleepType) {
+              case 241:
+                sleepSegments.add(SleepSegment(
+                  stage: SleepStage.deep,
+                  duration: Duration(seconds: dic.duration),
+                ));
+                break;
+              case 242:
+                sleepSegments.add(SleepSegment(
+                  stage: SleepStage.light,
+                  duration: Duration(seconds: dic.duration),
+                ));
+                break;
+              case 243:
+                sleepSegments.add(SleepSegment(
+                  stage: SleepStage.rem,
+                  duration: Duration(seconds: dic.duration),
+                ));
+                break;
+              case 244:
+                sleepSegments.add(SleepSegment(
+                  stage: SleepStage.awake,
+                  duration: Duration(seconds: dic.duration),
+                ));
+                break;
             }
-          });
+          }
+        } else {
+          for (var data in parsed) {
+            final stageDurations = {
+              SleepStage.deep: int.tryParse(data.deep) ?? 0,
+              SleepStage.light: int.tryParse(data.light) ?? 0,
+              SleepStage.rem: int.tryParse(data.rem) ?? 0,
+              SleepStage.awake: int.tryParse(data.awake) ?? 0,
+            };
+
+            stageDurations.forEach((stage, seconds) {
+              if (seconds > 0) {
+                final minutes = (seconds / 60).ceil(); // 四捨五入成分鐘
+                sleepSegments.add(SleepSegment(
+                  stage: stage,
+                  duration: Duration(minutes: minutes),
+                ));
+              }
+            });
+          }
         }
 
         switch (currentIndex.value) {

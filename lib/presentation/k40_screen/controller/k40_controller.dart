@@ -52,7 +52,7 @@ class K40Controller extends GetxController {
           final item = ListpulseringItemModel(
               pulsering: Rx("lbl_pulsering3".tr),
               id: Rx("msg_device_id".tr + " : " + device.deviceIdentifier),
-              tf: Rx("msg_update_time".tr + " : " + device.createdAt),
+              tf: Rx("msg_bind_time".tr + " : " + device.createdAt),
               pulsering1: Rx(ImageConstant.imgFrame86618),
               power: Rx("msg_power".tr + " : " + power.value));
           k40ModelObj.value.listpulseringItemList.value.add(item);
