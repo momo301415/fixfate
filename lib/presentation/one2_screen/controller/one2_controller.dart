@@ -100,6 +100,9 @@ class One2Controller extends GetxController {
           gc.avatarUrl.value = resBody['avatarUrl'] ?? "";
           gc.userGender.value = resBody['gender'] ?? "";
           gc.chatApiKeyValue.value = resBody['apiKeyValue'] ?? "";
+          gc.bodyWeight.value = resBody['bodyWeight'] ?? "";
+          gc.birth.value = resBody['birthDate'] ?? "";
+          gc.bodyHeight.value = resBody['bodyHeight'] ?? "";
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {
             gc.firebaseToken.value = ftoken;

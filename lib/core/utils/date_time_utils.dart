@@ -2,6 +2,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 const String dateTimeFormatPattern = 'dd/MM/yyyy';
+const String Y_M_D = 'y.M.d';
+const String H_M = 'H:m';
 
 extension DateTimeExtension on DateTime {
   String format({
@@ -154,5 +156,18 @@ class DateTimeUtils {
           .subtract(const Duration(seconds: 1));
     }
     return {"start": start, "end": end};
+  }
+
+  static getAge(String birthDate) {
+    final inputFormat = DateFormat("yyyy-MM-dd");
+    final dateTime = inputFormat.parse(birthDate);
+    final now = DateTime.now();
+    int age = now.year - dateTime.year;
+    // 如果還沒過今年的生日，歲數要減一
+    if (now.month < dateTime.month ||
+        (now.month == dateTime.month && now.day < dateTime.day)) {
+      age--;
+    }
+    return age;
   }
 }

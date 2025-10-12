@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 import '../models/k30_model.dart';
 
@@ -11,5 +10,22 @@ class K30SelectDeviceController extends GetxController {
 
   void goOne3FindDeviceScreen() {
     Get.toNamed(AppRoutes.one3FindDeviceScreen);
+  }
+
+  /// 註冊設備頁面
+  void goK10Screen() {
+    Get.toNamed(AppRoutes.k10Screen);
+  }
+
+  /// 選擇設備頁面
+  void goSelectDeviceScreen(int index) {
+    switch (index) {
+      case 0:
+        goK10Screen();
+        break;
+      case 1:
+        goOne3FindDeviceScreen();
+        break;
+    }
   }
 }

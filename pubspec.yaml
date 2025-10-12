@@ -1,6 +1,6 @@
 name: pulsedevice
 description: A new Flutter project.
-version: 1.0.10+1
+version: 1.0.11+1
 environment: 
   sdk: ^3.6.0
 dependencies: 
@@ -8,6 +8,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:  # Flutter官方多語系支援
     sdk: flutter
+  logger: ^2.6.1
   cached_network_image: ^3.4.1  # 圖片快取與異步加載
   flutter_svg: ^2.0.16  # 載入 SVG 向量圖片
   get: ^4.6.6  # GetX 狀態管理 / 路由跳轉 / DI
@@ -54,18 +55,23 @@ dependencies:
   geolocator: ^14.0.2 # 取得位置資訊
   pedometer: ^4.1.1 # 取得步數資訊
   # firebase_analytics: ^11.6.0 # Google Tag Manager #ga4
-  
+  flutter_datetime_picker_plus: ^2.2.0
+  camera: ^0.10.6  # 官方相机库
+  photo_manager: ^3.5.0  # 相册管理库
+
   yc_product_plugin:  # 戒指sdk
     git:
       url: https://gitee.com/yucheng_3/yc_product_plugin.git
       path: code/
       ref: 89962c165497ec484f1788b0d2546e1cc6a2f402
 
+
   pp_bluetooth_kit_flutter: # 體脂機sdk
     git:
       url: https://github.com/LefuHengqi/pp_bluetooth_kit_flutter.git
-      ref: 0.0.34
-      
+      ref: 0.0.39
+
+
 dev_dependencies: 
   flutter_test:  # Flutter內建單元測試
     sdk: flutter
@@ -85,8 +91,8 @@ flutter:
   assets: 
     - assets/
     - assets/images/
-    - assets/config/lefu.config
-  fonts: 
+    - config/lefu.config
+  fonts:
     - family: Manrope
       fonts: 
         - asset: assets/fonts/ManropeSemiBold.ttf

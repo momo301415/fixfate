@@ -48,12 +48,23 @@ class K40Controller extends GetxController {
     UserProfileStorage.getDevicesForUser(gc.userId.value).then((devices) {
       print("loading db devices");
       if (devices.isNotEmpty) {
+        var isFitDevice = false;
         for (var device in devices) {
+          String deviceTitle = "";
+          if (device.deviceModel == "fit") {
+            isFitDevice = true;
+            deviceTitle = "msg_pulsering4".tr;
+          } else {
+            isFitDevice = false;
+            deviceTitle = "lbl_pulsering3".tr;
+          }
           final item = ListpulseringItemModel(
-              pulsering: Rx("lbl_pulsering3".tr),
+              pulsering: Rx(deviceTitle),
               id: Rx("msg_device_id".tr + " : " + device.deviceIdentifier),
-              tf: Rx("msg_update_time".tr + " : " + device.createdAt),
-              pulsering1: Rx(ImageConstant.imgFrame86618),
+              pulsering1: isFitDevice
+                  ? Rx(ImageConstant.imgFrame866181)
+                  : Rx(ImageConstant.imgFrame86618),
+              tf: Rx("msg_bind_time".tr + " : " + device.createdAt),
               power: Rx("msg_power".tr + " : " + power.value));
           k40ModelObj.value.listpulseringItemList.value.add(item);
 
@@ -113,7 +124,6 @@ class K40Controller extends GetxController {
       } else {
         // goK10Screen();
         gotoK30SelectDeviceScreen();
-
       }
     } catch (e) {
       rethrow;
@@ -127,15 +137,19 @@ class K40Controller extends GetxController {
           await YcProductPlugin().queryDeviceBasicInfo();
       if (deviceBasicInfo != null && deviceBasicInfo.statusCode == 0) {
         power.value = "${deviceBasicInfo.data.batteryPower} %";
-        k40ModelObj.value.listpulseringItemList.value[0].power =
-            Rx("msg_power".tr + " : " + power.value);
+        for (var item in k40ModelObj.value.listpulseringItemList.value) {
+          if (item.pulsering == "lbl_pulsering3".tr) {
+            item.power = Rx("msg_power".tr + " : " + power.value);
+          }
+        }
+
         k40ModelObj.value.listpulseringItemList.refresh();
       }
     } catch (e) {
       power.value = "";
     }
   }
-  
+
   void gotoK30SelectDeviceScreen() {
     Get.toNamed(AppRoutes.k30SelectDeviceScreen);
   }

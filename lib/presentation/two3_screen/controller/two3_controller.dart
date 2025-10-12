@@ -80,6 +80,9 @@ class Two3Controller extends GetxController {
               gc.avatarUrl.value = resBody2['avatarUrl'] ?? "";
               gc.userGender.value = resBody2['gender'] ?? "";
               gc.chatApiKeyValue.value = resBody2['apiKeyValue'] ?? "";
+              gc.bodyWeight.value = resBody2['bodyWeight'] ?? "";
+              gc.birth.value = resBody2['birthDate'] ?? "";
+              gc.bodyHeight.value = resBody2['bodyHeight'] ?? "";
               final ftoken = await FirebaseHelper.getDeviceToken();
               if (ftoken != null) {
                 gc.firebaseToken.value = ftoken;

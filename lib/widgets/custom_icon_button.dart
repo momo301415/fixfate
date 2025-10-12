@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import '../core/app_export.dart';
 
 extension IconButtonStyleHelper on CustomIconButton {
+  static BoxDecoration get fillGray => BoxDecoration(
+        color: appTheme.gray200,
+        borderRadius: BorderRadius.circular(4.h),
+      );
   static BoxDecoration get outlineGray => BoxDecoration(
         color: appTheme.whiteA700,
         borderRadius: BorderRadius.circular(44.h),
@@ -25,6 +29,14 @@ extension IconButtonStyleHelper on CustomIconButton {
             offset: Offset(0, 4),
           ),
         ],
+      );
+  static BoxDecoration get fillPrimaryTL20 => BoxDecoration(
+        color: theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(20.h),
+      );
+  static BoxDecoration get fillPrimary => BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20.h),
       );
   static BoxDecoration get none => BoxDecoration();
 }

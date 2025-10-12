@@ -11,6 +11,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
+import 'package:pp_bluetooth_kit_flutter/enums/pp_scale_enums.dart';
+import 'package:pp_bluetooth_kit_flutter/model/pp_device_model.dart';
+import 'package:pp_bluetooth_kit_flutter/utils/pp_bluetooth_kit_logger.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
@@ -27,10 +30,11 @@ import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
+import 'package:pulsedevice/core/hiveDb/pp_device_profile.dart';
 import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/service/pp_scale_service.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
-import 'package:pulsedevice/core/service/goal_notification_service.dart';
 import 'package:pulsedevice/core/service/location_enhancement_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/service/pressure_calculation_service.dart';
@@ -73,6 +77,9 @@ class GlobalController extends GetxController {
   ///--- 藍牙狀態
   RxInt blueToolStatus = 0.obs;
   RxBool isBleConnect = false.obs;
+  RxBool isBleLefuConnect = false.obs;
+  Rx<PPBlePermissionState> isBleLefuPermission =
+      Rx(PPBlePermissionState.unknown);
 
   ///--- 用戶資料
   RxString userEmail = ''.obs;
@@ -91,7 +98,7 @@ class GlobalController extends GetxController {
   var firebaseToken = ''.obs;
 
   ///--- 記錄bottombar index
-  var bottomBarIndex = 2.obs;
+  var bottomBarIndex = 0.obs;
 
   ///--- 紀錄是否已經
   var isSendSyncApi = "Y".obs;
@@ -101,6 +108,9 @@ class GlobalController extends GetxController {
   int _previousBluetoothStatus = -1;
 
   DateTime? _lastSyncTime;
+
+  /// 🎯 新增：通用防抖動管理器
+  final Map<String, DateTime> _debounceTimers = {};
 
   ///--- 定位增強服務
   late LocationEnhancementService locationEnhancementService;
@@ -135,6 +145,20 @@ class GlobalController extends GetxController {
   ///--- 諮詢暫存輸入字串
   final chatInput = "".obs;
   final chatApiKeyValue = "".obs;
+
+  ///--- 磅秤設備管理（已遷移到 PPScaleService）
+
+  ///--- 體重
+  final bodyWeight = "".obs;
+
+  ///--- 性別
+  final gender = "".obs;
+
+  ///--- 出生日期
+  final birth = "".obs;
+
+  ///--- 身高
+  final bodyHeight = "".obs;
 
   // ✅ 添加事件分發系統
   final Map<String, List<Function(Map)>> _eventHandlers = {};
@@ -178,6 +202,8 @@ class GlobalController extends GetxController {
     super.onClose();
     YcProductPlugin().cancelListening();
 
+    // 磅秤 keepAlive 已由 PPScaleService 管理
+
     WidgetsBinding.instance.removeObserver(lifecycleObserver);
     db.close();
   }
@@ -190,6 +216,9 @@ class GlobalController extends GetxController {
     sqfliteInit();
     YcProductPluginInit();
     lefuInit();
+
+    /// 註冊 PPScaleService
+    Get.put(PPScaleService());
 
     /// 初始化 Firebase Analytics
     await FirebaseAnalyticsService.instance.initialize();
@@ -250,10 +279,25 @@ class GlobalController extends GetxController {
   }
 
   void lefuInit() async {
-    final path = 'assets/config/lefu.config';
+    // Monitor logs
+    PPBluetoothKitLogger.addListener(callBack: (log) {
+      print('SDK-Log:$log');
+    });
+    final path = 'config/lefu.config';
     String content = await rootBundle.loadString(path);
+
     PPBluetoothKitManager.initSDK('lefub60060202a15ac8a',
         'UCzWzna/eazehXaz8kKAC6WVfcL25nIPYlV9fXYzqDM=', content);
+
+    PPBluetoothKitManager.addBlePermissionListener(callBack: (permission) {
+      print('Bluetooth permission state changed:$permission');
+      isBleLefuPermission.value = permission;
+    });
+
+    PPBluetoothKitManager.addScanStateListener(callBack: (scanning) {
+      print('Bluetooth scanning state changed:$scanning');
+      isBleLefuConnect.value = scanning;
+    });
   }
 
   /// 內部藍牙事件處理
@@ -315,6 +359,7 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(SportRecordAdapter());
     Hive.registerAdapter(SportRecordListAdapter());
     Hive.registerAdapter(FamilyMemberAdapter());
+    Hive.registerAdapter(PPDeviceProfileAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -330,6 +375,7 @@ class GlobalController extends GetxController {
     await Hive.openBox<SportRecordList>('sport_record_list');
     await Hive.openBox<String>('notified_goals');
     await Hive.openBox<FamilyMember>('family_member');
+    await Hive.openBox<PPDeviceProfile>('pp_device_profile');
   }
 
   /// 🎯 順序權限請求：先通知權限，再位置權限
@@ -444,30 +490,6 @@ class GlobalController extends GetxController {
     return locationEnhancementService.getDetailedServiceStatus();
   }
 
-  /// 手動觸發統一GPS模式（測試用）
-  Future<void> testUnifiedGpsMode() async {
-    print('🧪 [GlobalController] 開始測試統一GPS模式...');
-
-    final originalStrategy = locationEnhancementService.currentStrategy;
-
-    try {
-      // 切換到統一GPS
-      await enableUnifiedGpsStrategy();
-
-      // 等待一段時間觀察效果
-      await Future.delayed(Duration(seconds: 30));
-
-      print('🧪 [GlobalController] 統一GPS模式測試完成');
-      print(
-          '📊 [GlobalController] 測試期間同步次數: ${locationEnhancementService.syncCount}');
-    } catch (e) {
-      print('❌ [GlobalController] 統一GPS模式測試失敗: $e');
-    } finally {
-      // 可選：恢復原始策略
-      // await locationEnhancementService.switchStrategy(originalStrategy);
-    }
-  }
-
   // ======================================================
   // 🎯 新增：定位權限升級管理接口
   // ======================================================
@@ -520,6 +542,41 @@ class GlobalController extends GetxController {
   /// 獲取詳細的權限狀態報告
   Future<Map<String, dynamic>> getLocationPermissionStatusReport() async {
     return await locationEnhancementService.getPermissionStatusReport();
+  }
+
+  /// 🎯 新增：通用防抖動檢查方法
+  bool shouldExecute(String actionKey, {Duration? interval}) {
+    final minInterval = interval ?? const Duration(seconds: 15);
+    final now = DateTime.now();
+
+    if (_debounceTimers.containsKey(actionKey)) {
+      final lastTime = _debounceTimers[actionKey]!;
+      final timeDiff = now.difference(lastTime);
+      if (timeDiff < minInterval) {
+        print("🚫 防抖動：$actionKey 距離上次執行僅 ${timeDiff.inSeconds}秒，跳過");
+        return false;
+      }
+    }
+
+    _debounceTimers[actionKey] = now;
+    print("✅ 防抖動：$actionKey 執行通過，記錄時間");
+    return true;
+  }
+
+  /// 🎯 新增：清除特定動作的防抖動記錄
+  void clearDebounce(String actionKey) {
+    _debounceTimers.remove(actionKey);
+    print("🧹 防抖動：已清除 $actionKey 的記錄");
+  }
+
+  /// 🎯 新增：檢查App是否在前景
+  bool isAppInForeground() {
+    return WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+  }
+
+  /// 🎯 新增：公開的事件分發方法
+  void distributeEvent(Map event) {
+    _distributeEvent(event);
   }
 
   /// 智能權限升級檢查（在app啟動和重要時機調用）
@@ -770,7 +827,7 @@ class GlobalController extends GetxController {
         isBleConnect.value = false;
 
         if (_isInitFuncRunning) {
-          NotificationService().showDeviceDisconnectedNotification();
+          // NotificationService().showDeviceDisconnectedNotification();
           stopForegroundTask();
         }
         await apiService.sendLog(json: "藍牙連線中斷", logType: "WARN");
@@ -856,5 +913,20 @@ class GlobalController extends GetxController {
     } catch (e) {
       print("❌ 停止排程任務時發生錯誤: $e");
     }
+  }
+
+  /// 取得 PPScaleService 實例
+  PPScaleService get ppScaleService => Get.find<PPScaleService>();
+
+  /// 檢查磅秤是否已連線（委託給 Service）
+  bool get hasPPDeviceConnected => ppScaleService.hasConnectedDevice;
+
+  /// 取得當前連線的磅秤設備（委託給 Service）
+  PPDeviceModel? get connectedPPDevice => ppScaleService.connectedDevice;
+
+  /// 更新磅秤連線狀態（委託給 Service）
+  void updatePPDeviceConnectionStatus(bool isConnected) {
+    // 這個方法現在由 PPScaleService 內部管理
+    print('📊 GlobalController: 磅秤連線狀態更新請求: $isConnected');
   }
 }

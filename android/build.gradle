@@ -4,6 +4,7 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "${project(':background_fetch').projectDir}/libs" }
+        maven { url "https://raw.githubusercontent.com/LefuHengqi/PPBaseKit-Android/main" }
     }
     
     configurations.all {
@@ -22,6 +23,13 @@ allprojects {
                 // 讓Gradle自動選擇最新的穩定版本，避免版本衝突
                 details.useTarget details.requested
             }
+        }
+    }
+    
+    // ✅ 為所有專案統一設定 Kotlin JVM 目標為 17
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = '17'
         }
     }
 }

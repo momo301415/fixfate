@@ -12,10 +12,10 @@ class DevicelistsectionItemModel {
     this.m,
     this.id,
   }) {
-    pulsering = pulsering ?? Rx("msg_pulsering4".tr);
-    d = d ?? Rx("msg_07_41_00_00_2d_fc".tr);
+    pulsering = Rx("msg_pulsering4".tr);
+    d = d;
     two = two ?? Rx("lbl264".tr);
-    one = one ?? Rx("lbl_0_12".tr);
+    one = one;
     m = m ?? Rx("lbl_m".tr);
     id = id ?? Rx("");
   }

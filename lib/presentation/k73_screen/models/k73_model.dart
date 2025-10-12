@@ -72,10 +72,17 @@ class K73Model {
     ListViewItemModel(
         isAlert: false.obs,
         loadTime: "lbl_1".tr.obs,
-        icon: ImageConstant.imgIcon40x40.obs,
+        icon: ImageConstant.imgIconWeight.obs,
         label: "lbl79".tr.obs,
         value: "".obs,
-        unit: "lbl193".tr.obs),
+        unit: "lbl370".tr.obs),
+    ListViewItemModel(
+        isAlert: false.obs,
+        loadTime: "lbl_1".tr.obs,
+        icon: ImageConstant.imgIconKg.obs,
+        label: "lbl780".tr.obs,
+        value: "".obs,
+        unit: "lbl182".tr.obs),
   ]);
 
   Rx<List<FamilyItemModel>> familyItemList = Rx([]);
@@ -123,6 +130,32 @@ class SleepData {
       rem: json['rem'] ?? '0',
       deep: json['deep'] ?? '0',
       awake: json['awake'] ?? '0',
+    );
+  }
+}
+
+class SleepDetailData {
+  final String userID;
+  final int startTimestamp;
+  final int duration;
+  final int sleepType;
+  final String typeName;
+
+  SleepDetailData({
+    required this.userID,
+    required this.startTimestamp,
+    required this.duration,
+    required this.sleepType,
+    required this.typeName,
+  });
+
+  factory SleepDetailData.fromJson(Map<String, dynamic> json) {
+    return SleepDetailData(
+      userID: json['userID'],
+      startTimestamp: json['starttimestamp'],
+      duration: json['duration'],
+      sleepType: json['sleepType'],
+      typeName: json['typeName'],
     );
   }
 }

@@ -4,12 +4,36 @@ import '../core/app_export.dart';
 /// A class that offers pre-defined button styles for customizing button appearance.
 class CustomButtonStyles {
   // Filled button style
+  static ButtonStyle get fillBlue => ElevatedButton.styleFrom(
+        backgroundColor: appTheme.blue50,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
+        elevation: 0,
+        padding: EdgeInsets.zero,
+      );
   static ButtonStyle get fillGray => ElevatedButton.styleFrom(
         backgroundColor: appTheme.gray300,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5.h),
         ),
         elevation: 0,
+        padding: EdgeInsets.zero,
+      );
+  static ButtonStyle get fillGrayTL41 => ElevatedButton.styleFrom(
+        backgroundColor: appTheme.gray200,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
+        elevation: 0,
+        padding: EdgeInsets.zero,
+      );
+  static ButtonStyle get outlineGrayTL4 => OutlinedButton.styleFrom(
+        backgroundColor: appTheme.whiteA700,
+        side: BorderSide(color: appTheme.gray20001, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
+        padding: EdgeInsets.zero,
+      );
+  static ButtonStyle get outlinePrimaryTL4 => OutlinedButton.styleFrom(
+        backgroundColor: theme.colorScheme.primary,
+        side: BorderSide(color: theme.colorScheme.primary, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.h)),
         padding: EdgeInsets.zero,
       );
   static ButtonStyle get fillGrayLR4 => ElevatedButton.styleFrom(
@@ -219,5 +243,4 @@ class CustomButtonStyles {
           colors: [appTheme.cyan300, theme.colorScheme.primary],
         ),
       );
-  
 }

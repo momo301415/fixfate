@@ -41,7 +41,7 @@ class K36DeviceDetailesScreen extends GetWidget<K36Controller> {
                       CustomButtonStyles.gradientCyanToPrimaryTL24Decoration,
                   onPressed: () async {
                     final res =
-                        await Get.toNamed(AppRoutes.k76Screen, arguments: 7);
+                        await Get.toNamed(AppRoutes.k76Screen, arguments: 8);
                   },
                 ),
                 _buildAutoClaimSettingsSection(),
@@ -228,7 +228,8 @@ class K36DeviceDetailesScreen extends GetWidget<K36Controller> {
                 ),
                 GestureDetector(
                   onTap: () => controller.showDeteleialog(),
-                  child: Text("lbl443".tr, style: CustomTextStyles.bodySmallPrimary10_1),
+                  child: Text("lbl443".tr,
+                      style: CustomTextStyles.bodySmallPrimary10_1),
                 ),
               ],
             ),

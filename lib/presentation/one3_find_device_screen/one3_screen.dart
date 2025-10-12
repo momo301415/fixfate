@@ -8,13 +8,17 @@ import 'package:pulsedevice/widgets/custom_rotating_widget.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 import '../../core/app_export.dart';
 
+/// 體脂秤綁定頁面
 class One3FindDeviceScreen extends GetWidget<One3FindDeviceController> {
   const One3FindDeviceScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffoldImageHeader(
-        title: "lbl421".tr,
+        onBack: () {
+          controller.onBack();
+        },
+        title: "lbl29".tr,
         isShowBackButton: true,
         child: Column(
           children: [
@@ -60,7 +64,7 @@ class One3FindDeviceScreen extends GetWidget<One3FindDeviceController> {
       ),
       width: double.maxFinite,
       child: Obx(() => Visibility(
-            visible: controller.devicelistsectionItemList.isEmpty,
+            visible: controller.devices.isEmpty,
             child: Row(
               children: [
                 CustomRotatingWidget(
@@ -139,16 +143,23 @@ class One3FindDeviceScreen extends GetWidget<One3FindDeviceController> {
         padding: EdgeInsets.zero,
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount:
-            controller.devicelistsectionItemList.length,
+        itemCount: controller.devices.length,
         itemBuilder: (context, index) {
-          DevicelistsectionItemModel model = controller
-              .devicelistsectionItemList[index];
-          return GestureDetector(
-            onTap: () {
-              controller.showMatchDeviceDialog();
+          final device = controller.devices[index];
+          return ListTile(
+            leading: CustomImageView(
+              imagePath: ImageConstant.imgFrameErrorcontainer16x16,
+              height: 16.h,
+              width: 16.h,
+            ),
+            title: Text("msg_pulsering4".tr),
+            subtitle: Text(device.deviceMac!),
+            trailing: Text('${device.rssi}' + 'lbl264'.tr),
+            onTap: () async {
+              print("");
+              // TODO: 點選裝置後的行為
+              controller.showMatchDeviceDialog(device);
             },
-            child: DevicelistsectionItemWidget(model),
           );
         },
       ),

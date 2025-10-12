@@ -15,21 +15,5 @@ class K30Model {
       pulsering: ImageConstant.imgFrame866181.obs,
       pulsering1: "lbl_scanfit2".tr.obs,
     ),
-    DeviceselectiongridItemModel(
-      pulsering: ImageConstant.imgFrame8661854x54.obs,
-      pulsering1: "msg_pulsering5".tr.obs,
-    ),
-    DeviceselectiongridItemModel(
-      pulsering: ImageConstant.imgFrame866181.obs,
-      pulsering1: "lbl_scanfit2".tr.obs,
-    ),
-    DeviceselectiongridItemModel(
-      pulsering: ImageConstant.imgFrame8661854x54.obs,
-      pulsering1: "msg_pulsering5".tr.obs,
-    ),
-    DeviceselectiongridItemModel(
-      pulsering: ImageConstant.imgFrame866181.obs,
-      pulsering1: "lbl_scanfit2".tr.obs,
-    ),
   ]);
 }
