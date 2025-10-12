@@ -12,6 +12,7 @@ import 'package:pulsedevice/presentation/k81_page/k81_page.dart';
 import 'package:pulsedevice/presentation/k82_page/k82_page.dart';
 import 'package:pulsedevice/presentation/k83_page/k83_page.dart';
 import 'package:pulsedevice/presentation/k84_page/k84_page.dart';
+import 'package:pulsedevice/presentation/k8_screen/k8_screen.dart';
 import 'package:pulsedevice/widgets/custom_scaffold.dart';
 
 /// 健康-主要控制頁面
@@ -73,6 +74,8 @@ class K76Screen extends GetView<K76Controller> {
                       return K83Page();
                     } else if (item.label!.value.contains("距離")) {
                       return K84Page();
+                    } else if (item.label?.value == "體重") {
+                      return K8Screen();
                     } else {
                       return Center(child: Text("這是 ${item.label} 頁面"));
                     }

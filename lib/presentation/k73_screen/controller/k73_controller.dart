@@ -103,6 +103,16 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     Get.toNamed(AppRoutes.k19Screen);
   }
 
+  /// 路由到飲食記錄頁面
+  void goK13Screen() {
+    Get.toNamed(AppRoutes.k13Screen);
+  }
+
+  /// 路由到填寫身體資料頁面
+  void goK27Screen() {
+    Get.toNamed(AppRoutes.k27Screen);
+  }
+
   /// 展開諮詢頁面
   void onSendPressed() {
     final str = searchController.value.text.trim();

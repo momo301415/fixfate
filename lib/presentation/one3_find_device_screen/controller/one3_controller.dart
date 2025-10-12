@@ -8,7 +8,14 @@ import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
 import 'package:pp_bluetooth_kit_flutter/enums/pp_scale_enums.dart';
 import 'package:pp_bluetooth_kit_flutter/model/pp_device_model.dart';
 import 'package:pulsedevice/core/global_controller.dart';
+import 'package:pulsedevice/core/hiveDb/pp_device_storage.dart';
+import 'package:pulsedevice/core/hiveDb/user_profile_storage.dart';
+import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/network/api_service.dart';
+import 'package:pulsedevice/core/service/firebase_analytics_service.dart';
 import 'package:pulsedevice/core/utils/dialog_utils.dart';
+import 'package:pulsedevice/core/utils/loading_helper.dart';
+import 'package:pulsedevice/core/utils/snackbar_helper.dart';
 import 'package:pulsedevice/presentation/ios_dialog/controller/ios_controller.dart';
 import 'package:pulsedevice/presentation/ios_dialog/ios_dialog.dart';
 import 'package:pulsedevice/presentation/one3_find_device_screen/models/devicelistsection_item_model.dart';
@@ -24,6 +31,7 @@ import '../models/one3_model.dart';
 /// current one3ModelObj
 class One3FindDeviceController extends GetxController {
   final gc = Get.find<GlobalController>();
+  final apiService = ApiService();
   RxList<PPDeviceModel> devices = <PPDeviceModel>[].obs;
   Rx<PPDeviceModel?> selectedDevice = Rx<PPDeviceModel?>(null);
   Rx<One3FindDeviceModel> one3FindDeviceModelObj = One3FindDeviceModel().obs;
@@ -40,7 +48,8 @@ class One3FindDeviceController extends GetxController {
     checkBluetoothPermission();
   }
 
-  void showMatchDeviceDialog() {
+  /// 顯示配對裝置對話框
+  void showMatchDeviceDialog(PPDeviceModel device) {
     showModalBottomSheet(
       context: Get.context!,
       backgroundColor: Colors.transparent, // 重要：设置背景透明
@@ -103,6 +112,9 @@ class One3FindDeviceController extends GetxController {
                           ),
                           SizedBox(height: 26.h),
                           CustomElevatedButton(
+                            onPressed: () {
+                              connectToDevice(device);
+                            },
                             height: 56.h,
                             text: "lbl33".tr,
                             buttonStyle: CustomButtonStyles.none,
@@ -124,6 +136,7 @@ class One3FindDeviceController extends GetxController {
     );
   }
 
+  /// 檢查藍牙權限
   Future<void> checkBluetoothPermission() async {
     try {
       if (Platform.isAndroid) {
@@ -160,27 +173,7 @@ class One3FindDeviceController extends GetxController {
     }
   }
 
-  /// 檢查藍牙和位置權限
-  Future<void> _checkPermissions() async {
-    // 檢查藍牙權限
-    var bluetoothStatus = await Permission.bluetooth.status;
-    var bluetoothScanStatus = await Permission.bluetoothScan.status;
-    var bluetoothConnectStatus = await Permission.bluetoothConnect.status;
-    var locationStatus = await Permission.location.status;
-    var locationFineStatus = await Permission.locationWhenInUse.status;
-
-    bool hasBluetooth = bluetoothStatus.isGranted ||
-        (bluetoothScanStatus.isGranted && bluetoothConnectStatus.isGranted);
-    print("藍牙權限：$_hasPermissions");
-    bool hasLocation = locationStatus.isGranted || locationFineStatus.isGranted;
-    print("位置權限：$_hasPermissions");
-    _hasPermissions = hasBluetooth && hasLocation;
-    print("磅秤藍牙權限：$_hasPermissions");
-    if (_hasPermissions) {
-      _onScanPressed();
-    }
-  }
-
+  /// 開始掃描藍牙設備
   Future _onScanPressed() async {
     print("開始掃描藍牙設備----");
 
@@ -199,18 +192,108 @@ class One3FindDeviceController extends GetxController {
     });
   }
 
+  /// 顯示藍牙對話框
   Future<void> showBlueTooth() async {
     final result = await DialogHelper.showCustomDialog(
         Get.context!, IosDialog(Get.put(IosController())));
     if (result != null && result.isNotEmpty) {}
   }
 
+  /// 停止掃描藍牙設備
   Future _onStopPressed() async {
     PPBluetoothKitManager.stopScan();
   }
 
+  /// 返回
   void onBack() {
     _onStopPressed();
     Get.back();
+  }
+
+  /// 連接裝置
+  Future<void> connectToDevice(PPDeviceModel device) async {
+    try {
+      // 📊 記錄開始配對按鈕點擊事件
+      FirebaseAnalyticsService.instance.logClickStartPairing(
+        deviceName: device.deviceName,
+      );
+
+      LoadingHelper.show();
+      PPBluetoothKitManager.connectDevice(device, callBack: (state) {
+        if (state == PPDeviceConnectionState.connected) {
+          _onStopPressed();
+          SnackbarHelper.showBlueSnackbar(
+              title: '連線成功', message: '已連線到 ${device.deviceName}');
+          UserProfileStorage.saveFitDeviceForCurrentUser(
+              gc.userId.value, device);
+
+          /// 儲存裝置到 Hive
+          PPDeviceStorage.savePPDevice(gc.userId.value, device);
+          callApiBindDevice(device);
+          Future.delayed(const Duration(milliseconds: 500), () {
+            goHomePage();
+          });
+        }
+      });
+    } catch (e) {
+      rethrow;
+    } finally {
+      LoadingHelper.hide();
+    }
+  }
+
+  /// 綁定裝置
+  Future<bool> callApiBindDevice(PPDeviceModel device) async {
+    try {
+      LoadingHelper.show();
+      var apiId = await PrefUtils().getApiUserId();
+      final params = {
+        "userId": apiId,
+        "deviceType": "fit",
+        "deviceCode": device.deviceMac,
+        "bluetoothCode": device.deviceName
+      };
+      var res = await apiService.postJson(Api.bindDevice, params);
+      LoadingHelper.hide();
+      if (res.isNotEmpty) {
+        var resBody = res['data'];
+        if (resBody != null) {
+          return true;
+        } else {
+          DialogHelper.showError("${res["message"]}");
+        }
+      }
+    } catch (e) {
+      LoadingHelper.hide();
+      DialogHelper.showError("服務錯誤，請稍後再試");
+    } finally {
+      LoadingHelper.hide();
+    }
+    return false;
+  }
+
+  /// 返回首頁
+  void goHomePage() {
+    // 檢查當前路由
+    if (Get.currentRoute == AppRoutes.homePage) {
+      print('✅ 已在 HomePage，直接返回');
+      Get.back();
+      return;
+    }
+
+    // 嘗試返回到已有的 HomePage
+    try {
+      print('🔄 嘗試返回到現有 HomePage');
+      Get.until((route) => route.settings.name == AppRoutes.homePage);
+      print('✅ 成功返回');
+      return;
+    } catch (e) {
+      print('⚠️ 無法返回，將創建新 HomePage: $e');
+    }
+
+    // 首次進入才執行
+    print('🆕 創建新 HomePage');
+    Get.offNamedUntil(
+        AppRoutes.homePage, ModalRoute.withName(AppRoutes.one2Screen));
   }
 }

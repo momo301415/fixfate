@@ -322,4 +322,8 @@ class ImageConstant {
   static String imgSwitchPrimary = '$imagePath/img_switch_primary.svg';
   static String imgIconPrimary = '$imagePath/img_icon_primary.svg';
   static String imgAnLoading = '$imagePath/an_loading.png';
+
+  static String imgIconKg = '$imagePath/img_icon_kg.png';
+  static String imgIconWeight = '$imagePath/img_icon_weight.png';
+  static String imgIconFood = '$imagePath/img_icon_food.png';
 }

@@ -178,6 +178,9 @@ class FourController extends GetxController with CodeAutoFill {
           gc.avatarUrl.value = resBody['avatarUrl'] ?? "";
           gc.userGender.value = resBody['gender'] ?? "";
           gc.chatApiKeyValue.value = resBody['apiKeyValue'] ?? "";
+          gc.bodyWeight.value = resBody['bodyWeight'] ?? "";
+          gc.birth.value = resBody['birthDate'] ?? "";
+          gc.bodyHeight.value = resBody['bodyHeight'] ?? "";
 
           final ftoken = await FirebaseHelper.getDeviceToken();
           if (ftoken != null) {

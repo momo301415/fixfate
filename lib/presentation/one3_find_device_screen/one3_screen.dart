@@ -158,7 +158,7 @@ class One3FindDeviceScreen extends GetWidget<One3FindDeviceController> {
             onTap: () async {
               print("");
               // TODO: 點選裝置後的行為
-              controller.showMatchDeviceDialog();
+              controller.showMatchDeviceDialog(device);
             },
           );
         },

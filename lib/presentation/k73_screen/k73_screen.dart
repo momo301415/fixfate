@@ -70,7 +70,19 @@ class K73Screen extends GetWidget<K73Controller> {
             final item = items[index];
             return GestureDetector(
               onTap: () {
-                controller.gok76Screen(index);
+                /// 體重和體脂肪需要填寫身體資料
+                if (item.label == "lbl370".tr || item.label == "lbl780".tr) {
+                  if (controller.gc.userGender.value.isEmpty ||
+                      controller.gc.birth.value.isEmpty ||
+                      controller.gc.bodyHeight.value.isEmpty) {
+                    controller.goK27Screen();
+                  } else {
+                    controller.gok76Screen(index);
+                  }
+                } else {
+                  controller.gok76Screen(index);
+                }
+
                 print("點擊了${item.label}");
               },
               child: ListviewItemWidget(model: item),
@@ -210,57 +222,6 @@ class K73Screen extends GetWidget<K73Controller> {
           Expanded(
             child: GestureDetector(
                 onTap: () {
-                  controller.goK40Screen();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.h),
-                  height: 50.h,
-                  child: Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Container(
-                        height: 40.h,
-                        width: 162.h,
-                        decoration: BoxDecoration(
-                          color: appTheme.whiteA700,
-                          borderRadius: BorderRadius.circular(
-                            8.h,
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: SizedBox(
-                          width: double.maxFinite,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: double.maxFinite,
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8.h),
-                                    child: _buildRowiconsportrun(
-                                      iconsportrun: ImageConstant.img2411,
-                                      one: "lbl222".tr,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                )),
-          ),
-          SizedBox(width: 0.h),
-          Expanded(
-            child: GestureDetector(
-                onTap: () {
                   controller.gok5Screen();
                 },
                 child: Container(
@@ -297,6 +258,57 @@ class K73Screen extends GetWidget<K73Controller> {
                                       iconsportrun:
                                           ImageConstant.imgIconSportRun,
                                       one: "lbl223".tr,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+          SizedBox(width: 0.h),
+          Expanded(
+            child: GestureDetector(
+                onTap: () {
+                  controller.goK13Screen();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.h),
+                  height: 50.h,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 162.h,
+                        decoration: BoxDecoration(
+                          color: appTheme.whiteA700,
+                          borderRadius: BorderRadius.circular(
+                            8.h,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: double.maxFinite,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.maxFinite,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.h),
+                                    child: _buildRowiconsportrun(
+                                      iconsportrun: ImageConstant.imgIconFood,
+                                      one: "lbl383".tr,
                                     ),
                                   ),
                                 ),

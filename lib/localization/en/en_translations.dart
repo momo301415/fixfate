@@ -547,6 +547,7 @@ final Map<String, String> en = {
   "lbl365": "文字",
   "lbl337": "趨勢注意",
   "lbl338": "行動建議",
+  "lbl370": "公斤",
   "lbl_fixfate": "FixFate 助手",
   "lbl_listen": "裝置偵測",
   "lbl_selector_birth": "選擇出生日期",

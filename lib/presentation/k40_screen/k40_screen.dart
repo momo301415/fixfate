@@ -57,8 +57,16 @@ class K40Screen extends GetWidget<K40Controller> {
                       .k40ModelObj.value.listpulseringItemList.value[index];
                   return GestureDetector(
                       onTap: () {
+                        if (item.pulsering == "msg_pulsering4".tr) {
+                          /// 路由到體脂秤資訊頁面
+                          controller.goDeviceDetailPage(item);
+                        } else {
+                          /// 路由到戒指資訊頁面
+                          controller
+                              .goK45Screen(controller.selectDevice[index]);
+                        }
                         // controller.goK45Screen(controller.selectDevice[index]);
-                        controller.goDeviceDetailPage(item);
+                        // controller.goDeviceDetailPage(item);
                       },
                       child: ListpulseringItemWidget(item));
                 },

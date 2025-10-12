@@ -12,6 +12,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
 import 'package:pp_bluetooth_kit_flutter/enums/pp_scale_enums.dart';
+import 'package:pp_bluetooth_kit_flutter/model/pp_device_model.dart';
 import 'package:pp_bluetooth_kit_flutter/utils/pp_bluetooth_kit_logger.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
@@ -29,10 +30,11 @@ import 'package:pulsedevice/core/hiveDb/remider_setting.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record.dart';
 import 'package:pulsedevice/core/hiveDb/sport_record_list.dart';
 import 'package:pulsedevice/core/hiveDb/user_profile.dart';
+import 'package:pulsedevice/core/hiveDb/pp_device_profile.dart';
 import 'package:pulsedevice/core/network/api.dart';
+import 'package:pulsedevice/core/service/pp_scale_service.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
 import 'package:pulsedevice/core/service/app_lifecycle_observer.dart';
-import 'package:pulsedevice/core/service/goal_notification_service.dart';
 import 'package:pulsedevice/core/service/location_enhancement_service.dart';
 import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/service/pressure_calculation_service.dart';
@@ -141,6 +143,20 @@ class GlobalController extends GetxController {
   final chatInput = "".obs;
   final chatApiKeyValue = "".obs;
 
+  ///--- 磅秤設備管理（已遷移到 PPScaleService）
+
+  ///--- 體重
+  final bodyWeight = "".obs;
+
+  ///--- 性別
+  final gender = "".obs;
+
+  ///--- 出生日期
+  final birth = "".obs;
+
+  ///--- 身高
+  final bodyHeight = "".obs;
+
   // ✅ 添加事件分發系統
   final Map<String, List<Function(Map)>> _eventHandlers = {};
 
@@ -183,6 +199,8 @@ class GlobalController extends GetxController {
     super.onClose();
     YcProductPlugin().cancelListening();
 
+    // 磅秤 keepAlive 已由 PPScaleService 管理
+
     WidgetsBinding.instance.removeObserver(lifecycleObserver);
     db.close();
   }
@@ -195,6 +213,9 @@ class GlobalController extends GetxController {
     sqfliteInit();
     YcProductPluginInit();
     lefuInit();
+
+    /// 註冊 PPScaleService
+    Get.put(PPScaleService());
 
     /// 初始化 Firebase Analytics
     await FirebaseAnalyticsService.instance.initialize();
@@ -334,6 +355,7 @@ class GlobalController extends GetxController {
     Hive.registerAdapter(SportRecordAdapter());
     Hive.registerAdapter(SportRecordListAdapter());
     Hive.registerAdapter(FamilyMemberAdapter());
+    Hive.registerAdapter(PPDeviceProfileAdapter());
     await Hive.openBox<UserProfile>('user_profile');
     await Hive.openBox<GoalProfile>('goal_profile');
     await Hive.openBox<HeartRateSetting>('heart_rate_setting');
@@ -349,6 +371,7 @@ class GlobalController extends GetxController {
     await Hive.openBox<SportRecordList>('sport_record_list');
     await Hive.openBox<String>('notified_goals');
     await Hive.openBox<FamilyMember>('family_member');
+    await Hive.openBox<PPDeviceProfile>('pp_device_profile');
   }
 
   /// 🎯 順序權限請求：先通知權限，再位置權限
@@ -875,5 +898,20 @@ class GlobalController extends GetxController {
     } catch (e) {
       print("❌ 停止排程任務時發生錯誤: $e");
     }
+  }
+
+  /// 取得 PPScaleService 實例
+  PPScaleService get ppScaleService => Get.find<PPScaleService>();
+
+  /// 檢查磅秤是否已連線（委託給 Service）
+  bool get hasPPDeviceConnected => ppScaleService.hasConnectedDevice;
+
+  /// 取得當前連線的磅秤設備（委託給 Service）
+  PPDeviceModel? get connectedPPDevice => ppScaleService.connectedDevice;
+
+  /// 更新磅秤連線狀態（委託給 Service）
+  void updatePPDeviceConnectionStatus(bool isConnected) {
+    // 這個方法現在由 PPScaleService 內部管理
+    print('📊 GlobalController: 磅秤連線狀態更新請求: $isConnected');
   }
 }

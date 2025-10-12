@@ -183,7 +183,7 @@ class CustomBottomBar extends StatelessWidget {
         child: GestureDetector(
           onTap: () => _onButtonTap(1),
           child: CustomImageView(
-            imagePath: ImageConstant.imgChat,
+            imagePath: ImageConstant.record,
             height: 80.h,
             width: 80.h,
             fit: BoxFit.fill,

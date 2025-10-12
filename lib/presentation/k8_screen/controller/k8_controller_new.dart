@@ -25,23 +25,25 @@ class K8Controller extends GetxController {
   Rx<DateTime> currentDate = DateTime.now().obs;
 
   /// 體脂秤相關（保留原有結構）
-  PPDeviceConnectionState _connectionStatus = PPDeviceConnectionState.disconnected;
+  PPDeviceConnectionState _connectionStatus =
+      PPDeviceConnectionState.disconnected;
   PPDeviceModel? _device;
 
   /// 磅秤測量相關（委託給 Service）
   RxBool isMeasuring = false.obs;
   RxString measurementStatus = '準備測量'.obs;
   RxDouble currentWeight = 0.0.obs;
-  Rx<PPMeasurementDataState> currentMeasurementState = PPMeasurementDataState.processData.obs;
+  Rx<PPMeasurementDataState> currentMeasurementState =
+      PPMeasurementDataState.processData.obs;
 
   @override
   void onInit() {
     super.onInit();
     updateDateRange(currentIndex.value);
-    
+
     // 設定 Service 監聽器
     _setupServiceListeners();
-    
+
     // 檢查是否有磅秤設備連線
     if (ppScaleService.hasConnectedDevice) {
       measurementStatus.value = '設備已連線，請站上磅秤';
@@ -134,27 +136,27 @@ class K8Controller extends GetxController {
   /// 設定 Service 監聽器
   void _setupServiceListeners() {
     print('🎯 K8Controller: 設定 Service 監聽器');
-    
+
     // 監聽測量數據
     ppScaleService.measurementStream.listen((dataModel) {
       _handleMeasurementData(dataModel);
     });
-    
+
     // 監聽連線狀態
     ppScaleService.connectionStateStream.listen((state) {
       _handleConnectionStateChange(state);
     });
-    
+
     // 監聽狀態訊息
     ppScaleService.statusMessageStream.listen((message) {
       measurementStatus.value = message;
     });
-    
+
     // 監聽體重變化
     ppScaleService.weightStream.listen((weight) {
       currentWeight.value = weight;
     });
-    
+
     // 監聽測量狀態
     ppScaleService.measurementState.listen((state) {
       currentMeasurementState.value = state;
@@ -171,7 +173,7 @@ class K8Controller extends GetxController {
   /// 處理測量數據
   void _handleMeasurementData(PPBodyBaseModel dataModel) {
     print('📊 K8Controller: 收到測量數據');
-    
+
     // 顯示測量結果
     _showMeasurementResult(dataModel);
   }
@@ -193,7 +195,7 @@ class K8Controller extends GetxController {
   /// 顯示測量結果
   void _showMeasurementResult(PPBodyBaseModel dataModel) {
     final weight = dataModel.weight / 100.0;
-    
+
     // 顯示成功訊息
     Get.snackbar(
       '測量完成',
@@ -216,7 +218,8 @@ class K8Controller extends GetxController {
   }
 
   /// 取得當前測量數據（委託給 Service）
-  PPBodyBaseModel? get currentMeasurementData => ppScaleService.lastMeasurementData;
+  PPBodyBaseModel? get currentMeasurementData =>
+      ppScaleService.lastMeasurementData;
 
   /// 檢查是否正在測量（委託給 Service）
   bool get isCurrentlyMeasuring => ppScaleService.isMeasuring.value;
@@ -246,3 +249,4 @@ class K8Controller extends GetxController {
     await ppScaleService.resetDevice();
   }
 }
+
