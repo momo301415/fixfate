@@ -11,6 +11,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pp_bluetooth_kit_flutter/ble/pp_bluetooth_kit_manager.dart';
+import 'package:pp_bluetooth_kit_flutter/enums/pp_scale_enums.dart';
+import 'package:pp_bluetooth_kit_flutter/utils/pp_bluetooth_kit_logger.dart';
 import 'package:pulsedevice/core/app_export.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list.dart';
@@ -73,6 +75,9 @@ class GlobalController extends GetxController {
   ///--- 藍牙狀態
   RxInt blueToolStatus = 0.obs;
   RxBool isBleConnect = false.obs;
+  RxBool isBleLefuConnect = false.obs;
+  Rx<PPBlePermissionState> isBleLefuPermission =
+      Rx(PPBlePermissionState.unknown);
 
   ///--- 用戶資料
   RxString userEmail = ''.obs;
@@ -91,7 +96,7 @@ class GlobalController extends GetxController {
   var firebaseToken = ''.obs;
 
   ///--- 記錄bottombar index
-  var bottomBarIndex = 2.obs;
+  var bottomBarIndex = 0.obs;
 
   ///--- 紀錄是否已經
   var isSendSyncApi = "Y".obs;
@@ -250,10 +255,24 @@ class GlobalController extends GetxController {
   }
 
   void lefuInit() async {
-    final path = 'assets/config/lefu.config';
+    // Monitor logs
+    PPBluetoothKitLogger.addListener(callBack: (log) {
+      print('SDK-Log:$log');
+    });
+    final path = 'config/lefu.config';
     String content = await rootBundle.loadString(path);
     PPBluetoothKitManager.initSDK('lefub60060202a15ac8a',
         'UCzWzna/eazehXaz8kKAC6WVfcL25nIPYlV9fXYzqDM=', content);
+
+    PPBluetoothKitManager.addBlePermissionListener(callBack: (permission) {
+      print('Bluetooth permission state changed:$permission');
+      isBleLefuPermission.value = permission;
+    });
+
+    PPBluetoothKitManager.addScanStateListener(callBack: (scanning) {
+      print('Bluetooth scanning state changed:$scanning');
+      isBleLefuConnect.value = scanning;
+    });
   }
 
   /// 內部藍牙事件處理

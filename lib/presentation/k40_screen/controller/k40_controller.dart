@@ -101,7 +101,8 @@ class K40Controller extends GetxController {
           if (state == BluetoothState.on ||
               state == BluetoothState.disconnected ||
               state == BluetoothState.connected) {
-            goK10Screen();
+            // goK10Screen();
+            gotoK30SelectDeviceScreen();
           } else {
             showBlueTooth();
           }
@@ -110,7 +111,8 @@ class K40Controller extends GetxController {
           showBlueTooth();
         }
       } else {
-        goK10Screen();
+        // goK10Screen();
+        gotoK30SelectDeviceScreen();
       }
     } catch (e) {
       rethrow;
@@ -131,5 +133,13 @@ class K40Controller extends GetxController {
     } catch (e) {
       power.value = "";
     }
+  }
+
+  void gotoK30SelectDeviceScreen() {
+    Get.toNamed(AppRoutes.k30SelectDeviceScreen);
+  }
+
+  void goDeviceDetailPage(ListpulseringItemModel item) {
+    Get.toNamed(AppRoutes.k36DeviceDetailesScreen, arguments: item);
   }
 }

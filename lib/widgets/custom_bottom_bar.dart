@@ -24,9 +24,9 @@ class CustomBottomBar extends StatelessWidget {
       type: BottomBarEnum.tf,
     ),
     BottomMenuModel(
-      icon: ImageConstant.imgChat,
-      activeIcon: ImageConstant.imgChat,
-      title: "諮詢".tr,
+      icon: ImageConstant.record,
+      activeIcon: ImageConstant.record,
+      title: "lbl158".tr,
       type: BottomBarEnum.tf,
     ),
     BottomMenuModel(

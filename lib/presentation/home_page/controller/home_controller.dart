@@ -4,6 +4,7 @@ import 'package:pulsedevice/core/chat_screen_controller.dart';
 import 'package:pulsedevice/core/utils/firebase_helper.dart';
 
 import 'package:pulsedevice/presentation/k73_screen/controller/k73_controller.dart';
+import 'package:pulsedevice/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final bottomBarIndex = 0.obs; // 改為 1，對應 K29Page
@@ -44,8 +45,8 @@ class HomeController extends GetxController {
         break;
       case 1:
         // 諮詢按鈕 - 打開 K19Screen
-        cc.isK19Visible.value = true;
         print('🔥 打開諮詢頁面');
+        goK13Screen();
         break;
       case 2:
         // 我的頁面 (實際對應 IndexedStack 的 index 1)
@@ -53,5 +54,9 @@ class HomeController extends GetxController {
         print('📱 切換到個人中心');
         break;
     }
+  }
+
+  void goK13Screen() {
+    Get.toNamed(AppRoutes.k13Screen);
   }
 }

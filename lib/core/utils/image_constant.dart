@@ -1,8 +1,17 @@
 // ignore_for_file: must_be_immutable
 class ImageConstant {
+  static String imgClosePrimary = '$imagePath/img_close_primary.svg';
+  static String imgFrame86948WhiteA700 =
+      '$imagePath/img_frame_86948_white_a700.svg';
+  static String imgNotification = '$imagePath/img_notification.svg';
+
+  static String imgFiRrUtensils = '$imagePath/img_fi_rr_utensils.svg';
+  static String imgArrowdownPrimarycontainer =
+      '$imagePath/img_arrowdown_primarycontainer.svg';
+  static String imgFiSrHourglass = '$imagePath/img_fi_sr_hourglass.svg';
   // Image folder path
   static String imagePath = 'assets/images';
-
+  static String imgUplusBlueGray400 = '$imagePath/img_uplus_blue_gray_400.svg';
 // Common images
   static String imgClose = '$imagePath/img_close.svg';
 
@@ -11,6 +20,7 @@ class ImageConstant {
   static String imgVector = '$imagePath/img_vector.png';
 
   static String imgMusic = '$imagePath/img_music.svg';
+  static String imgContrast = '$imagePath/img_contrast.svg';
 
   static String imgUnion = '$imagePath/img_union.svg';
 
@@ -32,6 +42,12 @@ class ImageConstant {
       '$imagePath/img_close_primarycontainer.svg';
 
   static String imgFrame86618 = '$imagePath/img_frame_86618.png';
+  static String imgFrame866181 = '$imagePath/img_frame_86618_1.png';
+  static String imgIosMatch = '$imagePath/ios_match.png';
+
+  static String imgFrame8661854x54 = '$imagePath/img_frame_86618_54x54.png';
+  static String imgClosePrimarycontainer1 =
+      '$imagePath/img_close_primarycontainer_1.svg';
 
   static String img01 = '$imagePath/img_01.svg';
 
@@ -41,7 +57,7 @@ class ImageConstant {
       '$imagePath/img_union_white_a700_157x180.svg';
 
   static String imgArrowDown = '$imagePath/img_arrow_down.svg';
-
+  static String img11611 = '$imagePath/img_116_1_1.png';
   static String imgUnionWhiteA700506x374 =
       '$imagePath/img_union_white_a700_506x374.png';
 
@@ -192,7 +208,7 @@ class ImageConstant {
 
   static String imgArrowDownPrimarycontainer =
       '$imagePath/img_arrow_down_primarycontainer.svg';
-
+  static String imgFiTrash2 = '$imagePath/img_fi_trash_2.svg';
   static String imgForward = '$imagePath/img_forward.svg';
 
   static String imgArrowRightPrimarycontainer =
@@ -203,11 +219,17 @@ class ImageConstant {
   static String imgFrame86884 = '$imagePath/img_frame_86884.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
-
+  static String imgArrowLeftWhiteA70024x24 =
+      '$imagePath/img_arrow_left_white_a700_24x24.svg';
+  static String imgArrowLeftWhiteA700 =
+      '$imagePath/img_arrow_left_white_a700.svg';
   static String imgUnionFullBg = '$imagePath/img_union_full.png';
   static String imgUnionBg2 = '$imagePath/img_union_2.png';
   static String imgQrBg = '$imagePath/img_qr_bg.png';
-
+  static String imgArrowDownPrimarycontainer1 =
+      '$imagePath/img_arrow_down_primarycontainer_1.svg';
+  static String imgArrowRightPrimarycontainer1 =
+      '$imagePath/img_arrow_right_primarycontainer_1.svg';
   static String solidDistance = '$imagePath/solid-icon-distance.svg';
   static String solidHeartbeat = '$imagePath/solid-icon-heartbeat.svg';
   static String solidBlood = '$imagePath/solid-icon-blood.svg';
@@ -216,9 +238,11 @@ class ImageConstant {
   static String solidStep = '$imagePath/solid-icon-step.svg';
   static String solidSleep = '$imagePath/solid-icon-sleep.svg';
   static String solidFire = '$imagePath/solid-icon-fire.svg';
-
+  static String imgFiedit2 = '$imagePath/img_fiedit2.svg';
+  static String imgUplusPrimary = '$imagePath/img_uplus_primary.svg';
   static String imgFrame86912 = '$imagePath/img_frame_86912.svg';
-
+  static String imgVector308 = '$imagePath/img_vector_308.svg';
+  static String imgIconUWaterGlass = '$imagePath/img_icon_u_water_glass.svg';
   static String imgFrame86911 = '$imagePath/img_frame_86911.svg';
 
   static String imgIcon11 = '$imagePath/img_icon_1_1.png';
@@ -286,4 +310,16 @@ class ImageConstant {
   static String imgFeedbackBad = '$imagePath/img_feedback_bad.svg';
 
   static String imgChat = '$imagePath/chat.png';
+  static String record = '$imagePath/record_86501.png';
+  static String imgImage764 = '$imagePath/img_image_764.png';
+  static String imgUCheckCirclePrimary2 =
+      '$imagePath/img_u_check_circle_primary_2.svg';
+  static String imgFrameErrorcontainer1 =
+      '$imagePath/img_frame_errorcontainer_1.svg';
+
+  static String imgUtachometerfastalt = '$imagePath/img_utachometerfastalt.svg';
+  static String imgSwitch = '$imagePath/img_switch.svg';
+  static String imgSwitchPrimary = '$imagePath/img_switch_primary.svg';
+  static String imgIconPrimary = '$imagePath/img_icon_primary.svg';
+  static String imgAnLoading = '$imagePath/an_loading.png';
 }

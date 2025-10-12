@@ -20,39 +20,42 @@ extension TextFormFieldStyleHelper on CustomTextFormField {
 }
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField(
-      {Key? key,
-      this.alignment,
-      this.width,
-      this.boxDecoration,
-      this.scrollPadding,
-      this.controller,
-      this.focusNode,
-      this.autofocus = false,
-      this.textStyle,
-      this.obscureText = false,
-      this.readOnly = false,
-      this.onTap,
-      this.onChanged,
-      this.textInputAction = TextInputAction.next,
-      this.textInputType = TextInputType.text,
-      this.maxLines,
-      this.hintText,
-      this.hintStyle,
-      this.prefix,
-      this.prefixConstraints,
-      this.suffix,
-      this.suffixConstraints,
-      this.contentPadding,
-      this.borderDecoration,
-      this.fillColor,
-      this.filled = true,
-      this.validator})
-      : super(
+  CustomTextFormField({
+    Key? key,
+    this.alignment,
+    this.width,
+    this.boxDecoration,
+    this.scrollPadding,
+    this.controller,
+    this.focusNode,
+    this.autofocus = false,
+    this.textStyle,
+    this.obscureText = false,
+    this.readOnly = false,
+    this.onTap,
+    this.onChanged,
+    this.textInputAction = TextInputAction.next,
+    this.textInputType = TextInputType.text,
+    this.maxLines,
+    this.hintText,
+    this.hintStyle,
+    this.prefix,
+    this.prefixConstraints,
+    this.suffix,
+    this.suffixConstraints,
+    this.contentPadding,
+    this.borderDecoration,
+    this.fillColor,
+    this.filled = true,
+    this.validator,
+    this.textAlign,
+  }) : super(
           key: key,
         );
 
   final Alignment? alignment;
+
+  final TextAlign? textAlign;
 
   final double? width;
 

@@ -4,6 +4,7 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "${project(':background_fetch').projectDir}/libs" }
+        maven { url "https://raw.githubusercontent.com/LefuHengqi/PPBaseKit-Android/main" }
     }
     
     configurations.all {
