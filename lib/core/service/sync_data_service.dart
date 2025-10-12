@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:geolocator/geolocator.dart';
 import 'package:pulsedevice/core/global_controller.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record.dart';
 import 'package:pulsedevice/core/hiveDb/alert_record_list_storage.dart';
@@ -15,7 +16,6 @@ import 'package:pulsedevice/core/hiveDb/pressure_setting.dart';
 import 'package:pulsedevice/core/hiveDb/pressure_setting_storage.dart';
 import 'package:pulsedevice/core/network/api.dart';
 import 'package:pulsedevice/core/network/api_service.dart';
-import 'package:pulsedevice/core/service/notification_service.dart';
 import 'package:pulsedevice/core/sqliteDb/app_database.dart';
 
 import 'package:pulsedevice/core/utils/date_time_utils.dart';
@@ -52,6 +52,31 @@ class SyncDataService {
     await gc.healthDataSyncService.syncHealthData();
     await Future.delayed(Duration.zero);
     await syncToApi();
+    await uploadGps();
+
+    // 🎯 新增：同步完成後發送事件（帶防抖動）
+    _notifySyncCompleted();
+  }
+
+  /// 🎯 新增：通知同步完成事件
+  void _notifySyncCompleted() {
+    // 使用防抖動機制，避免頻繁觸發
+    if (gc.shouldExecute('sync_completed_event',
+        interval: const Duration(seconds: 5))) {
+      print("📡 [SyncDataService] 發送同步完成事件");
+
+      // 分發同步完成事件
+      final eventData = {
+        'sync_completed': {
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'success': true,
+          'syncType': 'background',
+          'source': 'SyncDataService'
+        }
+      };
+
+      gc.distributeEvent(eventData);
+    }
   }
 
   ///------ 同步資料到API -----
@@ -182,6 +207,8 @@ class SyncDataService {
       'data': {'sleep': unsyncedSleep, 'sleepDetails': unsyncedSleepDetails},
       'uploadFuture':
           uploadSleep(unsyncedSleep, unsyncedSleepDetails, isSyncValue),
+      'uploadDetailsFuture':
+          uploadSleepDetail(unsyncedSleep, unsyncedSleepDetails, isSyncValue),
     };
   }
 
@@ -444,6 +471,23 @@ class SyncDataService {
     return false;
   }
 
+  /// 寫入睡眠詳情
+  Future<bool> uploadSleepDetail(List<SleepDataData> datas,
+      List<SleepDetailDataData> detailsDatas, String isSyncApi) async {
+    final dataList =
+        buildSleepDetailPayload(datas, detailsDatas, gc.apiId.value);
+
+    final payload = dataList;
+
+    try {
+      await service.postJsonList(Api.sleepSet, jsonEncode(payload));
+      return true;
+    } catch (e) {
+      print(e);
+    }
+    return false;
+  }
+
   Future<bool> uploadHrv(List<CombinedDataData> datas, String isSyncApi,
       {List<AlertRecord>? a}) async {
     final data = convertToPayload<CombinedDataData>(
@@ -507,6 +551,42 @@ class SyncDataService {
     }
 
     return result;
+  }
+
+  List<Map<String, dynamic>> buildSleepDetailPayload(
+    List<SleepDataData> sleepList,
+    List<SleepDetailDataData> detailList,
+    String userId,
+  ) {
+    final List<Map<String, dynamic>> result = [];
+
+    for (final sleep in detailList) {
+      ///---- sleep data
+      result.add({
+        "userID": userId,
+        "sleepType": sleep.sleepType,
+        "duration": sleep.duration,
+        "start_time_stamp": sleep.startTimeStamp,
+        "typeName": getSleepType(sleep.sleepType)
+      });
+    }
+
+    return result;
+  }
+
+  String getSleepType(int sleepType) {
+    switch (sleepType) {
+      case 241:
+        return "deepSleep"; // 深睡
+      case 242:
+        return "lightSleep"; // 浅睡
+      case 243:
+        return "rem"; // REM
+      case 244:
+        return "wake"; // 清醒
+      default:
+        return "deepSleep";
+    }
   }
 
   List<Map<String, dynamic>> convertToPayload<T>(
@@ -972,6 +1052,45 @@ class SyncDataService {
     } catch (e) {
       print(e);
       return {};
+    }
+  }
+
+  /// 上傳用戶gps位置
+  Future<void> uploadGps() async {
+    try {
+      // 🔑 檢查定位服務
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return;
+      }
+
+      // 🔑 請求權限
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      final location = await Geolocator.getCurrentPosition();
+
+      final payload = {
+        "userID": gc.apiId.value,
+        "coordinateX": location.longitude,
+        "coordinateY": location.latitude,
+      };
+      var res = await service.postJson(
+        Api.gpsSet,
+        payload,
+      );
+      if (res.isNotEmpty) {
+        final resMsg = res["message"];
+        if (resMsg == "SUCCESS") {
+          print("上傳成功");
+        }
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

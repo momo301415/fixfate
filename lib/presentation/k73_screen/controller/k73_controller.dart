@@ -38,6 +38,9 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       dataType: 'health_overview',
     );
 
+    // 🎯 新增：註冊同步完成事件監聽器
+    _registerSyncEventListener();
+
     /// 測試用帳號，有要測試數據就打開
     // gc.apiId.value = 'aa6b8da8c6324c6f92bf876ca5b84e5a';
   }
@@ -55,6 +58,9 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
     super.onClose();
     searchController.dispose();
     WidgetsBinding.instance.removeObserver(this);
+
+    // 🎯 新增：取消註冊同步完成事件監聽器
+    _unregisterSyncEventListener();
   }
 
   @override
@@ -535,5 +541,40 @@ class K73Controller extends GetxController with WidgetsBindingObserver {
       LoadingHelper.hide();
       print("getHealthData Error: $e");
     }
+  }
+
+  /// 🎯 新增：註冊同步完成事件監聽器
+  void _registerSyncEventListener() {
+    gc.registerEventHandler('sync_completed', _onSyncCompleted);
+    print("📡 [K73Controller] 已註冊同步完成事件監聽器");
+  }
+
+  /// 🎯 新增：取消註冊同步完成事件監聽器
+  void _unregisterSyncEventListener() {
+    gc.unregisterEventHandler('sync_completed', _onSyncCompleted);
+    print("📡 [K73Controller] 已取消註冊同步完成事件監聽器");
+  }
+
+  /// 🎯 新增：處理同步完成事件
+  void _onSyncCompleted(Map event) {
+    print("📨 [K73Controller] 收到同步完成事件: $event");
+
+    // 防抖動檢查：避免短時間內重複刷新
+    if (!gc.shouldExecute('k73_health_refresh',
+        interval: const Duration(seconds: 3))) {
+      print("🚫 [K73Controller] 防抖動：跳過健康數據刷新");
+      return;
+    }
+
+    // 前景狀態檢查：僅在App前景時才刷新
+    if (!gc.isAppInForeground()) {
+      print("🚫 [K73Controller] App在背景狀態，跳過UI刷新");
+      return;
+    }
+
+    print("✅ [K73Controller] 開始刷新健康數據");
+
+    // 執行健康數據刷新
+    getHealthData(familyId: gc.familyId.value, familyName: gc.familyName.value);
   }
 }

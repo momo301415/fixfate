@@ -109,6 +109,9 @@ class GlobalController extends GetxController {
 
   DateTime? _lastSyncTime;
 
+  /// 🎯 新增：通用防抖動管理器
+  final Map<String, DateTime> _debounceTimers = {};
+
   ///--- 定位增強服務
   late LocationEnhancementService locationEnhancementService;
 
@@ -282,6 +285,7 @@ class GlobalController extends GetxController {
     });
     final path = 'config/lefu.config';
     String content = await rootBundle.loadString(path);
+
     PPBluetoothKitManager.initSDK('lefub60060202a15ac8a',
         'UCzWzna/eazehXaz8kKAC6WVfcL25nIPYlV9fXYzqDM=', content);
 
@@ -486,30 +490,6 @@ class GlobalController extends GetxController {
     return locationEnhancementService.getDetailedServiceStatus();
   }
 
-  /// 手動觸發統一GPS模式（測試用）
-  Future<void> testUnifiedGpsMode() async {
-    print('🧪 [GlobalController] 開始測試統一GPS模式...');
-
-    final originalStrategy = locationEnhancementService.currentStrategy;
-
-    try {
-      // 切換到統一GPS
-      await enableUnifiedGpsStrategy();
-
-      // 等待一段時間觀察效果
-      await Future.delayed(Duration(seconds: 30));
-
-      print('🧪 [GlobalController] 統一GPS模式測試完成');
-      print(
-          '📊 [GlobalController] 測試期間同步次數: ${locationEnhancementService.syncCount}');
-    } catch (e) {
-      print('❌ [GlobalController] 統一GPS模式測試失敗: $e');
-    } finally {
-      // 可選：恢復原始策略
-      // await locationEnhancementService.switchStrategy(originalStrategy);
-    }
-  }
-
   // ======================================================
   // 🎯 新增：定位權限升級管理接口
   // ======================================================
@@ -562,6 +542,41 @@ class GlobalController extends GetxController {
   /// 獲取詳細的權限狀態報告
   Future<Map<String, dynamic>> getLocationPermissionStatusReport() async {
     return await locationEnhancementService.getPermissionStatusReport();
+  }
+
+  /// 🎯 新增：通用防抖動檢查方法
+  bool shouldExecute(String actionKey, {Duration? interval}) {
+    final minInterval = interval ?? const Duration(seconds: 15);
+    final now = DateTime.now();
+
+    if (_debounceTimers.containsKey(actionKey)) {
+      final lastTime = _debounceTimers[actionKey]!;
+      final timeDiff = now.difference(lastTime);
+      if (timeDiff < minInterval) {
+        print("🚫 防抖動：$actionKey 距離上次執行僅 ${timeDiff.inSeconds}秒，跳過");
+        return false;
+      }
+    }
+
+    _debounceTimers[actionKey] = now;
+    print("✅ 防抖動：$actionKey 執行通過，記錄時間");
+    return true;
+  }
+
+  /// 🎯 新增：清除特定動作的防抖動記錄
+  void clearDebounce(String actionKey) {
+    _debounceTimers.remove(actionKey);
+    print("🧹 防抖動：已清除 $actionKey 的記錄");
+  }
+
+  /// 🎯 新增：檢查App是否在前景
+  bool isAppInForeground() {
+    return WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+  }
+
+  /// 🎯 新增：公開的事件分發方法
+  void distributeEvent(Map event) {
+    _distributeEvent(event);
   }
 
   /// 智能權限升級檢查（在app啟動和重要時機調用）
@@ -812,7 +827,7 @@ class GlobalController extends GetxController {
         isBleConnect.value = false;
 
         if (_isInitFuncRunning) {
-          NotificationService().showDeviceDisconnectedNotification();
+          // NotificationService().showDeviceDisconnectedNotification();
           stopForegroundTask();
         }
         await apiService.sendLog(json: "藍牙連線中斷", logType: "WARN");
